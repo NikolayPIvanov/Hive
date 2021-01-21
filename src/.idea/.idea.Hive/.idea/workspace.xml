@@ -23,10 +23,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="66cb3650-3d8d-47d1-b17c-d3c313cbb1cd" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Hive/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Hive/.idea/contentModel.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Hive/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Hive/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/API/Api/Api.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/API/Api/Api.csproj" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/API/Api/Controllers/WeatherForecastController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/API/Api/Controllers/WeatherForecastController.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hive.sln" beforeDir="false" afterPath="$PROJECT_DIR$/Hive.sln" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/API/Api/Program.cs" beforeDir="false" afterPath="$PROJECT_DIR$/API/Api/Program.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/API/Api/appsettings.json" beforeDir="false" afterPath="$PROJECT_DIR$/API/Api/appsettings.json" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -43,6 +43,8 @@
         <option value="$PROJECT_DIR$/Hive.sln" />
         <option value="$PROJECT_DIR$/Domain/Domain/Class1.cs" />
         <option value="$PROJECT_DIR$/API/Api/Controllers/WeatherForecastController.cs" />
+        <option value="$PROJECT_DIR$/API/Api/appsettings.json" />
+        <option value="$PROJECT_DIR$/API/Api/Program.cs" />
       </list>
     </option>
   </component>
@@ -97,7 +99,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1611236683270</updated>
-      <workItem from="1611236689041" duration="1006000" />
+      <workItem from="1611236689041" duration="2259000" />
     </task>
     <task id="LOCAL-00001" summary="Initial API">
       <created>1611236980121</created>
@@ -106,7 +108,14 @@
       <option name="project" value="LOCAL" />
       <updated>1611236980121</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Adding Domain and sample exception">
+      <created>1611237992798</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1611237992798</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -128,7 +137,8 @@
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
     <MESSAGE value="Initial API" />
-    <option name="LAST_COMMIT_MESSAGE" value="Initial API" />
+    <MESSAGE value="Adding Domain and sample exception" />
+    <option name="LAST_COMMIT_MESSAGE" value="Adding Domain and sample exception" />
   </component>
   <component name="WindowStateProjectService">
     <state x="552" y="252" key="Rider.ProjectTemplateDialog.Size" timestamp="1611237371023">
