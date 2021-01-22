@@ -8,5 +8,7 @@ namespace Domain.Seller
         public Guid Id { get; set; }
 
         public List<Plan> Plans { get; set; }
+        
+        public List<Gig> Gigs { get; set; }
     }
 }

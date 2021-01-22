@@ -29,6 +29,50 @@
           <e p="Startup.cs" t="Include" />
           <e p="WeatherForecast.cs" t="Include" />
         </e>
+        <e p="Worker" t="IncludeRecursive">
+          <e p="appsettings.Development.json" t="Include" />
+          <e p="appsettings.json" t="Include" />
+          <e p="bin" t="ExcludeRecursive" />
+          <e p="obj" t="ExcludeRecursive">
+            <e p="Debug" t="Include">
+              <e p="net5.0" t="Include">
+                <e p="Worker.AssemblyInfo.cs" t="Include" />
+              </e>
+            </e>
+          </e>
+          <e p="Program.cs" t="Include" />
+          <e p="Properties" t="Include">
+            <e p="launchSettings.json" t="Include" />
+          </e>
+          <e p="Worker.cs" t="Include" />
+          <e p="Worker.csproj" t="IncludeRecursive" />
+        </e>
+      </e>
+      <e p="Application\Investor.Contracts" t="IncludeRecursive">
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="IInvestorRepository.cs" t="Include" />
+        <e p="Investor.Contracts.csproj" t="IncludeRecursive" />
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="net5.0" t="Include">
+              <e p="Investor.Contracts.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+      </e>
+      <e p="Application\Seller" t="IncludeRecursive">
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="ISellerRepository.cs" t="Include" />
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="net5.0" t="Include">
+              <e p="Seller.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+        <e p="Seller.csproj" t="IncludeRecursive" />
+        <e p="SellerDbContext.cs" t="Include" />
+        <e p="SellerRepository.cs" t="Include" />
       </e>
       <e p="Domain" t="Include">
         <e p="Domain" t="IncludeRecursive">
@@ -362,7 +406,21 @@
           </e>
         </e>
       </e>
+      <e p="Investor" t="IncludeRecursive">
+        <e p="bin" t="ExcludeRecursive" />
+        <e p="Class1.cs" t="Include" />
+        <e p="Investor.csproj" t="IncludeRecursive" />
+        <e p="obj" t="ExcludeRecursive">
+          <e p="Debug" t="Include">
+            <e p="net5.0" t="Include">
+              <e p="Investor.AssemblyInfo.cs" t="Include" />
+            </e>
+          </e>
+        </e>
+      </e>
+      <e p="InvestorContext" t="Include" />
       <e p="packages" t="ExcludeRecursive" />
+      <e p="SellerContext" t="Include" />
       <e p="Web" t="Include" />
     </e>
   </component>

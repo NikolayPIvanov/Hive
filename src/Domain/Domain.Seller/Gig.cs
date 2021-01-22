@@ -10,6 +10,6 @@ namespace Domain.Seller
         public Guid GigOverviewId { get; set; }
         public GigOverview GigOverview { get; set; }
         
-        
+        // options to include freelancers
     }
 }
