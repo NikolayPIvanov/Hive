@@ -26,15 +26,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="66cb3650-3d8d-47d1-b17c-d3c313cbb1cd" name="Default Changelist" comment="Adding IDP and user registration">
-      <change afterPath="$PROJECT_DIR$/Application/Seller/SellerDbContext.cs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Application/Seller/SellerRepository.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.Hive/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Hive/.idea/contentModel.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../build/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../build/docker-compose.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Hive/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Hive/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/Domain.Investor/Investor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Domain.Investor/Investor.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/Domain.Seller/Gig.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Domain.Seller/Gig.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/Domain.Seller/Seller.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Domain.Seller/Seller.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/Domain.Seller/Vendor.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Domain.Seller/Vendor.cs" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Hive.sln" beforeDir="false" afterPath="$PROJECT_DIR$/Hive.sln" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/API/Api/Api.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/API/Api/Api.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/API/Api/Controllers/WeatherForecastController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/API/Api/Controllers/WeatherForecastController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/API/Api/Startup.cs" beforeDir="false" afterPath="$PROJECT_DIR$/API/Api/Startup.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Identity/Hive.IDP/Hive.IDP.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Identity/Hive.IDP/Hive.IDP.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Identity/Hive.IDP/Quickstart/Account/AccountController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Identity/Hive.IDP/Quickstart/Account/AccountController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Identity/Hive.IDP/Startup.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Identity/Hive.IDP/Startup.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,6 +56,7 @@
     <setting file="mock://C:/Users/nikolay.ivanov/Desktop/Hive/src/Identity/Hive.IDP/Quickstart/Account/AccountController.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/API/Seller/Startup.cs" root0="SKIP_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/API/Seller/WeatherForecast.cs" root0="SKIP_HIGHLIGHTING" />
+    <setting file="file://$APPLICATION_CONFIG_DIR$/resharper-host/SourcesCache/C548E54F-3F18-4A17-8520-DC2A563BC763/1/CAP.RabbiMQOptions.cs" root0="SKIP_HIGHLIGHTING" />
   </component>
   <component name="IdeDocumentHistory">
     <changedPaths>
@@ -73,6 +73,10 @@
       <option value="$PROJECT_DIR$/Domain/Domain.Investor/Investor.cs" />
       <option value="$PROJECT_DIR$/Application/Investor.Contracts/Class1.cs" />
       <option value="$PROJECT_DIR$/Investor/Class1.cs" />
+      <option value="$PROJECT_DIR$/Identity/Hive.IDP/Startup.cs" />
+      <option value="$PROJECT_DIR$/Identity/Hive.IDP/Quickstart/Account/AccountController.cs" />
+      <option value="$PROJECT_DIR$/API/Api/Controllers/WeatherForecastController.cs" />
+      <option value="$PROJECT_DIR$/API/Api/Startup.cs" />
     </changedPaths>
   </component>
   <component name="ProjectId" id="1nNhumw39OEiS8hn6rGGgVvaS1z" />
@@ -90,7 +94,7 @@
     <property name="settings.editor.selected.configurable" value="preferences.sourceCode.C#" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
-  <component name="RunManager" selected=".NET Launch Settings Profile.Hive.IDP: SelfHost">
+  <component name="RunManager" selected=".NET Launch Settings Profile.Api">
     <configuration name="Api" type="LaunchSettings" factoryName=".NET Launch Settings Profile">
       <option name="LAUNCH_PROFILE_PROJECT_FILE_PATH" value="$PROJECT_DIR$/API/Api/Api.csproj" />
       <option name="LAUNCH_PROFILE_TFM" value=".NETCoreApp,Version=v5.0" />
@@ -193,7 +197,7 @@
       <workItem from="1611236689041" duration="8374000" />
       <workItem from="1611250885800" duration="2941000" />
       <workItem from="1611293392246" duration="332000" />
-      <workItem from="1611293823775" duration="3953000" />
+      <workItem from="1611293823775" duration="9108000" />
     </task>
     <task id="LOCAL-00001" summary="Initial API">
       <created>1611236980121</created>
@@ -230,7 +234,14 @@
       <option name="project" value="LOCAL" />
       <updated>1611295464625</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Making boundaries clearer">
+      <created>1611298868547</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1611298868547</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -257,6 +268,7 @@
     <MESSAGE value="Adding serilog and ELK" />
     <MESSAGE value="Adding IDP and user registration" />
     <MESSAGE value="Domains" />
-    <option name="LAST_COMMIT_MESSAGE" value="Domains" />
+    <MESSAGE value="Making boundaries clearer" />
+    <option name="LAST_COMMIT_MESSAGE" value="Making boundaries clearer" />
   </component>
 </project>

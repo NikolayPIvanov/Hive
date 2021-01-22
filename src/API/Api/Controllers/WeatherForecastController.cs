@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MassTransit;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -17,24 +18,32 @@ namespace Api.Controllers
         };
 
         private readonly ILogger<WeatherForecastController> _logger;
+        private readonly IPublishEndpoint _publishEndpoint;
 
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
+        public WeatherForecastController(ILogger<WeatherForecastController> logger, IPublishEndpoint publishEndpoint)
         {
             _logger = logger;
+            _publishEndpoint = publishEndpoint;
         }
 
         [HttpGet]
-        public IEnumerable<WeatherForecast> Get()
+        public async Task<IEnumerable<WeatherForecast>> Get()
         {
             var rng = new Random();
 
             try
             {
+                
                 if (rng.Next(1,6) > 3)
                 {
                     throw new Exception("Testing elastic");
-                }    
+                }
                 
+                await _publishEndpoint.Publish<ValueEntered>(new
+                {
+                    Value = Guid.NewGuid()
+                });
+
                 return Enumerable.Range(1, 5).Select(index => new WeatherForecast
                     {
                         Date = DateTime.Now.AddDays(index),
@@ -50,4 +59,5 @@ namespace Api.Controllers
             }
         }
     }
+    
 }

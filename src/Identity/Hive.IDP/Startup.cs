@@ -3,6 +3,7 @@
 
 
 using Domain.UserManagement;
+using DotNetCore.CAP;
 using IdentityServer4;
 using Hive.IDP.Data;
 using Hive.IDP.Models;
@@ -30,13 +31,15 @@ namespace Hive.IDP
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-
+            
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlite(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddIdentity<ApplicationUser, ApplicationRole>()
+            services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
+            
+            
 
             var builder = services.AddIdentityServer(options =>
                 {
@@ -67,22 +70,6 @@ namespace Hive.IDP
                     options.ClientId = "copy client ID from Google here";
                     options.ClientSecret = "copy client secret from Google here";
                 });
-            
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("dataEventRecordsAdmin", policyAdmin =>
-                {
-                    policyAdmin.RequireClaim("role", "dataEventRecords.admin");
-                });
-                options.AddPolicy("admin", policyAdmin =>
-                {
-                    policyAdmin.RequireClaim("role", "admin");
-                });
-                options.AddPolicy("dataEventRecordsUser", policyUser =>
-                {
-                    policyUser.RequireClaim("role", "dataEventRecords.user");
-                });
-            });
         }
 
         public void Configure(IApplicationBuilder app)

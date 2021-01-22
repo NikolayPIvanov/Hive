@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -14,6 +15,28 @@ using Microsoft.OpenApi.Models;
 
 namespace Api
 {
+    
+    public class ValueEntered
+    {
+        public Guid Value { get; set; }
+    }
+    
+    class EventConsumer :
+        IConsumer<ValueEntered>
+    {
+        ILogger<EventConsumer> _logger;
+
+        public EventConsumer(ILogger<EventConsumer> logger)
+        {
+            _logger = logger;
+        }
+
+        public async Task Consume(ConsumeContext<ValueEntered> context)
+        {
+            _logger.LogInformation("Value: {Value}", context.Message.Value);
+        }
+    }
+    
     public class Startup
     {
         public Startup(IConfiguration configuration)
@@ -27,6 +50,29 @@ namespace Api
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
+            
+            services.AddMassTransit(x =>
+            {
+                x.AddConsumer<EventConsumer>();
+
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    cfg.Host("localhost", "/", h =>
+                    {
+                        h.Username("admin");
+                        h.Password("admin");
+                    });
+                    
+                    cfg.ReceiveEndpoint("event-listener", e =>
+                    {
+                        e.ConfigureConsumer<EventConsumer>(context);
+                    });
+                });
+                
+            });
+
+            services.AddMassTransitHostedService();
+
             services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo {Title = "Api", Version = "v1"}); });
         }
 

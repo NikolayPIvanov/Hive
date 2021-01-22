@@ -18,6 +18,7 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using Domain.UserManagement;
+using DotNetCore.CAP;
 using Hive.IDP.Models.AccountViewModels;
 
 namespace IdentityServerHost.Quickstart.UI
@@ -32,6 +33,8 @@ namespace IdentityServerHost.Quickstart.UI
         private readonly IClientStore _clientStore;
         private readonly IAuthenticationSchemeProvider _schemeProvider;
         private readonly IEventService _events;
+        private readonly ICapPublisher _capBus;
+
 
         public AccountController(
             UserManager<ApplicationUser> userManager,
@@ -39,7 +42,8 @@ namespace IdentityServerHost.Quickstart.UI
             IIdentityServerInteractionService interaction,
             IClientStore clientStore,
             IAuthenticationSchemeProvider schemeProvider,
-            IEventService events)
+            IEventService events,
+            ICapPublisher capBus)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -47,6 +51,7 @@ namespace IdentityServerHost.Quickstart.UI
             _clientStore = clientStore;
             _schemeProvider = schemeProvider;
             _events = events;
+            _capBus = capBus;
         }
 
         /// <summary>
@@ -246,6 +251,8 @@ namespace IdentityServerHost.Quickstart.UI
                     //    $"Please confirm your account by clicking this link: <a href='{callbackUrl}'>link</a>");
                     //await _signInManager.SignInAsync(user, isPersistent: false);
                     //_logger.LogInformation(3, "User created a new account with password.");
+
+                    
                     return RedirectToLocal(returnUrl);
                 }
                 AddErrors(result);
