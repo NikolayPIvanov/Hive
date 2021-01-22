@@ -7,6 +7,7 @@ using DotNetCore.CAP;
 using IdentityServer4;
 using Hive.IDP.Data;
 using Hive.IDP.Models;
+using MassTransit;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -39,7 +40,18 @@ namespace Hive.IDP
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();
             
-            
+            services.AddMassTransit(x =>
+            {
+                x.UsingRabbitMq((context, cfg) =>
+                {
+                    cfg.Host("localhost", "/", h =>
+                    {
+                        h.Username("admin");
+                        h.Password("admin");
+                    });
+                });
+                
+            });
 
             var builder = services.AddIdentityServer(options =>
                 {

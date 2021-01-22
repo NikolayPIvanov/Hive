@@ -12,6 +12,9 @@
           <e p="appsettings.Development.json" t="Include" />
           <e p="appsettings.json" t="Include" />
           <e p="bin" t="ExcludeRecursive" />
+          <e p="Consumers" t="Include">
+            <e p="UserCreatedConsumer.cs" t="Include" />
+          </e>
           <e p="Controllers" t="Include">
             <e p="WeatherForecastController.cs" t="Include" />
           </e>
@@ -29,24 +32,6 @@
           <e p="Startup.cs" t="Include" />
           <e p="WeatherForecast.cs" t="Include" />
         </e>
-        <e p="Worker" t="IncludeRecursive">
-          <e p="appsettings.Development.json" t="Include" />
-          <e p="appsettings.json" t="Include" />
-          <e p="bin" t="ExcludeRecursive" />
-          <e p="obj" t="ExcludeRecursive">
-            <e p="Debug" t="Include">
-              <e p="net5.0" t="Include">
-                <e p="Worker.AssemblyInfo.cs" t="Include" />
-              </e>
-            </e>
-          </e>
-          <e p="Program.cs" t="Include" />
-          <e p="Properties" t="Include">
-            <e p="launchSettings.json" t="Include" />
-          </e>
-          <e p="Worker.cs" t="Include" />
-          <e p="Worker.csproj" t="IncludeRecursive" />
-        </e>
       </e>
       <e p="Application\Investor.Contracts" t="IncludeRecursive">
         <e p="bin" t="ExcludeRecursive" />
@@ -62,6 +47,7 @@
       </e>
       <e p="Application\Seller" t="IncludeRecursive">
         <e p="bin" t="ExcludeRecursive" />
+        <e p="ConfigureServices.cs" t="Include" />
         <e p="ISellerRepository.cs" t="Include" />
         <e p="obj" t="ExcludeRecursive">
           <e p="Debug" t="Include">
@@ -404,6 +390,18 @@
               </e>
             </e>
           </e>
+        </e>
+        <e p="IDP.Domain" t="IncludeRecursive">
+          <e p="bin" t="ExcludeRecursive" />
+          <e p="IDP.Domain.csproj" t="IncludeRecursive" />
+          <e p="obj" t="ExcludeRecursive">
+            <e p="Debug" t="Include">
+              <e p="net5.0" t="Include">
+                <e p="IDP.Domain.AssemblyInfo.cs" t="Include" />
+              </e>
+            </e>
+          </e>
+          <e p="UserCreatedEvent.cs" t="Include" />
         </e>
       </e>
       <e p="Investor" t="IncludeRecursive">

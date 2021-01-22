@@ -20,6 +20,8 @@ using System.Threading.Tasks;
 using Domain.UserManagement;
 using DotNetCore.CAP;
 using Hive.IDP.Models.AccountViewModels;
+using IDP.Domain;
+using MassTransit;
 
 namespace IdentityServerHost.Quickstart.UI
 {
@@ -33,7 +35,7 @@ namespace IdentityServerHost.Quickstart.UI
         private readonly IClientStore _clientStore;
         private readonly IAuthenticationSchemeProvider _schemeProvider;
         private readonly IEventService _events;
-        private readonly ICapPublisher _capBus;
+        private readonly IPublishEndpoint _publishEndpoint;
 
 
         public AccountController(
@@ -43,7 +45,7 @@ namespace IdentityServerHost.Quickstart.UI
             IClientStore clientStore,
             IAuthenticationSchemeProvider schemeProvider,
             IEventService events,
-            ICapPublisher capBus)
+            IPublishEndpoint publishEndpoint)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -51,7 +53,7 @@ namespace IdentityServerHost.Quickstart.UI
             _clientStore = clientStore;
             _schemeProvider = schemeProvider;
             _events = events;
-            _capBus = capBus;
+            _publishEndpoint = publishEndpoint;
         }
 
         /// <summary>
@@ -252,6 +254,10 @@ namespace IdentityServerHost.Quickstart.UI
                     //await _signInManager.SignInAsync(user, isPersistent: false);
                     //_logger.LogInformation(3, "User created a new account with password.");
 
+                    await _publishEndpoint.Publish<UserCreatedEvent>(new UserCreatedEvent
+                    {
+                        Id = Guid.Parse(user.Id), Type = UserType.Seller
+                    });
                     
                     return RedirectToLocal(returnUrl);
                 }
