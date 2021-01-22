@@ -4,4 +4,11 @@
         <TargetFramework>net5.0</TargetFramework>
     </PropertyGroup>
 
+    <ItemGroup>
+      <Folder Include="Company" />
+      <Folder Include="EnterpCompanyContract" />
+      <Folder Include="Entrepreneurs" />
+      <Folder Include="Services" />
+    </ItemGroup>
+
 </Project>

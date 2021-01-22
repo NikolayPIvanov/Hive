@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Domain.UserManagement;
 using IdentityModel;
 using IdentityServer4;
 using IdentityServer4.Events;

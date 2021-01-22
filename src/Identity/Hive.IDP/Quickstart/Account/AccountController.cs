@@ -17,6 +17,7 @@ using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using Domain.UserManagement;
 using Hive.IDP.Models.AccountViewModels;
 
 namespace IdentityServerHost.Quickstart.UI

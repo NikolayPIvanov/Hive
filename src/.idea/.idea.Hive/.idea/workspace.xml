@@ -23,11 +23,24 @@
     <select />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="66cb3650-3d8d-47d1-b17c-d3c313cbb1cd" name="Default Changelist" comment="">
+    <list default="true" id="66cb3650-3d8d-47d1-b17c-d3c313cbb1cd" name="Default Changelist" comment="Adding IDP and user registration">
+      <change afterPath="$PROJECT_DIR$/Domain/Domain.Seller/Gig.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Domain/Domain.Seller/GigOverview.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Domain/Domain.Seller/Plan.cs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Domain/Domain.Seller/Vendor.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../build/docker-compose.yml" beforeDir="false" afterPath="$PROJECT_DIR$/../build/docker-compose.yml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Hive/.idea/contentModel.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Hive/.idea/contentModel.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.Hive/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Hive/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/.idea.Hive/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.Hive/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Domain/Domain/Class1.cs" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Domain/Domain/Domain.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Domain/Domain.csproj" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Hive.sln" beforeDir="false" afterPath="$PROJECT_DIR$/Hive.sln" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Identity/Hive.IDP/Data/ApplicationDbContext.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Identity/Hive.IDP/Data/ApplicationDbContext.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Identity/Hive.IDP/Hive.IDP.csproj" beforeDir="false" afterPath="$PROJECT_DIR$/Identity/Hive.IDP/Hive.IDP.csproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Identity/Hive.IDP/Models/ApplicationUser.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Domain/Domain.UserManagement/ApplicationUser.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Identity/Hive.IDP/Quickstart/Account/AccountController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Identity/Hive.IDP/Quickstart/Account/AccountController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Identity/Hive.IDP/Quickstart/Account/ExternalController.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Identity/Hive.IDP/Quickstart/Account/ExternalController.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Identity/Hive.IDP/SeedData.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Identity/Hive.IDP/SeedData.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Identity/Hive.IDP/Startup.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Identity/Hive.IDP/Startup.cs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -39,26 +52,15 @@
     <option name="UPDATE_TYPE" value="REBASE" />
   </component>
   <component name="IdeDocumentHistory">
-    <option name="CHANGED_PATHS">
-      <list>
-        <option value="$PROJECT_DIR$/Hive.sln" />
-        <option value="$PROJECT_DIR$/Domain/Domain/Class1.cs" />
-        <option value="$PROJECT_DIR$/API/Api/Controllers/WeatherForecastController.cs" />
-        <option value="$PROJECT_DIR$/API/Api/appsettings.json" />
-        <option value="$PROJECT_DIR$/API/Api/Program.cs" />
-        <option value="$PROJECT_DIR$/Identity/Hive.IDP/Models/ApplicationUser.cs" />
-        <option value="$PROJECT_DIR$/Identity/Hive.IDP/Services/IdentityWithAdditionalClaimsProfileService.cs" />
-        <option value="$PROJECT_DIR$/Identity/Hive.IDP/Startup.cs" />
-        <option value="$PROJECT_DIR$/Identity/Hive.IDP/Controllers/UserManagementController.cs" />
-        <option value="$PROJECT_DIR$/Identity/Hive.IDP/Quickstart/Account/RegisterViewModel.cs" />
-        <option value="$PROJECT_DIR$/Identity/Hive.IDP/Views/Account/RegisterViewModel.cshtml" />
-        <option value="$PROJECT_DIR$/Identity/Hive.IDP/Views/Account/Login.cshtml" />
-        <option value="$PROJECT_DIR$/Identity/Hive.IDP/Controllers/AuthenticationController.cs" />
-        <option value="$PROJECT_DIR$/Identity/Hive.IDP/Models/AccountViewModels/RegisterViewModel.cs" />
-        <option value="$PROJECT_DIR$/Identity/Hive.IDP/Quickstart/Account/AccountController.cs" />
-        <option value="$PROJECT_DIR$/Identity/Hive.IDP/Views/Account/Register.cshtml" />
-      </list>
-    </option>
+    <changedPaths>
+      <option value="$PROJECT_DIR$/Domain/Domain.Investor/Class1.cs" />
+      <option value="$PROJECT_DIR$/Domain/Domain.Investor/Investor.cs" />
+      <option value="$PROJECT_DIR$/Domain/Domain.Seller/Plan.cs" />
+      <option value="$PROJECT_DIR$/Domain/Domain.Seller/Vendor.cs" />
+      <option value="$PROJECT_DIR$/Domain/Domain.Seller/Seller.cs" />
+      <option value="$PROJECT_DIR$/Domain/Domain.Seller/GigOverview.cs" />
+      <option value="$PROJECT_DIR$/Domain/Domain.Seller/Gig.cs" />
+    </changedPaths>
   </component>
   <component name="ProjectId" id="1nNhumw39OEiS8hn6rGGgVvaS1z" />
   <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
@@ -71,6 +73,7 @@
     <property name="DatabaseDriversLRU" value="sqlite" />
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="nodejs_package_manager_path" value="npm" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RunManager" selected=".NET Launch Settings Profile.Hive.IDP: SelfHost">
@@ -128,7 +131,10 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1611236683270</updated>
-      <workItem from="1611236689041" duration="6977000" />
+      <workItem from="1611236689041" duration="8374000" />
+      <workItem from="1611250885800" duration="2941000" />
+      <workItem from="1611293392246" duration="332000" />
+      <workItem from="1611293823775" duration="1614000" />
     </task>
     <task id="LOCAL-00001" summary="Initial API">
       <created>1611236980121</created>
@@ -151,13 +157,20 @@
       <option name="project" value="LOCAL" />
       <updated>1611239209857</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Adding IDP and user registration">
+      <created>1611243878150</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1611243878150</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
-  <component name="UnityProjectConfiguration" hasMinimizedUI="null" />
+  <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
   <component name="UnityUnitTestConfiguration" currentTestLauncher="NUnit" />
   <component name="Vcs.Log.Tabs.Properties">
     <option name="TAB_STATES">
@@ -169,46 +182,14 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="VcsManagerConfiguration">
     <option name="CLEAR_INITIAL_COMMIT_MESSAGE" value="true" />
     <MESSAGE value="Initial API" />
     <MESSAGE value="Adding Domain and sample exception" />
     <MESSAGE value="Adding serilog and ELK" />
-    <option name="LAST_COMMIT_MESSAGE" value="Adding serilog and ELK" />
-  </component>
-  <component name="WindowStateProjectService">
-    <state x="552" y="178" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1611240135518">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="552" y="178" key="#com.intellij.execution.impl.EditConfigurationsDialog/0.0.1920.1040@0.0.1920.1040" timestamp="1611240135518" />
-    <state width="1877" height="282" key="GridCell.Tab.0.bottom" timestamp="1611241871810">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state width="1877" height="282" key="GridCell.Tab.0.bottom/0.0.1920.1040@0.0.1920.1040" timestamp="1611241871810" />
-    <state width="1877" height="282" key="GridCell.Tab.0.center" timestamp="1611241871810">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state width="1877" height="282" key="GridCell.Tab.0.center/0.0.1920.1040@0.0.1920.1040" timestamp="1611241871810" />
-    <state width="1877" height="282" key="GridCell.Tab.0.left" timestamp="1611241871810">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state width="1877" height="282" key="GridCell.Tab.0.left/0.0.1920.1040@0.0.1920.1040" timestamp="1611241871810" />
-    <state width="1877" height="282" key="GridCell.Tab.0.right" timestamp="1611241871810">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state width="1877" height="282" key="GridCell.Tab.0.right/0.0.1920.1040@0.0.1920.1040" timestamp="1611241871810" />
-    <state x="552" y="252" key="Rider.ProjectTemplateDialog.Size" timestamp="1611239899307">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="552" y="252" key="Rider.ProjectTemplateDialog.Size/0.0.1920.1040@0.0.1920.1040" timestamp="1611239899307" />
-    <state x="552" y="253" key="Vcs.Push.Dialog.v2" timestamp="1611239214904">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="552" y="253" key="Vcs.Push.Dialog.v2/0.0.1920.1040@0.0.1920.1040" timestamp="1611239214904" />
-    <state x="777" y="434" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2" timestamp="1611237312138">
-      <screen x="0" y="0" width="1920" height="1040" />
-    </state>
-    <state x="777" y="434" key="com.intellij.openapi.vcs.update.UpdateOrStatusOptionsDialogupdate-v2/0.0.1920.1040@0.0.1920.1040" timestamp="1611237312138" />
+    <MESSAGE value="Adding IDP and user registration" />
+    <option name="LAST_COMMIT_MESSAGE" value="Adding IDP and user registration" />
   </component>
 </project>

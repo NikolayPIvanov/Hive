@@ -5,6 +5,7 @@
 using System;
 using System.Linq;
 using System.Security.Claims;
+using Domain.UserManagement;
 using IdentityModel;
 using Hive.IDP.Data;
 using Hive.IDP.Models;
