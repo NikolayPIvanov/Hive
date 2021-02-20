@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using IDP.Domain;
 using MassTransit;
 using Microsoft.Extensions.Logging;
-using Seller;
+using Seller.Contracts;
 
 namespace Api.Consumers
 {
@@ -20,7 +20,7 @@ namespace Api.Consumers
 
         public async Task Consume(ConsumeContext<UserCreatedEvent> context)
         {
-            await _sellerRepository.CreateSellerAccount(context.Message.Id);
+            await _sellerRepository.CreateAccountAsync(context.Message.Id);
         }
     }
 }

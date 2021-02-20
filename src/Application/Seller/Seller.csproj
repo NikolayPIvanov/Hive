@@ -2,15 +2,18 @@
 
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
+        <RootNamespace>Hive.Seller</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.2" />
       <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="5.0.2" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.2" />
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Domain\Domain.Seller\Domain.Seller.csproj" />
+      <ProjectReference Include="..\..\Domain\Seller.Domain\Seller.Domain.csproj" />
+      <ProjectReference Include="..\..\Seller\Seller.Contracts\Seller.Contracts.csproj" />
     </ItemGroup>
 
 </Project>
