@@ -15,6 +15,7 @@ using Microsoft.Extensions.Hosting;
 using NSwag;
 using NSwag.Generation.Processors.Security;
 using System.Linq;
+using Hive.Seller.Infrastructure;
 
 namespace Hive.WebUI
 {
@@ -32,6 +33,7 @@ namespace Hive.WebUI
         {
             services.AddApplication();
             services.AddInfrastructure(Configuration);
+            services.AddSellerInfrastructure(Configuration);
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 

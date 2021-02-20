@@ -41,6 +41,7 @@
   <ItemGroup>
     <ProjectReference Include="..\Base\Application\Application.csproj" />
     <ProjectReference Include="..\Base\Infrastructure\Infrastructure.csproj" />
+    <ProjectReference Include="..\Seller\Seller.Infrastructure\Seller.Infrastructure.csproj" />
   </ItemGroup>
 
   <Target Name="NSwag" AfterTargets="Build" Condition="'$(Configuration)' == 'Debug'">
