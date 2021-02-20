@@ -8,8 +8,10 @@ on:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
+
+    env:
+      SOLUTION: Hive.sln
 
     steps:
     - uses: actions/checkout@v2
@@ -18,11 +20,8 @@ jobs:
       with:
         dotnet-version: 5.0.x
     - name: Restore dependencies
-      working-directory: ./src
-      run: dotnet restore
+      run: dotnet restore $SOLUTION
     - name: Build
-      run: dotnet build --no-restore
-      working-directory: ./src
+      run: dotnet build --no-restore $SOLUTION
     - name: Test
-      working-directory: ./src
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test --no-build --verbosity normal $SOLUTION
