@@ -17,11 +17,15 @@ namespace Hive.Seller.Domain
         public int CategoryId { get; set; }
 
         public Category Category { get; set; }
-        
+
         public string? Metadata { get; set; }
 
         public string Tags { get; set; }
 
         public List<Package> Packages { get; set; }
+
+        public string Description { get; set; }
+
+        public List<GigQuestion> Questions { get; set; }
     }
 }

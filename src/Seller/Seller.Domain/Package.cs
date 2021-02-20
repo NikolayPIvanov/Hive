@@ -1,4 +1,5 @@
-﻿using Hive.Domain.Common;
+﻿using System;
+using Hive.Domain.Common;
 
 namespace Hive.Seller.Domain
 {
@@ -16,5 +17,9 @@ namespace Hive.Seller.Domain
 
         // TODO: Needs to be Enum
         public string PackageTier { get; set; }
+
+        public string Description { get; set; }
+
+        public DateTime EstimatedDeliveryTime { get; set; }
     }
 }

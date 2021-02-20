@@ -10,7 +10,9 @@ namespace Hive.Seller.Infrastructure
         { }
 
         public DbSet<Gig> Gigs { get; set; }
-
+        
+        public DbSet<GigQuestion> GigQuestions { get; set; }
+        
         public DbSet<Category> Categories { get; set; }
 
         public DbSet<Package> Packages { get; set; }
