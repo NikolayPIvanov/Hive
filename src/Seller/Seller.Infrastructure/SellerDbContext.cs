@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
-using Hive.Seller.Domain;
+using Hive.Domain.Entities;
+using Hive.Domain.Entities.Gigs;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hive.Seller.Infrastructure
@@ -11,13 +12,7 @@ namespace Hive.Seller.Infrastructure
         public SellerDbContext(DbContextOptions<SellerDbContext> options) : base(options)
         { }
 
-        public DbSet<Gig> Gigs { get; set; }
         
-        public DbSet<GigQuestion> GigQuestions { get; set; }
-        
-        public DbSet<Category> Categories { get; set; }
-
-        public DbSet<Package> Packages { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

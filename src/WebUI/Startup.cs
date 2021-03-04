@@ -33,7 +33,6 @@ namespace Hive.WebUI
         {
             services.AddApplication();
             services.AddInfrastructure(Configuration);
-            services.AddSellerInfrastructure(Configuration);
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 

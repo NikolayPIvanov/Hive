@@ -1,6 +1,6 @@
 ﻿using Hive.Domain.Common;
 
-namespace Hive.Seller.Domain
+namespace Hive.Domain.Entities
 {
     public class Category : AuditableEntity
     {

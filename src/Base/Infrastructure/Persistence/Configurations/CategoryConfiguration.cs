@@ -1,4 +1,4 @@
-﻿using Hive.Seller.Domain;
+﻿using Hive.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

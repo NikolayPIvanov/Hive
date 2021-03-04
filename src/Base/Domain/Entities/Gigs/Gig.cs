@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Hive.Domain.Common;
 
-namespace Hive.Seller.Domain
+namespace Hive.Domain.Entities.Gigs
 {
     public class Gig : AuditableEntity
     {

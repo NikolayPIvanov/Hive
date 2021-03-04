@@ -10,6 +10,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Hive.Domain.Entities.Gigs;
 
 namespace Hive.Infrastructure.Persistence
 {
@@ -34,6 +35,15 @@ namespace Hive.Infrastructure.Persistence
         public DbSet<TodoItem> TodoItems { get; set; }
 
         public DbSet<TodoList> TodoLists { get; set; }
+        
+        
+        public DbSet<Gig> Gigs { get; set; }
+        
+        public DbSet<GigQuestion> GigQuestions { get; set; }
+        
+        public DbSet<Category> Categories { get; set; }
+
+        public DbSet<Package> Packages { get; set; }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {

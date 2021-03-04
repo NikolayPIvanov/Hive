@@ -16,4 +16,8 @@
       <ProjectReference Include="..\Seller.Domain\Seller.Domain.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Configurations" />
+    </ItemGroup>
+
 </Project>
