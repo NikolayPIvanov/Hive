@@ -15,7 +15,6 @@ using Microsoft.Extensions.Hosting;
 using NSwag;
 using NSwag.Generation.Processors.Security;
 using System.Linq;
-using Hive.Seller.Infrastructure;
 
 namespace Hive.WebUI
 {
