@@ -10,6 +10,8 @@ namespace Hive.Application.Common.Interfaces
         DbSet<TodoList> TodoLists { get; set; }
 
         DbSet<TodoItem> TodoItems { get; set; }
+        
+        DbSet<Category> Categories { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
