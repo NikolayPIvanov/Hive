@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Hive.Application.Common.Interfaces;
 using Hive.Domain.Entities;
+using Hive.Domain.Entities.Categories;
 using MediatR;
 
 namespace Hive.Application.Categories.Commands.CreateCategory
@@ -9,6 +10,8 @@ namespace Hive.Application.Categories.Commands.CreateCategory
     public class CreateCategoryCommand : IRequest<int>
     {
         public string Title { get; set; }
+
+        public int? ParentId { get; set; }
     }
 
     public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, int>
@@ -24,7 +27,8 @@ namespace Hive.Application.Categories.Commands.CreateCategory
         {
             var category = new Category()
             {
-                Title = request.Title
+                Title = request.Title,
+                ParentCategoryId = request.ParentId
             };
 
             _context.Categories.Add(category);

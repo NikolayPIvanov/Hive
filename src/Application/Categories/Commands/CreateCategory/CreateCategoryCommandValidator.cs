@@ -9,7 +9,7 @@ namespace Hive.Application.Categories.Commands.CreateCategory
     public class CreateCategoryCommandValidator : AbstractValidator<CreateCategoryCommand>
     {
         private readonly IApplicationDbContext _context;
-
+        
         public CreateCategoryCommandValidator(IApplicationDbContext context)
         {
             _context = context;
@@ -18,6 +18,18 @@ namespace Hive.Application.Categories.Commands.CreateCategory
                 .MustAsync(UniqueTitleAsync)
                 .MaximumLength(200)
                 .NotEmpty();
+
+            RuleFor(c => c.ParentId)
+                .MustAsync(ParentCategoryExistsAsync);
+        }
+
+        private async Task<bool> ParentCategoryExistsAsync(int? parentCategoryId, CancellationToken cancellationToken)
+        {
+            if (parentCategoryId is null)
+            {
+                return true;
+            }
+            return (await _context.Categories.FindAsync(parentCategoryId, cancellationToken)) is not null;
         }
         
         // TODO: Might become problem for bigger datasets

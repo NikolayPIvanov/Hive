@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Hive.Domain.Common;
+using Hive.Domain.Entities.Categories;
 
 namespace Hive.Domain.Entities.Gigs
 {

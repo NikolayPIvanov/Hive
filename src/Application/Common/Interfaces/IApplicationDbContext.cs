@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Threading;
 using System.Threading.Tasks;
+using Hive.Domain.Entities.Categories;
 
 namespace Hive.Application.Common.Interfaces
 {

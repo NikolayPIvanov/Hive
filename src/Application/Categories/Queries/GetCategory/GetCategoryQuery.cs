@@ -4,6 +4,7 @@ using AutoMapper;
 using Hive.Application.Common.Exceptions;
 using Hive.Application.Common.Interfaces;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Hive.Application.Categories.Queries.GetCategory
 {
@@ -27,7 +28,10 @@ namespace Hive.Application.Categories.Queries.GetCategory
         {
             var id = request.Id;
             
-            var entity = await _context.Categories.FindAsync(id);
+            var entity = await _context.Categories
+                .Include(c => c.SubCategories)
+                .FirstOrDefaultAsync(c => id == c.Id, cancellationToken);
+            
             if (entity is null)
             {
                 throw new NotFoundException("Category", id);
