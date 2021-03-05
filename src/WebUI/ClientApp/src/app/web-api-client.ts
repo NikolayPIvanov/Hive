@@ -15,8 +15,10 @@ import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angula
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 export interface ICategoriesClient {
-    get(id: number | undefined): Observable<CategoryDto>;
-    post(command: CreateCategoryCommand): Observable<CategoryDto>;
+    get(id: number): Observable<CategoryDto>;
+    put(id: number, command: UpdateCategoryCommand | null | undefined): Observable<FileResponse>;
+    delete(id: number): Observable<FileResponse>;
+    post(command: CreateCategoryCommand | null | undefined): Observable<CategoryDto>;
 }
 
 @Injectable({
@@ -32,12 +34,11 @@ export class CategoriesClient implements ICategoriesClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    get(id: number | undefined): Observable<CategoryDto> {
-        let url_ = this.baseUrl + "/api/Categories?";
-        if (id === null)
-            throw new Error("The parameter 'id' cannot be null.");
-        else if (id !== undefined)
-            url_ += "Id=" + encodeURIComponent("" + id) + "&";
+    get(id: number): Observable<CategoryDto> {
+        let url_ = this.baseUrl + "/api/Categories/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -84,7 +85,109 @@ export class CategoriesClient implements ICategoriesClient {
         return _observableOf<CategoryDto>(<any>null);
     }
 
-    post(command: CreateCategoryCommand): Observable<CategoryDto> {
+    put(id: number, command: UpdateCategoryCommand | null | undefined): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/Categories/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/octet-stream"
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processPut(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processPut(<any>response_);
+                } catch (e) {
+                    return <Observable<FileResponse>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<FileResponse>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processPut(response: HttpResponseBase): Observable<FileResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            return _observableOf({ fileName: fileName, data: <any>responseBlob, status: status, headers: _headers });
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<FileResponse>(<any>null);
+    }
+
+    delete(id: number): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/Categories/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/octet-stream"
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDelete(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDelete(<any>response_);
+                } catch (e) {
+                    return <Observable<FileResponse>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<FileResponse>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processDelete(response: HttpResponseBase): Observable<FileResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            return _observableOf({ fileName: fileName, data: <any>responseBlob, status: status, headers: _headers });
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<FileResponse>(<any>null);
+    }
+
+    post(command: CreateCategoryCommand | null | undefined): Observable<CategoryDto> {
         let url_ = this.baseUrl + "/api/Categories";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -139,10 +242,10 @@ export class CategoriesClient implements ICategoriesClient {
 
 export interface ITodoItemsClient {
     getTodoItemsWithPagination(listId: number | undefined, pageNumber: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfTodoItemDto>;
-    create(command: CreateTodoItemCommand): Observable<number>;
-    update(id: number, command: UpdateTodoItemCommand): Observable<FileResponse>;
+    create(command: CreateTodoItemCommand | null | undefined): Observable<number>;
+    update(id: number, command: UpdateTodoItemCommand | null | undefined): Observable<FileResponse>;
     delete(id: number): Observable<FileResponse>;
-    updateItemDetails(id: number | undefined, command: UpdateTodoItemDetailCommand): Observable<FileResponse>;
+    updateItemDetails(id: number | undefined, command: UpdateTodoItemDetailCommand | null | undefined): Observable<FileResponse>;
 }
 
 @Injectable({
@@ -218,7 +321,7 @@ export class TodoItemsClient implements ITodoItemsClient {
         return _observableOf<PaginatedListOfTodoItemDto>(<any>null);
     }
 
-    create(command: CreateTodoItemCommand): Observable<number> {
+    create(command: CreateTodoItemCommand | null | undefined): Observable<number> {
         let url_ = this.baseUrl + "/api/TodoItems";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -270,7 +373,7 @@ export class TodoItemsClient implements ITodoItemsClient {
         return _observableOf<number>(<any>null);
     }
 
-    update(id: number, command: UpdateTodoItemCommand): Observable<FileResponse> {
+    update(id: number, command: UpdateTodoItemCommand | null | undefined): Observable<FileResponse> {
         let url_ = this.baseUrl + "/api/TodoItems/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -372,7 +475,7 @@ export class TodoItemsClient implements ITodoItemsClient {
         return _observableOf<FileResponse>(<any>null);
     }
 
-    updateItemDetails(id: number | undefined, command: UpdateTodoItemDetailCommand): Observable<FileResponse> {
+    updateItemDetails(id: number | undefined, command: UpdateTodoItemDetailCommand | null | undefined): Observable<FileResponse> {
         let url_ = this.baseUrl + "/api/TodoItems/UpdateItemDetails?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
@@ -429,9 +532,9 @@ export class TodoItemsClient implements ITodoItemsClient {
 
 export interface ITodoListsClient {
     get(): Observable<TodosVm>;
-    create(command: CreateTodoListCommand): Observable<number>;
+    create(command: CreateTodoListCommand | null | undefined): Observable<number>;
     get2(id: number): Observable<FileResponse>;
-    update(id: number, command: UpdateTodoListCommand): Observable<FileResponse>;
+    update(id: number, command: UpdateTodoListCommand | null | undefined): Observable<FileResponse>;
     delete(id: number): Observable<FileResponse>;
 }
 
@@ -496,7 +599,7 @@ export class TodoListsClient implements ITodoListsClient {
         return _observableOf<TodosVm>(<any>null);
     }
 
-    create(command: CreateTodoListCommand): Observable<number> {
+    create(command: CreateTodoListCommand | null | undefined): Observable<number> {
         let url_ = this.baseUrl + "/api/TodoLists";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -597,7 +700,7 @@ export class TodoListsClient implements ITodoListsClient {
         return _observableOf<FileResponse>(<any>null);
     }
 
-    update(id: number, command: UpdateTodoListCommand): Observable<FileResponse> {
+    update(id: number, command: UpdateTodoListCommand | null | undefined): Observable<FileResponse> {
         let url_ = this.baseUrl + "/api/TodoLists/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -773,6 +876,8 @@ export class WeatherForecastClient implements IWeatherForecastClient {
 export class CategoryDto implements ICategoryDto {
     id?: number;
     title?: string | undefined;
+    parentId?: number | undefined;
+    subCategories?: CategoryDto[] | undefined;
 
     constructor(data?: ICategoryDto) {
         if (data) {
@@ -787,6 +892,12 @@ export class CategoryDto implements ICategoryDto {
         if (_data) {
             this.id = _data["id"];
             this.title = _data["title"];
+            this.parentId = _data["parentId"];
+            if (Array.isArray(_data["subCategories"])) {
+                this.subCategories = [] as any;
+                for (let item of _data["subCategories"])
+                    this.subCategories!.push(CategoryDto.fromJS(item));
+            }
         }
     }
 
@@ -801,6 +912,12 @@ export class CategoryDto implements ICategoryDto {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["title"] = this.title;
+        data["parentId"] = this.parentId;
+        if (Array.isArray(this.subCategories)) {
+            data["subCategories"] = [];
+            for (let item of this.subCategories)
+                data["subCategories"].push(item.toJSON());
+        }
         return data; 
     }
 }
@@ -808,10 +925,13 @@ export class CategoryDto implements ICategoryDto {
 export interface ICategoryDto {
     id?: number;
     title?: string | undefined;
+    parentId?: number | undefined;
+    subCategories?: CategoryDto[] | undefined;
 }
 
 export class CreateCategoryCommand implements ICreateCategoryCommand {
     title?: string | undefined;
+    parentId?: number | undefined;
 
     constructor(data?: ICreateCategoryCommand) {
         if (data) {
@@ -825,6 +945,7 @@ export class CreateCategoryCommand implements ICreateCategoryCommand {
     init(_data?: any) {
         if (_data) {
             this.title = _data["title"];
+            this.parentId = _data["parentId"];
         }
     }
 
@@ -838,12 +959,70 @@ export class CreateCategoryCommand implements ICreateCategoryCommand {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["title"] = this.title;
+        data["parentId"] = this.parentId;
         return data; 
     }
 }
 
 export interface ICreateCategoryCommand {
     title?: string | undefined;
+    parentId?: number | undefined;
+}
+
+export class UpdateCategoryCommand implements IUpdateCategoryCommand {
+    id?: number;
+    title?: string | undefined;
+    parentCategoryId?: number | undefined;
+    subCategoriesIds?: number[] | undefined;
+
+    constructor(data?: IUpdateCategoryCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.title = _data["title"];
+            this.parentCategoryId = _data["parentCategoryId"];
+            if (Array.isArray(_data["subCategoriesIds"])) {
+                this.subCategoriesIds = [] as any;
+                for (let item of _data["subCategoriesIds"])
+                    this.subCategoriesIds!.push(item);
+            }
+        }
+    }
+
+    static fromJS(data: any): UpdateCategoryCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateCategoryCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["title"] = this.title;
+        data["parentCategoryId"] = this.parentCategoryId;
+        if (Array.isArray(this.subCategoriesIds)) {
+            data["subCategoriesIds"] = [];
+            for (let item of this.subCategoriesIds)
+                data["subCategoriesIds"].push(item);
+        }
+        return data; 
+    }
+}
+
+export interface IUpdateCategoryCommand {
+    id?: number;
+    title?: string | undefined;
+    parentCategoryId?: number | undefined;
+    subCategoriesIds?: number[] | undefined;
 }
 
 export class PaginatedListOfTodoItemDto implements IPaginatedListOfTodoItemDto {

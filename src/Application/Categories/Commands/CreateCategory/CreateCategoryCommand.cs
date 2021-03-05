@@ -11,7 +11,7 @@ namespace Hive.Application.Categories.Commands.CreateCategory
     {
         public string Title { get; set; }
 
-        public int? ParentId { get; set; }
+        public int? ParentId { get; set; } = null;
     }
 
     public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, int>

@@ -25,7 +25,7 @@ namespace Hive.Application.Categories.Commands.UpdateCategory
 
         public int? ParentCategoryId { get; set; }
 
-        public List<int> SubCategoriesIds { get; private set; }
+        public List<int> SubCategoriesIds { get; set; }
     }
     
     public class UpdateCategoryCommandHandler : IRequestHandler<UpdateCategoryCommand>
@@ -55,6 +55,8 @@ namespace Hive.Application.Categories.Commands.UpdateCategory
             entity.Title = request.Title;
             entity.ParentCategoryId = request.ParentCategoryId;
             entity.SubCategories = await updatedSubCategories.ToListAsync(cancellationToken);
+
+            await _context.SaveChangesAsync(cancellationToken);
 
             return  Unit.Value;
         }

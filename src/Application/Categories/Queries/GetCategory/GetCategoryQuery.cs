@@ -37,7 +37,8 @@ namespace Hive.Application.Categories.Queries.GetCategory
                 throw new NotFoundException("Category", id);
             }
             
-            return _mapper.Map<CategoryDto>(entity);
+            var mapped = _mapper.Map<CategoryDto>(entity);
+            return mapped;
         }
     }
 }

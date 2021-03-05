@@ -42,9 +42,12 @@ namespace Hive.WebUI
             services.AddHealthChecks()
                 .AddDbContextCheck<ApplicationDbContext>();
 
-            services.AddControllersWithViews(options =>
-                options.Filters.Add<ApiExceptionFilterAttribute>())
-                    .AddFluentValidation();
+            services.AddControllersWithViews(options  =>
+                {
+                    options.AllowEmptyInputInBodyModelBinding = true;
+                    options.Filters.Add<ApiExceptionFilterAttribute>();
+                })
+                .AddFluentValidation();
 
             services.AddRazorPages();
 
