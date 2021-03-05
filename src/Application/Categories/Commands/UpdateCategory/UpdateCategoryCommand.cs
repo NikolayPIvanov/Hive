@@ -5,14 +5,13 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Hive.Application.Common.Exceptions;
 using Hive.Application.Common.Interfaces;
-using Hive.Application.Common.Mappings;
 using Hive.Domain.Entities.Categories;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hive.Application.Categories.Commands.UpdateCategory
 {
-    public class UpdateCategoryCommand : IRequest, IMapFrom<Category>
+    public class UpdateCategoryCommand : IRequest
     {
         public UpdateCategoryCommand()
         {
