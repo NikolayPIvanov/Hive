@@ -33,7 +33,6 @@ namespace Hive.Application.Categories.Commands.CreateCategory
             return (await _context.Categories.AnyAsync(c => c.Id == parentCategoryId, cancellationToken));
         }
         
-        // TODO: Might become problem for bigger datasets
         private async Task<bool> UniqueTitleAsync(string title, CancellationToken cancellationToken)
         {
             var hasWithTitle = await _context.Categories.AnyAsync(r => r.Title == title, cancellationToken);

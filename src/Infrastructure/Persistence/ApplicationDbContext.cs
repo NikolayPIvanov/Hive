@@ -10,6 +10,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Hive.Domain.Entities.Accounts;
 using Hive.Domain.Entities.Categories;
 using Hive.Domain.Entities.Gigs;
 
@@ -43,8 +44,14 @@ namespace Hive.Infrastructure.Persistence
         public DbSet<GigQuestion> GigQuestions { get; set; }
         
         public DbSet<Category> Categories { get; set; }
-
-        public DbSet<Package> Packages { get; set; }
+        
+        // Accounts
+        public DbSet<Seller> Sellers { get; set; }
+        
+        public DbSet<UserProfile> UserProfiles { get; set; }
+        
+        // Identity
+        public DbSet<ApplicationUser> Users { get; set; }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {

@@ -18,9 +18,10 @@ namespace Hive.Infrastructure.Persistence.Configurations
                 .WithOne()
                 .HasForeignKey<Gig>(g => g.CategoryId);
             
-            builder.HasMany(g => g.Packages)
+            /*builder.HasMany(g => g.Packages)
                 .WithOne(p => p.Gig)
                 .HasForeignKey(g => g.GigId);
+                */
 
             builder.HasMany(g => g.Questions)
                 .WithOne()

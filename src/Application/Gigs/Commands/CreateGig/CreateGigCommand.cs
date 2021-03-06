@@ -1,24 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using AutoMapper;
+using Hive.Application.Common.Interfaces;
+using Hive.Application.Common.Mappings;
+using Hive.Domain.Entities.Gigs;
 using MediatR;
 
 namespace Hive.Application.Gigs.Commands.CreateGig
 {
-    public class PackageDto
-    {
-        public string Title { get; set; }
-        
-        public string Description { get; set; }
-        
-        // TODO: Needs to be Enum
-        public string PackageTier { get; set; }
-        
-        public decimal Price { get; set; }
-        
-        public DateTime EstimatedDeliveryTime { get; set; }
-    }
-    
-    public class CreateGigCommand : IRequest<int>
+    public class CreateGigCommand : IRequest<int>, IMapFrom<Gig>
     {
         public string Title { get; set; }
         
@@ -29,7 +20,29 @@ namespace Hive.Application.Gigs.Commands.CreateGig
         public string Tags { get; set; }
 
         public int CategoryId { get; set; }
+
+        public List<QuestionDto> Questions { get; set; }
+    }
+
+    public class CreateGigCommandHandler : IRequestHandler<CreateGigCommand, int>
+    {
+        private readonly IApplicationDbContext _context;
+        private readonly IMapper _mapper;
+
+        public CreateGigCommandHandler(IApplicationDbContext context, IMapper mapper)
+        {
+            _context = context;
+            _mapper = mapper;
+        }
         
-        public List<PackageDto> Packages { get; set; }
+        public async Task<int> Handle(CreateGigCommand request, CancellationToken cancellationToken)
+        {
+            var entity = _mapper.Map<Gig>(request);
+
+            _context.Gigs.Add(entity);
+            await _context.SaveChangesAsync(cancellationToken);
+
+            return entity.Id;
+        }
     }
 }
