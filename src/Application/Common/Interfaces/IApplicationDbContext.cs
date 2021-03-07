@@ -17,7 +17,7 @@ namespace Hive.Application.Common.Interfaces
         DbSet<Category> Categories { get; set; }
         
         DbSet<Gig> Gigs { get; set; }
-        
+
         DbSet<Seller> Sellers { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);

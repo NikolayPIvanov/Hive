@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Hive.Application.Common.Interfaces;
 using Hive.Application.Common.Mappings;
+using Hive.Application.Gigs.Queries.GetGig;
 using Hive.Domain.Entities.Gigs;
 using MediatR;
 
@@ -14,7 +15,7 @@ namespace Hive.Application.Gigs.Commands.CreateGig
         public string Title { get; set; }
         
         public string Description { get; set; }
-        
+
         public string? Metadata { get; set; }
         
         public string Tags { get; set; }
@@ -37,14 +38,14 @@ namespace Hive.Application.Gigs.Commands.CreateGig
         
         public async Task<int> Handle(CreateGigCommand request, CancellationToken cancellationToken)
         {
-            var entity = new Gig()
+            var entity = new Gig
             {
                 Title = request.Title,
                 Description = request.Description,
                 Metadata = request.Metadata,
                 Tags = request.Tags,
-                CategoryId = request.CategoryId,
-                Questions = _mapper.Map<List<GigQuestion>>(request.Questions)
+                Questions = _mapper.Map<List<GigQuestion>>(request.Questions),
+                CategoryId = request.CategoryId
             };
 
             _context.Gigs.Add(entity);

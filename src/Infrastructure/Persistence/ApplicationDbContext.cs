@@ -50,9 +50,6 @@ namespace Hive.Infrastructure.Persistence
         
         public DbSet<UserProfile> UserProfiles { get; set; }
         
-        // Identity
-        public DbSet<ApplicationUser> Users { get; set; }
-
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
             foreach (Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<AuditableEntity> entry in ChangeTracker.Entries<AuditableEntity>())

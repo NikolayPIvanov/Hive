@@ -8,11 +8,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Hive.Application.Gigs.Queries.GetGig
 {
-    
-    public class GetGigQuery : IRequest<GigDto>
-    {
-        public int Id { get; set; }
-    }
+
+    public record GetGigQuery(int Id) : IRequest<GigDto>;
 
     public class GetGigQueryHandler : IRequestHandler<GetGigQuery, GigDto>
     {

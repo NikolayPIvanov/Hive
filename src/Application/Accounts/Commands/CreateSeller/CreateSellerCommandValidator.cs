@@ -22,7 +22,7 @@ namespace Hive.Application.Accounts.Commands.CreateSeller
 
         private async Task<bool> NotExistAccountAlreadyAsync(string userId, CancellationToken cancellationToken)
         {
-            return await _context.Sellers.AnyAsync(c => c.UserId == userId, cancellationToken);
+            return !(await _context.Sellers.AnyAsync(c => c.UserId == userId, cancellationToken));
         }
     }
 }
