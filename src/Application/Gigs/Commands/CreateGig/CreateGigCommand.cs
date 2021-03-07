@@ -3,8 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Hive.Application.Common.Interfaces;
-using Hive.Application.Common.Mappings;
-using Hive.Application.Gigs.Queries.GetGig;
 using Hive.Domain.Entities.Gigs;
 using MediatR;
 

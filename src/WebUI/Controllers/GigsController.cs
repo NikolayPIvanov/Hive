@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using Hive.Application.Common.Security;
 using Hive.Application.Gigs.Commands.CreateGig;
 using Hive.Application.Gigs.Queries.GetGig;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hive.WebUI.Controllers

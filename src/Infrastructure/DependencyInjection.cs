@@ -1,4 +1,5 @@
 ﻿using Hive.Application.Common.Interfaces;
+using Hive.Infrastructure.Configs;
 using Hive.Infrastructure.Files;
 using Hive.Infrastructure.Identity;
 using Hive.Infrastructure.Persistence;
@@ -38,8 +39,9 @@ namespace Hive.Infrastructure
                 .AddEntityFrameworkStores<ApplicationDbContext>();
 
             services.AddIdentityServer()
-                .AddApiAuthorization<ApplicationUser, ApplicationDbContext>();
-
+                .AddApiAuthorization<ApplicationUser, ApplicationDbContext>()
+                .AddProfileService<IdentityProfileService>();
+                
             services.AddTransient<IDateTime, DateTimeService>();
             services.AddTransient<IIdentityService, IdentityService>();
             services.AddTransient<ICsvFileBuilder, CsvFileBuilder>();

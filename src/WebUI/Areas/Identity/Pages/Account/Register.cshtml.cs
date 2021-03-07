@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
@@ -66,6 +67,10 @@ namespace Hive.WebUI.Areas.Identity.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
+            
+            [Display(Name = "Account type")]
+            [EnumDataType(typeof(AccountType))]
+            public AccountType AccountType { get; set; }
         }
 
         public async Task OnGetAsync(string returnUrl = null)
@@ -85,9 +90,13 @@ namespace Hive.WebUI.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
-
-                    await _mediator.Send(new CreateSellerCommand.Command(user.Id));
                     
+                    // Custom Logic
+                    if (Input.AccountType == AccountType.Seller)
+                    {
+                        await _mediator.Send(new CreateSellerCommand.Command(user.Id));
+                    }
+
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                     var callbackUrl = Url.Page(
