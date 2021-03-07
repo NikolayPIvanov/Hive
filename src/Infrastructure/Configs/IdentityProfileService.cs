@@ -38,9 +38,6 @@ namespace Hive.Infrastructure.Configs
             var principal = await _claimsFactory.CreateAsync(user);
             var claims = principal.Claims.ToList();
 
-            //Add more claims like this
-            //claims.Add(new System.Security.Claims.Claim("MyProfileID", user.Id));
-
             var sellerAccount = await GetSellerAccountAsync(user.Id);
             if (sellerAccount != null)
             {
