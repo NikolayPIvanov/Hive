@@ -9,7 +9,7 @@ using MediatR;
 
 namespace Hive.Application.Gigs.Commands.CreateGig
 {
-    public class CreateGigCommand : IRequest<int>, IMapFrom<Gig>
+    public class CreateGigCommand : IRequest<int>
     {
         public string Title { get; set; }
         
@@ -37,7 +37,15 @@ namespace Hive.Application.Gigs.Commands.CreateGig
         
         public async Task<int> Handle(CreateGigCommand request, CancellationToken cancellationToken)
         {
-            var entity = _mapper.Map<Gig>(request);
+            var entity = new Gig()
+            {
+                Title = request.Title,
+                Description = request.Description,
+                Metadata = request.Metadata,
+                Tags = request.Tags,
+                CategoryId = request.CategoryId,
+                Questions = _mapper.Map<List<GigQuestion>>(request.Questions)
+            };
 
             _context.Gigs.Add(entity);
             await _context.SaveChangesAsync(cancellationToken);

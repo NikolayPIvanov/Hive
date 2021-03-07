@@ -240,6 +240,76 @@ export class CategoriesClient implements ICategoriesClient {
     }
 }
 
+export interface IGigsClient {
+    post(command: CreateGigCommand | null | undefined): Observable<number>;
+}
+
+@Injectable({
+    providedIn: 'root'
+})
+export class GigsClient implements IGigsClient {
+    private http: HttpClient;
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
+        this.http = http;
+        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    post(command: CreateGigCommand | null | undefined): Observable<number> {
+        let url_ = this.baseUrl + "/api/Gigs";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processPost(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processPost(<any>response_);
+                } catch (e) {
+                    return <Observable<number>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<number>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processPost(response: HttpResponseBase): Observable<number> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 !== undefined ? resultData200 : <any>null;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<number>(<any>null);
+    }
+}
+
 export interface ITodoItemsClient {
     getTodoItemsWithPagination(listId: number | undefined, pageNumber: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfTodoItemDto>;
     create(command: CreateTodoItemCommand | null | undefined): Observable<number>;
@@ -1023,6 +1093,110 @@ export interface IUpdateCategoryCommand {
     title?: string | undefined;
     parentCategoryId?: number | undefined;
     subCategoriesIds?: number[] | undefined;
+}
+
+export class CreateGigCommand implements ICreateGigCommand {
+    title?: string | undefined;
+    description?: string | undefined;
+    metadata?: string | undefined;
+    tags?: string | undefined;
+    categoryId?: number;
+    questions?: QuestionDto[] | undefined;
+
+    constructor(data?: ICreateGigCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.title = _data["title"];
+            this.description = _data["description"];
+            this.metadata = _data["metadata"];
+            this.tags = _data["tags"];
+            this.categoryId = _data["categoryId"];
+            if (Array.isArray(_data["questions"])) {
+                this.questions = [] as any;
+                for (let item of _data["questions"])
+                    this.questions!.push(QuestionDto.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): CreateGigCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateGigCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["title"] = this.title;
+        data["description"] = this.description;
+        data["metadata"] = this.metadata;
+        data["tags"] = this.tags;
+        data["categoryId"] = this.categoryId;
+        if (Array.isArray(this.questions)) {
+            data["questions"] = [];
+            for (let item of this.questions)
+                data["questions"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface ICreateGigCommand {
+    title?: string | undefined;
+    description?: string | undefined;
+    metadata?: string | undefined;
+    tags?: string | undefined;
+    categoryId?: number;
+    questions?: QuestionDto[] | undefined;
+}
+
+export class QuestionDto implements IQuestionDto {
+    question?: string | undefined;
+    answer?: string | undefined;
+
+    constructor(data?: IQuestionDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.question = _data["question"];
+            this.answer = _data["answer"];
+        }
+    }
+
+    static fromJS(data: any): QuestionDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new QuestionDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["question"] = this.question;
+        data["answer"] = this.answer;
+        return data; 
+    }
+}
+
+export interface IQuestionDto {
+    question?: string | undefined;
+    answer?: string | undefined;
 }
 
 export class PaginatedListOfTodoItemDto implements IPaginatedListOfTodoItemDto {
