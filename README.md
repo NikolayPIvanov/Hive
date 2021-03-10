@@ -72,6 +72,10 @@ To use `dotnet-ef` for your migrations please add the following flags to your co
 For example, to add a new migration from the root folder:
 
  `dotnet ef migrations add "SampleMigration" --project src\Infrastructure --startup-project src\WebUI --output-dir Persistence\Migrations`
+ 
+ To update the database manually (upon start of the web app, the migrations are applied automatically):
+ 
+  `dotnet ef database update --project src\Infrastructure --startup-project src\WebUI`
 
 ## Overview
 
