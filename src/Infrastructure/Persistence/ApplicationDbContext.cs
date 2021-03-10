@@ -48,7 +48,7 @@ namespace Hive.Infrastructure.Persistence
         // Accounts
         public DbSet<Seller> Sellers { get; set; }
         
-        public DbSet<UserProfile> UserProfiles { get; set; }
+        public DbSet<UserProfile> Profiles { get; set; }
         
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {

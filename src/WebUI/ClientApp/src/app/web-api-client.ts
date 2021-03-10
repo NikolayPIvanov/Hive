@@ -298,7 +298,9 @@ export class CategoriesClient implements ICategoriesClient {
 
 export interface IGigsClient {
     get(id: number): Observable<GigDto>;
-    post(command: CreateGigCommand | null | undefined): Observable<GigDto>;
+    post(id: number, command: UpdateGigCommand | null | undefined): Observable<GigDto>;
+    post2(id: number): Observable<GigDto>;
+    post3(command: CreateGigCommand | null | undefined): Observable<GigDto>;
 }
 
 @Injectable({
@@ -365,7 +367,113 @@ export class GigsClient implements IGigsClient {
         return _observableOf<GigDto>(<any>null);
     }
 
-    post(command: CreateGigCommand | null | undefined): Observable<GigDto> {
+    post(id: number, command: UpdateGigCommand | null | undefined): Observable<GigDto> {
+        let url_ = this.baseUrl + "/api/Gigs/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processPost(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processPost(<any>response_);
+                } catch (e) {
+                    return <Observable<GigDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<GigDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processPost(response: HttpResponseBase): Observable<GigDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GigDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<GigDto>(<any>null);
+    }
+
+    post2(id: number): Observable<GigDto> {
+        let url_ = this.baseUrl + "/api/Gigs/{id}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processPost2(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processPost2(<any>response_);
+                } catch (e) {
+                    return <Observable<GigDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<GigDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processPost2(response: HttpResponseBase): Observable<GigDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GigDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<GigDto>(<any>null);
+    }
+
+    post3(command: CreateGigCommand | null | undefined): Observable<GigDto> {
         let url_ = this.baseUrl + "/api/Gigs";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -382,11 +490,11 @@ export class GigsClient implements IGigsClient {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processPost(response_);
+            return this.processPost3(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processPost(<any>response_);
+                    return this.processPost3(<any>response_);
                 } catch (e) {
                     return <Observable<GigDto>><any>_observableThrow(e);
                 }
@@ -395,7 +503,7 @@ export class GigsClient implements IGigsClient {
         }));
     }
 
-    protected processPost(response: HttpResponseBase): Observable<GigDto> {
+    protected processPost3(response: HttpResponseBase): Observable<GigDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1385,6 +1493,7 @@ export class CreateGigCommand implements ICreateGigCommand {
     metadata?: string | undefined;
     tags?: string | undefined;
     categoryId?: number;
+    sellerId?: number;
     questions?: QuestionDto[] | undefined;
 
     constructor(data?: ICreateGigCommand) {
@@ -1403,6 +1512,7 @@ export class CreateGigCommand implements ICreateGigCommand {
             this.metadata = _data["metadata"];
             this.tags = _data["tags"];
             this.categoryId = _data["categoryId"];
+            this.sellerId = _data["sellerId"];
             if (Array.isArray(_data["questions"])) {
                 this.questions = [] as any;
                 for (let item of _data["questions"])
@@ -1425,6 +1535,7 @@ export class CreateGigCommand implements ICreateGigCommand {
         data["metadata"] = this.metadata;
         data["tags"] = this.tags;
         data["categoryId"] = this.categoryId;
+        data["sellerId"] = this.sellerId;
         if (Array.isArray(this.questions)) {
             data["questions"] = [];
             for (let item of this.questions)
@@ -1440,7 +1551,60 @@ export interface ICreateGigCommand {
     metadata?: string | undefined;
     tags?: string | undefined;
     categoryId?: number;
+    sellerId?: number;
     questions?: QuestionDto[] | undefined;
+}
+
+export class UpdateGigCommand implements IUpdateGigCommand {
+    id?: number;
+    title?: string | undefined;
+    description?: string | undefined;
+    tags?: string | undefined;
+    categoryId?: number;
+
+    constructor(data?: IUpdateGigCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.title = _data["title"];
+            this.description = _data["description"];
+            this.tags = _data["tags"];
+            this.categoryId = _data["categoryId"];
+        }
+    }
+
+    static fromJS(data: any): UpdateGigCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateGigCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["title"] = this.title;
+        data["description"] = this.description;
+        data["tags"] = this.tags;
+        data["categoryId"] = this.categoryId;
+        return data; 
+    }
+}
+
+export interface IUpdateGigCommand {
+    id?: number;
+    title?: string | undefined;
+    description?: string | undefined;
+    tags?: string | undefined;
+    categoryId?: number;
 }
 
 export class PaginatedListOfTodoItemDto implements IPaginatedListOfTodoItemDto {

@@ -14,11 +14,14 @@ namespace Hive.Application.Gigs.Commands.CreateGig
         
         public string Description { get; set; }
 
-        public string? Metadata { get; set; }
+        public string Metadata { get; set; }
         
         public string Tags { get; set; }
 
         public int CategoryId { get; set; }
+
+
+        public int SellerId { get; set; }
 
         public List<QuestionDto> Questions { get; set; }
     }
@@ -43,6 +46,7 @@ namespace Hive.Application.Gigs.Commands.CreateGig
                 Metadata = request.Metadata,
                 Tags = request.Tags,
                 Questions = _mapper.Map<List<GigQuestion>>(request.Questions),
+                SellerId = request.SellerId,
                 CategoryId = request.CategoryId
             };
 

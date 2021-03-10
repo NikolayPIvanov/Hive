@@ -264,6 +264,92 @@
             "JWT": []
           }
         ]
+      },
+      "put": {
+        "tags": [
+          "Gigs"
+        ],
+        "operationId": "Gigs_Post",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdateGigCommand"
+                  }
+                ]
+              }
+            }
+          },
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GigDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Gigs"
+        ],
+        "operationId": "Gigs_Post2",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GigDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Gigs": {
@@ -271,7 +357,7 @@
         "tags": [
           "Gigs"
         ],
-        "operationId": "Gigs_Post",
+        "operationId": "Gigs_Post3",
         "requestBody": {
           "x-name": "command",
           "content": {
@@ -939,12 +1025,42 @@
             "type": "integer",
             "format": "int32"
           },
+          "sellerId": {
+            "type": "integer",
+            "format": "int32"
+          },
           "questions": {
             "type": "array",
             "nullable": true,
             "items": {
               "$ref": "#/components/schemas/QuestionDto"
             }
+          }
+        }
+      },
+      "UpdateGigCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "tags": {
+            "type": "string",
+            "nullable": true
+          },
+          "categoryId": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },

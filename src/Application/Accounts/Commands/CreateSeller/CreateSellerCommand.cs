@@ -22,7 +22,8 @@ namespace Hive.Application.Accounts.Commands.CreateSeller
             
             public async Task<Response> Handle(Command request, CancellationToken cancellationToken)
             {
-                var seller = new Seller { UserId = request.UserId };
+                var profile = new UserProfile();
+                var seller = new Seller { UserId = request.UserId, UserProfile = profile};
 
                 _context.Sellers.Add(seller);
                 await _context.SaveChangesAsync(cancellationToken);
