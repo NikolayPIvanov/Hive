@@ -1,4 +1,4 @@
- <img align="left" width="116" height="116" src="https://www.google.com/url?sa=i&url=https%3A%2F%2Frewardpoints.home.blog%2Freferral-code%2Fhive-referral-40%2F&psig=AOvVaw3tLlRU3S6Lhx1EzZ6qcbzc&ust=1615495075182000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCLjGz7PKpu8CFQAAAAAdAAAAABAI" />
+ <img align="left" width="116" height="116" src="https://rewardpointshome.files.wordpress.com/2019/11/hive_horizontal_logo_orange_rgb.d265ab1d7fbec8be02e8e7be66e9645f392e216d.png?w=816" />
 
 
 </br>
