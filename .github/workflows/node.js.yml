@@ -32,6 +32,7 @@ jobs:
           node-version: '12.x'
           
       - name: npm ci and npm run build
+        working-directory: src/WebUI/ClientApp
         run: |
           npm ci
           npm run build:ci        
