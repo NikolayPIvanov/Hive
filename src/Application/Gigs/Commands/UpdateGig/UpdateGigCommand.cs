@@ -23,9 +23,8 @@ namespace Hive.Application.Gigs.Commands.UpdateGig
 
         public void Mapping(Profile profile)
         {
-            profile.CreateMap<UpdateGigCommand, Gig>()
-                .ForMember(d => d.Questions, x => x.Ignore())
-                .ForMember(d => d.SellerId, x => x.Ignore());
+            // TODO:
+            profile.CreateMap<UpdateGigCommand, Gig>(MemberList.Source);
         }
     }
 
@@ -42,7 +41,7 @@ namespace Hive.Application.Gigs.Commands.UpdateGig
         
         public async Task<Unit> Handle(UpdateGigCommand request, CancellationToken cancellationToken)
         {
-            var entity = await _context.Gigs.FindAsync(request.Id, cancellationToken);
+            var entity = await _context.Gigs.FindAsync(request.Id);
             if (entity is null)
             {
                 throw new NotFoundException(nameof(Gig), request.Id);
