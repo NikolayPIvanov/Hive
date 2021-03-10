@@ -34,5 +34,7 @@ jobs:
       - name: npm ci and npm run build
         run: |
           npm ci
-          npm run build:ci
-        run: npm test
+          npm run build:ci        
+        
+        
+        
