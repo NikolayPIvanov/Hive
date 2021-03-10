@@ -3,12 +3,16 @@
   "version": "0.0.0",
   "scripts": {
     "ng": "ng",
+    "clean": "rimraf ./dist",
     "start": "echo Starting... && ng serve",
     "build": "ng build",
+    "build:prod": "ng build --prod",
     "build:ssr": "ng run Hive.WebUI:server:dev",
-    "test": "ng test",
+    "test": "ng test --watch=false --browsers=ChromeHeadlessCustom",
+    "test:watch": "ng test",
     "lint": "ng lint",
-    "e2e": "ng e2e"
+    "e2e": "ng e2e",
+    "build:ci": "npm run clean && npm run test && npm run build:prod"
   },
   "private": true,
   "dependencies": {
@@ -51,6 +55,7 @@
     "karma-coverage-istanbul-reporter": "~3.0.2",
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "^1.5.0",
+    "puppeteer": "^8.0.0",
     "typescript": "4.0.2"
   },
   "optionalDependencies": {
