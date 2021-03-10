@@ -1,9 +1,11 @@
  <img align="left" width="300" height="116" src="https://rewardpointshome.files.wordpress.com/2019/11/hive_horizontal_logo_orange_rgb.d265ab1d7fbec8be02e8e7be66e9645f392e216d.png?w=816" />
 
+# Hive
+<hr/>
+
 <br/>
 
 ## Technologies
-
 * ASP.NET Core 5
 * [Entity Framework Core 5](https://docs.microsoft.com/en-us/ef/core/)
 * [Angular 10](https://angular.io/)
@@ -19,12 +21,9 @@ The easiest way to get started is to install the [NuGet package](https://www.nug
 
 1. Install the latest [.NET 5 SDK](https://dotnet.microsoft.com/download/dotnet/5.0)
 2. Install the latest [Node.js LTS](https://nodejs.org/en/)
-3. Run `dotnet new --install Clean.Architecture.Solution.Template` to install the project template
-4. Create a folder for your solution and cd into it (the template will use it as project name)
-5. Run `dotnet new ca-sln` to create a new project
-6. Navigate to `src/WebUI/ClientApp` and run `npm install`
-7. Navigate to `src/WebUI/ClientApp` and run `npm start` to launch the front end (Angular)
-8. Navigate to `src/WebUI` and run `dotnet run` to launch the back end (ASP.NET Core Web API)
+3. Navigate to `src/WebUI/ClientApp` and run `npm install`
+4. Navigate to `src/WebUI/ClientApp` and run `npm start` to launch the front end (Angular)
+5. Navigate to `src/WebUI` and run `dotnet run` to launch the back end (ASP.NET Core Web API)
 
 ### Docker Configuration
 
