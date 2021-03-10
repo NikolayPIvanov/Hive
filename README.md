@@ -1,6 +1,7 @@
- <img align="left" width="116" height="116" src="https://rewardpointshome.files.wordpress.com/2019/11/hive_horizontal_logo_orange_rgb.d265ab1d7fbec8be02e8e7be66e9645f392e216d.png?w=816" />
+ <img align="left" width="300" height="150" src="https://rewardpointshome.files.wordpress.com/2019/11/hive_horizontal_logo_orange_rgb.d265ab1d7fbec8be02e8e7be66e9645f392e216d.png?w=816" />
 
 
+# Hive
 </br>
 
 ## Technologies
