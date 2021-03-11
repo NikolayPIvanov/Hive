@@ -23,7 +23,6 @@ namespace Hive.Application.Gigs.Commands.UpdateGig
 
         public void Mapping(Profile profile)
         {
-            // TODO:
             profile.CreateMap<UpdateGigCommand, Gig>(MemberList.Source);
         }
     }

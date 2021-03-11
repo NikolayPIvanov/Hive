@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Packages" />
+    <Folder Include="Packages\Commands" />
   </ItemGroup>
 
 </Project>

@@ -10,6 +10,7 @@ namespace Hive.Domain.Entities.Gigs
         public Gig()
         {
             Questions = new();
+            Packages = new();
         }
 
         public int Id { get; set; }
@@ -26,7 +27,7 @@ namespace Hive.Domain.Entities.Gigs
 
         public Category Category { get; set; }
         
-        //public List<Package> Packages { get; set; }
+        public List<Package> Packages { get; set; }
         
         public List<GigQuestion> Questions { get; set; }
         

@@ -10,11 +10,14 @@ namespace Hive.Infrastructure.Persistence.Configurations
         {
             builder.Property(p => p.Price).HasColumnType("decimal(18,2)").IsRequired();
             builder.Property(p => p.Title).HasMaxLength(50).IsRequired();
+            builder.Property(p => p.Description).HasMaxLength(75).IsRequired();
+            builder.Property(p => p.DeliveryTime).IsRequired();
+            builder.Property(p => p.DeliveryFrequency).IsRequired();
             builder.Property(p => p.PackageTier).IsRequired();
 
-            /*builder.HasOne(p => p.Gig)
+            builder.HasOne(p => p.Gig)
                 .WithMany(g => g.Packages)
-                .HasForeignKey(p => p.GigId); */
+                .HasForeignKey(p => p.GigId);
         }
     }
 }

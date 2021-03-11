@@ -10,7 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Hive.WebUI.Controllers
 {
-    [Authorize]
+    //[Authorize]
     public class CategoriesController : ApiControllerBase
     {
         [HttpGet("{id:int}")]
