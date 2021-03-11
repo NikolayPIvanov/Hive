@@ -38,7 +38,6 @@ namespace Hive.Infrastructure.Persistence
 
         public DbSet<TodoList> TodoLists { get; set; }
         
-        
         public DbSet<Gig> Gigs { get; set; }
         
         public DbSet<GigQuestion> GigQuestions { get; set; }
@@ -50,6 +49,8 @@ namespace Hive.Infrastructure.Persistence
         
         public DbSet<UserProfile> Profiles { get; set; }
         
+        public DbSet<Package> Packages { get; set; }
+
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
             foreach (Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<AuditableEntity> entry in ChangeTracker.Entries<AuditableEntity>())

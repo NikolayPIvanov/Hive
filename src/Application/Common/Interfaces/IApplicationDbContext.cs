@@ -22,7 +22,8 @@ namespace Hive.Application.Common.Interfaces
         
         DbSet<UserProfile> Profiles { get; set; }
         
-
+        DbSet<Package> Packages { get; set; }
+        
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
 }
