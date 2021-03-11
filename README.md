@@ -1,4 +1,4 @@
- <img align="left" width="300" height="116" src="https://lever-client-logos.s3.amazonaws.com/605b9c15-27d1-4344-8cf6-5a47e388346a-1531357861796.png" />
+ <img align="left" width="300" height="116" src="https://o.dlf.pt/dfpng/smallpng/216-2160576_hive-logo-hive-ai-logo-png-transparent-png.png" />
 
 # Hive
 [![.NET](https://github.com/NikolayPIvanov/Hive/actions/workflows/dotnet.yml/badge.svg?branch=main)](https://github.com/NikolayPIvanov/Hive/actions/workflows/dotnet.yml)
