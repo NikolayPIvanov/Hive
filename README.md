@@ -1,4 +1,4 @@
-<img align="left" width="300" height="116" style="background-color:white;" src="https://user-images.githubusercontent.com/30214973/110761903-ec697800-8258-11eb-80bd-0726b0d5642c.png" />
+<img align="left" width="300" height="150" style="background-color:white;" src="https://user-images.githubusercontent.com/30214973/110762307-5124d280-8259-11eb-81d8-2b401e13dbad.png" />
 
 # Hive
 [![.NET](https://github.com/NikolayPIvanov/Hive/actions/workflows/dotnet.yml/badge.svg?branch=main)](https://github.com/NikolayPIvanov/Hive/actions/workflows/dotnet.yml)
