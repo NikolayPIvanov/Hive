@@ -7,6 +7,10 @@ import { RouterModule } from '@angular/router';
 import { ApplicationPaths } from './api-authorization.constants';
 import { HttpClientModule } from '@angular/common/http';
 
+import { MatButtonModule } from '@angular/material/button';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+
+
 @NgModule({
   imports: [
     CommonModule,
@@ -22,7 +26,9 @@ import { HttpClientModule } from '@angular/common/http';
         { path: ApplicationPaths.LoggedOut, component: LogoutComponent },
         { path: ApplicationPaths.LogOutCallback, component: LogoutComponent }
       ]
-    )
+    ),
+    BrowserAnimationsModule,
+    MatButtonModule
   ],
   declarations: [LoginMenuComponent, LoginComponent, LogoutComponent],
   exports: [LoginMenuComponent, LoginComponent, LogoutComponent]

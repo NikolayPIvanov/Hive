@@ -1,7 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Hive.Application.Categories.Commands.CreateCategory;
 using Hive.Application.Categories.Commands.DeleteCategory;
 using Hive.Application.Categories.Commands.UpdateCategory;
+using Hive.Application.Categories.Queries.GetCategories;
 using Hive.Application.Categories.Queries.GetCategory;
 using Hive.Application.Common.Models;
 using Hive.Application.Gigs.Queries.GetGigsForCategory;
@@ -17,6 +19,12 @@ namespace Hive.WebUI.Controllers
         public async Task<ActionResult<CategoryDto>> Get(int id)
         {
             return await Mediator.Send(new GetCategoryQuery { Id = id});
+        }
+        
+        [HttpGet]
+        public async Task<ActionResult<IEnumerable<CategoryDto>>> Get([FromQuery] GetCategoriesQuery query)
+        {
+            return await Mediator.Send(query);
         }
         
         [HttpGet("{id:int}/gigs")]
