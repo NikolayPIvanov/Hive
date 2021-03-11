@@ -1,4 +1,4 @@
- <img align="left" width="300" height="116" src="https://rewardpointshome.files.wordpress.com/2019/11/hive_horizontal_logo_orange_rgb.d265ab1d7fbec8be02e8e7be66e9645f392e216d.png?w=816" />
+ <img align="left" width="300" height="116" src="https://lever-client-logos.s3.amazonaws.com/605b9c15-27d1-4344-8cf6-5a47e388346a-1531357861796.png" />
 
 # Hive
 [![.NET](https://github.com/NikolayPIvanov/Hive/actions/workflows/dotnet.yml/badge.svg?branch=main)](https://github.com/NikolayPIvanov/Hive/actions/workflows/dotnet.yml)
