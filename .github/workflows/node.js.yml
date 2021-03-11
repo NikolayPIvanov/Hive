@@ -17,16 +17,25 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+        
+      - name: Cache node modules
+        uses: actions/cache@v1
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+        
       - name: Use Node 12.x
         uses: actions/setup-node@v1
         with:
           node-version: '12.x'
-      - name: Install dependencies
+          
+      - name: npm ci and npm run build
         working-directory: src/WebUI/ClientApp
-        run: npm ci
-      - name: Build
-        working-directory: src/WebUI/ClientApp
-        run: npm build
-      - name: Test
-        working-directory: src/WebUI/ClientApp
-        run: npm test
+        run: |
+          npm ci
+          npm run build:ci        
+        
+        
+        
