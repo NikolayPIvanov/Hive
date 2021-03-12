@@ -7,7 +7,6 @@ using Hive.Application.Categories.Queries.GetCategories;
 using Hive.Application.Categories.Queries.GetCategory;
 using Hive.Application.Common.Models;
 using Hive.Application.Gigs.Queries.GetGigsForCategory;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hive.WebUI.Controllers

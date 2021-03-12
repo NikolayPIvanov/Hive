@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
+using Hive.Application.GigPackages.Queries.GetGigPackages;
 using Hive.Application.Gigs.Commands.CreateGig;
 using Hive.Application.Gigs.Commands.DeleteGig;
 using Hive.Application.Gigs.Commands.UpdateGig;
 using Hive.Application.Gigs.Queries.GetGig;
-using Hive.Application.Packages.Queries.GetGigPackages;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
