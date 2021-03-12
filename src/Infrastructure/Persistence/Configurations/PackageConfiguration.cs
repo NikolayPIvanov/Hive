@@ -15,9 +15,9 @@ namespace Hive.Infrastructure.Persistence.Configurations
             builder.Property(p => p.DeliveryFrequency).IsRequired();
             builder.Property(p => p.PackageTier).IsRequired();
 
-            builder.HasOne(p => p.Gig)
-                .WithMany(g => g.Packages)
-                .HasForeignKey(p => p.GigId);
+            builder.HasMany(p => p.Orders)
+                .WithOne()
+                .HasForeignKey(o => o.PackageId);
         }
     }
 }

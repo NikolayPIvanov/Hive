@@ -19,7 +19,7 @@ namespace Hive.Domain.Entities.Orders
         public Guid OrderNumber { get; private init; }
         public DateTime OrderedAt { get; private init; }
         public bool IsCanceled { get; private set; }
-        public string CanceledBy { get; private set; }
+        public string? CanceledBy { get; private set; }
         // TODO: Would be good if it is with private set
         public string OrderedById { get; set; }
 

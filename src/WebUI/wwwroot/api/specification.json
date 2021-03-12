@@ -353,6 +353,41 @@
         }
       }
     },
+    "/api/Gigs/{id}/packages": {
+      "get": {
+        "tags": [
+          "Gigs"
+        ],
+        "operationId": "Gigs_GetPackages",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PackageDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Gigs": {
       "post": {
         "tags": [
@@ -382,6 +417,74 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/GigDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Packages/{id}": {
+      "get": {
+        "tags": [
+          "Packages"
+        ],
+        "operationId": "Packages_Get",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PackageDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Packages": {
+      "post": {
+        "tags": [
+          "Packages"
+        ],
+        "operationId": "Packages_Get2",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/CreatePackageCommand"
+                  }
+                ]
+              }
+            }
+          },
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PackageDto"
                 }
               }
             }
@@ -997,6 +1100,70 @@
           }
         }
       },
+      "PackageDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "packageTier": {
+            "$ref": "#/components/schemas/PackageTier"
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "price": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "deliveryTime": {
+            "type": "number",
+            "format": "double"
+          },
+          "deliveryFrequency": {
+            "$ref": "#/components/schemas/DeliveryFrequency"
+          },
+          "gigId": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "PackageTier": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "Basic",
+          "Standard",
+          "Premium"
+        ],
+        "enum": [
+          0,
+          1,
+          2
+        ]
+      },
+      "DeliveryFrequency": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "Hours",
+          "Days",
+          "Weeks"
+        ],
+        "enum": [
+          0,
+          1,
+          2
+        ]
+      },
       "CreateGigCommand": {
         "type": "object",
         "additionalProperties": false,
@@ -1055,6 +1222,38 @@
             "nullable": true
           },
           "categoryId": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "CreatePackageCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "packageTier": {
+            "$ref": "#/components/schemas/PackageTier"
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "price": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "deliveryTime": {
+            "type": "number",
+            "format": "double"
+          },
+          "deliveryFrequency": {
+            "$ref": "#/components/schemas/DeliveryFrequency"
+          },
+          "gigId": {
             "type": "integer",
             "format": "int32"
           }

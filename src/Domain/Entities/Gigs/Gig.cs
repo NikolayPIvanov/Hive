@@ -2,6 +2,7 @@
 using Hive.Domain.Common;
 using Hive.Domain.Entities.Accounts;
 using Hive.Domain.Entities.Categories;
+using Hive.Domain.Entities.Orders;
 
 namespace Hive.Domain.Entities.Gigs
 {
@@ -11,6 +12,7 @@ namespace Hive.Domain.Entities.Gigs
         {
             Questions = new();
             Packages = new();
+            Orders = new();
         }
 
         public int Id { get; set; }
@@ -27,12 +29,14 @@ namespace Hive.Domain.Entities.Gigs
 
         public Category Category { get; set; }
         
-        public List<Package> Packages { get; set; }
-        
         public List<GigQuestion> Questions { get; set; }
         
         public Seller Seller { get; set; }
 
         public int SellerId { get; set; }
+        
+        public List<Package> Packages { get; set; }
+
+        public List<Order> Orders { get; set; }
     }
 }
