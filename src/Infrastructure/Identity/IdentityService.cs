@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using IdentityServer4.Extensions;
 using Microsoft.AspNetCore.Http;
 
 namespace Hive.Infrastructure.Identity
@@ -33,7 +34,8 @@ namespace Hive.Infrastructure.Identity
         public async Task<string> GetCurrentUserId()
         {
             if (_httpContextAccessor.HttpContext == null) return null;
-            var user = await _userManager.GetUserAsync(ClaimsPrincipal.Current);
+            var email = _httpContextAccessor.HttpContext.User.Identity.Name;
+            var user = await _userManager.FindByEmailAsync(email);
 
             return user.Id;
         }

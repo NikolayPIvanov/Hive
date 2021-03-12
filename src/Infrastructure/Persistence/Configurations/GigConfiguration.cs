@@ -9,6 +9,7 @@ namespace Hive.Infrastructure.Persistence.Configurations
         // TODO: Add column types
         public void Configure(EntityTypeBuilder<Gig> builder)
         {
+            builder.HasKey(g => g.Id);
             builder.Property(g => g.Title).HasMaxLength(50).IsRequired();
             builder.Property(g => g.Metadata).HasMaxLength(50);
             builder.Property(g => g.Tags).HasMaxLength(100).IsRequired();
@@ -20,11 +21,7 @@ namespace Hive.Infrastructure.Persistence.Configurations
 
             builder.HasMany(g => g.Orders)
                 .WithOne()
-                .HasForeignKey(x => x.GigId);
-            
-            builder.HasMany(g => g.Packages)
-                .WithOne(p => p.Gig)
-                .HasForeignKey(g => g.GigId)
+                .HasForeignKey(x => x.GigId)
                 .OnDelete(DeleteBehavior.NoAction);
 
             builder.HasMany(g => g.Questions)

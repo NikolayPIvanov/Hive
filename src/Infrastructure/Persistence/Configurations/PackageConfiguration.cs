@@ -17,7 +17,13 @@ namespace Hive.Infrastructure.Persistence.Configurations
 
             builder.HasMany(p => p.Orders)
                 .WithOne()
-                .HasForeignKey(o => o.PackageId);
+                .HasForeignKey(o => o.PackageId)
+                .OnDelete(DeleteBehavior.NoAction);
+
+            builder.HasOne(p => p.Gig)
+                .WithMany(x => x.Packages)
+                .HasForeignKey(p => p.GigId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

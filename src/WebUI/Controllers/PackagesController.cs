@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Hive.WebUI.Controllers
 {
+    [Route("api/gigs/{gigId:int}/[controller]")]
     public class PackagesController : ApiControllerBase
     {
         [HttpGet("{id:int}")]
@@ -16,7 +17,7 @@ namespace Hive.WebUI.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<PackageDto>> Get([FromBody] CreatePackageCommand command)
+        public async Task<ActionResult<PackageDto>> Post([FromBody] CreatePackageCommand command)
         {
             var id = await Mediator.Send(command);
             return CreatedAtAction(nameof(Get), new {id}, id);

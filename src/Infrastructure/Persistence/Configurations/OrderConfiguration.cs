@@ -16,6 +16,7 @@ namespace Hive.Infrastructure.Persistence.Configurations
             builder.Property(o => o.TotalAmount)
                 .HasColumnType("decimal(18,2)")
                 .IsRequired();
+            
         }
     }
 }

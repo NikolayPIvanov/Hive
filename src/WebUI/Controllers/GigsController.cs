@@ -20,13 +20,6 @@ namespace Hive.WebUI.Controllers
             return Ok(entity);
         }
         
-        [HttpGet("{id:int}/packages")]
-        public async Task<ActionResult<IEnumerable<PackageDto>>> GetPackages([FromRoute] int id)
-        {
-            var packages = await Mediator.Send(new GetGigPackagesQuery() { GigId = id});
-            return Ok(packages);
-        }
-        
         [HttpPost]
         public async Task<ActionResult<GigDto>> Post([FromBody] CreateGigCommand command)
         {
@@ -46,6 +39,14 @@ namespace Hive.WebUI.Controllers
         {
             await Mediator.Send(new DeleteGigCommand() { Id = id });
             return NoContent();
+        }
+        
+        
+        [HttpGet("{id:int}/packages")]
+        public async Task<ActionResult<IEnumerable<PackageDto>>> GetPackages([FromRoute] int id)
+        {
+            var packages = await Mediator.Send(new GetGigPackagesQuery() { GigId = id});
+            return Ok(packages);
         }
     }
 }
