@@ -21,8 +21,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Application\Application.csproj" />
-    <ProjectReference Include="..\..\src\Base\Application\Application.csproj" />
-    <ProjectReference Include="..\..\src\Base\Infrastructure\Infrastructure.csproj" />
     <ProjectReference Include="..\..\src\Domain\Domain.csproj" />
   </ItemGroup>
 

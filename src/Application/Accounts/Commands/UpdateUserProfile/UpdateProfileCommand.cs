@@ -1,9 +1,9 @@
-﻿using System.Threading;
+﻿#nullable enable
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Hive.Application.Common.Exceptions;
 using Hive.Application.Common.Interfaces;
-using Hive.Application.Common.Mappings;
 using Hive.Domain.Entities.Accounts;
 using MediatR;
 
@@ -27,7 +27,7 @@ namespace Hive.Application.Accounts.Commands.UpdateUserProfile
             
             public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
             {
-                var entity = await _context.Profiles.FindAsync(request.ProfileId);
+                var entity = await _context.Profiles.FindAsync(new object[] { request.ProfileId }, cancellationToken: cancellationToken);
 
                 if (entity is null)
                 {
