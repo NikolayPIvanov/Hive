@@ -4,14 +4,16 @@ using Hive.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Hive.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210312213937_setting no action behaviour for orders")]
+    partial class settingnoactionbehaviourfororders
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -341,6 +343,8 @@ namespace Hive.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("OrderNumber")
                         .IsUnique();
+
+                    b.HasIndex("PackageId");
 
                     b.ToTable("Orders");
                 });
@@ -790,6 +794,12 @@ namespace Hive.Infrastructure.Persistence.Migrations
                         .HasForeignKey("GigId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+
+                    b.HasOne("Hive.Domain.Entities.Gigs.Package", null)
+                        .WithMany("Orders")
+                        .HasForeignKey("PackageId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Hive.Domain.Entities.TodoItem", b =>
@@ -896,6 +906,11 @@ namespace Hive.Infrastructure.Persistence.Migrations
                     b.Navigation("Packages");
 
                     b.Navigation("Questions");
+                });
+
+            modelBuilder.Entity("Hive.Domain.Entities.Gigs.Package", b =>
+                {
+                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("Hive.Domain.Entities.TodoList", b =>

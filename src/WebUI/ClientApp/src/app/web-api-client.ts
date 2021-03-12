@@ -643,8 +643,8 @@ export class GigsClient implements IGigsClient {
 
 export interface IOrdersClient {
     placeOrder(command: PlaceOrderCommand | null | undefined): Observable<number>;
-    cancelOrder(orderNumber: string | undefined, number: string): Observable<number>;
-    acceptOrder(orderNumber: string | undefined, number: string): Observable<number>;
+    cancelOrder(orderNumber: string): Observable<number>;
+    acceptOrder(orderNumber: string): Observable<number>;
 }
 
 @Injectable({
@@ -712,15 +712,11 @@ export class OrdersClient implements IOrdersClient {
         return _observableOf<number>(<any>null);
     }
 
-    cancelOrder(orderNumber: string | undefined, number: string): Observable<number> {
-        let url_ = this.baseUrl + "/api/Orders/{number}/cancellation?";
-        if (number === undefined || number === null)
-            throw new Error("The parameter 'number' must be defined.");
-        url_ = url_.replace("{number}", encodeURIComponent("" + number));
-        if (orderNumber === null)
-            throw new Error("The parameter 'orderNumber' cannot be null.");
-        else if (orderNumber !== undefined)
-            url_ += "orderNumber=" + encodeURIComponent("" + orderNumber) + "&";
+    cancelOrder(orderNumber: string): Observable<number> {
+        let url_ = this.baseUrl + "/api/Orders/{orderNumber}/cancellation";
+        if (orderNumber === undefined || orderNumber === null)
+            throw new Error("The parameter 'orderNumber' must be defined.");
+        url_ = url_.replace("{orderNumber}", encodeURIComponent("" + orderNumber));
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -767,15 +763,11 @@ export class OrdersClient implements IOrdersClient {
         return _observableOf<number>(<any>null);
     }
 
-    acceptOrder(orderNumber: string | undefined, number: string): Observable<number> {
-        let url_ = this.baseUrl + "/api/Orders/{number}/acceptance?";
-        if (number === undefined || number === null)
-            throw new Error("The parameter 'number' must be defined.");
-        url_ = url_.replace("{number}", encodeURIComponent("" + number));
-        if (orderNumber === null)
-            throw new Error("The parameter 'orderNumber' cannot be null.");
-        else if (orderNumber !== undefined)
-            url_ += "orderNumber=" + encodeURIComponent("" + orderNumber) + "&";
+    acceptOrder(orderNumber: string): Observable<number> {
+        let url_ = this.baseUrl + "/api/Orders/{orderNumber}/acceptance";
+        if (orderNumber === undefined || orderNumber === null)
+            throw new Error("The parameter 'orderNumber' must be defined.");
+        url_ = url_.replace("{orderNumber}", encodeURIComponent("" + orderNumber));
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {

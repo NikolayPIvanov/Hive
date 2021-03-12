@@ -16,14 +16,14 @@ namespace Hive.WebUI.Controllers
             return Ok(id);
         }
         
-        [HttpPut("{number:guid}/cancellation")]
+        [HttpPut("{orderNumber:guid}/cancellation")]
         public async Task<ActionResult<int>> CancelOrder(Guid orderNumber)
         {
-            var id = await Mediator.Send(new CancelOrderCommand { OrderNumber = orderNumber });
-            return Ok(id);
+            await Mediator.Send(new CancelOrderCommand { OrderNumber = orderNumber });
+            return NoContent();
         }
         
-        [HttpPut("{number:guid}/acceptance")]
+        [HttpPut("{orderNumber:guid}/acceptance")]
         public async Task<ActionResult<int>> AcceptOrder(Guid orderNumber)
         {
             var id = await Mediator.Send(new CancelOrderCommand { OrderNumber = orderNumber });

@@ -461,7 +461,7 @@
         }
       }
     },
-    "/api/Orders/{number}/cancellation": {
+    "/api/Orders/{orderNumber}/cancellation": {
       "put": {
         "tags": [
           "Orders"
@@ -470,21 +470,13 @@
         "parameters": [
           {
             "name": "orderNumber",
-            "in": "query",
+            "in": "path",
+            "required": true,
             "schema": {
               "type": "string",
               "format": "guid"
             },
             "x-position": 1
-          },
-          {
-            "name": "number",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "x-position": 2
           }
         ],
         "responses": {
@@ -502,7 +494,7 @@
         }
       }
     },
-    "/api/Orders/{number}/acceptance": {
+    "/api/Orders/{orderNumber}/acceptance": {
       "put": {
         "tags": [
           "Orders"
@@ -511,21 +503,13 @@
         "parameters": [
           {
             "name": "orderNumber",
-            "in": "query",
+            "in": "path",
+            "required": true,
             "schema": {
               "type": "string",
               "format": "guid"
             },
             "x-position": 1
-          },
-          {
-            "name": "number",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "x-position": 2
           }
         ],
         "responses": {
