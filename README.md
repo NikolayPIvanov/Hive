@@ -1,7 +1,9 @@
- <img align="left" width="300" height="116" src="https://rewardpointshome.files.wordpress.com/2019/11/hive_horizontal_logo_orange_rgb.d265ab1d7fbec8be02e8e7be66e9645f392e216d.png?w=816" />
+<img align="left" width="300" height="150" style="background-color:white;" src="https://user-images.githubusercontent.com/30214973/110762307-5124d280-8259-11eb-81d8-2b401e13dbad.png" />
 
 # Hive
 [![.NET](https://github.com/NikolayPIvanov/Hive/actions/workflows/dotnet.yml/badge.svg?branch=main)](https://github.com/NikolayPIvanov/Hive/actions/workflows/dotnet.yml)
+<br/>
+<br/>
 <br/>
 
 ## Technologies
