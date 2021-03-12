@@ -1,10 +1,13 @@
-﻿using Hive.Application.Common.Interfaces;
+﻿using System;
+using Hive.Application.Common.Interfaces;
 using Hive.Application.Common.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 
 namespace Hive.Infrastructure.Identity
 {
@@ -12,16 +15,27 @@ namespace Hive.Infrastructure.Identity
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly IUserClaimsPrincipalFactory<ApplicationUser> _userClaimsPrincipalFactory;
+        private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IAuthorizationService _authorizationService;
 
         public IdentityService(
             UserManager<ApplicationUser> userManager,
             IUserClaimsPrincipalFactory<ApplicationUser> userClaimsPrincipalFactory,
+            IHttpContextAccessor httpContextAccessor,
             IAuthorizationService authorizationService)
         {
             _userManager = userManager;
             _userClaimsPrincipalFactory = userClaimsPrincipalFactory;
+            _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
+        }
+
+        public async Task<string> GetCurrentUserId()
+        {
+            if (_httpContextAccessor.HttpContext == null) return null;
+            var user = await _userManager.GetUserAsync(ClaimsPrincipal.Current);
+
+            return user.Id;
         }
 
         public async Task<string> GetUserNameAsync(string userId)

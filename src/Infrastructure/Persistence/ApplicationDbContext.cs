@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Hive.Domain.Entities.Accounts;
 using Hive.Domain.Entities.Categories;
 using Hive.Domain.Entities.Gigs;
+using Hive.Domain.Entities.Orders;
 
 namespace Hive.Infrastructure.Persistence
 {
@@ -50,6 +51,8 @@ namespace Hive.Infrastructure.Persistence
         public DbSet<UserProfile> Profiles { get; set; }
         
         public DbSet<Package> Packages { get; set; }
+        
+        public DbSet<Order> Orders { get; set; }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {

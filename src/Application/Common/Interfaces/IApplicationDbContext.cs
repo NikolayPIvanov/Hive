@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Hive.Domain.Entities.Accounts;
 using Hive.Domain.Entities.Categories;
 using Hive.Domain.Entities.Gigs;
+using Hive.Domain.Entities.Orders;
 
 namespace Hive.Application.Common.Interfaces
 {
@@ -24,6 +25,8 @@ namespace Hive.Application.Common.Interfaces
         
         DbSet<Package> Packages { get; set; }
         
+        DbSet<Order> Orders { get; set; }
+
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
 }
