@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Hive.Application.Common.Interfaces;
@@ -8,7 +9,7 @@ using MediatR;
 
 namespace Hive.Application.Orders.Commands.PlaceOrder
 {
-    public class PlaceOrderCommand : IRequest<int>, IMapFrom<Order>, IRequest<Unit>
+    public class PlaceOrderCommand : IRequest<Guid>, IMapFrom<Order>
     {
         public int OfferedById { get; set; }
         
@@ -24,7 +25,7 @@ namespace Hive.Application.Orders.Commands.PlaceOrder
         }
     }
 
-    public class PlaceOrderCommandHandler : IRequestHandler<PlaceOrderCommand, int>
+    public class PlaceOrderCommandHandler : IRequestHandler<PlaceOrderCommand, Guid>
     {
         private readonly IApplicationDbContext _context;
         private readonly IIdentityService _identityService;
@@ -37,7 +38,7 @@ namespace Hive.Application.Orders.Commands.PlaceOrder
             _mapper = mapper;
         }   
         
-        public async Task<int> Handle(PlaceOrderCommand request, CancellationToken cancellationToken)
+        public async Task<Guid> Handle(PlaceOrderCommand request, CancellationToken cancellationToken)
         {
             var order = _mapper.Map<Order>(request);
 
@@ -46,7 +47,7 @@ namespace Hive.Application.Orders.Commands.PlaceOrder
             _context.Orders.Add(order);
             await _context.SaveChangesAsync(cancellationToken);
 
-            return order.Id;
+            return order.OrderNumber;
         }
     }
 }
