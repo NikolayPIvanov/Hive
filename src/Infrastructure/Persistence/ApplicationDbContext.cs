@@ -53,6 +53,8 @@ namespace Hive.Infrastructure.Persistence
         public DbSet<Package> Packages { get; set; }
         
         public DbSet<Order> Orders { get; set; }
+        
+        public DbSet<Requirement> Requirements { get; set; }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {

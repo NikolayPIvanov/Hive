@@ -9,7 +9,7 @@ namespace Hive.Application.Orders.Queries.GetSellerOrders
     {
         public Guid OrderNumber { get; set; }
         
-        public DateTime OrderedAt { get; private init; }
+        public DateTime OrderedAt { get; set; }
         
         public OrderStatus Status { get; set; }
 

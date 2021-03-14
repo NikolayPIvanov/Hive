@@ -19,6 +19,8 @@ namespace Hive.WebUI.Controllers
             return Ok();
         }
         
+        [HttpGet()]
+        
         [HttpPost]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status201Created)]

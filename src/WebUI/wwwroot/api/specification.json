@@ -457,11 +457,66 @@
       }
     },
     "/api/Orders": {
-      "post": {
+      "get": {
         "tags": [
           "Orders"
         ],
         "operationId": "Orders_PlaceOrder",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/PlaceOrderCommand"
+                  }
+                ]
+              }
+            }
+          },
+          "x-position": 1
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "guid"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Orders"
+        ],
+        "operationId": "Orders_PlaceOrder2",
         "requestBody": {
           "x-name": "command",
           "content": {
@@ -1484,13 +1539,17 @@
         "description": "",
         "x-enumNames": [
           "Pending",
+          "Accepted",
+          "Declined",
           "InProgress",
           "Completed"
         ],
         "enum": [
           0,
           1,
-          2
+          2,
+          3,
+          4
         ]
       },
       "ProblemDetails": {
@@ -1535,6 +1594,10 @@
             "type": "integer",
             "format": "int32"
           },
+          "totalAmount": {
+            "type": "number",
+            "format": "decimal"
+          },
           "gigId": {
             "type": "integer",
             "format": "int32"
@@ -1543,9 +1606,9 @@
             "type": "integer",
             "format": "int32"
           },
-          "totalAmount": {
-            "type": "number",
-            "format": "decimal"
+          "orderRequirement": {
+            "type": "string",
+            "nullable": true
           }
         }
       },

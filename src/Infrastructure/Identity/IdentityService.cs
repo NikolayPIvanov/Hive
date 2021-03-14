@@ -33,11 +33,12 @@ namespace Hive.Infrastructure.Identity
 
         public async Task<string> GetCurrentUserId()
         {
-            if (_httpContextAccessor.HttpContext == null) return null;
+            if (_httpContextAccessor.HttpContext?.User.Identity == null) return null;
             var email = _httpContextAccessor.HttpContext.User.Identity.Name;
             var user = await _userManager.FindByEmailAsync(email);
 
             return user.Id;
+
         }
 
         public async Task<string> GetUserNameAsync(string userId)

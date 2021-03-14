@@ -14,14 +14,14 @@ namespace Hive.Application.Orders.Commands.PlaceOrder
     public class PlaceOrderCommand : IRequest<Guid>, IMapFrom<Order>
     {
         public int OfferedById { get; set; }
+
+        public decimal TotalAmount { get; set; }
         
         public int GigId { get; set; }
         
         public int PackageId { get; set; }
 
-        //public decimal PackagePrice { get; set; }
-
-        public decimal TotalAmount { get; set; }
+        public string OrderRequirement { get; set; }
 
         public void Mapping(Profile profile)
         {
@@ -44,9 +44,12 @@ namespace Hive.Application.Orders.Commands.PlaceOrder
         
         public async Task<Guid> Handle(PlaceOrderCommand request, CancellationToken cancellationToken)
         {
-            
-            
             var order = _mapper.Map<Order>(request);
+            order.Requirement = new Requirement()
+            {
+                Details = request.OrderRequirement
+            };
+            
 
             order.OrderedById = await _identityService.GetCurrentUserId();
 

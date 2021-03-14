@@ -26,6 +26,8 @@ namespace Hive.Application.Common.Interfaces
         DbSet<Package> Packages { get; set; }
         
         DbSet<Order> Orders { get; set; }
+        
+        DbSet<Requirement> Requirements { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }

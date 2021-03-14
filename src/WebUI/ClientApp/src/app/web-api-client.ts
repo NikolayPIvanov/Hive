@@ -644,6 +644,7 @@ export class GigsClient implements IGigsClient {
 export interface IOrdersClient {
     getOrder(orderNumber: string): Observable<OrderDto>;
     placeOrder(command: PlaceOrderCommand | null | undefined): Observable<string>;
+    placeOrder2(command: PlaceOrderCommand | null | undefined): Observable<string>;
     cancelOrder(orderNumber: string): Observable<number>;
     acceptOrder(orderNumber: string): Observable<number>;
 }
@@ -728,7 +729,7 @@ export class OrdersClient implements IOrdersClient {
             })
         };
 
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
             return this.processPlaceOrder(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
@@ -743,6 +744,72 @@ export class OrdersClient implements IOrdersClient {
     }
 
     protected processPlaceOrder(response: HttpResponseBase): Observable<string> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 201) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result201: any = null;
+            let resultData201 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result201 = resultData201 !== undefined ? resultData201 : <any>null;
+            return _observableOf(result201);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
+            }));
+        } else if (status === 401) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result401: any = null;
+            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result401 = ProblemDetails.fromJS(resultData401);
+            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<string>(<any>null);
+    }
+
+    placeOrder2(command: PlaceOrderCommand | null | undefined): Observable<string> {
+        let url_ = this.baseUrl + "/api/Orders";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processPlaceOrder2(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processPlaceOrder2(<any>response_);
+                } catch (e) {
+                    return <Observable<string>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<string>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processPlaceOrder2(response: HttpResponseBase): Observable<string> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -2299,8 +2366,10 @@ export interface IOrderDto {
 
 export enum OrderStatus {
     Pending = 0,
-    InProgress = 1,
-    Completed = 2,
+    Accepted = 1,
+    Declined = 2,
+    InProgress = 3,
+    Completed = 4,
 }
 
 export class ProblemDetails implements IProblemDetails {
@@ -2373,9 +2442,10 @@ export interface IProblemDetails {
 
 export class PlaceOrderCommand implements IPlaceOrderCommand {
     offeredById?: number;
+    totalAmount?: number;
     gigId?: number;
     packageId?: number;
-    totalAmount?: number;
+    orderRequirement?: string | undefined;
 
     constructor(data?: IPlaceOrderCommand) {
         if (data) {
@@ -2389,9 +2459,10 @@ export class PlaceOrderCommand implements IPlaceOrderCommand {
     init(_data?: any) {
         if (_data) {
             this.offeredById = _data["offeredById"];
+            this.totalAmount = _data["totalAmount"];
             this.gigId = _data["gigId"];
             this.packageId = _data["packageId"];
-            this.totalAmount = _data["totalAmount"];
+            this.orderRequirement = _data["orderRequirement"];
         }
     }
 
@@ -2405,18 +2476,20 @@ export class PlaceOrderCommand implements IPlaceOrderCommand {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["offeredById"] = this.offeredById;
+        data["totalAmount"] = this.totalAmount;
         data["gigId"] = this.gigId;
         data["packageId"] = this.packageId;
-        data["totalAmount"] = this.totalAmount;
+        data["orderRequirement"] = this.orderRequirement;
         return data; 
     }
 }
 
 export interface IPlaceOrderCommand {
     offeredById?: number;
+    totalAmount?: number;
     gigId?: number;
     packageId?: number;
-    totalAmount?: number;
+    orderRequirement?: string | undefined;
 }
 
 export class CreatePackageCommand implements ICreatePackageCommand {
