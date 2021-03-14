@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
+import { AuthorizeService } from 'src/api-authorization/authorize.service';
 import { CategoriesClient, CategoryDto } from '../web-api-client';
 
 @Component({
@@ -12,11 +13,13 @@ export class CategoryMenuComponent implements OnInit {
   ONLY_PARENTS = true;
 
   $categories: Observable<CategoryDto[]>
+  isAuthenticated: Observable<boolean>;
 
-  constructor(private categoriesClient: CategoriesClient) { }
+  constructor(private categoriesClient: CategoriesClient, private authorizationService: AuthorizeService) { }
 
   ngOnInit(): void {
     this.$categories = this.getParentCategories();
+    this.isAuthenticated = this.authorizationService.isAuthenticated()
   }
 
   getParentCategories() {

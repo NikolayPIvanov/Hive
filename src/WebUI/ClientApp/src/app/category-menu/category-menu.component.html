@@ -1,3 +1,3 @@
-<mat-nav-list class="inline-list">
-    <a mat-list-item *ngFor="let category of $categories | async" style="color: black;"> {{ category.title }} </a>
+<mat-nav-list class="inline-list" *ngIf="(isAuthenticated | async)">
+    <a mat-list-item *ngFor="let category of $categories | async"> {{ category.title }} </a>
 </mat-nav-list>

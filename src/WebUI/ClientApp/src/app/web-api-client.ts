@@ -642,6 +642,7 @@ export class GigsClient implements IGigsClient {
 }
 
 export interface IOrdersClient {
+    getOrder(orderNumber: string): Observable<OrderDto>;
     placeOrder(command: PlaceOrderCommand | null | undefined): Observable<string>;
     cancelOrder(orderNumber: string): Observable<number>;
     acceptOrder(orderNumber: string): Observable<number>;
@@ -658,6 +659,57 @@ export class OrdersClient implements IOrdersClient {
     constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
         this.http = http;
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
+    }
+
+    getOrder(orderNumber: string): Observable<OrderDto> {
+        let url_ = this.baseUrl + "/api/Orders/{orderNumber}";
+        if (orderNumber === undefined || orderNumber === null)
+            throw new Error("The parameter 'orderNumber' must be defined.");
+        url_ = url_.replace("{orderNumber}", encodeURIComponent("" + orderNumber));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetOrder(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetOrder(<any>response_);
+                } catch (e) {
+                    return <Observable<OrderDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<OrderDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetOrder(response: HttpResponseBase): Observable<OrderDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = OrderDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<OrderDto>(<any>null);
     }
 
     placeOrder(command: PlaceOrderCommand | null | undefined): Observable<string> {
@@ -2189,6 +2241,68 @@ export enum DeliveryFrequency {
     Weeks = 2,
 }
 
+export class OrderDto implements IOrderDto {
+    orderNumber?: string;
+    orderedAt?: Date;
+    status?: OrderStatus;
+    totalAmount?: number;
+    gigId?: number;
+    packageId?: number;
+
+    constructor(data?: IOrderDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.orderNumber = _data["orderNumber"];
+            this.orderedAt = _data["orderedAt"] ? new Date(_data["orderedAt"].toString()) : <any>undefined;
+            this.status = _data["status"];
+            this.totalAmount = _data["totalAmount"];
+            this.gigId = _data["gigId"];
+            this.packageId = _data["packageId"];
+        }
+    }
+
+    static fromJS(data: any): OrderDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new OrderDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["orderNumber"] = this.orderNumber;
+        data["orderedAt"] = this.orderedAt ? this.orderedAt.toISOString() : <any>undefined;
+        data["status"] = this.status;
+        data["totalAmount"] = this.totalAmount;
+        data["gigId"] = this.gigId;
+        data["packageId"] = this.packageId;
+        return data; 
+    }
+}
+
+export interface IOrderDto {
+    orderNumber?: string;
+    orderedAt?: Date;
+    status?: OrderStatus;
+    totalAmount?: number;
+    gigId?: number;
+    packageId?: number;
+}
+
+export enum OrderStatus {
+    Pending = 0,
+    InProgress = 1,
+    Completed = 2,
+}
+
 export class ProblemDetails implements IProblemDetails {
     type?: string | undefined;
     title?: string | undefined;
@@ -2363,68 +2477,6 @@ export interface ICreatePackageCommand {
     deliveryTime?: number;
     deliveryFrequency?: DeliveryFrequency;
     gigId?: number;
-}
-
-export class OrderDto implements IOrderDto {
-    orderNumber?: string;
-    orderedAt?: Date;
-    status?: OrderStatus;
-    totalAmount?: number;
-    gigId?: number;
-    packageId?: number;
-
-    constructor(data?: IOrderDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.orderNumber = _data["orderNumber"];
-            this.orderedAt = _data["orderedAt"] ? new Date(_data["orderedAt"].toString()) : <any>undefined;
-            this.status = _data["status"];
-            this.totalAmount = _data["totalAmount"];
-            this.gigId = _data["gigId"];
-            this.packageId = _data["packageId"];
-        }
-    }
-
-    static fromJS(data: any): OrderDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new OrderDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["orderNumber"] = this.orderNumber;
-        data["orderedAt"] = this.orderedAt ? this.orderedAt.toISOString() : <any>undefined;
-        data["status"] = this.status;
-        data["totalAmount"] = this.totalAmount;
-        data["gigId"] = this.gigId;
-        data["packageId"] = this.packageId;
-        return data; 
-    }
-}
-
-export interface IOrderDto {
-    orderNumber?: string;
-    orderedAt?: Date;
-    status?: OrderStatus;
-    totalAmount?: number;
-    gigId?: number;
-    packageId?: number;
-}
-
-export enum OrderStatus {
-    Pending = 0,
-    InProgress = 1,
-    Completed = 2,
 }
 
 export class PaginatedListOfTodoItemDto implements IPaginatedListOfTodoItemDto {

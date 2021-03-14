@@ -424,6 +424,38 @@
         }
       }
     },
+    "/api/Orders/{orderNumber}": {
+      "get": {
+        "tags": [
+          "Orders"
+        ],
+        "operationId": "Orders_GetOrder",
+        "parameters": [
+          {
+            "name": "orderNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Orders": {
       "post": {
         "tags": [
@@ -1418,6 +1450,49 @@
           2
         ]
       },
+      "OrderDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "orderNumber": {
+            "type": "string",
+            "format": "guid"
+          },
+          "orderedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "$ref": "#/components/schemas/OrderStatus"
+          },
+          "totalAmount": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "gigId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "packageId": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "OrderStatus": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "Pending",
+          "InProgress",
+          "Completed"
+        ],
+        "enum": [
+          0,
+          1,
+          2
+        ]
+      },
       "ProblemDetails": {
         "type": "object",
         "additionalProperties": {
@@ -1505,49 +1580,6 @@
             "format": "int32"
           }
         }
-      },
-      "OrderDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "orderNumber": {
-            "type": "string",
-            "format": "guid"
-          },
-          "orderedAt": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "status": {
-            "$ref": "#/components/schemas/OrderStatus"
-          },
-          "totalAmount": {
-            "type": "number",
-            "format": "decimal"
-          },
-          "gigId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "packageId": {
-            "type": "integer",
-            "format": "int32"
-          }
-        }
-      },
-      "OrderStatus": {
-        "type": "integer",
-        "description": "",
-        "x-enumNames": [
-          "Pending",
-          "InProgress",
-          "Completed"
-        ],
-        "enum": [
-          0,
-          1,
-          2
-        ]
       },
       "PaginatedListOfTodoItemDto": {
         "type": "object",

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
+using FluentValidation;
 using Hive.Application.Common.Interfaces;
 using Hive.Application.Common.Mappings;
 using Hive.Domain.Entities.Orders;
@@ -16,6 +18,8 @@ namespace Hive.Application.Orders.Commands.PlaceOrder
         public int GigId { get; set; }
         
         public int PackageId { get; set; }
+
+        //public decimal PackagePrice { get; set; }
 
         public decimal TotalAmount { get; set; }
 
@@ -40,6 +44,8 @@ namespace Hive.Application.Orders.Commands.PlaceOrder
         
         public async Task<Guid> Handle(PlaceOrderCommand request, CancellationToken cancellationToken)
         {
+            
+            
             var order = _mapper.Map<Order>(request);
 
             order.OrderedById = await _identityService.GetCurrentUserId();

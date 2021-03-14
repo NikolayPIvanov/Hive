@@ -1,10 +1,46 @@
-<div *ngIf="(isAuthenticated | async)">
+<button mat-icon-button [matMenuTriggerFor]="menu" aria-label="Example icon-button with a menu">
+    <mat-icon>account_circle</mat-icon>
+</button>
+  <mat-menu #menu="matMenu">
+    <div *ngIf="!(isAuthenticated | async)">
+        <a [routerLink]='["/authentication/login"]'>
+            <button mat-menu-item>
+                <mat-icon>login</mat-icon>
+                <span>Login</span>
+            </button>
+        </a>
+        <a [routerLink]='["/authentication/register"]'>
+            <button mat-menu-item>
+                <mat-icon>get_app</mat-icon>
+                <span>Register</span>
+            </button>
+        </a>
+    </div>
+    <div *ngIf="(isAuthenticated | async)">
+        <a [routerLink]='["/authentication/logout"]' [state]='{ local: true }'>
+            <button mat-menu-item>
+                <mat-icon>logout</mat-icon>
+                <span>Logout</span>
+            </button>
+        </a>
+    </div>
+  </mat-menu>
+  
 
+
+<!-- <div *ngIf="(isAuthenticated | async)">
+    <a [routerLink]='["/authentication/logout"]' [state]='{ local: true }'>
+        <button mat-raised-button color="primary">Logout</button>
+    </a>
 </div>
 <div *ngIf="!(isAuthenticated | async)">
-    <button mat-raised-button color="primary" class="mr-3">Sign Up</button>
-    <button mat-raised-button color="primary">Sign In</button>
-</div>
+    <a [routerLink]='["/authentication/register"]'>
+        <button mat-raised-button color="primary" class="mr-3">Sign Up</button>
+    </a>
+    <a [routerLink]='["/authentication/login"]'>
+        <button mat-raised-button color="primary">Sign In</button>
+    </a>
+</div> -->
 
 
 <!-- <ul class="navbar-nav" *ngIf="isAuthenticated | async">
