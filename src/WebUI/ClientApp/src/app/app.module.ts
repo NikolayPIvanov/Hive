@@ -23,6 +23,8 @@ import { MatButtonModule } from '@angular/material/button';
 import {MatIconModule} from '@angular/material/icon';
 import {MatListModule} from '@angular/material/list';
 import {MatDividerModule} from '@angular/material/divider';
+import {MatSidenavModule} from '@angular/material/sidenav';
+import { GigsModule } from './gigs/gigs.module';
 
 @NgModule({
   declarations: [
@@ -52,6 +54,8 @@ import {MatDividerModule} from '@angular/material/divider';
     MatIconModule,
     MatListModule,
     MatDividerModule,
+    MatSidenavModule,
+    GigsModule,
     ModalModule.forRoot()
   ],
   providers: [

@@ -9,7 +9,8 @@ import { AuthorizeService } from 'src/api-authorization/authorize.service';
 })
 export class NavMenuComponent {
   isAuthenticated: Observable<boolean>;
-
+  showFiller = false;
+  
   constructor(private authorizationService: AuthorizeService) { }
 
   ngOnInit(): void {
