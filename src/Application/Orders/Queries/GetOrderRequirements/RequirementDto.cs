@@ -11,8 +11,6 @@ namespace Hive.Application.Orders.Queries.GetOrderRequirements
         
         public string Details { get; set; }
 
-        public Guid OrderId { get; set; }
-
         public void Mapping(Profile profile)
         {
             profile.CreateMap<Requirement, RequirementDto>(MemberList.Destination);

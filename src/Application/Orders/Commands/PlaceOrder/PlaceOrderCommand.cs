@@ -1,17 +1,13 @@
 ﻿using System;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using AutoMapper;
-using FluentValidation;
 using Hive.Application.Common.Interfaces;
-using Hive.Application.Common.Mappings;
 using Hive.Domain.Entities.Orders;
 using MediatR;
 
 namespace Hive.Application.Orders.Commands.PlaceOrder
 {
-    public class PlaceOrderCommand : IRequest<Guid>, IMapFrom<Order>
+    public class PlaceOrderCommand : IRequest<Guid>
     {
         public int OfferedById { get; set; }
 
@@ -22,36 +18,30 @@ namespace Hive.Application.Orders.Commands.PlaceOrder
         public int PackageId { get; set; }
 
         public string OrderRequirement { get; set; }
-
-        public void Mapping(Profile profile)
-        {
-            profile.CreateMap<PlaceOrderCommand, Order>(MemberList.Source);
-        }
     }
 
     public class PlaceOrderCommandHandler : IRequestHandler<PlaceOrderCommand, Guid>
     {
         private readonly IApplicationDbContext _context;
         private readonly IIdentityService _identityService;
-        private readonly IMapper _mapper;
 
-        public PlaceOrderCommandHandler(IApplicationDbContext context, IIdentityService identityService, IMapper mapper)
+        public PlaceOrderCommandHandler(IApplicationDbContext context, IIdentityService identityService)
         {
             _context = context;
             _identityService = identityService;
-            _mapper = mapper;
         }   
         
         public async Task<Guid> Handle(PlaceOrderCommand request, CancellationToken cancellationToken)
         {
-            var order = _mapper.Map<Order>(request);
-            order.Requirement = new Requirement()
+            var order = new Order
             {
-                Details = request.OrderRequirement
+                GigId = request.GigId,
+                PackageId = request.PackageId,
+                OfferedById = request.OfferedById,
+                TotalAmount = request.TotalAmount,
+                Requirement = new Requirement() {Details = request.OrderRequirement},
+                OrderedById = await _identityService.GetCurrentUserId()
             };
-            
-
-            order.OrderedById = await _identityService.GetCurrentUserId();
 
             _context.Orders.Add(order);
             await _context.SaveChangesAsync(cancellationToken);
