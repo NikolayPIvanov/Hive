@@ -643,8 +643,8 @@ export class GigsClient implements IGigsClient {
 
 export interface IOrdersClient {
     getOrder(orderNumber: string): Observable<OrderDto>;
+    getRequirements(orderNumber: string): Observable<RequirementDto>;
     placeOrder(command: PlaceOrderCommand | null | undefined): Observable<string>;
-    placeOrder2(command: PlaceOrderCommand | null | undefined): Observable<string>;
     cancelOrder(orderNumber: string): Observable<number>;
     acceptOrder(orderNumber: string): Observable<number>;
 }
@@ -713,6 +713,57 @@ export class OrdersClient implements IOrdersClient {
         return _observableOf<OrderDto>(<any>null);
     }
 
+    getRequirements(orderNumber: string): Observable<RequirementDto> {
+        let url_ = this.baseUrl + "/api/Orders/{orderNumber}/requirements";
+        if (orderNumber === undefined || orderNumber === null)
+            throw new Error("The parameter 'orderNumber' must be defined.");
+        url_ = url_.replace("{orderNumber}", encodeURIComponent("" + orderNumber));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetRequirements(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetRequirements(<any>response_);
+                } catch (e) {
+                    return <Observable<RequirementDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<RequirementDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetRequirements(response: HttpResponseBase): Observable<RequirementDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = RequirementDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<RequirementDto>(<any>null);
+    }
+
     placeOrder(command: PlaceOrderCommand | null | undefined): Observable<string> {
         let url_ = this.baseUrl + "/api/Orders";
         url_ = url_.replace(/[?&]$/, "");
@@ -729,7 +780,7 @@ export class OrdersClient implements IOrdersClient {
             })
         };
 
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
             return this.processPlaceOrder(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
@@ -744,72 +795,6 @@ export class OrdersClient implements IOrdersClient {
     }
 
     protected processPlaceOrder(response: HttpResponseBase): Observable<string> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 201) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result201: any = null;
-            let resultData201 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result201 = resultData201 !== undefined ? resultData201 : <any>null;
-            return _observableOf(result201);
-            }));
-        } else if (status === 400) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result400: any = null;
-            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = ProblemDetails.fromJS(resultData400);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result400);
-            }));
-        } else if (status === 401) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result401: any = null;
-            let resultData401 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result401 = ProblemDetails.fromJS(resultData401);
-            return throwException("A server side error occurred.", status, _responseText, _headers, result401);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<string>(<any>null);
-    }
-
-    placeOrder2(command: PlaceOrderCommand | null | undefined): Observable<string> {
-        let url_ = this.baseUrl + "/api/Orders";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(command);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processPlaceOrder2(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processPlaceOrder2(<any>response_);
-                } catch (e) {
-                    return <Observable<string>><any>_observableThrow(e);
-                }
-            } else
-                return <Observable<string>><any>_observableThrow(response_);
-        }));
-    }
-
-    protected processPlaceOrder2(response: HttpResponseBase): Observable<string> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -949,8 +934,8 @@ export class OrdersClient implements IOrdersClient {
 }
 
 export interface IPackagesClient {
-    get(id: number, gigId: string): Observable<PackageDto>;
-    post(gigId: string, command: CreatePackageCommand | null | undefined): Observable<PackageDto>;
+    get(id: number): Observable<PackageDto>;
+    post(command: CreatePackageCommand | null | undefined): Observable<PackageDto>;
 }
 
 @Injectable({
@@ -966,14 +951,11 @@ export class PackagesClient implements IPackagesClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    get(id: number, gigId: string): Observable<PackageDto> {
-        let url_ = this.baseUrl + "/api/gigs/{gigId}/Packages/{id}";
+    get(id: number): Observable<PackageDto> {
+        let url_ = this.baseUrl + "/api/Packages/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        if (gigId === undefined || gigId === null)
-            throw new Error("The parameter 'gigId' must be defined.");
-        url_ = url_.replace("{gigId}", encodeURIComponent("" + gigId));
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -1020,11 +1002,8 @@ export class PackagesClient implements IPackagesClient {
         return _observableOf<PackageDto>(<any>null);
     }
 
-    post(gigId: string, command: CreatePackageCommand | null | undefined): Observable<PackageDto> {
-        let url_ = this.baseUrl + "/api/gigs/{gigId}/Packages";
-        if (gigId === undefined || gigId === null)
-            throw new Error("The parameter 'gigId' must be defined.");
-        url_ = url_.replace("{gigId}", encodeURIComponent("" + gigId));
+    post(command: CreatePackageCommand | null | undefined): Observable<PackageDto> {
+        let url_ = this.baseUrl + "/api/Packages";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -1714,76 +1693,6 @@ export class TodoListsClient implements ITodoListsClient {
     }
 }
 
-export interface IWeatherForecastClient {
-    get(): Observable<WeatherForecast[]>;
-}
-
-@Injectable({
-    providedIn: 'root'
-})
-export class WeatherForecastClient implements IWeatherForecastClient {
-    private http: HttpClient;
-    private baseUrl: string;
-    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
-
-    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
-        this.http = http;
-        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
-    }
-
-    get(): Observable<WeatherForecast[]> {
-        let url_ = this.baseUrl + "/api/WeatherForecast";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGet(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGet(<any>response_);
-                } catch (e) {
-                    return <Observable<WeatherForecast[]>><any>_observableThrow(e);
-                }
-            } else
-                return <Observable<WeatherForecast[]>><any>_observableThrow(response_);
-        }));
-    }
-
-    protected processGet(response: HttpResponseBase): Observable<WeatherForecast[]> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(WeatherForecast.fromJS(item));
-            }
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<WeatherForecast[]>(<any>null);
-    }
-}
-
 export class CategoryDto implements ICategoryDto {
     id?: number;
     title?: string | undefined;
@@ -2370,6 +2279,46 @@ export enum OrderStatus {
     Declined = 2,
     InProgress = 3,
     Completed = 4,
+}
+
+export class RequirementDto implements IRequirementDto {
+    id?: number;
+    details?: string | undefined;
+
+    constructor(data?: IRequirementDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.details = _data["details"];
+        }
+    }
+
+    static fromJS(data: any): RequirementDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new RequirementDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["details"] = this.details;
+        return data; 
+    }
+}
+
+export interface IRequirementDto {
+    id?: number;
+    details?: string | undefined;
 }
 
 export class ProblemDetails implements IProblemDetails {
@@ -3037,54 +2986,6 @@ export class UpdateTodoListCommand implements IUpdateTodoListCommand {
 export interface IUpdateTodoListCommand {
     id?: number;
     title?: string | undefined;
-}
-
-export class WeatherForecast implements IWeatherForecast {
-    date?: Date;
-    temperatureC?: number;
-    temperatureF?: number;
-    summary?: string | undefined;
-
-    constructor(data?: IWeatherForecast) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.date = _data["date"] ? new Date(_data["date"].toString()) : <any>undefined;
-            this.temperatureC = _data["temperatureC"];
-            this.temperatureF = _data["temperatureF"];
-            this.summary = _data["summary"];
-        }
-    }
-
-    static fromJS(data: any): WeatherForecast {
-        data = typeof data === 'object' ? data : {};
-        let result = new WeatherForecast();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["date"] = this.date ? this.date.toISOString() : <any>undefined;
-        data["temperatureC"] = this.temperatureC;
-        data["temperatureF"] = this.temperatureF;
-        data["summary"] = this.summary;
-        return data; 
-    }
-}
-
-export interface IWeatherForecast {
-    date?: Date;
-    temperatureC?: number;
-    temperatureF?: number;
-    summary?: string | undefined;
 }
 
 export interface FileResponse {

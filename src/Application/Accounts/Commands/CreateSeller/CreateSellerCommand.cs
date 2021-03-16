@@ -8,7 +8,7 @@ namespace Hive.Application.Accounts.Commands.CreateSeller
 {
     public static class CreateSellerCommand
     {
-        public record Command(string UserId) : IRequest<Response>;
+        public record Command(string UserId, int UserProfileId) : IRequest<Response>;
         public record Response(int Id);
 
         public class Handler : IRequestHandler<Command, Response>
@@ -22,8 +22,12 @@ namespace Hive.Application.Accounts.Commands.CreateSeller
             
             public async Task<Response> Handle(Command request, CancellationToken cancellationToken)
             {
-                var profile = new UserProfile();
-                var seller = new Seller { UserId = request.UserId, UserProfile = profile};
+                var (userId, userProfileId) = request;
+                var seller = new Seller
+                {
+                    UserId = userId,
+                    UserProfileId = userProfileId
+                };
 
                 _context.Sellers.Add(seller);
                 await _context.SaveChangesAsync(cancellationToken);

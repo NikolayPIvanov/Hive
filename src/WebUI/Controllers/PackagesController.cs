@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Hive.WebUI.Controllers
 {
-    [Route("api/gigs/{gigId:int}/[controller]")]
     public class PackagesController : ApiControllerBase
     {
         [HttpGet("{id:int}")]

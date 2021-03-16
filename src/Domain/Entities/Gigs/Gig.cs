@@ -13,6 +13,7 @@ namespace Hive.Domain.Entities.Gigs
             Questions = new();
             Packages = new();
             Orders = new();
+            Reviews = new();
         }
 
         public int Id { get; set; }
@@ -38,5 +39,7 @@ namespace Hive.Domain.Entities.Gigs
         public List<Package> Packages { get; set; }
 
         public List<Order> Orders { get; set; }
+
+        public List<Review> Reviews { get; set; }
     }
 }

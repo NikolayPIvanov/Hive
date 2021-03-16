@@ -30,6 +30,11 @@ namespace Hive.WebUI.Controllers
         [HttpPut("{id:int}")]
         public async Task<ActionResult<GigDto>> Post(int id, [FromBody] UpdateGigCommand command)
         {
+            if (id != command.Id)
+            {
+                return BadRequest();
+            }
+            
             await Mediator.Send(command);
             return NoContent();
         }
@@ -37,7 +42,7 @@ namespace Hive.WebUI.Controllers
         [HttpDelete("{id:int}")]
         public async Task<ActionResult<GigDto>> Post(int id)
         {
-            await Mediator.Send(new DeleteGigCommand() { Id = id });
+            await Mediator.Send(new DeleteGigCommand { Id = id });
             return NoContent();
         }
         
@@ -45,7 +50,7 @@ namespace Hive.WebUI.Controllers
         [HttpGet("{id:int}/packages")]
         public async Task<ActionResult<IEnumerable<PackageDto>>> GetPackages([FromRoute] int id)
         {
-            var packages = await Mediator.Send(new GetGigPackagesQuery() { GigId = id});
+            var packages = await Mediator.Send(new GetGigPackagesQuery { GigId = id});
             return Ok(packages);
         }
     }

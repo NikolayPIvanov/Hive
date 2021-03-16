@@ -11,7 +11,7 @@ namespace Hive.Infrastructure.Persistence.Configurations
             builder.Property(s => s.IsDraft).HasDefaultValue(true);
 
             builder.HasOne(s => s.UserProfile)
-                .WithOne(up => up.Seller)
+                .WithOne()
                 .HasForeignKey<Seller>(s => s.UserProfileId);
 
             builder.HasMany(s => s.Gigs)

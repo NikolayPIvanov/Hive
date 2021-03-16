@@ -27,6 +27,10 @@ namespace Hive.Infrastructure.Persistence.Configurations
             builder.HasMany(g => g.Questions)
                 .WithOne()
                 .HasForeignKey(g => g.GigId);
+
+            builder.HasMany(g => g.Reviews)
+                .WithOne()
+                .HasForeignKey(r => r.GigId);
         }
     }
     
