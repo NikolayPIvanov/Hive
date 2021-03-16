@@ -17,12 +17,12 @@ namespace Hive.Application.Orders.Commands.CancelOrder
     public class CancelOrderCommandHandler : IRequestHandler<CancelOrderCommand>
     {
         private readonly IApplicationDbContext _context;
-        private readonly IIdentityService _identityService;
+        private readonly ICurrentUserService _currentUserService;
 
-        public CancelOrderCommandHandler(IApplicationDbContext context, IIdentityService identityService)
+        public CancelOrderCommandHandler(IApplicationDbContext context, ICurrentUserService currentUserService)
         {
             _context = context;
-            _identityService = identityService;
+            _currentUserService = currentUserService;
         }   
         
         public async Task<Unit> Handle(CancelOrderCommand request, CancellationToken cancellationToken)
@@ -37,7 +37,7 @@ namespace Hive.Application.Orders.Commands.CancelOrder
                 throw new NotFoundException(nameof(Order), request.OrderNumber);
             }
             
-            var currentUserId = await _identityService.GetCurrentUserId();
+            var currentUserId = _currentUserService.UserId;
             order.Cancel(currentUserId);
             await _context.SaveChangesAsync(cancellationToken);
 

@@ -55,6 +55,7 @@ namespace Hive.Infrastructure.Persistence
         public DbSet<Order> Orders { get; set; }
         
         public DbSet<Requirement> Requirements { get; set; }
+        public DbSet<Review> Reviews { get; set; }
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
