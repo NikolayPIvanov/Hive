@@ -57,7 +57,7 @@ namespace Hive.Application.Categories.Commands.UpdateCategory
 
             await _context.SaveChangesAsync(cancellationToken);
 
-            return  Unit.Value;
+            return Unit.Value;
         }
     }
 }

@@ -12,9 +12,11 @@ using Moq;
 using NUnit.Framework;
 using Respawn;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Hive.Domain.Entities.Accounts;
 
 [SetUpFixture]
 public class Testing
@@ -100,8 +102,17 @@ public class Testing
         using var scope = _scopeFactory.CreateScope();
 
         var userManager = scope.ServiceProvider.GetService<UserManager<ApplicationUser>>();
+        
+        var context = scope.ServiceProvider.GetService<ApplicationDbContext>();
+        var profile = new UserProfile();
+        context.Profiles.Add(profile);
+        await context.SaveChangesAsync();
 
-        var user = new ApplicationUser { UserName = userName, Email = userName };
+        var user = new ApplicationUser
+        {
+            UserName = userName, Email = userName,
+            UserProfileId = profile.Id
+        };
 
         var result = await userManager.CreateAsync(user, password);
 
@@ -153,6 +164,18 @@ public class Testing
         var context = scope.ServiceProvider.GetService<ApplicationDbContext>();
 
         context.Add(entity);
+
+        await context.SaveChangesAsync();
+    }
+    
+    public static async Task AddBulkAsync<TEntity>(IEnumerable<TEntity> entities)
+        where TEntity : class
+    {
+        using var scope = _scopeFactory.CreateScope();
+
+        var context = scope.ServiceProvider.GetService<ApplicationDbContext>();
+
+        context.AddRange(entities);
 
         await context.SaveChangesAsync();
     }
