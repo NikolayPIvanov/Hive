@@ -4,7 +4,7 @@ using Hive.Application.Common.Interfaces;
 using Hive.Domain.Entities.Accounts;
 using MediatR;
 
-namespace Hive.Application.Accounts.Commands.CreateUserProfile
+namespace Hive.Application.UserProfiles.Commands.CreateUserProfile
 {
     public class CreateUserProfileCommand : IRequest<int>
     {

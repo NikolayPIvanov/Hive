@@ -7,7 +7,7 @@ using Hive.Application.Common.Interfaces;
 using Hive.Domain.Entities.Accounts;
 using MediatR;
 
-namespace Hive.Application.Accounts.Commands.UpdateUserProfile
+namespace Hive.Application.UserProfiles.Commands.UpdateUserProfile
 {
     public static class UpdateProfileCommand
     {

@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
 
-namespace Hive.Application.Accounts.Commands.UpdateUserProfile
+namespace Hive.Application.UserProfiles.Commands.UpdateUserProfile
 {
     public class UpdateProfileCommandValidator : AbstractValidator<UpdateProfileCommand.Command>
     {

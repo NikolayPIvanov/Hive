@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Reviews\Commands" />
     <Folder Include="Sellers\Commands" />
   </ItemGroup>
 
