@@ -8,9 +8,7 @@ namespace Hive.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<UserProfile> builder)
         {
-            builder.HasOne(up => up.Seller)
-                .WithOne(s => s.UserProfile)
-                .HasForeignKey<UserProfile>(up => up.SellerId);
+            // TODO: Configuration
         }
     }
 }
