@@ -1,11 +1,10 @@
-﻿using System.Data;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
 using Hive.Application.Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace Hive.Application.Accounts.Commands.CreateSeller
+namespace Hive.Application.Sellers.Commands.CreateSeller
 {
     public class CreateSellerCommandValidator : AbstractValidator<CreateSellerCommand.Command>
     {

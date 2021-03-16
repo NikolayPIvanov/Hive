@@ -4,7 +4,7 @@ using Hive.Application.Common.Interfaces;
 using Hive.Domain.Entities.Accounts;
 using MediatR;
 
-namespace Hive.Application.Accounts.Commands.CreateSeller
+namespace Hive.Application.Sellers.Commands.CreateSeller
 {
     public static class CreateSellerCommand
     {
