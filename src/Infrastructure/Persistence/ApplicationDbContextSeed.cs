@@ -52,5 +52,22 @@ namespace Hive.Infrastructure.Persistence
                 await context.SaveChangesAsync();
             }
         }
+
+        public static async Task Seed(ApplicationDbContext context)
+        {
+            FakeData.Init(10);
+            await SeedCategories(context);
+        }
+
+        private static Task SeedCategories(ApplicationDbContext context)
+        {
+            if (!context.Categories.Any())
+            {
+                context.AddRange(FakeData.Categories);
+                return context.SaveChangesAsync();
+            }
+
+            return Task.CompletedTask;
+        }
     }
 }
