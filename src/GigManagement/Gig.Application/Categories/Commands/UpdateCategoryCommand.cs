@@ -19,32 +19,31 @@ namespace Hive.Gig.Application.Categories.Commands
         {
             _context = context;
             
-            RuleFor(c => c)
-                .MustAsync(UniqueTitleAsync);
-
             RuleFor(c => c.Title)
-                .MaximumLength(50)
-                .NotEmpty();
-
-            RuleFor(c => c.ParentId)
-                .MustAsync(ParentCategoryExistsAsync);
-        }
-
-        private async Task<bool> ParentCategoryExistsAsync(int? parentCategoryId, CancellationToken cancellationToken)
-        {
-            if (parentCategoryId is null) return true;
-            return (await _context.Categories.AnyAsync(c => c.Id == parentCategoryId, cancellationToken));
+                .MinimumLength(3).WithMessage("Title should be at minimum 3 characters")
+                .MaximumLength(50).WithMessage("Title should be at maximum 50 characters")
+                .NotEmpty().WithMessage("Title cannot be empty");
+            
+            RuleFor(c => c)
+                .MustAsync(BeValidAsync).WithMessage("Either parent category does not exist, title already is taken or trying to set invalid parent id");
         }
         
-        private async Task<bool> UniqueTitleAsync(UpdateCategoryCommand command, CancellationToken cancellationToken)
+        // TODO: Bug - Might update a category so that it has it's parent category as one of it's subcategories
+        private async Task<bool> ParentCategoryExistsAsync(int parentCategoryId, CancellationToken cancellationToken)
         {
-            var (id, title, _) = command;
-            var hasWithTitle = await _context.Categories
+            return await _context.Categories.AnyAsync(c => c.Id == parentCategoryId, cancellationToken);
+        }
+        
+        private async Task<bool> BeValidAsync(UpdateCategoryCommand command, CancellationToken cancellationToken)
+        {
+            var (id, title, parentId) = command;
+            var titleExists = await _context.Categories
                 .AnyAsync(r => r.Title == title && r.Id != id, cancellationToken);
-
-            var titleIsValid = !hasWithTitle;
             
-            return titleIsValid;
+            var titleIsValid = !titleExists;
+            var parentCategoryIsValid = !parentId.HasValue || await ParentCategoryExistsAsync(parentId.Value, cancellationToken);
+            
+            return titleIsValid && parentCategoryIsValid;
         }
     }
     
