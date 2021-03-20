@@ -24,8 +24,6 @@ namespace Hive.Gig.Infrastructure
 
             services.AddScoped<IGigManagementContext>(provider => provider.GetService<GigManagementContext>());
 
-            
-
             return services;
         }
     }

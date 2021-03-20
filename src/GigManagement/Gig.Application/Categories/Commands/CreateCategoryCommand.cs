@@ -6,7 +6,7 @@ using Hive.Gig.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Hive.Gig.Application.Categories.Commands.CreateCategory
+namespace Hive.Gig.Application.Categories.Commands
 {
     public class CreateCategoryCommand : IRequest<int>
     {
