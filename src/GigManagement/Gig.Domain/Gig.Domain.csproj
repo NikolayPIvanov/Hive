@@ -2,8 +2,8 @@
 
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
-        <RootNamespace>Hive.Common.Domain</RootNamespace>
-        <AssemblyName>Hive.Common.Domain</AssemblyName>
+        <RootNamespace>Hive.Gig.Domain</RootNamespace>
+        <AssemblyName>Hive.Gig.Domain</AssemblyName>
     </PropertyGroup>
 
     <ItemGroup>

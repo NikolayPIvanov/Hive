@@ -1,4 +1,6 @@
-﻿namespace Hive.Common.Domain.Entities
+﻿using Hive.Common.Domain;
+
+namespace Hive.Gig.Domain.Entities
 {
     public class Gig : AuditableEntity
     {

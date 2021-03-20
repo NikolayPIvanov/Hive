@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <RootNamespace>Hive.Gig.Application</RootNamespace>
+        <AssemblyName>Hive.Gig.Application</AssemblyName>
+    </PropertyGroup>
+
+</Project>
