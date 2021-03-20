@@ -21,7 +21,8 @@ namespace Hive.Application.UnitTests.Common.Mappings
 
             _mapper = _configuration.CreateMapper();
         }
-
+    
+        
         [Test]
         public void ShouldHaveValidConfiguration()
         {
@@ -29,6 +30,7 @@ namespace Hive.Application.UnitTests.Common.Mappings
         }
         
         [Test]
+        [TestCase(null, null)]
         [Ignore("Pending")]
         public void ShouldSupportMappingFromSourceToDestination(Type source, Type destination)
         {
