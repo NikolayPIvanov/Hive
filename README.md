@@ -6,6 +6,9 @@
 <br/>
 <br/>
 
+## Schema
+https://dbdiagram.io/d/60559287ecb54e10c33c5cdd
+
 ## Technologies
 * ASP.NET Core 5
 * [Entity Framework Core 5](https://docs.microsoft.com/en-us/ef/core/)
