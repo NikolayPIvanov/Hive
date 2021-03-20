@@ -6,4 +6,12 @@
         <AssemblyName>Hive.Common.Domain</AssemblyName>
     </PropertyGroup>
 
+    <ItemGroup>
+      <Folder Include="Enums" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\..\Common\Common.Domain\Common.Domain.csproj" />
+    </ItemGroup>
+
 </Project>
