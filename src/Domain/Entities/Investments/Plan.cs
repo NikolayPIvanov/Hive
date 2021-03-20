@@ -1,14 +1,22 @@
 ﻿using System.Collections.Generic;
 using Hive.Domain.Common;
+using Hive.Domain.Entities.Accounts;
 using Hive.Domain.Entities.Categories;
 
-namespace Hive.Domain.Entities.Accounts
+namespace Hive.Domain.Entities.Investments
 {
+    public class PlanCategory
+    {
+        public int CategoryId { get; set; }
+
+        public int PlanId { get; set; }
+    }
+    
     public class Plan : AuditableEntity
     {
         public Plan()
         {
-            InvolvedCategories = new();
+            Categories = new();
             Investments = new();
             IsReleased = false;
         }
@@ -25,9 +33,9 @@ namespace Hive.Domain.Entities.Accounts
 
         public Seller Seller { get; set; }
 
-        public List<Category> InvolvedCategories { get; private set; }
+        public List<PlanCategory> Categories { get; private set; }
 
-        public List<InvestmentContract> Investments { get; private set; }
+        public List<Investment> Investments { get; private set; }
         
     }
 }

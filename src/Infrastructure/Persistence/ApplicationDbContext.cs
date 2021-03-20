@@ -13,6 +13,7 @@ using System.Threading.Tasks;
 using Hive.Domain.Entities.Accounts;
 using Hive.Domain.Entities.Categories;
 using Hive.Domain.Entities.Gigs;
+using Hive.Domain.Entities.Investments;
 using Hive.Domain.Entities.Orders;
 
 namespace Hive.Infrastructure.Persistence
@@ -52,6 +53,13 @@ namespace Hive.Infrastructure.Persistence
         
         public DbSet<Requirement> Requirements { get; set; }
         public DbSet<Review> Reviews { get; set; }
+        
+        
+        public DbSet<Plan> Plans { get; set; }
+        public DbSet<Investor> Investors { get; set; }
+        public DbSet<Investment> Investments { get; set; }
+        
+        
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {

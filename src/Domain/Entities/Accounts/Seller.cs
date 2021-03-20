@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Hive.Domain.Common;
 using Hive.Domain.Entities.Gigs;
+using Hive.Domain.Entities.Investments;
 
 namespace Hive.Domain.Entities.Accounts
 {
@@ -9,6 +10,7 @@ namespace Hive.Domain.Entities.Accounts
         public Seller()
         {
             Gigs = new List<Gig>();
+            Plans = new();
         }
         
         public int Id { get; set; }
@@ -22,5 +24,7 @@ namespace Hive.Domain.Entities.Accounts
         public UserProfile UserProfile { get; set; }
         
         public List<Gig> Gigs { get; private set; }
+        
+        public List<Plan> Plans { get; private set; }
     }
 }

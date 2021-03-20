@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Hive.Domain.Common;
 
-namespace Hive.Domain.Entities.Accounts
+namespace Hive.Domain.Entities.Investments
 {
     public class Investor : AuditableEntity
     {
@@ -12,6 +12,8 @@ namespace Hive.Domain.Entities.Accounts
         
         public int Id { get; set; }
 
-        public List<InvestmentContract> Investments { get; private set; }
+        public string UserId { get; set; }
+
+        public List<Investment> Investments { get; private set; }
     }
 }

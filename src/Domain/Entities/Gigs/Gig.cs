@@ -2,6 +2,7 @@
 using Hive.Domain.Common;
 using Hive.Domain.Entities.Accounts;
 using Hive.Domain.Entities.Categories;
+using Hive.Domain.Entities.Investments;
 using Hive.Domain.Entities.Orders;
 
 namespace Hive.Domain.Entities.Gigs

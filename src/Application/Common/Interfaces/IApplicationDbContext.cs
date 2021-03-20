@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Hive.Domain.Entities.Accounts;
 using Hive.Domain.Entities.Categories;
 using Hive.Domain.Entities.Gigs;
+using Hive.Domain.Entities.Investments;
 using Hive.Domain.Entities.Orders;
 
 namespace Hive.Application.Common.Interfaces
@@ -26,6 +27,10 @@ namespace Hive.Application.Common.Interfaces
         DbSet<Requirement> Requirements { get; set; }
         
         DbSet<Review> Reviews { get; set; }
+        
+        DbSet<Plan> Plans { get; set; }
+        DbSet<Investor> Investors { get; set; }
+        DbSet<Investment> Investments { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
