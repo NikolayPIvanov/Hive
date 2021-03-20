@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Hive.Gig.Application;
 using Hive.Gig.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -28,6 +29,7 @@ namespace LooslyCoupled
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddGigsInfrastructure(Configuration);
+            services.AddGigsManagement(Configuration);
             
             services.AddControllers();
             services.AddSwaggerGen(c =>
