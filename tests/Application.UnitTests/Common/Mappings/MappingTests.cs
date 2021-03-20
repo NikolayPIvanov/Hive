@@ -29,6 +29,7 @@ namespace Hive.Application.UnitTests.Common.Mappings
         }
         
         [Test]
+        [TestCase(null, null)]
         [Ignore("Pending")]
         public void ShouldSupportMappingFromSourceToDestination(Type source, Type destination)
         {
