@@ -21,7 +21,7 @@ namespace Hive.Infrastructure.Persistence.Migrations
                 .HasAnnotation("ProductVersion", "5.0.3")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Hive.Domain.Entities.Category", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.Category", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -55,7 +55,7 @@ namespace Hive.Infrastructure.Persistence.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Gigs.Gig", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.Gigs.Gig", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -104,7 +104,7 @@ namespace Hive.Infrastructure.Persistence.Migrations
                     b.ToTable("Gigs");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Gigs.GigQuestion", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.Gigs.GigQuestion", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -143,7 +143,7 @@ namespace Hive.Infrastructure.Persistence.Migrations
                     b.ToTable("GigQuestions");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Gigs.Package", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.Gigs.Package", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -190,7 +190,7 @@ namespace Hive.Infrastructure.Persistence.Migrations
                     b.ToTable("Packages");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.TodoItem", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.TodoItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -236,7 +236,7 @@ namespace Hive.Infrastructure.Persistence.Migrations
                     b.ToTable("TodoItems");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.TodoList", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.TodoList", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -568,36 +568,36 @@ namespace Hive.Infrastructure.Persistence.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Category", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.Category", b =>
                 {
-                    b.HasOne("Hive.Domain.Entities.Category", null)
+                    b.HasOne("Hive.Gig.Domain.Entities.Category", null)
                         .WithMany("SubCategories")
                         .HasForeignKey("ParentCategoryId");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Gigs.Gig", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.Gigs.Gig", b =>
                 {
-                    b.HasOne("Hive.Domain.Entities.Category", "Category")
+                    b.HasOne("Hive.Gig.Domain.Entities.Category", "Category")
                         .WithOne()
-                        .HasForeignKey("Hive.Domain.Entities.Gigs.Gig", "CategoryId")
+                        .HasForeignKey("Hive.Gig.Domain.Entities.Gigs.Gig", "CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Category");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Gigs.GigQuestion", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.Gigs.GigQuestion", b =>
                 {
-                    b.HasOne("Hive.Domain.Entities.Gigs.Gig", null)
+                    b.HasOne("Hive.Gig.Domain.Entities.Gigs.Gig", null)
                         .WithMany("Questions")
                         .HasForeignKey("GigId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Gigs.Package", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.Gigs.Package", b =>
                 {
-                    b.HasOne("Hive.Domain.Entities.Gigs.Gig", "Gig")
+                    b.HasOne("Hive.Gig.Domain.Entities.Gigs.Gig", "Gig")
                         .WithMany("Packages")
                         .HasForeignKey("GigId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -606,9 +606,9 @@ namespace Hive.Infrastructure.Persistence.Migrations
                     b.Navigation("Gig");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.TodoItem", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.TodoItem", b =>
                 {
-                    b.HasOne("Hive.Domain.Entities.TodoList", "List")
+                    b.HasOne("Hive.Gig.Domain.Entities.TodoList", "List")
                         .WithMany("Items")
                         .HasForeignKey("ListId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -617,9 +617,9 @@ namespace Hive.Infrastructure.Persistence.Migrations
                     b.Navigation("List");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.TodoList", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.TodoList", b =>
                 {
-                    b.OwnsOne("Hive.Domain.ValueObjects.Colour", "Colour", b1 =>
+                    b.OwnsOne("Hive.Gig.Domain.ValueObjects.Colour", "Colour", b1 =>
                         {
                             b1.Property<int>("TodoListId")
                                 .ValueGeneratedOnAdd()
@@ -691,19 +691,19 @@ namespace Hive.Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Category", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.Category", b =>
                 {
                     b.Navigation("SubCategories");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Gigs.Gig", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.Gigs.Gig", b =>
                 {
                     b.Navigation("Packages");
 
                     b.Navigation("Questions");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.TodoList", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.TodoList", b =>
                 {
                     b.Navigation("Items");
                 });

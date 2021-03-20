@@ -1,0 +1,9 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <RootNamespace>Hive.Common.Domain</RootNamespace>
+        <AssemblyName>Hive.Common.Domain</AssemblyName>
+    </PropertyGroup>
+
+</Project>

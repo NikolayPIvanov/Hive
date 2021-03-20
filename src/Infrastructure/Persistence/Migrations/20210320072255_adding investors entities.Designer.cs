@@ -21,7 +21,7 @@ namespace Hive.Infrastructure.Persistence.Migrations
                 .HasAnnotation("ProductVersion", "5.0.3")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Hive.Domain.Entities.Accounts.Seller", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.Accounts.Seller", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -59,7 +59,7 @@ namespace Hive.Infrastructure.Persistence.Migrations
                     b.ToTable("Sellers");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Accounts.UserProfile", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.Accounts.UserProfile", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -104,7 +104,7 @@ namespace Hive.Infrastructure.Persistence.Migrations
                     b.ToTable("Profiles");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Categories.Category", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.Categories.Category", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -138,7 +138,7 @@ namespace Hive.Infrastructure.Persistence.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Gigs.Gig", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.Gigs.Gig", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -202,7 +202,7 @@ namespace Hive.Infrastructure.Persistence.Migrations
                     b.ToTable("Gigs");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Gigs.GigQuestion", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.Gigs.GigQuestion", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -241,7 +241,7 @@ namespace Hive.Infrastructure.Persistence.Migrations
                     b.ToTable("GigQuestions");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Gigs.Package", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.Gigs.Package", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -292,7 +292,7 @@ namespace Hive.Infrastructure.Persistence.Migrations
                     b.ToTable("Packages");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Gigs.Review", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.Gigs.Review", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -334,7 +334,7 @@ namespace Hive.Infrastructure.Persistence.Migrations
                     b.HasCheckConstraint("CK_Review_Rating", "[Rating] BETWEEN 1.0 AND 5.0");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Investments.Investment", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.Investments.Investment", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -380,7 +380,7 @@ namespace Hive.Infrastructure.Persistence.Migrations
                     b.ToTable("Investments");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Investments.Investor", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.Investments.Investor", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -407,7 +407,7 @@ namespace Hive.Infrastructure.Persistence.Migrations
                     b.ToTable("Investors");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Investments.Plan", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.Investments.Plan", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -451,7 +451,7 @@ namespace Hive.Infrastructure.Persistence.Migrations
                     b.ToTable("Plans");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Investments.PlanCategory", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.Investments.PlanCategory", b =>
                 {
                     b.Property<int>("PlanId")
                         .HasColumnType("int");
@@ -464,7 +464,7 @@ namespace Hive.Infrastructure.Persistence.Migrations
                     b.ToTable("PlanCategory");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Orders.Order", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.Orders.Order", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -535,7 +535,7 @@ namespace Hive.Infrastructure.Persistence.Migrations
                     b.ToTable("Orders");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Orders.Requirement", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.Orders.Requirement", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -882,41 +882,41 @@ namespace Hive.Infrastructure.Persistence.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Accounts.Seller", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.Accounts.Seller", b =>
                 {
-                    b.HasOne("Hive.Domain.Entities.Accounts.UserProfile", "UserProfile")
+                    b.HasOne("Hive.Gig.Domain.Entities.Accounts.UserProfile", "UserProfile")
                         .WithOne()
-                        .HasForeignKey("Hive.Domain.Entities.Accounts.Seller", "UserProfileId")
+                        .HasForeignKey("Hive.Gig.Domain.Entities.Accounts.Seller", "UserProfileId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("UserProfile");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Categories.Category", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.Categories.Category", b =>
                 {
-                    b.HasOne("Hive.Domain.Entities.Categories.Category", null)
+                    b.HasOne("Hive.Gig.Domain.Entities.Categories.Category", null)
                         .WithMany("SubCategories")
                         .HasForeignKey("ParentCategoryId");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Gigs.Gig", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.Gigs.Gig", b =>
                 {
-                    b.HasOne("Hive.Domain.Entities.Categories.Category", "Category")
+                    b.HasOne("Hive.Gig.Domain.Entities.Categories.Category", "Category")
                         .WithOne()
-                        .HasForeignKey("Hive.Domain.Entities.Gigs.Gig", "CategoryId")
+                        .HasForeignKey("Hive.Gig.Domain.Entities.Gigs.Gig", "CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Hive.Domain.Entities.Categories.Category", null)
+                    b.HasOne("Hive.Gig.Domain.Entities.Categories.Category", null)
                         .WithMany("Gigs")
                         .HasForeignKey("CategoryId1");
 
-                    b.HasOne("Hive.Domain.Entities.Investments.Plan", "Plan")
+                    b.HasOne("Hive.Gig.Domain.Entities.Investments.Plan", "Plan")
                         .WithMany()
                         .HasForeignKey("PlanId");
 
-                    b.HasOne("Hive.Domain.Entities.Accounts.Seller", "Seller")
+                    b.HasOne("Hive.Gig.Domain.Entities.Accounts.Seller", "Seller")
                         .WithMany("Gigs")
                         .HasForeignKey("SellerId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -929,18 +929,18 @@ namespace Hive.Infrastructure.Persistence.Migrations
                     b.Navigation("Seller");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Gigs.GigQuestion", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.Gigs.GigQuestion", b =>
                 {
-                    b.HasOne("Hive.Domain.Entities.Gigs.Gig", null)
+                    b.HasOne("Hive.Gig.Domain.Entities.Gigs.Gig", null)
                         .WithMany("Questions")
                         .HasForeignKey("GigId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Gigs.Package", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.Gigs.Package", b =>
                 {
-                    b.HasOne("Hive.Domain.Entities.Gigs.Gig", "Gig")
+                    b.HasOne("Hive.Gig.Domain.Entities.Gigs.Gig", "Gig")
                         .WithMany("Packages")
                         .HasForeignKey("GigId")
                         .OnDelete(DeleteBehavior.NoAction)
@@ -949,24 +949,24 @@ namespace Hive.Infrastructure.Persistence.Migrations
                     b.Navigation("Gig");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Gigs.Review", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.Gigs.Review", b =>
                 {
-                    b.HasOne("Hive.Domain.Entities.Gigs.Gig", null)
+                    b.HasOne("Hive.Gig.Domain.Entities.Gigs.Gig", null)
                         .WithMany("Reviews")
                         .HasForeignKey("GigId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Investments.Investment", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.Investments.Investment", b =>
                 {
-                    b.HasOne("Hive.Domain.Entities.Investments.Investor", null)
+                    b.HasOne("Hive.Gig.Domain.Entities.Investments.Investor", null)
                         .WithMany("Investments")
                         .HasForeignKey("InvestorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Hive.Domain.Entities.Investments.Plan", "Plan")
+                    b.HasOne("Hive.Gig.Domain.Entities.Investments.Plan", "Plan")
                         .WithMany("Investments")
                         .HasForeignKey("PlanId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -975,9 +975,9 @@ namespace Hive.Infrastructure.Persistence.Migrations
                     b.Navigation("Plan");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Investments.Plan", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.Investments.Plan", b =>
                 {
-                    b.HasOne("Hive.Domain.Entities.Accounts.Seller", "Seller")
+                    b.HasOne("Hive.Gig.Domain.Entities.Accounts.Seller", "Seller")
                         .WithMany("Plans")
                         .HasForeignKey("SellerId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -986,29 +986,29 @@ namespace Hive.Infrastructure.Persistence.Migrations
                     b.Navigation("Seller");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Investments.PlanCategory", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.Investments.PlanCategory", b =>
                 {
-                    b.HasOne("Hive.Domain.Entities.Investments.Plan", null)
+                    b.HasOne("Hive.Gig.Domain.Entities.Investments.Plan", null)
                         .WithMany("Categories")
                         .HasForeignKey("PlanId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Orders.Order", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.Orders.Order", b =>
                 {
-                    b.HasOne("Hive.Domain.Entities.Gigs.Gig", null)
+                    b.HasOne("Hive.Gig.Domain.Entities.Gigs.Gig", null)
                         .WithMany("Orders")
                         .HasForeignKey("GigId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Orders.Requirement", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.Orders.Requirement", b =>
                 {
-                    b.HasOne("Hive.Domain.Entities.Orders.Order", "Order")
+                    b.HasOne("Hive.Gig.Domain.Entities.Orders.Order", "Order")
                         .WithOne("Requirement")
-                        .HasForeignKey("Hive.Domain.Entities.Orders.Requirement", "OrderId")
+                        .HasForeignKey("Hive.Gig.Domain.Entities.Orders.Requirement", "OrderId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1017,7 +1017,7 @@ namespace Hive.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Hive.Infrastructure.Identity.ApplicationUser", b =>
                 {
-                    b.HasOne("Hive.Domain.Entities.Accounts.UserProfile", "Profile")
+                    b.HasOne("Hive.Gig.Domain.Entities.Accounts.UserProfile", "Profile")
                         .WithOne()
                         .HasForeignKey("Hive.Infrastructure.Identity.ApplicationUser", "UserProfileId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -1077,21 +1077,21 @@ namespace Hive.Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Accounts.Seller", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.Accounts.Seller", b =>
                 {
                     b.Navigation("Gigs");
 
                     b.Navigation("Plans");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Categories.Category", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.Categories.Category", b =>
                 {
                     b.Navigation("Gigs");
 
                     b.Navigation("SubCategories");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Gigs.Gig", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.Gigs.Gig", b =>
                 {
                     b.Navigation("Orders");
 
@@ -1102,19 +1102,19 @@ namespace Hive.Infrastructure.Persistence.Migrations
                     b.Navigation("Reviews");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Investments.Investor", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.Investments.Investor", b =>
                 {
                     b.Navigation("Investments");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Investments.Plan", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.Investments.Plan", b =>
                 {
                     b.Navigation("Categories");
 
                     b.Navigation("Investments");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Orders.Order", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.Orders.Order", b =>
                 {
                     b.Navigation("Requirement");
                 });

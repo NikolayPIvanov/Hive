@@ -21,7 +21,7 @@ namespace Hive.Infrastructure.Persistence.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.0");
 
-            modelBuilder.Entity("Hive.Domain.Entities.TodoItem", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.TodoItem", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -67,7 +67,7 @@ namespace Hive.Infrastructure.Persistence.Migrations
                     b.ToTable("TodoItems");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.TodoList", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.TodoList", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -399,9 +399,9 @@ namespace Hive.Infrastructure.Persistence.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.TodoItem", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.TodoItem", b =>
                 {
-                    b.HasOne("Hive.Domain.Entities.TodoList", "List")
+                    b.HasOne("Hive.Gig.Domain.Entities.TodoList", "List")
                         .WithMany("Items")
                         .HasForeignKey("ListId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -410,9 +410,9 @@ namespace Hive.Infrastructure.Persistence.Migrations
                     b.Navigation("List");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.TodoList", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.TodoList", b =>
                 {
-                    b.OwnsOne("Hive.Domain.ValueObjects.Colour", "Colour", b1 =>
+                    b.OwnsOne("Hive.Gig.Domain.ValueObjects.Colour", "Colour", b1 =>
                         {
                             b1.Property<int>("TodoListId")
                                 .ValueGeneratedOnAdd()
@@ -484,7 +484,7 @@ namespace Hive.Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.TodoList", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.TodoList", b =>
                 {
                     b.Navigation("Items");
                 });
