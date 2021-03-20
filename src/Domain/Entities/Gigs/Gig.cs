@@ -35,6 +35,10 @@ namespace Hive.Domain.Entities.Gigs
         public Seller Seller { get; set; }
 
         public int SellerId { get; set; }
+
+        public int? PlanId { get; set; }
+
+        public Plan Plan { get; set; }
         
         public List<Package> Packages { get; set; }
 

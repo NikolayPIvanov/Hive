@@ -1,5 +1,4 @@
 ﻿using Hive.Application.Common.Interfaces;
-using Hive.Infrastructure.Configs;
 using Hive.Infrastructure.Files;
 using Hive.Infrastructure.Identity;
 using Hive.Infrastructure.Persistence;

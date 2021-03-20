@@ -14,7 +14,8 @@ namespace Hive.Infrastructure.Persistence
                 .RuleFor(p => p.Title, f => f.Name.JobTitle());
 
             var baseCategories = baseCategoriesFaker.Generate(count);
-            FakeData.Categories.AddRange(baseCategories);
+            
+            Categories.AddRange(baseCategories);
         }
     }
 }

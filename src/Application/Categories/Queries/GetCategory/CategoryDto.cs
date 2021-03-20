@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
 using AutoMapper;
 using Hive.Application.Common.Mappings;
-using Hive.Application.TodoLists.Queries.GetTodos;
-using Hive.Domain.Entities;
 using Hive.Domain.Entities.Categories;
 
 namespace Hive.Application.Categories.Queries.GetCategory

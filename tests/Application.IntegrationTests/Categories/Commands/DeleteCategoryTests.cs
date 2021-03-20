@@ -5,9 +5,6 @@ using FluentAssertions;
 using Hive.Application.Categories.Commands.CreateCategory;
 using Hive.Application.Categories.Commands.DeleteCategory;
 using Hive.Application.Common.Exceptions;
-using Hive.Application.TodoItems.Commands.CreateTodoItem;
-using Hive.Application.TodoItems.Commands.DeleteTodoItem;
-using Hive.Application.TodoLists.Commands.CreateTodoList;
 using Hive.Domain.Entities;
 using Hive.Domain.Entities.Categories;
 using NUnit.Framework;
@@ -43,7 +40,7 @@ namespace Hive.Application.IntegrationTests.Categories.Commands
                 Id = categoryId
             });
 
-            var category = await FindAsync<TodoItem>(categoryId);
+            var category = await FindAsync<Category>(categoryId);
             var categoriesCount = await CountAsync<Category>();
 
             category.Should().BeNull();

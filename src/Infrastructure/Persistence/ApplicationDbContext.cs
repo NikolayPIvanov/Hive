@@ -35,10 +35,6 @@ namespace Hive.Infrastructure.Persistence
             _dateTime = dateTime;
         }
 
-        public DbSet<TodoItem> TodoItems { get; set; }
-
-        public DbSet<TodoList> TodoLists { get; set; }
-        
         public DbSet<Gig> Gigs { get; set; }
         
         public DbSet<GigQuestion> GigQuestions { get; set; }
