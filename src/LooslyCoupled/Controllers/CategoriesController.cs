@@ -15,11 +15,37 @@ namespace LooslyCoupled.Controllers
             return Ok(category);
         }
         
+        [HttpGet]
+        public async Task<ActionResult<CategoryDto>> Get([FromQuery] GetCategoriesQuery query)
+        {
+            var list = await Mediator.Send(query);
+            return Ok(list);
+        }
+        
         [HttpPost]
         public async Task<ActionResult<int>> Create([FromBody] CreateCategoryCommand command)
         {
             var id = await Mediator.Send(command);
-            return Ok(id);
+            return CreatedAtAction(nameof(Get), new { id }, id);
+        }
+        
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateCategoryCommand command)
+        {
+            if (id != command.Id)
+            {
+                return BadRequest("Body and route ids mismatch.");
+            }
+            
+            await Mediator.Send(command);
+            return NoContent();
+        }
+        
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            await Mediator.Send(new DeleteCategoryCommand(id));
+            return NoContent();
         }
     }
 }
