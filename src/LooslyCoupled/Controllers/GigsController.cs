@@ -20,5 +20,23 @@ namespace LooslyCoupled.Controllers
             var id = await Mediator.Send(command);
             return CreatedAtAction(nameof(Get), new { id }, id);
         }
+        
+        [HttpPut("{id}")]
+        public async Task<ActionResult<int>> Create([FromRoute] int id, [FromBody] UpdateGigCommand command)
+        { 
+            if (id != command.Id)
+            {
+                return BadRequest();
+            }
+            await Mediator.Send(command);
+            return NoContent();
+        }
+        
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<int>> Create(int id)
+        {
+            await Mediator.Send(new DeleteGigCommand(id));
+            return NoContent();
+        }
     }
 }

@@ -32,7 +32,7 @@ namespace Hive.Gig.Application.Gigs.Queries
 
             if (entity is null)
             {
-                throw new NotFoundException(nameof(entity), request.Id);
+                throw new NotFoundException(nameof(Gig), request.Id);
             }
 
             return _mapper.Map<GigDto>(entity);
