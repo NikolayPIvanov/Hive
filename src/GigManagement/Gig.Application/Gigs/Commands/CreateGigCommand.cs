@@ -12,9 +12,9 @@ namespace Hive.Gig.Application.Gigs.Commands
 {
     public record CreateGigCommand : IRequest<int>
     {
-        public string Title { get; private init; }
-        public int CategoryId { get; private init; }
-        public HashSet<string> Tags { get; private init; }
+        public string Title { get; init; }
+        public int CategoryId { get;  init; }
+        public HashSet<string> Tags { get;  init; }
 
         public CreateGigCommand(string title, int categoryId, HashSet<string> tags)
             => (Title, CategoryId, Tags) = (title, categoryId, tags ?? new HashSet<string>(5));

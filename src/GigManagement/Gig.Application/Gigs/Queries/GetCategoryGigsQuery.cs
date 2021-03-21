@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -32,7 +31,7 @@ namespace Hive.Gig.Application.Gigs.Queries
                 .Include(g => g.GigScope)
                 .Include(g => g.Tags)
                 .Include(g => g.Category)
-                .Where(g => g.CategoryId == request.CategoryId)
+                .Where(g => g.CategoryId == request.CategoryId && !g.IsDraft)
                 .ProjectTo<GigDto>(_mapper.ConfigurationProvider) 
                 .PaginatedListAsync(request.PageNumber, request.PageSize);
         }

@@ -19,7 +19,6 @@ namespace Hive.Gig.Application.Gigs.Queries
                 .ForMember(d => d.Tags, 
                     x => x.MapFrom(s => 
                         s.Tags.Select(t => new Tag(t))));
-
         }
     }
 }
