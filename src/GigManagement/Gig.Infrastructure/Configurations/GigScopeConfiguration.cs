@@ -13,6 +13,10 @@ namespace Hive.Gig.Infrastructure.Configurations
             builder.Property(gs => gs.Description)
                 .HasMaxLength(2000)
                 .IsRequired();
+            
+            builder.HasOne(g => g.Gig)
+                .WithOne(gs => gs.GigScope)
+                .HasForeignKey<Domain.Entities.Gig>(gs => gs.GigScopeId);
         }
     }
 }

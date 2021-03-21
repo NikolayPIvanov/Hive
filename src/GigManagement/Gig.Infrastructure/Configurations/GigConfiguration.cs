@@ -21,9 +21,6 @@ namespace Hive.Gig.Infrastructure.Configurations
             builder.HasMany(g => g.Tags)
                 .WithMany(t => t.Gigs);
 
-            builder.HasOne(g => g.GigScope)
-                .WithOne(gs => gs.Gig)
-                .HasForeignKey<GigScope>(gs => gs.GigId);
         }
     }
 }

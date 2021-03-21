@@ -4,14 +4,16 @@ using Hive.Gig.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Hive.Gig.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(GigManagementContext))]
-    partial class GigManagementContextModelSnapshot : ModelSnapshot
+    [Migration("20210321083320_MakingGigScopeIdNullableForCompability")]
+    partial class MakingGigScopeIdNullableForCompability
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

@@ -4,14 +4,16 @@ using Hive.Gig.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Hive.Gig.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(GigManagementContext))]
-    partial class GigManagementContextModelSnapshot : ModelSnapshot
+    [Migration("20210321082023_MakingGigScopeNullable")]
+    partial class MakingGigScopeNullable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -106,10 +108,6 @@ namespace Hive.Gig.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("CategoryId");
 
-                    b.HasIndex("GigScopeId")
-                        .IsUnique()
-                        .HasFilter("[GigScopeId] IS NOT NULL");
-
                     b.ToTable("Gigs");
                 });
 
@@ -141,6 +139,9 @@ namespace Hive.Gig.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(36)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("GigId")
+                        .IsUnique();
 
                     b.ToTable("GigScope");
                 });
@@ -193,13 +194,18 @@ namespace Hive.Gig.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Hive.Gig.Domain.Entities.GigScope", "GigScope")
-                        .WithOne("Gig")
-                        .HasForeignKey("Hive.Gig.Domain.Entities.Gig", "GigScopeId");
-
                     b.Navigation("Category");
+                });
 
-                    b.Navigation("GigScope");
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.GigScope", b =>
+                {
+                    b.HasOne("Hive.Gig.Domain.Entities.Gig", "Gig")
+                        .WithOne("GigScope")
+                        .HasForeignKey("Hive.Gig.Domain.Entities.GigScope", "GigId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Gig");
                 });
 
             modelBuilder.Entity("Hive.Gig.Domain.Entities.Category", b =>
@@ -207,9 +213,9 @@ namespace Hive.Gig.Infrastructure.Persistence.Migrations
                     b.Navigation("SubCategories");
                 });
 
-            modelBuilder.Entity("Hive.Gig.Domain.Entities.GigScope", b =>
+            modelBuilder.Entity("Hive.Gig.Domain.Entities.Gig", b =>
                 {
-                    b.Navigation("Gig");
+                    b.Navigation("GigScope");
                 });
 #pragma warning restore 612, 618
         }

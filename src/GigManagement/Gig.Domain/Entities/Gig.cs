@@ -10,9 +10,10 @@ namespace Hive.Gig.Domain.Entities
             Tags = new HashSet<Tag>(5);
         }
         
-        public Gig(string title, ICollection<Tag> tags) : this()
+        public Gig(string title, int categoryId, ICollection<Tag> tags) : this()
         {
             Title = title;
+            CategoryId = categoryId;
             Tags = tags;
         }
         
@@ -22,7 +23,7 @@ namespace Hive.Gig.Domain.Entities
 
         public bool IsDraft { get; set; } = true;
 
-        public int GigScopeId { get; set; }
+        public int? GigScopeId { get; set; }
 
         public GigScope GigScope { get; set; }
 
