@@ -8,9 +8,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Hive.Gig.Application.GigScopes.Command
 {
-    public record UpdateGigCommand(int GigId, string Description) : IRequest;
+    public record UpdateGigScopeCommand(int GigId, string Description) : IRequest;
 
-    public class UpdateGigValidator : AbstractValidator<UpdateGigCommand>
+    public class UpdateGigValidator : AbstractValidator<UpdateGigScopeCommand>
     {
         public UpdateGigValidator()
         {
@@ -21,7 +21,7 @@ namespace Hive.Gig.Application.GigScopes.Command
         }
     }
     
-    public class UpdateGigCommandHandler : IRequestHandler<UpdateGigCommand>
+    public class UpdateGigCommandHandler : IRequestHandler<UpdateGigScopeCommand>
     {
         private readonly IGigManagementContext _context;
 
@@ -30,7 +30,7 @@ namespace Hive.Gig.Application.GigScopes.Command
             _context = context;
         }
         
-        public async Task<Unit> Handle(UpdateGigCommand request, CancellationToken cancellationToken)
+        public async Task<Unit> Handle(UpdateGigScopeCommand request, CancellationToken cancellationToken)
         {
             var gig = await _context.Gigs
                 .Include(g => g.GigScope)

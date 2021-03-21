@@ -13,6 +13,8 @@ namespace Hive.Gig.Infrastructure.Configurations
             builder.Property(gs => gs.Description)
                 .HasMaxLength(2000)
                 .IsRequired();
+
+            builder.HasIndex(gs => gs.GigId).IsUnique();
             
             builder.HasOne(g => g.Gig)
                 .WithOne(gs => gs.GigScope)

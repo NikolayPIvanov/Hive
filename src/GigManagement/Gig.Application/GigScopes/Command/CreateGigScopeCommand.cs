@@ -21,6 +21,9 @@ namespace Hive.Gig.Application.GigScopes.Command
 
             RuleFor(x => x.GigId)
                 .MustAsync(async (id, token) => await context.Gigs.AnyAsync(x => x.Id == id, token));
+            
+            RuleFor(x => x.GigId)
+                .MustAsync(async (id, token) => await context.GigScopes.AnyAsync(x => x.GigId == id, token));
         }
     }
 

@@ -1,7 +1,9 @@
 ﻿using System.Threading.Tasks;
 using Hive.Gig.Application.Gigs.Commands;
 using Hive.Gig.Application.Gigs.Queries;
+using Hive.Gig.Application.GigScopes.Command;
 using Microsoft.AspNetCore.Mvc;
+using UpdateGigCommand = Hive.Gig.Application.Gigs.Commands.UpdateGigCommand;
 
 namespace LooslyCoupled.Controllers
 {
@@ -21,6 +23,18 @@ namespace LooslyCoupled.Controllers
             return CreatedAtAction(nameof(Get), new { id }, id);
         }
         
+        [HttpPost("{id}/scope")]
+        public async Task<ActionResult<int>> CreateScope(int id, [FromBody] CreateGigScopeCommand command)
+        {
+            if (id != command.GigId)
+            {
+                return BadRequest();
+            }
+
+            var scopeId = await Mediator.Send(command);
+            return Ok(scopeId);
+        }
+        
         [HttpPut("{id}")]
         public async Task<ActionResult<int>> Update([FromRoute] int id, [FromBody] UpdateGigCommand command)
         { 
@@ -28,6 +42,18 @@ namespace LooslyCoupled.Controllers
             {
                 return BadRequest();
             }
+            await Mediator.Send(command);
+            return NoContent();
+        }
+        
+        [HttpPut("{id}/scope")]
+        public async Task<IActionResult> UpdateDescription(int id, [FromBody] UpdateGigScopeCommand command)
+        {
+            if (id != command.GigId)
+            {
+                return BadRequest();
+            }
+
             await Mediator.Send(command);
             return NoContent();
         }

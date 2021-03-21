@@ -4,7 +4,7 @@ using Gig.Contracts;
 using Hive.Gig.Application.Gigs.Commands;
 using Hive.Gig.Domain.Entities;
 
-namespace Hive.Gig.Application.Gigs.Queries
+namespace Hive.Gig.Application.Gigs
 {
     public class GigsProfile : Profile
     {
