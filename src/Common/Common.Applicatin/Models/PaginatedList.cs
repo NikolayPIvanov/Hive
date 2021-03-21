@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Hive.Common.Application.Models
 {
+    public record PaginatedQuery(int PageNumber = 1, int PageSize = 10);
     public class PaginatedList<T> 
     {
         public List<T> Items { get; }

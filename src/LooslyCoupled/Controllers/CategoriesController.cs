@@ -1,7 +1,9 @@
 ﻿using System.Threading.Tasks;
 using Gig.Contracts;
+using Hive.Common.Application.Models;
 using Hive.Gig.Application.Categories.Commands;
 using Hive.Gig.Application.Categories.Queries;
+using Hive.Gig.Application.Gigs.Queries;
 using Microsoft.AspNetCore.Mvc;
 
 namespace LooslyCoupled.Controllers
@@ -13,6 +15,19 @@ namespace LooslyCoupled.Controllers
         {
             var category = await Mediator.Send(new GetCategoryQuery(id));
             return Ok(category);
+        }
+        
+        [HttpGet("{id}/gigs")]
+        public async Task<ActionResult<int>> Get([FromRoute] int id, [FromQuery] PaginatedQuery query)
+        {
+            var request = new GetCategoryGigsQuery(id)
+            {
+                PageNumber = query.PageNumber,
+                PageSize = query.PageSize
+            };
+            
+            var list = await Mediator.Send(request);
+            return Ok(list);
         }
         
         [HttpGet]
