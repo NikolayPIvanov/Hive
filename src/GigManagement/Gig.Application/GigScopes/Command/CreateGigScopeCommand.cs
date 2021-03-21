@@ -18,9 +18,9 @@ namespace Hive.Gig.Application.GigScopes.Command
                 .MaximumLength(2000).WithMessage("Description should be below 2000 characters.")
                 .MinimumLength(10).WithMessage("Description should be above 10 characters.")
                 .NotNull().WithMessage("Must provide description for gig.");
-            
+
             RuleFor(x => x.GigId)
-                .MustAsync(async (id, token) => await context.Gigs.AnyAsync(x => x.Id == id, token))
+                .MustAsync(async (id, token) => await context.Gigs.AnyAsync(x => x.Id == id, token));
         }
     }
 

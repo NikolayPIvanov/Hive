@@ -1,0 +1,51 @@
+﻿using System.Threading;
+using System.Threading.Tasks;
+using FluentValidation;
+using Hive.Common.Application.Exceptions;
+using Hive.Gig.Application.Interfaces;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
+
+namespace Hive.Gig.Application.GigScopes.Command
+{
+    public record UpdateGigCommand(int GigId, string Description) : IRequest;
+
+    public class UpdateGigValidator : AbstractValidator<UpdateGigCommand>
+    {
+        public UpdateGigValidator()
+        {
+            RuleFor(x => x.Description)
+                .MaximumLength(2000).WithMessage("Description should be below 2000 characters.")
+                .MinimumLength(10).WithMessage("Description should be above 10 characters.")
+                .NotNull().WithMessage("Must provide description for gig.");
+        }
+    }
+    
+    public class UpdateGigCommandHandler : IRequestHandler<UpdateGigCommand>
+    {
+        private readonly IGigManagementContext _context;
+
+        public UpdateGigCommandHandler(IGigManagementContext context)
+        {
+            _context = context;
+        }
+        
+        public async Task<Unit> Handle(UpdateGigCommand request, CancellationToken cancellationToken)
+        {
+            var gig = await _context.Gigs
+                .Include(g => g.GigScope)
+                .FirstOrDefaultAsync(g => g.Id == request.GigId, cancellationToken: cancellationToken);
+
+            if (gig is null)
+            {
+                throw new NotFoundException(nameof(Gig), request.GigId);
+            }
+
+            gig.GigScope.Description = request.Description;
+            
+            await _context.SaveChangesAsync(cancellationToken);
+
+            return Unit.Value;
+        }
+    }
+}
