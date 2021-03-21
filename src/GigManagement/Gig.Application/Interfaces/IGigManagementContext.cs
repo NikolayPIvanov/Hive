@@ -16,6 +16,8 @@ namespace Hive.Gig.Application.Interfaces
         DbSet<Package> Packages { get; set; }
         
         DbSet<Tag> Tags { get; set; }
+        
+        DbSet<Question> Questions { get; set; }
 
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }

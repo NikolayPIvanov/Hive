@@ -17,6 +17,7 @@ namespace Hive.Gig.Infrastructure
         public DbSet<GigScope> GigScopes { get; set; }
         public DbSet<Package> Packages { get; set; }
         public DbSet<Tag> Tags { get; set; }
+        public DbSet<Question> Questions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

@@ -9,6 +9,7 @@ namespace Hive.Gig.Domain.Entities
         {
             Tags = new HashSet<Tag>(5);
             Packages = new HashSet<Package>(3);
+            Questions = new HashSet<Question>();
         }
         
         public Gig(string title, int categoryId, ICollection<Tag> tags) : this()
@@ -35,6 +36,7 @@ namespace Hive.Gig.Domain.Entities
         public ICollection<Tag> Tags { get; private set; }
         
         public ICollection<Package> Packages { get; private set; }
-
+        
+        public ICollection<Question> Questions { get; private set;  }
     }
 }

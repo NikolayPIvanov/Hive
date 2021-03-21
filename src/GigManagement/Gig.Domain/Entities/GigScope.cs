@@ -24,6 +24,5 @@ namespace Hive.Gig.Domain.Entities
 
         public Gig Gig { get; set; }
         
-        //public ICollection<Question> Questions { get; private set;  }
     }
 }

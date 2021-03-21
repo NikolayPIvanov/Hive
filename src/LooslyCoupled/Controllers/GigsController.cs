@@ -1,9 +1,14 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Gig.Contracts;
+using Hive.Gig.Application.GigPackages.Commands;
+using Hive.Gig.Application.GigPackages.Queries;
 using Hive.Gig.Application.Gigs.Commands;
 using Hive.Gig.Application.Gigs.Queries;
 using Hive.Gig.Application.GigScopes.Command;
 using Hive.Gig.Application.GigScopes.Queries;
+using Hive.Gig.Application.Questions.Commands;
+using Hive.Gig.Application.Questions.Queries;
 using Microsoft.AspNetCore.Mvc;
 using UpdateGigCommand = Hive.Gig.Application.Gigs.Commands.UpdateGigCommand;
 
@@ -73,10 +78,89 @@ namespace LooslyCoupled.Controllers
             await Mediator.Send(command);
             return NoContent();
         }
+
+        [HttpGet("{id}/packages")]
+        public async Task<ActionResult<IEnumerable<PackageDto>>> GetPackages(int id)
+        {
+            var packages = await Mediator.Send(new GetGigPackagesQuery(id));
+            return Ok(packages);
+        }
         
-        // [HttpGet("{id}/packges/{id}")]
-        // public async Task<AcceptedResult>
-        //
-        // [HttpGet("{id}/packges/{id}")]
+        [HttpGet("{id}/packages/{packageId}")]
+        public async Task<ActionResult<PackageDto>> GetPackage(int id, int packageId)
+        {
+            var package = await Mediator.Send(new GetPackageQuery(packageId));
+            return Ok(package);
+        }
+        
+        [HttpPost("{id}/packages")]
+        public async Task<IActionResult> CreatePackage(int id, [FromBody] CreatePackageCommand command)
+        {
+            if (id != command.GigId)
+            {
+                return BadRequest();
+            }
+            
+            var packageId = await Mediator.Send(command);
+            return CreatedAtAction(nameof(GetPackage), new {id, packageId}, new {id, packageId});
+        }
+        
+        [HttpPut("{id}/packages/{packageId}")]
+        public async Task<IActionResult> UpdatePackage(int id, int packageId, [FromBody] UpdatePackageCommand command)
+        {
+            if (packageId != command.Id)
+            {
+                return BadRequest();
+            }
+            
+            await Mediator.Send(command);
+            return NoContent();
+        }
+        
+        [HttpDelete("{id}/packages/{packageId}")]
+        public async Task<IActionResult> DeletePackage(int id, int packageId)
+        {
+            await Mediator.Send(new DeletePackageCommand(packageId));
+            return NoContent();
+        }
+        
+        [HttpGet("{id}/questions")]
+        public async Task<ActionResult<IEnumerable<QuestionDto>>> GetQuestions(int id)
+        {
+            var questions = await Mediator.Send(new GetQuestionsQuery(id));
+            return Ok(questions);
+        }
+        
+        [HttpPost("{id}/questions")]
+        public async Task<IActionResult> CreateQuestion(int id, [FromBody] CreateQuestionCommand command)
+        {
+            if (id != command.GigId)
+            {
+                return BadRequest();
+            }
+            
+            var packageId = await Mediator.Send(command);
+            // TODO: Watch if this is a problem?
+            return CreatedAtAction(nameof(GetPackage), new {id, packageId}, new {id, packageId});
+        }
+        
+        [HttpPut("{id}/questions/{questionId}")]
+        public async Task<IActionResult> UpdateQuestion(int id, int questionId, [FromBody] UpdateQuestionCommand command)
+        {
+            if (questionId != command.Id)
+            {
+                return BadRequest();
+            }
+            
+            await Mediator.Send(command);
+            return NoContent();
+        }
+        
+        [HttpDelete("{id}/questions/{questionId}")]
+        public async Task<IActionResult> DeleteQuestion(int id, int questionId)
+        {
+            await Mediator.Send(new DeleteQuestionCommand(questionId));
+            return NoContent();
+        }
     }
 }
