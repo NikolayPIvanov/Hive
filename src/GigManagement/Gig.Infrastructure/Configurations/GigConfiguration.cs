@@ -1,5 +1,4 @@
-﻿using Hive.Gig.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Hive.Gig.Infrastructure.Configurations
@@ -21,6 +20,9 @@ namespace Hive.Gig.Infrastructure.Configurations
             builder.HasMany(g => g.Tags)
                 .WithMany(t => t.Gigs);
 
+            builder.HasMany(g => g.Packages)
+                .WithOne(p => p.Gig)
+                .HasForeignKey(g => g.GigId);
         }
     }
 }

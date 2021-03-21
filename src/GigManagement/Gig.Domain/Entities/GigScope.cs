@@ -7,7 +7,6 @@ namespace Hive.Gig.Domain.Entities
     {
         private GigScope()
         {
-            Packages = new HashSet<Package>(3);
             //Questions = new HashSet<Question>();
         }
 
@@ -24,8 +23,6 @@ namespace Hive.Gig.Domain.Entities
         public int GigId { get; set; }
 
         public Gig Gig { get; set; }
-
-        public ICollection<Package> Packages { get; private set; }
         
         //public ICollection<Question> Questions { get; private set;  }
     }

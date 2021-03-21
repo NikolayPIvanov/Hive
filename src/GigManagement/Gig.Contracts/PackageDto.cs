@@ -1,13 +1,10 @@
-﻿using Hive.Common.Domain;
-using Hive.Gig.Domain.Enums;
-
-namespace Hive.Gig.Domain.Entities
+﻿namespace Gig.Contracts
 {
-    public class Package : AuditableEntity
+    public class PackageDto
     {
         public int Id { get; set; }
         
-        public PackageTier PackageTier { get; set; }
+        public string PackageTier { get; set; }
         
         public string Title { get; set; }
         
@@ -17,12 +14,10 @@ namespace Hive.Gig.Domain.Entities
         
         public double DeliveryTime { get; set; }
         
-        public DeliveryFrequency DeliveryFrequency { get; set; }
+        public string DeliveryFrequency { get; set; }
 
         public int Revisions { get; set; }
         
         public int GigId { get; set; }
-
-        public Gig Gig { get; set; }
     }
 }

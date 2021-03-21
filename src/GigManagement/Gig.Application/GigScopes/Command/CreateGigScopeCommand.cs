@@ -20,10 +20,12 @@ namespace Hive.Gig.Application.GigScopes.Command
                 .NotNull().WithMessage("Must provide description for gig.");
 
             RuleFor(x => x.GigId)
-                .MustAsync(async (id, token) => await context.Gigs.AnyAsync(x => x.Id == id, token));
-            
+                .MustAsync(async (id, token) => await context.Gigs.AnyAsync(x => x.Id == id, token))
+                .WithMessage("Must specify an existing gig.");
+
             RuleFor(x => x.GigId)
-                .MustAsync(async (id, token) => await context.GigScopes.AnyAsync(x => x.GigId == id, token));
+                .MustAsync(async (id, token) => !(await context.GigScopes.AnyAsync(x => x.GigId == id, token)))
+                .WithMessage("This gig already contains scope.");
         }
     }
 

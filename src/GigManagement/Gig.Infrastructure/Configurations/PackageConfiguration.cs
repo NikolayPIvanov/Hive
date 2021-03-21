@@ -13,7 +13,7 @@ namespace Hive.Gig.Infrastructure.Configurations
                 .IsRequired();
 
             builder.Property(x => x.Description)
-                .HasMaxLength(50)
+                .HasMaxLength(100)
                 .IsRequired();
 
             builder.Property(x => x.Price)
@@ -25,10 +25,6 @@ namespace Hive.Gig.Infrastructure.Configurations
 
             builder.Property(x => x.Revisions)
                 .IsRequired();
-
-            builder.HasOne(p => p.GigScope)
-                .WithMany(x => x.Packages)
-                .HasForeignKey(x => x.GigScopeId);
         }
     }
 }
