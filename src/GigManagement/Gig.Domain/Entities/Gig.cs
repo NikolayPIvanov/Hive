@@ -20,7 +20,11 @@ namespace Hive.Gig.Domain.Entities
         
         public string Title { get; set; }
 
-        public bool IsDraft { get; set; } = false;
+        public bool IsDraft { get; set; } = true;
+
+        public int GigScopeId { get; set; }
+
+        public GigScope GigScope { get; set; }
 
         public int CategoryId { get; set; }
         

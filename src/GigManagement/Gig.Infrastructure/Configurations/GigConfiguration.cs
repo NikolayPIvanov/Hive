@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Hive.Gig.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Hive.Gig.Infrastructure.Configurations
@@ -11,6 +12,7 @@ namespace Hive.Gig.Infrastructure.Configurations
             
             builder.HasKey(g => g.Id);
             builder.Property(g => g.Title).HasMaxLength(50).IsRequired();
+            builder.Property(g => g.IsDraft).IsRequired();
 
             builder.HasOne(g => g.Category)
                 .WithMany()
@@ -18,6 +20,10 @@ namespace Hive.Gig.Infrastructure.Configurations
 
             builder.HasMany(g => g.Tags)
                 .WithMany(t => t.Gigs);
+
+            builder.HasOne(g => g.GigScope)
+                .WithOne(gs => gs.Gig)
+                .HasForeignKey<GigScope>(gs => gs.GigId);
         }
     }
 }

@@ -1,0 +1,18 @@
+﻿using Hive.Gig.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+
+namespace Hive.Gig.Infrastructure.Configurations
+{
+    public class GigScopeConfiguration : IEntityTypeConfiguration<GigScope>
+    {
+        public void Configure(EntityTypeBuilder<GigScope> builder)
+        {
+            AuditableEntityConfiguration.ConfigureAuditableEntity(builder);
+
+            builder.Property(gs => gs.Description)
+                .HasMaxLength(2000)
+                .IsRequired();
+        }
+    }
+}
