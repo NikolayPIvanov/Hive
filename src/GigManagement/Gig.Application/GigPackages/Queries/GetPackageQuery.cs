@@ -4,6 +4,7 @@ using AutoMapper;
 using Gig.Contracts;
 using Hive.Common.Application.Exceptions;
 using Hive.Gig.Application.Interfaces;
+using Hive.Gig.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -29,7 +30,7 @@ namespace Hive.Gig.Application.GigPackages.Queries
 
             if (entity is null)
             {
-                throw new NotFoundException(nameof(entity), request.Id);
+                throw new NotFoundException(nameof(Package), request.Id);
             }
 
             return _mapper.Map<PackageDto>(entity);

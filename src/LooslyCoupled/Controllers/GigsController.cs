@@ -102,6 +102,7 @@ namespace LooslyCoupled.Controllers
             return Ok(package);
         }
         
+        // TODO: Add restriction on the type of package can be created for a given gig
         [HttpPost("{id}/packages")]
         public async Task<IActionResult> CreatePackage(int id, [FromBody] CreatePackageCommand command)
         {
@@ -141,6 +142,13 @@ namespace LooslyCoupled.Controllers
             return Ok(questions);
         }
         
+        [HttpGet("{id}/questions/{questionId}")]
+        public async Task<ActionResult<QuestionDto>> GetQuestion(int id, int questionId)
+        {
+            var question = await Mediator.Send(new GetQuestionByIdQuery(id, questionId));
+            return Ok(question);
+        }
+        
         [HttpPost("{id}/questions")]
         public async Task<IActionResult> CreateQuestion(int id, [FromBody] CreateQuestionCommand command)
         {
@@ -149,9 +157,8 @@ namespace LooslyCoupled.Controllers
                 return BadRequest();
             }
             
-            var packageId = await Mediator.Send(command);
-            // TODO: Watch if this is a problem?
-            return CreatedAtAction(nameof(GetPackage), new {id, packageId}, new {id, packageId});
+            var questionId = await Mediator.Send(command);
+            return CreatedAtAction(nameof(GetQuestion), new {id, questionId}, new {id, questionId});
         }
         
         [HttpPut("{id}/questions/{questionId}")]

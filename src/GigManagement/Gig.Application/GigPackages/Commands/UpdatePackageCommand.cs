@@ -48,11 +48,11 @@ namespace Hive.Gig.Application.GigPackages.Commands
             
             RuleFor(x => x.DeliveryTime)
                 .NotNull().WithMessage("A {PropertyName} must be provided")
-                .GreaterThan(1.0d).WithMessage("{PropertyName} cannot be below {ComparisonValue}.");
+                .GreaterThanOrEqualTo(1.0d).WithMessage("{PropertyName} cannot be below {ComparisonValue}.");
             
             RuleFor(x => x.Revisions)
                 .NotNull().WithMessage("A {PropertyName} must be provided")
-                .GreaterThan(1).WithMessage("{PropertyName} cannot be below {ComparisonValue}.");
+                .GreaterThanOrEqualTo(1).WithMessage("{PropertyName} cannot be below {ComparisonValue}.");
         }
     }
 
