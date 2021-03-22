@@ -42,6 +42,9 @@ namespace Hive.Gig.Application.GigScopes.Command
         {
             var gigScope = new GigScope(request.Description, request.GigId);
 
+            var gig = await _context.Gigs.FindAsync(request.GigId);
+            gig.GigScope = gigScope;
+
             _context.GigScopes.Add(gigScope);
             await _context.SaveChangesAsync(cancellationToken);
 

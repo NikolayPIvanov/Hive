@@ -10,20 +10,20 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Hive.Gig.Application.GigScopes.Queries
 {
-    public record GetGigScopeQuery(int GigId) : IRequest<GigScopeDto>;
+    public record GetScopeByIdQuery(int GigId, int ScopeId) : IRequest<GigScopeDto>;
 
-    public class GetGigScopeQueryHandler : IRequestHandler<GetGigScopeQuery, GigScopeDto>
+    public class GetScopeByIdQueryHandler : IRequestHandler<GetScopeByIdQuery, GigScopeDto>
     {
         private readonly IGigManagementContext _context;
         private readonly IMapper _mapper;
 
-        public GetGigScopeQueryHandler(IGigManagementContext context, IMapper mapper)
+        public GetScopeByIdQueryHandler(IGigManagementContext context, IMapper mapper)
         {
             _context = context;
             _mapper = mapper;
         }
         
-        public async Task<GigScopeDto> Handle(GetGigScopeQuery request, CancellationToken cancellationToken)
+        public async Task<GigScopeDto> Handle(GetScopeByIdQuery request, CancellationToken cancellationToken)
         {
             var gig = await _context.Gigs
                 .Select(x => new
@@ -31,7 +31,7 @@ namespace Hive.Gig.Application.GigScopes.Queries
                     x.Id,
                     x.GigScope
                 })
-                .FirstOrDefaultAsync(g => g.Id == request.GigId,cancellationToken);
+                .FirstOrDefaultAsync(g => g.Id == request.GigId && g.GigScope.Id == request.ScopeId,cancellationToken);
             
             if (gig is null)
             {

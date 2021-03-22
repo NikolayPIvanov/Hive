@@ -48,11 +48,19 @@ namespace LooslyCoupled.Controllers
             return NoContent();
         }
         
+        
         [HttpGet("{id}/scopes")]
         public async Task<ActionResult<GigScopeDto>> GetScope([FromRoute] int id)
         {
-            await Mediator.Send(new GetGigScopeQuery(id));
-            return NoContent();
+            var scope = await Mediator.Send(new GetGigScopeQuery(id));
+            return Ok(scope);
+        }
+        
+        [HttpGet("{id}/scopes/{scopeId}")]
+        public async Task<ActionResult<GigScopeDto>> GetScope([FromRoute] int id, int scopeId)
+        {
+            var scope = await Mediator.Send(new GetScopeByIdQuery(id, scopeId));
+            return Ok(scope);
         }
         
         [HttpPost("{id}/scopes")]
@@ -64,7 +72,7 @@ namespace LooslyCoupled.Controllers
             }
 
             var scopeId = await Mediator.Send(command);
-            return Ok(scopeId);
+            return CreatedAtAction(nameof(GetScope), new { id, scopeId}, new {id,scopeId});
         }
         
         [HttpPut("{id}/scopes")]
@@ -78,7 +86,8 @@ namespace LooslyCoupled.Controllers
             await Mediator.Send(command);
             return NoContent();
         }
-
+        
+        
         [HttpGet("{id}/packages")]
         public async Task<ActionResult<IEnumerable<PackageDto>>> GetPackages(int id)
         {
@@ -123,6 +132,7 @@ namespace LooslyCoupled.Controllers
             await Mediator.Send(new DeletePackageCommand(packageId));
             return NoContent();
         }
+        
         
         [HttpGet("{id}/questions")]
         public async Task<ActionResult<IEnumerable<QuestionDto>>> GetQuestions(int id)

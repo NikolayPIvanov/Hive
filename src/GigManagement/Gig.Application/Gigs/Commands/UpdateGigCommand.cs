@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -15,16 +16,18 @@ namespace Hive.Gig.Application.Gigs.Commands
         public int Id { get; set; }
         
         public string Title { get; set; }
+
+        public string Description { get; set; }
         
         public bool IsDraft { get; set; } = true;
         
         public int CategoryId { get; set; }
         
-        public HashSet<string> Tags { get; private init; }
+        public HashSet<string> Tags { get; init; }
         
-        public UpdateGigCommand(int id, string title, int categoryId, bool isDraft, HashSet<string> tags)
-            => (Id, Title, CategoryId, IsDraft, Tags) = 
-                (id, title, categoryId, isDraft, tags ?? new HashSet<string>(5));
+        public UpdateGigCommand(int id, string title, string description, int categoryId, bool isDraft, HashSet<string> tags)
+            => (Id, Title, Description, CategoryId, IsDraft, Tags) = 
+                (id, title, description, categoryId, isDraft, tags ?? new HashSet<string>(5));
     }
 
     public class UpdateGigCommandValidator : AbstractValidator<UpdateGigCommand>
@@ -62,7 +65,11 @@ namespace Hive.Gig.Application.Gigs.Commands
         
         public async Task<Unit> Handle(UpdateGigCommand request, CancellationToken cancellationToken)
         {
-            var entity = await _context.Gigs.FindAsync(request.Id);
+            var entity = await _context.Gigs
+                .Include(g => g.GigScope)
+                .Include(g => g.Tags)
+                .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
+            
             if (entity is null)
             {
                 throw new NotFoundException(nameof(Gig), request.Id);
