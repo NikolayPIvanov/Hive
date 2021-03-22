@@ -42,6 +42,8 @@ namespace Hive.Gig.Infrastructure
                     ro.Port = 5672;
                     ro.VirtualHost = "/";
                 });
+
+                x.UseDashboard(opt => { opt.PathMatch = "/cap"; });
             });
 
             services.AddScoped<IGigManagementContext>(provider => provider.GetService<GigManagementContext>());

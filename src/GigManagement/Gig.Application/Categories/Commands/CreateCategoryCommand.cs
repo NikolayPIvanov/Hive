@@ -65,7 +65,7 @@ namespace Hive.Gig.Application.Categories.Commands
             _context.Categories.Add(category);
             await _context.SaveChangesAsync(cancellationToken);
             
-            var categoryCreatedEvent = new CategoryCreatedIntegrationEvent(category.Id, category.Title);
+            var categoryCreatedEvent = new CategoryCreated(category.Id, category.Title);
             await _eventPublisher.Publish(categoryCreatedEvent);
             
             return category.Id;
