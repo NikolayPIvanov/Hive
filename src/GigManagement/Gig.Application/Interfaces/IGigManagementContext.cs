@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Data;
+using System.Threading;
 using System.Threading.Tasks;
 using Hive.Gig.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -18,7 +19,7 @@ namespace Hive.Gig.Application.Interfaces
         DbSet<Tag> Tags { get; set; }
         
         DbSet<Question> Questions { get; set; }
-
+        
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
 }

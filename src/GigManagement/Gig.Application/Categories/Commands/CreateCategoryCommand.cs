@@ -1,6 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
+using Gig.Contracts.IntegrationEvents;
 using Hive.Gig.Application.Interfaces;
 using Hive.Gig.Domain.Entities;
 using MediatR;
@@ -49,18 +50,24 @@ namespace Hive.Gig.Application.Categories.Commands
     public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, int>
     {
         private readonly IGigManagementContext _context;
+        private readonly IIntegrationEventPublisher _eventPublisher;
 
-        public CreateCategoryCommandHandler(IGigManagementContext context)
+        public CreateCategoryCommandHandler(IGigManagementContext context, IIntegrationEventPublisher eventPublisher)
         {
             _context = context;
+            _eventPublisher = eventPublisher;
         }
         
         public async Task<int> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
         {
             var category = new Category(request.Title, request.ParentId);
+            
             _context.Categories.Add(category);
             await _context.SaveChangesAsync(cancellationToken);
-
+            
+            var categoryCreatedEvent = new CategoryCreatedIntegrationEvent(category.Id, category.Title);
+            await _eventPublisher.Publish(categoryCreatedEvent);
+            
             return category.Id;
         }
     }
