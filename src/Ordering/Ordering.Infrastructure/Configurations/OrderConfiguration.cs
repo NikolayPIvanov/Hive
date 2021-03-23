@@ -13,7 +13,7 @@ namespace Ordering.Infrastructure.Configurations
             // builder.Property(o => o.OrderedById).IsRequired();
             // builder.Property(o => o.IsCanceled).HasDefaultValue(false).IsRequired();
             // builder.Property(o => o.OfferedById).IsRequired();
-            builder.Property(o => o.UnitAmount)
+            builder.Property(o => o.UnitPrice)
                 .HasColumnType("decimal(18,2)")
                 .IsRequired();
 

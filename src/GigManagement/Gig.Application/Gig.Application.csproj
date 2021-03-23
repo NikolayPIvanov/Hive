@@ -16,7 +16,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Common\Common.Applicatin\Common.Applicatin.csproj" />
+      <ProjectReference Include="..\..\Common\Common.Application\Common.Application.csproj" />
       <ProjectReference Include="..\Gig.Contracts\Gig.Contracts.csproj" />
       <ProjectReference Include="..\Gig.Domain\Gig.Domain.csproj" />
     </ItemGroup>

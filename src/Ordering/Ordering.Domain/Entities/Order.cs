@@ -10,12 +10,13 @@ namespace Ordering.Domain.Entities
         {
             OrderNumber = Guid.NewGuid();
             OrderedAt = DateTime.UtcNow;
-            Status = OrderStatus.Pending;
+            Status = OrderStatus.InValidation;
+            IsClosed = false;
         }
         
         public Order(decimal price, string requirements, int gigId, int packageId, string userId, int sellerId) : this()
         {
-            UnitAmount = price;
+            UnitPrice = price;
             GigId = gigId;
             PackageId = packageId;
             OrderedBy = userId;
@@ -31,7 +32,9 @@ namespace Ordering.Domain.Entities
         public string OrderedBy { get; private init; }
         
         public OrderStatus Status { get; set; }
-        public decimal UnitAmount { get; set; }
+        public decimal UnitPrice { get; set; }
+
+        public bool IsClosed { get; set; }
         
         public int GigId { get; private init; }
         public int PackageId { get; private init; }

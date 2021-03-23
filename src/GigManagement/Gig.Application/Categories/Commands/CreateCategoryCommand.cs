@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using FluentValidation;
 using Gig.Contracts.IntegrationEvents;
+using Hive.Common.Application.Publisher;
 using Hive.Gig.Application.Interfaces;
 using Hive.Gig.Domain.Entities;
 using MediatR;

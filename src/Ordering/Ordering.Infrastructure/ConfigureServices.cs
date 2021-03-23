@@ -1,7 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Hive.Common.Application.Publisher;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Ordering.Application.Interfaces;
+using Ordering.Infrastructure.MessageBroker;
 using Ordering.Infrastructure.Persistence;
 
 namespace Ordering.Infrastructure
@@ -47,7 +49,7 @@ namespace Ordering.Infrastructure
             });
 
             services.AddScoped<IOrderingContext>(provider => provider.GetService<OrderingContext>());
-            //services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
+            services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
 
             return services;
         }

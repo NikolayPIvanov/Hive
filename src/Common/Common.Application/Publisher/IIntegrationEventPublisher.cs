@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using Gig.Contracts.IntegrationEvents;
+using Hive.Common.Domain;
 
-namespace Hive.Gig.Application.Interfaces
+namespace Hive.Common.Application.Publisher
 {
     public interface IIntegrationEventPublisher
     {

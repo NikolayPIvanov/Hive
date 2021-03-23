@@ -1,4 +1,5 @@
-﻿using Hive.Gig.Application.Interfaces;
+﻿using Hive.Common.Application.Publisher;
+using Hive.Gig.Application.Interfaces;
 using Hive.Gig.Infrastructure.MessageBroker;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

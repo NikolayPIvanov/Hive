@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Gig.Contracts.IntegrationEvents
+namespace Hive.Common.Domain
 {
     public record IntegrationEvent
     {

@@ -1,4 +1,6 @@
-﻿namespace Gig.Contracts.IntegrationEvents
+﻿using Hive.Common.Domain;
+
+namespace Gig.Contracts.IntegrationEvents
 {
     public record CategoryCreated(int CategoryId, string Title) 
         : IntegrationEvent(nameof(CategoryCreated));
@@ -7,5 +9,5 @@
         : IntegrationEvent(nameof(CategoryUpdated));
 
     public record CategoryDelete(int CategoryId, string Title)
-    : IntegrationEvent(nameof(CategoryUpdated));
+        : IntegrationEvent(nameof(CategoryUpdated));
 }

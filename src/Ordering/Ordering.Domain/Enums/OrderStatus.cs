@@ -2,6 +2,7 @@
 {
     public enum OrderStatus
     {
+        InValidation,
         Pending,
         Canceled,
         Accepted,
