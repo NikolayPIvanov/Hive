@@ -1,5 +1,6 @@
 ﻿using System;
 using Hive.Common.Domain;
+using Ordering.Domain.Enums;
 
 namespace Ordering.Domain.Entities
 {
@@ -9,25 +10,32 @@ namespace Ordering.Domain.Entities
         {
             OrderNumber = Guid.NewGuid();
             OrderedAt = DateTime.UtcNow;
+            Status = OrderStatus.Pending;
         }
         
-        public Order(decimal price, int gigId, int packageId) : this()
+        public Order(decimal price, string requirements, int gigId, int packageId, string userId, int sellerId) : this()
         {
             UnitAmount = price;
+            GigId = gigId;
+            PackageId = packageId;
+            OrderedBy = userId;
+            SellerId = sellerId;
+            Requirement = new Requirement(requirements);
         }
         
         public int Id { get; set; }
         
         public Guid OrderNumber { get; private init; }
         public DateTime OrderedAt { get; private init; }
-        public decimal UnitAmount { get; private init; }
+        public int SellerId { get; private init; }
+        public string OrderedBy { get; private init; }
         
-        public int GigId { get; set; }
+        public OrderStatus Status { get; set; }
+        public decimal UnitAmount { get; set; }
         
-        public int PackageId { get; set; }
-        
-        public int RequirementId { get; set; }
-        
-        public Requirement Requirement { get; set; }
+        public int GigId { get; private init; }
+        public int PackageId { get; private init; }
+        public int RequirementId { get; private init; }
+        public Requirement Requirement { get; private init; }
     }
 }
