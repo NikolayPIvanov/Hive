@@ -16,6 +16,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\GigManagement\Gig.Infrastructure\Gig.Infrastructure.csproj" />
+      <ProjectReference Include="..\Ordering\Ordering.Infrastructure\Ordering.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>
