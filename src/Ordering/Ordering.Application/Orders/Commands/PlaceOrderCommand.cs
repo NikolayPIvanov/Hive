@@ -38,7 +38,6 @@ namespace Ordering.Application.Orders.Commands
             var order = new Order(request.UnitPrice, request.Requirements, request.GigId, request.PackageId,
                 request.OrderedBy, request.SellerId);
             
-            // TODO: send validation integration event
             var orderCreated = new OrderCreatedIntegrationEvent(order.OrderNumber, order.UnitPrice, order.OrderedBy,
                 order.SellerId, order.GigId, order.PackageId);
             await _publisher.Publish(orderCreated);
