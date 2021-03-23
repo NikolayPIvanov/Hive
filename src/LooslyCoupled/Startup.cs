@@ -13,6 +13,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Ordering.Application;
 using Ordering.Infrastructure;
 
 namespace LooslyCoupled
@@ -32,6 +33,7 @@ namespace LooslyCoupled
             services.AddGigsInfrastructure(Configuration);
             services.AddGigsManagement(Configuration);
 
+            services.AddOrderingApp(Configuration);
             services.AddOrdering(Configuration);
             
             services.AddControllers();
