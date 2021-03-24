@@ -1,6 +1,5 @@
 ﻿using System;
 using Hive.Common.Domain;
-using Ordering.Domain.Enums;
 
 namespace Ordering.Domain.Entities
 {
@@ -10,7 +9,7 @@ namespace Ordering.Domain.Entities
         {
             OrderNumber = Guid.NewGuid();
             OrderedAt = DateTime.UtcNow;
-            Status = OrderStatus.InValidation;
+            Status = new OrderStatus(null);
             IsClosed = false;
         }
         
@@ -31,10 +30,11 @@ namespace Ordering.Domain.Entities
         public int SellerId { get; private init; }
         public string OrderedBy { get; private init; }
         
-        public OrderStatus Status { get; set; }
         public decimal UnitPrice { get; set; }
-
         public bool IsClosed { get; set; }
+
+        public int OrderStatusId { get; set; }
+        public OrderStatus Status { get; set; }
         
         public int GigId { get; private init; }
         public int PackageId { get; private init; }

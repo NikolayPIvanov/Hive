@@ -20,6 +20,7 @@ namespace Hive.Gig.Application
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PerformanceBehaviour<,>));
 
             services.AddIntegrationEvents();
+            
 
             return services;
         }

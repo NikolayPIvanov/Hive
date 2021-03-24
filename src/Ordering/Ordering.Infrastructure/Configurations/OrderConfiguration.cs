@@ -8,11 +8,8 @@ namespace Ordering.Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<Order> builder)
         {
-            builder.HasIndex(o => o.OrderNumber).IsUnique();
+            builder.HasIndex(o => o.OrderNumber).IsUnique().IsClustered();
             builder.Property(o => o.OrderedAt).IsRequired();
-            // builder.Property(o => o.OrderedById).IsRequired();
-            // builder.Property(o => o.IsCanceled).HasDefaultValue(false).IsRequired();
-            // builder.Property(o => o.OfferedById).IsRequired();
             builder.Property(o => o.UnitPrice)
                 .HasColumnType("decimal(18,2)")
                 .IsRequired();

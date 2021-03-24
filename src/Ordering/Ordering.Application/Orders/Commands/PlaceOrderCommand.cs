@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentValidation;
 using Hive.Common.Application.Publisher;
 using MediatR;
 using Ordering.Application.Interfaces;
@@ -9,18 +10,36 @@ using Ordering.Domain.Entities;
 
 namespace Ordering.Application.Orders.Commands
 {
-    public record PlaceOrderCommand : IRequest<Guid>
+    public record PlaceOrderCommand(string OrderedBy, decimal UnitPrice, string Requirements,
+            int SellerId, int GigId, int PackageId) : IRequest<Guid>;
+
+    public class PlaceOrderCommandValidator : AbstractValidator<PlaceOrderCommand>
     {
-        public string OrderedBy { get; init; } 
-        public decimal UnitPrice { get; init; }
-        public string Requirements { get; init; }
-        
-        public int SellerId { get; init; }
-        public int GigId { get; init; }
-        public int PackageId { get; init; }
+        public PlaceOrderCommandValidator()
+        {
+            RuleFor(x => x.OrderedBy)
+                .NotEmpty().WithMessage("A {PropertyName} must be provided");
+            
+            RuleFor(x => x.Requirements)
+                .NotEmpty().WithMessage("A {PropertyName} must be provided");
+
+            RuleFor(x => x.UnitPrice)
+                .GreaterThan(0.0m).WithMessage("{PropertyName} cannot be below {ComparisonValue}.")
+                .NotNull().WithMessage("A {PropertyName} must be provided");
+            
+            RuleFor(x => x.SellerId)
+                .GreaterThan(0).WithMessage("{PropertyName} cannot be below {ComparisonValue}.")
+                .NotNull().WithMessage("A {PropertyName} must be provided");
+            
+            RuleFor(x => x.GigId)
+                .GreaterThan(0).WithMessage("{PropertyName} cannot be below {ComparisonValue}.")
+                .NotNull().WithMessage("A {PropertyName} must be provided");
+            
+            RuleFor(x => x.PackageId)
+                .GreaterThan(0).WithMessage("{PropertyName} cannot be below {ComparisonValue}.")
+                .NotNull().WithMessage("A {PropertyName} must be provided");
+        }
     }
-    
-    // TODO: Place basic validation
     
     public class PlaceOrderCommandHandler : IRequestHandler<PlaceOrderCommand, Guid>
     {

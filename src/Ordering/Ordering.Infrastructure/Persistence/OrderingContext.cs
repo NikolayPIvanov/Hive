@@ -17,6 +17,7 @@ namespace Ordering.Infrastructure.Persistence
         public string Schema => DefaultSchema;
         
         public DbSet<Order> Orders { get; set; }
+        public DbSet<OrderStatus> OrderStatus { get; set; }
         public DbSet<Requirement> Requirements { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)

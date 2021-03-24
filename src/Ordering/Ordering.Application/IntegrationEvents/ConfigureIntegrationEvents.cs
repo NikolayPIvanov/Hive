@@ -3,7 +3,7 @@ using DotNetCore.CAP;
 using Hive.Common.Application;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Hive.Gig.Application.IntegrationEvents
+namespace Ordering.Application.IntegrationEvents
 {
     public static class ConfigureIntegrationEvents
     {

@@ -4,6 +4,7 @@ using Hive.Common.Application.Behaviours;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Ordering.Application.IntegrationEvents;
 
 namespace Ordering.Application
 {
@@ -18,6 +19,8 @@ namespace Ordering.Application
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PerformanceBehaviour<,>));
 
+            services.AddIntegrationEvents();
+            
             return services;
         }
     }
