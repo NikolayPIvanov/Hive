@@ -38,7 +38,7 @@ namespace Ordering.Application.Orders.Commands
                 throw new NotFoundException(nameof(Order), request.OrderNumber);
             }
             
-            var state = new State(OrderState.Accepted, "Order declined by seller");
+            var state = new State(OrderState.Declined, "Order declined by seller");
             order.OrderStates.Add(state);
 
             await _context.SaveChangesAsync(cancellationToken);
