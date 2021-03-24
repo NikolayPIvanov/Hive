@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Ordering.Infrastructure.Persistence;
 
 namespace Ordering.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(OrderingContext))]
-    partial class OrderingContextModelSnapshot : ModelSnapshot
+    [Migration("20210324171122_AddingResolution")]
+    partial class AddingResolution
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -45,6 +47,9 @@ namespace Ordering.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("OrderNumber")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<int>("OrderStatusId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("OrderedAt")
                         .HasColumnType("datetime2");
 
@@ -75,6 +80,39 @@ namespace Ordering.Infrastructure.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("Orders");
+                });
+
+            modelBuilder.Entity("Ordering.Domain.Entities.OrderStatus", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Reason")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId")
+                        .IsUnique();
+
+                    b.ToTable("OrderStatus");
                 });
 
             modelBuilder.Entity("Ordering.Domain.Entities.Requirement", b =>
@@ -136,39 +174,7 @@ namespace Ordering.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Resolutions");
-                });
-
-            modelBuilder.Entity("Ordering.Domain.Entities.State", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("OrderId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("OrderState")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Reason")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OrderId");
-
-                    b.ToTable("OrderStates");
+                    b.ToTable("Resolution");
                 });
 
             modelBuilder.Entity("Ordering.Domain.Entities.Order", b =>
@@ -182,6 +188,17 @@ namespace Ordering.Infrastructure.Persistence.Migrations
                     b.Navigation("Resolution");
                 });
 
+            modelBuilder.Entity("Ordering.Domain.Entities.OrderStatus", b =>
+                {
+                    b.HasOne("Ordering.Domain.Entities.Order", "Order")
+                        .WithOne("Status")
+                        .HasForeignKey("Ordering.Domain.Entities.OrderStatus", "OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Order");
+                });
+
             modelBuilder.Entity("Ordering.Domain.Entities.Requirement", b =>
                 {
                     b.HasOne("Ordering.Domain.Entities.Order", "Order")
@@ -193,22 +210,11 @@ namespace Ordering.Infrastructure.Persistence.Migrations
                     b.Navigation("Order");
                 });
 
-            modelBuilder.Entity("Ordering.Domain.Entities.State", b =>
-                {
-                    b.HasOne("Ordering.Domain.Entities.Order", "Order")
-                        .WithMany("OrderStates")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Order");
-                });
-
             modelBuilder.Entity("Ordering.Domain.Entities.Order", b =>
                 {
-                    b.Navigation("OrderStates");
-
                     b.Navigation("Requirement");
+
+                    b.Navigation("Status");
                 });
 
             modelBuilder.Entity("Ordering.Domain.Entities.Resolution", b =>

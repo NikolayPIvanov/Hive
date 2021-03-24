@@ -28,7 +28,7 @@ namespace Ordering.Application.Orders.Queries
         {
             var order = await _context.Orders
                 .Include(o => o.Requirement)
-                .Include(o => o.Status)
+                .Include(o => o.OrderStates)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(o => o.OrderNumber == request.OrderNumber, cancellationToken: cancellationToken);
 

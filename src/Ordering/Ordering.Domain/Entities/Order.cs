@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using Hive.Common.Domain;
+using Ordering.Domain.Enums;
 
 namespace Ordering.Domain.Entities
 {
@@ -9,7 +11,7 @@ namespace Ordering.Domain.Entities
         {
             OrderNumber = Guid.NewGuid();
             OrderedAt = DateTime.UtcNow;
-            Status = new OrderStatus(null);
+            OrderStates = new HashSet<State> {State.Initial()};
             IsClosed = false;
         }
         
@@ -32,13 +34,16 @@ namespace Ordering.Domain.Entities
         
         public decimal UnitPrice { get; set; }
         public bool IsClosed { get; set; }
-
-        public int OrderStatusId { get; set; }
-        public OrderStatus Status { get; set; }
         
         public int GigId { get; private init; }
         public int PackageId { get; private init; }
         public int RequirementId { get; private init; }
         public Requirement Requirement { get; private init; }
+        
+        public int ResolutionId { get; set; }
+        
+        public Resolution Resolution { get; set; }
+        
+        public ICollection<State> OrderStates { get; set; }
     }
 }

@@ -5,6 +5,7 @@ using DotNetCore.CAP;
 using Gig.Contracts.IntegrationEvents;
 using Microsoft.EntityFrameworkCore;
 using Ordering.Application.Interfaces;
+using Ordering.Domain.Entities;
 using Ordering.Domain.Enums;
 
 namespace Ordering.Application.IntegrationEvents.EventHandlers
@@ -25,14 +26,14 @@ namespace Ordering.Application.IntegrationEvents.EventHandlers
                 .Select(o => new
                 {
                     o.OrderNumber,
-                    o.Status
+                    o.OrderStates
                 })
                 .FirstOrDefaultAsync(o => o.OrderNumber == @event.OrderNumber);
 
-            orderStatus.Status.Status = OrderStatus.Pending;
-            orderStatus.Status.Reason = "Waiting for seller to review order";
-
-            _context.OrderStatus.Update(orderStatus.Status);
+            var reason = "Waiting for seller to review order";
+            var state = new State(OrderState.Pending, reason);
+            orderStatus.OrderStates.Add(state);
+            
             await _context.SaveChangesAsync(new CancellationToken());
         }
     }

@@ -8,7 +8,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Ordering.Application.Interfaces;
 using Ordering.Domain.Entities;
-using OrderStatus = Ordering.Domain.Enums.OrderStatus;
+using Ordering.Domain.Enums;
 
 namespace Ordering.Application.Orders.Commands
 {
@@ -38,7 +38,7 @@ namespace Ordering.Application.Orders.Commands
                 .Select(x => new
                 {
                     x.OrderNumber,
-                    x.Status
+                    x.OrderStates
                 })
                 .FirstOrDefaultAsync(o => o.OrderNumber == request.OrderNumber, cancellationToken);
 
@@ -49,8 +49,8 @@ namespace Ordering.Application.Orders.Commands
             
             // TODO: V2: Check if order is in progress and compensate the seller a given amount.
 
-            order.Status.Status = OrderStatus.Canceled;
-            order.Status.Reason = request.Reason;
+            var state = new State(OrderState.Canceled, "Order canceled by user");
+            order.OrderStates.Add(state);
 
             await _context.SaveChangesAsync(cancellationToken);
             

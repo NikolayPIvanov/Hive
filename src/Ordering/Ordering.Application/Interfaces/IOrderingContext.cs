@@ -10,9 +10,11 @@ namespace Ordering.Application.Interfaces
         public string Schema { get; }
         DbSet<Order> Orders { get; set; }
         
-        DbSet<OrderStatus> OrderStatus { get; set; }
+        DbSet<State> OrderStates { get; set; }
 
         DbSet<Requirement> Requirements { get; set; }
+        
+        DbSet<Resolution> Resolutions { get; set; }
         
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }

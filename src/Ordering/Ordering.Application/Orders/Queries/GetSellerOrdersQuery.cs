@@ -29,7 +29,7 @@ namespace Ordering.Application.Orders.Queries
         {
             var orders = await _context.Orders
                 .Include(o => o.Requirement)
-                .Include(o => o.Status)
+                .Include(o => o.OrderStates)
                 .Where(o => o.SellerId == request.SellerId)
                 .AsNoTracking()
                 .ProjectToListAsync<OrderDto>(_mapper.ConfigurationProvider);

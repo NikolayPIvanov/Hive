@@ -1,23 +1,27 @@
 ﻿using Hive.Common.Domain;
+using Ordering.Domain.Enums;
 
 namespace Ordering.Domain.Entities
 {
-    public class OrderStatus : AuditableEntity
+    public class State : AuditableEntity
     {
-        private OrderStatus()
+        private State()
         {
-            Status = Enums.OrderStatus.InValidation;
+            OrderState = OrderState.InValidation;
             Reason ??= "Validating Order";
         }
 
-        public OrderStatus(string? reason) : this()
+        public State(OrderState state, string reason) : this()
         {
+            OrderState = state;
             Reason = reason;
         }
+
+        public static State Initial() => new();
         
         public int Id { get; set; }
 
-        public Enums.OrderStatus Status { get; set; }
+        public OrderState OrderState { get; set; }
 
         public string? Reason { get; set; }
 

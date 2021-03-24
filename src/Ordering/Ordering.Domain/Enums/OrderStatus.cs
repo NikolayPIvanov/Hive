@@ -1,8 +1,9 @@
 ﻿namespace Ordering.Domain.Enums
 {
-    public enum OrderStatus
+    public enum OrderState
     {
         InValidation,
+        Invalid,
         Pending,
         Canceled,
         Accepted,

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Hive.Common.Application.Exceptions;
@@ -6,7 +7,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Ordering.Application.Interfaces;
 using Ordering.Domain.Entities;
-using OrderStatus = Ordering.Domain.Enums.OrderStatus;
+using Ordering.Domain.Enums;
 
 namespace Ordering.Application.Orders.Commands
 {
@@ -25,7 +26,11 @@ namespace Ordering.Application.Orders.Commands
         public async Task<Unit> Handle(DeclineOrderCommand request, CancellationToken cancellationToken)
         {
             var order = await _context.Orders
-                .Include(o => o.Status)
+                .Select(x => new
+                {
+                    x.OrderNumber,
+                    x.OrderStates
+                })
                 .FirstOrDefaultAsync(o => o.OrderNumber == request.OrderNumber, cancellationToken: cancellationToken);
 
             if (order is null)
@@ -33,8 +38,8 @@ namespace Ordering.Application.Orders.Commands
                 throw new NotFoundException(nameof(Order), request.OrderNumber);
             }
             
-            order.Status.Status = OrderStatus.Declined;
-            order.Status.Reason = "Order declined by seller";
+            var state = new State(OrderState.Accepted, "Order declined by seller");
+            order.OrderStates.Add(state);
 
             await _context.SaveChangesAsync(cancellationToken);
             return Unit.Value;

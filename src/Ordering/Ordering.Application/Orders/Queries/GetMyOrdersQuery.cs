@@ -30,7 +30,7 @@ namespace Ordering.Application.Orders.Queries
             var userId = "test";
             return await _context.Orders
                 .Include(o => o.Requirement)
-                .Include(o => o.Status)
+                .Include(o => o.OrderStates)
                 .Where(o => o.OrderedBy == userId)
                 .AsNoTracking()
                 .ProjectToListAsync<OrderDto>(_mapper.ConfigurationProvider);

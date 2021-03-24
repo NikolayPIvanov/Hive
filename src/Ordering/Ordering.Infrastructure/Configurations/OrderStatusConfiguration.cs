@@ -4,13 +4,13 @@ using Ordering.Domain.Entities;
 
 namespace Ordering.Infrastructure.Configurations
 {
-    public class OrderStatusConfiguration : IEntityTypeConfiguration<OrderStatus>
+    public class OrderStatusConfiguration : IEntityTypeConfiguration<State>
     {
-        public void Configure(EntityTypeBuilder<OrderStatus> builder)
+        public void Configure(EntityTypeBuilder<State> builder)
         {
             builder.HasOne(s => s.Order)
-                .WithOne(o => o.Status)
-                .HasForeignKey<OrderStatus>(s => s.OrderId);
+                .WithMany(o => o.OrderStates)
+                .HasForeignKey(s => s.OrderId);
         }
     }
 }

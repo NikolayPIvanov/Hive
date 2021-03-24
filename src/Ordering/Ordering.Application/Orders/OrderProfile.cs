@@ -8,13 +8,8 @@ namespace Ordering.Application.Orders
     {
         public OrderProfile()
         {
-            CreateMap<Order, OrderDto>()
-                .AfterMap((order, dto) =>
-                {
-                    dto.Status = order.Status.Status.ToString();
-                    dto.Reason = order.Status.Reason;
-                    dto.Requirements = order.Requirement.Details;
-                });
+            CreateMap<Order, OrderDto>();
+            CreateMap<State, StateDto>(MemberList.Destination);
         }
     }
 }

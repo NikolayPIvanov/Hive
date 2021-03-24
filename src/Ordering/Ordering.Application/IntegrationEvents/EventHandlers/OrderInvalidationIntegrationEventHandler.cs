@@ -5,6 +5,8 @@ using DotNetCore.CAP;
 using Gig.Contracts.IntegrationEvents;
 using Microsoft.EntityFrameworkCore;
 using Ordering.Application.Interfaces;
+using Ordering.Domain.Entities;
+using Ordering.Domain.Enums;
 
 namespace Ordering.Application.IntegrationEvents.EventHandlers
 {
@@ -24,13 +26,13 @@ namespace Ordering.Application.IntegrationEvents.EventHandlers
                 .Select(o => new
                 {
                     o.OrderNumber,
-                    o.Status
+                    o.OrderStates
                 })
                 .FirstOrDefaultAsync(o => o.OrderNumber == @event.OrderNumber);
 
-            orderStatus.Status.Reason = @event.Reason;
+            var state = new State(OrderState.Invalid, @event.Reason);
+            orderStatus.OrderStates.Add(state);
 
-            _context.OrderStatus.Update(orderStatus.Status);
             await _context.SaveChangesAsync(new CancellationToken());
         }
     }
