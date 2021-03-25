@@ -5,15 +5,18 @@ namespace Billing.Domain
 {
     public class Transaction : AuditableEntity
     {
-        public Transaction(decimal amount, Guid orderNumber, Guid accountId, Guid paymentMethodId)
+        public Transaction(TransactionType type, decimal amount, Guid orderNumber, Guid accountId, Guid paymentMethodId)
         {
             Amount = amount;
             OrderNumber = orderNumber;
             AccountId = accountId;
             PaymentMethodId = paymentMethodId;
+            TransactionType = type;
         }
         
         public Guid Id { get; set; }
+
+        public TransactionType TransactionType { get; set; }
 
         public decimal Amount { get; set; }
 
