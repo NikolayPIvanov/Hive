@@ -53,6 +53,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Billing.Domain", "src\Billi
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Billing.Application", "src\Billing\Billing.Application\Billing.Application.csproj", "{ACE84E12-9669-43D0-9436-8B27E28711B3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Billing.Infrastructure", "src\Billing\Billing.Infrastructure\Billing.Infrastructure.csproj", "{376D57F7-41D6-4308-8813-3BE621C4D938}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -123,6 +125,10 @@ Global
 		{ACE84E12-9669-43D0-9436-8B27E28711B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{ACE84E12-9669-43D0-9436-8B27E28711B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{ACE84E12-9669-43D0-9436-8B27E28711B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{376D57F7-41D6-4308-8813-3BE621C4D938}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{376D57F7-41D6-4308-8813-3BE621C4D938}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{376D57F7-41D6-4308-8813-3BE621C4D938}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{376D57F7-41D6-4308-8813-3BE621C4D938}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -148,6 +154,7 @@ Global
 		{0C0C3FD3-1C83-490B-BCAB-193B4D434F72} = {6ED356A7-8B47-4613-AD01-C85CF28491BD}
 		{FBDFFF93-67BF-4F47-9A24-0700B13D83C2} = {0C0C3FD3-1C83-490B-BCAB-193B4D434F72}
 		{ACE84E12-9669-43D0-9436-8B27E28711B3} = {0C0C3FD3-1C83-490B-BCAB-193B4D434F72}
+		{376D57F7-41D6-4308-8813-3BE621C4D938} = {0C0C3FD3-1C83-490B-BCAB-193B4D434F72}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3CB609D9-5D54-4C11-A371-DAAC8B74E430}
