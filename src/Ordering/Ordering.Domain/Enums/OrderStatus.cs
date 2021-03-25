@@ -2,7 +2,9 @@
 {
     public enum OrderState
     {
-        InValidation,
+        Validation,
+        OrderValid,
+        UserBalanceValid,
         Invalid,
         Pending,
         Canceled,

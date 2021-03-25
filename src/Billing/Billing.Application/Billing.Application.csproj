@@ -5,11 +5,15 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <PackageReference Include="DotNetCore.CAP" Version="5.0.0-preview-132888327" />
       <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.4" />
     </ItemGroup>
 
     <ItemGroup>
         <ProjectReference Include="..\..\Common\Common.Application\Common.Application.csproj" />
+        <ProjectReference Include="..\..\GigManagement\Gig.Contracts\Gig.Contracts.csproj" />
+        <ProjectReference Include="..\..\Ordering\Ordering.Contracts\Ordering.Contracts.csproj" />
+        <ProjectReference Include="..\Billing.Contracts\Billing.Contracts.csproj" />
         <ProjectReference Include="..\Billing.Domain\Billing.Domain.csproj" />
     </ItemGroup>
 

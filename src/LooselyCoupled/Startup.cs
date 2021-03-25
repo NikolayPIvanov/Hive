@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Billing.Infrastructure;
 using Hive.Gig.Application;
 using Hive.Gig.Infrastructure;
 using Microsoft.AspNetCore.Builder;
@@ -35,6 +36,8 @@ namespace Hive.LooselyCoupled
 
             services.AddOrderingApp(Configuration);
             services.AddOrdering(Configuration);
+
+            services.AddBilling(Configuration);
             
             services.AddControllers();
             services.AddSwaggerGen(c =>

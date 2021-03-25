@@ -55,7 +55,7 @@ namespace Hive.Gig.Application.IntegrationEvents
                 return;
             }
 
-            var confirmationEvent = new OrderConfirmationIntegrationEvent(@event.OrderNumber);
+            var confirmationEvent = new OrderDataConfirmationIntegrationEvent(@event.OrderNumber, "Order details are valid.");
             await _publisher.Publish(confirmationEvent);
         }
     }

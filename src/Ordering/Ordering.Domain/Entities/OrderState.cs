@@ -7,7 +7,7 @@ namespace Ordering.Domain.Entities
     {
         private State()
         {
-            OrderState = OrderState.InValidation;
+            OrderState = OrderState.Validation;
             Reason ??= "Validating Order";
         }
 

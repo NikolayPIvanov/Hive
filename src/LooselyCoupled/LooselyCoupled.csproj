@@ -17,6 +17,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Billing\Billing.Infrastructure\Billing.Infrastructure.csproj" />
       <ProjectReference Include="..\GigManagement\Gig.Infrastructure\Gig.Infrastructure.csproj" />
       <ProjectReference Include="..\Ordering\Ordering.Infrastructure\Ordering.Infrastructure.csproj" />
     </ItemGroup>

@@ -3,6 +3,6 @@ using Hive.Common.Domain;
 
 namespace Gig.Contracts.IntegrationEvents
 {
-    public record OrderConfirmationIntegrationEvent(Guid OrderNumber) :
-        IntegrationEvent(nameof(OrderConfirmationIntegrationEvent));
+    public record OrderDataConfirmationIntegrationEvent(Guid OrderNumber, string Reason) :
+        IntegrationEvent(nameof(OrderDataConfirmationIntegrationEvent));
 }
