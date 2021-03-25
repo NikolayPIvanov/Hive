@@ -1,8 +1,4 @@
-using Hive.Infrastructure.Identity;
-using Hive.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -23,20 +19,20 @@ namespace Hive.WebUI
 
                 try
                 {
-                    var context = services.GetRequiredService<ApplicationDbContext>();
+                    //var context = services.GetRequiredService<ApplicationDbContext>();
 
-                    if (context.Database.IsSqlServer())
-                    {
-                        context.Database.Migrate();
-                    }                   
-
-                    var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-                    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
+                    // if (context.Database.IsSqlServer())
+                    // {
+                    //     context.Database.Migrate();
+                    // }                   
+                    //
+                    // var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
+                    // var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
                     //await ApplicationDbContextSeed.SeedDefaultUserAsync(userManager, roleManager);
                     //await ApplicationDbContextSeed.SeedSampleDataAsync(context);
 
-                    await ApplicationDbContextSeed.Seed(context);
+                    //await ApplicationDbContextSeed.Seed(context);
                 }
                 catch (Exception ex)
                 {

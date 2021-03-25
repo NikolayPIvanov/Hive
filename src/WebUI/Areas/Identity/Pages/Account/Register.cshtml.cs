@@ -6,8 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Hive.Application.Sellers.Commands.CreateSeller;
-using Hive.Application.UserProfiles.Commands.CreateUserProfile;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Hive.Infrastructure.Identity;
@@ -99,13 +97,6 @@ namespace Hive.WebUI.Areas.Identity.Pages.Account
             if (result.Succeeded)
             {
                 _logger.LogInformation("User created a new account with password.");
-
-                var userProfileId = await _mediator.Send(new CreateUserProfileCommand {UserId = user.Id});
-                
-                if (Input.AccountType == AccountType.Seller)
-                {
-                    await _mediator.Send(new CreateSellerCommand.Command(user.Id, userProfileId));
-                }
 
                 var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));

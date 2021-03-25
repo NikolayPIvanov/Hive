@@ -1,9 +1,4 @@
-using Hive.Application;
-using Hive.Application.Common.Interfaces;
 using Hive.Infrastructure;
-using Hive.Infrastructure.Persistence;
-using Hive.WebUI.Filters;
-using Hive.WebUI.Services;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -30,22 +25,20 @@ namespace Hive.WebUI
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddApplication();
-            services.AddInfrastructure(Configuration);
+            //services.AddApplication();
+            //services.AddInfrastructure(Configuration);
 
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddSingleton<ICurrentUserService, CurrentUserService>();
+            //services.AddSingleton<ICurrentUserService, CurrentUserService>();
 
             services.AddHttpContextAccessor();
 
-            services.AddHealthChecks()
-                .AddDbContextCheck<ApplicationDbContext>();
 
             services.AddControllersWithViews(options  =>
                 {
                     options.AllowEmptyInputInBodyModelBinding = true;
-                    options.Filters.Add<ApiExceptionFilterAttribute>();
+                    //options.Filters.Add<ApiExceptionFilterAttribute>();
                 })
                 .AddFluentValidation();
 

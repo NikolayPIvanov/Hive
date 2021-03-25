@@ -22,6 +22,7 @@
 
   <ItemGroup>
     <Folder Include="Files\Maps" />
+    <Folder Include="Persistence\Configurations" />
   </ItemGroup>
 
 </Project>

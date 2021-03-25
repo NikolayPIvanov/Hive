@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using Hive.Common.Domain;
-using Ordering.Domain.Enums;
 
 namespace Ordering.Domain.Entities
 {
