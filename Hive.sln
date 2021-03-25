@@ -57,6 +57,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Billing.Infrastructure", "s
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Billing.Contracts", "src\Billing\Billing.Contracts\Billing.Contracts.csproj", "{82A4459B-968A-48AE-80D2-940DB629AD83}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Identity", "Identity", "{A631BEB6-EA6F-4DD4-B4FD-C7686C6CEDC1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hive.Identity", "src\Identity\Hive.Identity\Hive.Identity.csproj", "{D470BC56-5BFF-4918-9C52-7325200C665B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -135,6 +139,10 @@ Global
 		{82A4459B-968A-48AE-80D2-940DB629AD83}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{82A4459B-968A-48AE-80D2-940DB629AD83}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{82A4459B-968A-48AE-80D2-940DB629AD83}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D470BC56-5BFF-4918-9C52-7325200C665B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D470BC56-5BFF-4918-9C52-7325200C665B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D470BC56-5BFF-4918-9C52-7325200C665B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D470BC56-5BFF-4918-9C52-7325200C665B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -162,6 +170,8 @@ Global
 		{ACE84E12-9669-43D0-9436-8B27E28711B3} = {0C0C3FD3-1C83-490B-BCAB-193B4D434F72}
 		{376D57F7-41D6-4308-8813-3BE621C4D938} = {0C0C3FD3-1C83-490B-BCAB-193B4D434F72}
 		{82A4459B-968A-48AE-80D2-940DB629AD83} = {0C0C3FD3-1C83-490B-BCAB-193B4D434F72}
+		{A631BEB6-EA6F-4DD4-B4FD-C7686C6CEDC1} = {6ED356A7-8B47-4613-AD01-C85CF28491BD}
+		{D470BC56-5BFF-4918-9C52-7325200C665B} = {A631BEB6-EA6F-4DD4-B4FD-C7686C6CEDC1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3CB609D9-5D54-4C11-A371-DAAC8B74E430}

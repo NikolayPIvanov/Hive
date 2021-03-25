@@ -105,6 +105,7 @@ namespace Hive.WebUI
             app.UseAuthentication();
             app.UseIdentityServer();
             app.UseAuthorization();
+            
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(

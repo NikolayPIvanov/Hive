@@ -23,8 +23,4 @@
       <ProjectReference Include="..\Ordering.Domain\Ordering.Domain.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Resolutions\Commands" />
-    </ItemGroup>
-
 </Project>

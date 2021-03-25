@@ -7,7 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.0" NoWarn="NU1605" />
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.4" NoWarn="NU1605" />
         <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="5.0.0" NoWarn="NU1605" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.4">
           <PrivateAssets>all</PrivateAssets>
@@ -19,6 +19,7 @@
     <ItemGroup>
       <ProjectReference Include="..\Billing\Billing.Infrastructure\Billing.Infrastructure.csproj" />
       <ProjectReference Include="..\GigManagement\Gig.Infrastructure\Gig.Infrastructure.csproj" />
+      <ProjectReference Include="..\Identity\Identity.Infrastructure\Identity.Infrastructure.csproj" />
       <ProjectReference Include="..\Ordering\Ordering.Infrastructure\Ordering.Infrastructure.csproj" />
     </ItemGroup>
 
