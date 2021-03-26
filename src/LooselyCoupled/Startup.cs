@@ -1,19 +1,14 @@
-using System;
-using System.Collections.Generic;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
-using System.Threading.Tasks;
 using Billing.Infrastructure;
 using Hive.Gig.Application;
 using Hive.Gig.Infrastructure;
+using IdentityServer4.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Ordering.Application;
@@ -35,12 +30,12 @@ namespace Hive.LooselyCoupled
         {
             services.AddGigsInfrastructure(Configuration);
             services.AddGigsManagement(Configuration);
-
             services.AddOrderingApp(Configuration);
             services.AddOrdering(Configuration);
-
             services.AddBilling(Configuration);
             
+            services.AddHttpContextAccessor();
+
             services.AddControllers();
             
             services.AddAuthentication("Bearer")
@@ -59,33 +54,35 @@ namespace Hive.LooselyCoupled
                 options.AddPolicy("GigManagement", policy =>
                 {
                     policy.RequireAuthenticatedUser();
-                    policy.RequireClaim("scope", "gig-management");
+                    policy.RequireClaim("scope", "loosely-coupled");
                 });
             });
-            
-            JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
-
-            services.AddAuthentication(options =>
-                {
-                    options.DefaultScheme = "Cookies";
-                    options.DefaultChallengeScheme = "oidc";
-                })
-                .AddCookie("Cookies")
-                .AddOpenIdConnect("oidc", options =>
-                {
-                    options.Authority = "https://localhost:7001";
-
-                    options.ClientId = "mvc";
-                    options.ClientSecret = "secret";
-                    options.ResponseType = "code";
-
-                    options.SaveTokens = true;
-                });
-            
             
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo {Title = "LooselyCoupled", Version = "v1"});
+                
+                c.AddSecurityDefinition("JWT", new OpenApiSecurityScheme()
+                {
+                    Type = SecuritySchemeType.ApiKey,
+                    Name = "Authorization",
+                    In = ParameterLocation.Header,
+                    Description = "Type into the textbox: Bearer {your JWT token}."
+                });
+                
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement {
+                { 
+                    new OpenApiSecurityScheme 
+                    { 
+                        Reference = new OpenApiReference 
+                        { 
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer" 
+                        } 
+                    },
+                    System.Array.Empty<string>()
+                } 
+                });
             });
         }
 
@@ -96,7 +93,7 @@ namespace Hive.LooselyCoupled
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "LooslyCoupled v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "LooselyCoupled v1"));
             }
 
             app.UseHttpsRedirection();

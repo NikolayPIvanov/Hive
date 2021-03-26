@@ -106,35 +106,38 @@ namespace Hive.Identity
 
             var context = serviceScope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
             context.Database.Migrate();
-            if (!context.Clients.Any())
+            
+            foreach (var client in Config.Clients)
             {
-                foreach (var client in Config.Clients)
+                if (context.Clients.Any(c => c.ClientId == client.ClientId))
                 {
-                    context.Clients.Add(client.ToEntity());
+                    continue;
                 }
+                context.Clients.Add(client.ToEntity());
+            }
+            context.SaveChanges();
 
-                context.SaveChanges();
+            
+            foreach (var resource in Config.IdentityResources)
+            {
+                if (context.IdentityResources.Any(c => c.Name == resource.Name))
+                {
+                    continue;
+                }
+                context.IdentityResources.Add(resource.ToEntity());
+            }
+            context.SaveChanges();
+        
+            foreach (var resource in Config.ApiScopes)
+            {
+                if (context.ApiScopes.Any(c => c.Name == resource.Name))
+                {
+                    continue;
+                }
+                context.ApiScopes.Add(resource.ToEntity());
             }
 
-            if (!context.IdentityResources.Any())
-            {
-                foreach (var resource in Config.IdentityResources)
-                {
-                    context.IdentityResources.Add(resource.ToEntity());
-                }
-
-                context.SaveChanges();
-            }
-
-            if (context.ApiScopes.Any()) return;
-            {
-                foreach (var resource in Config.ApiScopes)
-                {
-                    context.ApiScopes.Add(resource.ToEntity());
-                }
-
-                context.SaveChanges();
-            }
+            context.SaveChanges();
         }
     }
 }
