@@ -28,6 +28,7 @@ namespace Hive.Gig.Application.Gigs.Queries
                 .Include(g => g.GigScope)
                 .Include(g => g.Tags)
                 .Include(g => g.Category)
+                .Include(g => g.Packages)
                 .FirstOrDefaultAsync(g => g.Id == request.Id, cancellationToken);
 
             if (entity is null)

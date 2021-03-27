@@ -11,18 +11,18 @@ using Ordering.Contracts.IntegrationEvents;
 
 namespace Billing.Application.IntegrationEvents
 {
-    public class OrderConfirmationIntegrationEventHandler : ICapSubscribe
+    public class OrderBillingConfirmationIntegrationEventHandler : ICapSubscribe
     {
         private readonly IBillingContext _context;
         private readonly IIntegrationEventPublisher _publisher;
 
-        public OrderConfirmationIntegrationEventHandler(IBillingContext context, IIntegrationEventPublisher publisher)
+        public OrderBillingConfirmationIntegrationEventHandler(IBillingContext context, IIntegrationEventPublisher publisher)
         {
             _context = context;
             _publisher = publisher;
         }
         
-        [CapSubscribe(nameof(OrderCreatedIntegrationEvent))]
+        [CapSubscribe(nameof(OrderCreatedIntegrationEvent), Group = "cap.hive.billing")]
         public async Task Handle(OrderCreatedIntegrationEvent @event)
         {
             var userId = @event.OrderedBy;

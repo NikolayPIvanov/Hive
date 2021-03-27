@@ -16,5 +16,6 @@ namespace Gig.Contracts
 
         public ICollection<string> Tags { get; set; }
         
+        public ICollection<PackageDto> Packages { get; set; }
     }
 }

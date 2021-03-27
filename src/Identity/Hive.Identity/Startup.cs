@@ -54,7 +54,6 @@ namespace Hive.Identity
                     // see https://docs.duendesoftware.com/identityserver/v5/fundamentals/resources/
                     options.EmitStaticAudienceClaim = true;
                 })
-                .AddTestUsers(TestUsers.Users)
                 .AddConfigurationStore(options =>
                 {
                     options.ConfigureDbContext = b => b.UseSqlServer(connectionString,
@@ -97,47 +96,47 @@ namespace Hive.Identity
             app.UseAuthorization();
             app.UseEndpoints(endpoints => { endpoints.MapDefaultControllerRoute(); });
         }
-
+    
         private void InitializeDatabase(IApplicationBuilder app)
         {
             using var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>()?.CreateScope();
             if (serviceScope == null) return;
-            serviceScope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();
+            InitializePersistedGrantDbContext(serviceScope);
+            InitializeConfigurationDbContext(serviceScope);
+            InitializeApplicationDbContext(serviceScope);
+        }
 
+        private void InitializePersistedGrantDbContext(IServiceScope serviceScope)
+        {
+            serviceScope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();
+        }
+        
+        private void InitializeConfigurationDbContext(IServiceScope serviceScope)
+        {
             var context = serviceScope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
             context.Database.Migrate();
-            
-            foreach (var client in Config.Clients)
-            {
-                if (context.Clients.Any(c => c.ClientId == client.ClientId))
-                {
-                    continue;
-                }
-                context.Clients.Add(client.ToEntity());
-            }
-            context.SaveChanges();
 
-            
-            foreach (var resource in Config.IdentityResources)
-            {
-                if (context.IdentityResources.Any(c => c.Name == resource.Name))
-                {
-                    continue;
-                }
-                context.IdentityResources.Add(resource.ToEntity());
-            }
-            context.SaveChanges();
-        
-            foreach (var resource in Config.ApiScopes)
-            {
-                if (context.ApiScopes.Any(c => c.Name == resource.Name))
-                {
-                    continue;
-                }
-                context.ApiScopes.Add(resource.ToEntity());
-            }
+            var allClients = context.Clients.AsQueryable();
+            context.Clients.RemoveRange(allClients);
+            context.Clients.AddRange(Config.Clients.Select(x => x.ToEntity()));
 
             context.SaveChanges();
+            
+            var allResources = context.IdentityResources.AsQueryable();
+            context.IdentityResources.RemoveRange(allResources);
+            context.IdentityResources.AddRange(Config.IdentityResources.Select(x => x.ToEntity()));
+            context.SaveChanges();
+            
+            var allScopes = context.ApiScopes.AsQueryable();
+            context.ApiScopes.RemoveRange(allScopes);
+            context.ApiScopes.AddRange(Config.ApiScopes.Select(x => x.ToEntity()));
+            context.SaveChanges();
+        }
+
+        private void InitializeApplicationDbContext(IServiceScope serviceScope)
+        {
+            var appContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            appContext.Database.Migrate();
         }
     }
 }

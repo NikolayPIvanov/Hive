@@ -19,21 +19,17 @@ namespace Ordering.Application.IntegrationEvents.EventHandlers
             _context = context;
         }
         
-        [CapSubscribe(nameof(OrderInvalidIntegrationEvent))] 
+        [CapSubscribe(nameof(OrderInvalidIntegrationEvent), Group = "cap.hive.ordering")] 
         public async Task Handle(OrderInvalidIntegrationEvent @event)
         {
             var orderStatus = await _context.Orders
-                .Select(o => new
-                {
-                    o.OrderNumber,
-                    o.OrderStates
-                })
+                .Select(o => new { o.Id, o.OrderNumber })
                 .FirstOrDefaultAsync(o => o.OrderNumber == @event.OrderNumber);
 
             var state = new State(OrderState.Invalid, @event.Reason);
-            orderStatus.OrderStates.Add(state);
+            _context.OrderStates.Add(state);
 
-            await _context.SaveChangesAsync(new CancellationToken());
+            await _context.SaveChangesAsync(default);
         }
     }
 }

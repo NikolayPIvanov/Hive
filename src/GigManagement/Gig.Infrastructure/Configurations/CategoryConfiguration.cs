@@ -9,7 +9,6 @@ namespace Hive.Gig.Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<Category> builder)
         {
-            AuditableEntityConfiguration.ConfigureAuditableEntity(builder);
             builder.Property(c => c.Title).HasMaxLength(50).IsRequired();
 
             builder.HasMany(c => c.SubCategories)

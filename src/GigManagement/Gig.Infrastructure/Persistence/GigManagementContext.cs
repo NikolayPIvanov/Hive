@@ -1,30 +1,34 @@
-﻿using System.Reflection;
+﻿using System.Data;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Billing.Application.Interfaces;
-using Billing.Domain;
 using Hive.Common.Domain;
+using Hive.Gig.Application.Interfaces;
+using Hive.Gig.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
+using Ordering.Application.Interfaces;
+using IDateTimeService = Hive.Gig.Application.Interfaces.IDateTimeService;
 
-namespace Billing.Infrastructure
+namespace Hive.Gig.Infrastructure
 {
-    public class BillingContext : DbContext, IBillingContext
+    public class GigManagementContext : DbContext, IGigManagementContext
     {
         private readonly IDateTimeService _dateTimeService;
-        private const string DefaultSchema = "billing";
-        
-        public BillingContext(
-            DbContextOptions<BillingContext> options,
+
+        public GigManagementContext(
+            DbContextOptions<GigManagementContext> options,
             IDateTimeService dateTimeService) : base(options)
         {
             _dateTimeService = dateTimeService;
         }
 
-        public string Schema => DefaultSchema;
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<Domain.Entities.Gig> Gigs { get; set; }
+        public DbSet<GigScope> GigScopes { get; set; }
+        public DbSet<Package> Packages { get; set; }
         
-        public DbSet<Account> Accounts { get; set; }
-        public DbSet<Transaction> Transactions { get; set; }
-        public DbSet<PaymentMethod> PaymentMethods { get; set; }
+        public DbSet<Tag> Tags { get; set; }
+        public DbSet<Question> Questions { get; set; }
         
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
@@ -50,10 +54,10 @@ namespace Billing.Infrastructure
 
             return result;
         }
-        
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            builder.HasDefaultSchema(DefaultSchema);
+            builder.HasDefaultSchema("gmt");
             builder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
 
             base.OnModelCreating(builder);

@@ -28,6 +28,18 @@ namespace Hive.Identity
         public static IEnumerable<Client> Clients =>
             new Client[]
             {
+                new Client
+                {
+                    ClientId = "m2m.monolith",
+                    ClientName = "Loosely Coupled Monolith",
+                    
+                    AllowedGrantTypes = GrantTypes.ClientCredentials,
+                    ClientSecrets = { new Secret("511536EF-F270-4058-80CA-1C89C192F69A".Sha256()) },
+                    
+                    AllowOfflineAccess = true,
+                    
+                    AllowedScopes = new List<string> { "loosely-coupled" }
+                },
                 // m2m client credentials flow client
                 new Client
                 {

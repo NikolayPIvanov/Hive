@@ -7,7 +7,6 @@ namespace Hive.Gig.Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<Domain.Entities.Gig> builder)
         {
-            AuditableEntityConfiguration.ConfigureAuditableEntity(builder);
             
             builder.HasKey(g => g.Id);
             builder.Property(g => g.Title).HasMaxLength(50).IsRequired();

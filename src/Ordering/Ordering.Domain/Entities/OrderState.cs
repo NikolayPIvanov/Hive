@@ -16,6 +16,11 @@ namespace Ordering.Domain.Entities
             OrderState = state;
             Reason = reason;
         }
+        
+        public State(OrderState state, string reason, int orderId) : this(state, reason)
+        {
+            OrderId = orderId;
+        }
 
         public static State Initial() => new();
         

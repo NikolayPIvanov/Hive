@@ -1,9 +1,7 @@
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
+using Billing.Application;
 using Billing.Infrastructure;
 using Hive.Gig.Application;
 using Hive.Gig.Infrastructure;
-using IdentityServer4.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -30,9 +28,12 @@ namespace Hive.LooselyCoupled
         {
             services.AddGigsInfrastructure(Configuration);
             services.AddGigsManagement(Configuration);
+            
             services.AddOrderingApp(Configuration);
             services.AddOrdering(Configuration);
-            services.AddBilling(Configuration);
+            
+            services.AddBillingInfrastructure(Configuration);
+            services.AddBillingApp(Configuration);
             
             services.AddHttpContextAccessor();
 

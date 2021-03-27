@@ -1,11 +1,10 @@
 ﻿using Hive.Common.Application.Publisher;
-using Hive.Gig.Application.IntegrationEvents;
 using Hive.Gig.Application.Interfaces;
 using Hive.Gig.Infrastructure.MessageBroker;
+using Hive.Gig.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Ordering.Contracts.IntegrationEvents;
 
 namespace Hive.Gig.Infrastructure
 {
@@ -51,6 +50,7 @@ namespace Hive.Gig.Infrastructure
 
             services.AddScoped<IGigManagementContext>(provider => provider.GetService<GigManagementContext>());
             services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
+            services.AddScoped<IDateTimeService, DateTimeService>();
 
             return services;
         }

@@ -8,7 +8,6 @@ namespace Hive.Gig.Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<Question> builder)
         {
-            AuditableEntityConfiguration.ConfigureAuditableEntity(builder);
             
             builder.Property(x => x.Title)
                 .HasMaxLength(50)

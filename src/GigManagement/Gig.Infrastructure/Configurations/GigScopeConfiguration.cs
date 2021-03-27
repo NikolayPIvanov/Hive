@@ -8,7 +8,6 @@ namespace Hive.Gig.Infrastructure.Configurations
     {
         public void Configure(EntityTypeBuilder<GigScope> builder)
         {
-            AuditableEntityConfiguration.ConfigureAuditableEntity(builder);
 
             builder.Property(gs => gs.Description)
                 .HasMaxLength(2000)

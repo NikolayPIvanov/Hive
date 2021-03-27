@@ -6,11 +6,10 @@ namespace Ordering.Domain.Entities
 {
     public class Order : AuditableEntity
     {
-        private Order()
+        private Order() : base()
         {
             OrderNumber = Guid.NewGuid();
             OrderedAt = DateTime.UtcNow;
-            OrderStates = new HashSet<State> {State.Initial()};
             IsClosed = false;
         }
         
@@ -22,6 +21,7 @@ namespace Ordering.Domain.Entities
             OrderedBy = userId;
             SellerId = sellerId;
             Requirement = new Requirement(requirements);
+            OrderStates = new HashSet<State> {State.Initial()};
         }
         
         public int Id { get; set; }
@@ -39,7 +39,7 @@ namespace Ordering.Domain.Entities
         public int RequirementId { get; private init; }
         public Requirement Requirement { get; private init; }
         
-        public int ResolutionId { get; set; }
+        public int? ResolutionId { get; set; }
         
         public Resolution Resolution { get; set; }
         

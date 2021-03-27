@@ -4,7 +4,7 @@ namespace Hive.Common.Domain
 {
     public abstract class AuditableEntity
     {
-        public DateTime Created { get; } = DateTime.UtcNow;
+        public DateTime Created { get; set;  }
 
         public string CreatedBy { get; set; }
 

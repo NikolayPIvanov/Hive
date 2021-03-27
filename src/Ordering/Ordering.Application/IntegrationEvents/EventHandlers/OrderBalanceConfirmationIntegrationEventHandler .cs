@@ -20,21 +20,17 @@ namespace Ordering.Application.IntegrationEvents.EventHandlers
             _context = context;
         }
         
-        [CapSubscribe(nameof(OrderBalanceConfirmationIntegrationEvent))] 
+        [CapSubscribe(nameof(OrderBalanceConfirmationIntegrationEvent), Group = "cap.hive.ordering")] 
         public async Task Handle(OrderBalanceConfirmationIntegrationEvent @event)
         {
             var orderStatus = await _context.Orders
-                .Select(o => new
-                {
-                    o.OrderNumber,
-                    o.OrderStates
-                })
+                .Select(o => new { o.Id, o.OrderNumber })
                 .FirstOrDefaultAsync(o => o.OrderNumber == @event.OrderNumber);
 
-            var state = new State(OrderState.UserBalanceValid, @event.Reason);
-            orderStatus.OrderStates.Add(state);
+            var state = new State(OrderState.UserBalanceValid, @event.Reason, orderStatus.Id);
+            _context.OrderStates.Add(state);
             
-            await _context.SaveChangesAsync(new CancellationToken());
+            await _context.SaveChangesAsync(default);
         }
     }
 }

@@ -10,6 +10,7 @@ using Ordering.Application;
 using Ordering.Application.Interfaces;
 using Ordering.Infrastructure.MessageBroker;
 using Ordering.Infrastructure.Persistence;
+using Ordering.Infrastructure.Services;
 
 namespace Ordering.Infrastructure
 {
@@ -55,6 +56,7 @@ namespace Ordering.Infrastructure
 
             services.AddScoped<IOrderingContext>(provider => provider.GetService<OrderingContext>());
             services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
+            services.AddScoped<IDateTimeService, DateTimeService>();
 
             return services;
         }

@@ -18,6 +18,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\Ordering\Ordering.Application\Ordering.Application.csproj" />
       <ProjectReference Include="..\Gig.Application\Gig.Application.csproj" />
     </ItemGroup>
 

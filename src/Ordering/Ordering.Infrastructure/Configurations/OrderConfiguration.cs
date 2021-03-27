@@ -17,7 +17,6 @@ namespace Ordering.Infrastructure.Configurations
             builder.HasOne(o => o.Requirement)
                 .WithOne(r => r.Order)
                 .HasForeignKey<Order>(o => o.RequirementId);
-
         }
     }
 }
