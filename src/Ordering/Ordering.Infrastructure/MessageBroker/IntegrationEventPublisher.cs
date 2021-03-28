@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using DotNetCore.CAP;
-using Hive.Common.Application.Publisher;
+using Hive.Common.Application.Interfaces;
 using Hive.Common.Domain;
 using Ordering.Application.Interfaces;
 

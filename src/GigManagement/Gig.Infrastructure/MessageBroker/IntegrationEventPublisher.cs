@@ -1,20 +1,16 @@
 ﻿using System.Threading.Tasks;
 using DotNetCore.CAP;
-using Gig.Contracts.IntegrationEvents;
-using Hive.Common.Application.Publisher;
+using Hive.Common.Application.Interfaces;
 using Hive.Common.Domain;
-using Hive.Gig.Application.Interfaces;
 
 namespace Hive.Gig.Infrastructure.MessageBroker
 {
     public class IntegrationEventPublisher : IIntegrationEventPublisher 
     {
-        private readonly IGigManagementContext _context;
         private readonly ICapPublisher _publisher;
 
-        public IntegrationEventPublisher(IGigManagementContext context, ICapPublisher publisher)
+        public IntegrationEventPublisher(ICapPublisher publisher)
         {
-            _context = context;
             _publisher = publisher;
         }
         

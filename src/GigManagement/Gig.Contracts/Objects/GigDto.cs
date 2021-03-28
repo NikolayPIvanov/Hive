@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Gig.Contracts
+namespace Hive.Gig.Domain.Objects
 {
     public class GigDto
     {

@@ -1,10 +1,10 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
-using Gig.Contracts.IntegrationEvents;
-using Hive.Common.Application.Publisher;
+using Hive.Common.Application.Interfaces;
 using Hive.Gig.Application.Interfaces;
 using Hive.Gig.Domain.Entities;
+using Hive.Gig.Domain.IntegrationEvents;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

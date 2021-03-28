@@ -5,7 +5,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="Events" />
+      <ProjectReference Include="..\Common.Application\Common.Application.csproj" />
     </ItemGroup>
 
 </Project>

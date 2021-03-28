@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using Billing.Application.Interfaces;
 using Billing.Domain;
 using DotNetCore.CAP;
-using Gig.Contracts.IntegrationEvents;
 using Hive.Billing.Contracts.IntegrationEvents;
-using Hive.Common.Application.Publisher;
+using Hive.Common.Application.Interfaces;
+using Hive.Gig.Domain.IntegrationEvents;
 using Microsoft.EntityFrameworkCore;
 using Ordering.Contracts.IntegrationEvents;
 

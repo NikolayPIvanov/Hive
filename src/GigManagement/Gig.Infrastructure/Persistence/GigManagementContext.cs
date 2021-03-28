@@ -1,15 +1,13 @@
-﻿using System.Data;
-using System.Reflection;
+﻿using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Hive.Common.Domain;
 using Hive.Gig.Application.Interfaces;
 using Hive.Gig.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using Ordering.Application.Interfaces;
-using IDateTimeService = Hive.Gig.Application.Interfaces.IDateTimeService;
+using IDateTimeService = Hive.Common.Application.Interfaces.IDateTimeService;
 
-namespace Hive.Gig.Infrastructure
+namespace Hive.Gig.Infrastructure.Persistence
 {
     public class GigManagementContext : DbContext, IGigManagementContext
     {
@@ -30,7 +28,7 @@ namespace Hive.Gig.Infrastructure
         public DbSet<Tag> Tags { get; set; }
         public DbSet<Question> Questions { get; set; }
         
-        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new())
         {
             foreach (Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<AuditableEntity> entry in ChangeTracker.Entries<AuditableEntity>())
             {

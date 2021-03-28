@@ -1,7 +1,7 @@
 ﻿using System;
-using Hive.Gig.Application.Interfaces;
+using Hive.Common.Application.Interfaces;
 
-namespace Hive.Gig.Infrastructure.Services
+namespace Common.Infrastructure.Services
 {
     public class DateTimeService : IDateTimeService
     {

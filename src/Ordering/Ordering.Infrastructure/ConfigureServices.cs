@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using FluentValidation;
 using Hive.Common.Application.Behaviours;
-using Hive.Common.Application.Publisher;
+using Hive.Common.Application.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -11,6 +11,7 @@ using Ordering.Application.Interfaces;
 using Ordering.Infrastructure.MessageBroker;
 using Ordering.Infrastructure.Persistence;
 using Ordering.Infrastructure.Services;
+using IDateTimeService = Ordering.Application.Interfaces.IDateTimeService;
 
 namespace Ordering.Infrastructure
 {

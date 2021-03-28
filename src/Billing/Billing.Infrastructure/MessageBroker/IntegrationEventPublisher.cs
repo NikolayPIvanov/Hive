@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Billing.Application.Interfaces;
 using DotNetCore.CAP;
-using Hive.Common.Application.Publisher;
+using Hive.Common.Application.Interfaces;
 using Hive.Common.Domain;
 
 namespace Billing.Infrastructure.MessageBroker

@@ -3,9 +3,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
-using Gig.Contracts;
 using Hive.Common.Application.Mappings;
 using Hive.Gig.Application.Interfaces;
+using Hive.Gig.Domain.Objects;
 using MediatR;
 
 namespace Hive.Gig.Application.Questions.Queries

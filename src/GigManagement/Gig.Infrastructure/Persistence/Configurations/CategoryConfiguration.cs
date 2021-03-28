@@ -1,9 +1,8 @@
-﻿using Hive.Common.Domain;
-using Hive.Gig.Domain.Entities;
+﻿using Hive.Gig.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Hive.Gig.Infrastructure.Configurations
+namespace Hive.Gig.Infrastructure.Persistence.Configurations
 {
     public class CategoryConfiguration : IEntityTypeConfiguration<Category>
     {

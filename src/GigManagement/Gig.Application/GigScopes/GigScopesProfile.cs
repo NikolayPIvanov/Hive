@@ -1,6 +1,6 @@
 ﻿using AutoMapper;
-using Gig.Contracts;
 using Hive.Gig.Domain.Entities;
+using Hive.Gig.Domain.Objects;
 
 namespace Hive.Gig.Application.GigScopes
 {

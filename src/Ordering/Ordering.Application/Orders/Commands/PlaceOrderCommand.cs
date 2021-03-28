@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
-using Hive.Common.Application.Publisher;
+using Hive.Common.Application.Interfaces;
 using MediatR;
 using Ordering.Application.Interfaces;
 using Ordering.Contracts.IntegrationEvents;

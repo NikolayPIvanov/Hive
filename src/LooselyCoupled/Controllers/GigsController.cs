@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Gig.Contracts;
 using Hive.Gig.Application.GigPackages.Commands;
 using Hive.Gig.Application.GigPackages.Queries;
 using Hive.Gig.Application.Gigs.Commands;
@@ -9,6 +8,7 @@ using Hive.Gig.Application.GigScopes.Command;
 using Hive.Gig.Application.GigScopes.Queries;
 using Hive.Gig.Application.Questions.Commands;
 using Hive.Gig.Application.Questions.Queries;
+using Hive.Gig.Domain.Objects;
 using Microsoft.AspNetCore.Mvc;
 using UpdateGigCommand = Hive.Gig.Application.Gigs.Commands.UpdateGigCommand;
 

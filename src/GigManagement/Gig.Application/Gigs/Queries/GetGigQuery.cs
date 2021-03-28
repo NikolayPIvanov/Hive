@@ -1,9 +1,9 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
-using Gig.Contracts;
 using Hive.Common.Application.Exceptions;
 using Hive.Gig.Application.Interfaces;
+using Hive.Gig.Domain.Objects;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

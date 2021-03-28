@@ -1,7 +1,8 @@
 ﻿using System.Reflection;
+using DotNetCore.CAP;
 using FluentValidation;
+using Hive.Common.Application;
 using Hive.Common.Application.Behaviours;
-using Hive.Gig.Application.IntegrationEvents;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -19,7 +20,8 @@ namespace Hive.Gig.Application
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PerformanceBehaviour<,>));
 
-            services.AddIntegrationEvents();
+            // Integration Events
+            services.ScanFor<ICapSubscribe>(new[] {Assembly.GetExecutingAssembly()});
             
 
             return services;
