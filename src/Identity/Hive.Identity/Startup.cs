@@ -35,6 +35,7 @@ namespace Hive.Identity
             var connectionString = Configuration.GetConnectionString("DefaultConnection");
             var assembly = typeof(Startup).Assembly.FullName;
             services.AddControllersWithViews();
+            services.AddRazorPages();
 
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString,
@@ -42,7 +43,8 @@ namespace Hive.Identity
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
+                .AddDefaultTokenProviders()
+                .AddDefaultUI();
 
             var builder = services.AddIdentityServer(options =>
                 {
@@ -94,7 +96,11 @@ namespace Hive.Identity
             app.UseRouting();
             app.UseIdentityServer();
             app.UseAuthorization();
-            app.UseEndpoints(endpoints => { endpoints.MapDefaultControllerRoute(); });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapDefaultControllerRoute();
+                endpoints.MapRazorPages();
+            });
         }
     
         private void InitializeDatabase(IApplicationBuilder app)
