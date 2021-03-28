@@ -63,6 +63,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Investing", "Investing", "{
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Infrastructure", "src\Common\Common.Infrastructure\Common.Infrastructure.csproj", "{C469D6AE-7295-4227-82D7-AD3DD6FCAD5A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hive.Contracts", "src\Identity\Hive.Contracts\Hive.Contracts.csproj", "{B456D47F-0F7F-4773-A3EF-8AD599F9BDF9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -145,6 +147,10 @@ Global
 		{C469D6AE-7295-4227-82D7-AD3DD6FCAD5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C469D6AE-7295-4227-82D7-AD3DD6FCAD5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C469D6AE-7295-4227-82D7-AD3DD6FCAD5A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B456D47F-0F7F-4773-A3EF-8AD599F9BDF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B456D47F-0F7F-4773-A3EF-8AD599F9BDF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B456D47F-0F7F-4773-A3EF-8AD599F9BDF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B456D47F-0F7F-4773-A3EF-8AD599F9BDF9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -175,6 +181,7 @@ Global
 		{D470BC56-5BFF-4918-9C52-7325200C665B} = {A631BEB6-EA6F-4DD4-B4FD-C7686C6CEDC1}
 		{DA51A033-CBCE-4621-8B23-25904897343C} = {6ED356A7-8B47-4613-AD01-C85CF28491BD}
 		{C469D6AE-7295-4227-82D7-AD3DD6FCAD5A} = {41107A04-EDDC-4B64-BC0E-ABE63675D97B}
+		{B456D47F-0F7F-4773-A3EF-8AD599F9BDF9} = {A631BEB6-EA6F-4DD4-B4FD-C7686C6CEDC1}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3CB609D9-5D54-4C11-A371-DAAC8B74E430}

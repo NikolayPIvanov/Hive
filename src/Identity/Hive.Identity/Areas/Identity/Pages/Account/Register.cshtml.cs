@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Hive.Identity.Models;
+using Hive.Identity.Services;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using IdentityServerHost.Models;
@@ -22,16 +24,19 @@ namespace Hive.Identity.Areas.Identity.Pages.Account
     public class RegisterModel : PageModel
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IDispatcher _dispatcher;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly IEmailSender _emailSender;
 
         public RegisterModel(
+            IDispatcher dispatcher,
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender)
         {
+            _dispatcher = dispatcher;
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
@@ -62,6 +67,9 @@ namespace Hive.Identity.Areas.Identity.Pages.Account
             [Display(Name = "Confirm password")]
             [Compare("Password", ErrorMessage = "The password and confirmation password do not match.")]
             public string ConfirmPassword { get; set; }
+
+            [Required]
+            public UserType UserType { get; set; }
         }
 
         
@@ -77,10 +85,23 @@ namespace Hive.Identity.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email };
+                var user = new ApplicationUser { UserName = Input.Email, Email = Input.Email, UserType = Input.UserType };
                 var result = await _userManager.CreateAsync(user, Input.Password);
                 if (result.Succeeded)
                 {
+                    _logger.LogInformation("User created a new account with password.");
+
+                    var userCreatedEventTask = _dispatcher.PublishUserCreatedEventAsync(user.Id);
+                    var roleEventTask = user.UserType switch
+                    {
+                        UserType.Buyer => _dispatcher.PublishBuyerCreatedEventAsync(user.Id),
+                        UserType.Seller => _dispatcher.PublishSellerCreatedEventAsync(user.Id),
+                        UserType.Investor => _dispatcher.PublishInvestorCreatedEventAsync(user.Id),
+                        _ => throw new ArgumentOutOfRangeException()
+                    };
+
+                    await Task.WhenAll(userCreatedEventTask, roleEventTask);
+                    
                     _logger.LogInformation("User created a new account with password.");
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);

@@ -2,18 +2,15 @@
 using DotNetCore.CAP;
 using Hive.Common.Application.Interfaces;
 using Hive.Common.Domain;
-using Ordering.Application.Interfaces;
 
-namespace Ordering.Infrastructure.MessageBroker
+namespace Common.Infrastructure.Services
 {
-    public class IntegrationEventPublisher : IIntegrationEventPublisher 
+    public class IntegrationEventPublisher : IIntegrationEventPublisher
     {
-        private readonly IOrderingContext _context;
         private readonly ICapPublisher _publisher;
 
-        public IntegrationEventPublisher(IOrderingContext context, ICapPublisher publisher)
+        public IntegrationEventPublisher(ICapPublisher publisher)
         {
-            _context = context;
             _publisher = publisher;
         }
         

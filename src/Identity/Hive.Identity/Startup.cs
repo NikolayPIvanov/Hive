@@ -4,10 +4,13 @@
 
 using System.Linq;
 using System.Reflection;
+using Common.Infrastructure.Services;
 using Duende.IdentityServer;
 using Duende.IdentityServer.EntityFramework.DbContexts;
 using Duende.IdentityServer.EntityFramework.Mappers;
+using Hive.Common.Application.Interfaces;
 using Hive.Identity.Data;
+using Hive.Identity.Services;
 using IdentityServerHost.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -36,10 +39,34 @@ namespace Hive.Identity
             var assembly = typeof(Startup).Assembly.FullName;
             services.AddControllersWithViews();
             services.AddRazorPages();
-
+            
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString,
                     o => o.MigrationsAssembly(assembly)));
+            
+            var sqlServerConnectionString = Configuration.GetConnectionString("DefaultConnection");
+            
+            services.AddCap(x =>
+            {
+                x.UseEntityFramework<ApplicationDbContext>();
+                x.UseSqlServer(sqlServerConnectionString);
+
+                x.UseRabbitMQ(ro =>
+                {
+                    ro.Password = "admin";
+                    ro.UserName = "admin";
+                    ro.HostName = "localhost";
+                    ro.Port = 5672;
+                    ro.VirtualHost = "/";
+                });
+
+                x.UseDashboard(opt => { opt.PathMatch = "/cap"; });
+            });
+
+            services.AddScoped<IDispatcher, EventDispatcher>();
+            services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
+
+            
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()

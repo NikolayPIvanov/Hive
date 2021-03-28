@@ -8,4 +8,8 @@
       <ProjectReference Include="..\Common.Application\Common.Application.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="DotNetCore.CAP" Version="5.0.0-preview-132888327" />
+    </ItemGroup>
+
 </Project>

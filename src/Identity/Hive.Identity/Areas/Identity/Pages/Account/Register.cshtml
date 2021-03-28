@@ -1,4 +1,5 @@
 @page
+@using Hive.Identity.Models
 @model RegisterModel
 @{
     ViewData["Title"] = "Register";
@@ -26,6 +27,12 @@
                 <label asp-for="Input.ConfirmPassword"></label>
                 <input asp-for="Input.ConfirmPassword" class="form-control" />
                 <span asp-validation-for="Input.ConfirmPassword" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Input.UserType"></label>
+                <select asp-for="Input.UserType" asp-items="Html.GetEnumSelectList<UserType>()">
+                    <option selected="selected" value="">Please select</option>
+                </select>
             </div>
             <button type="submit" class="btn btn-primary">Register</button>
         </form>

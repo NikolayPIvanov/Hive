@@ -1,5 +1,4 @@
 ﻿using Billing.Application.Interfaces;
-using Billing.Infrastructure.MessageBroker;
 using Common.Infrastructure.Services;
 using Hive.Common.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
