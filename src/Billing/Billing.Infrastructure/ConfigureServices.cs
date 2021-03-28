@@ -1,11 +1,10 @@
 ﻿using Billing.Application.Interfaces;
 using Billing.Infrastructure.MessageBroker;
-using Billing.Infrastructure.Services;
+using Common.Infrastructure.Services;
 using Hive.Common.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using IDateTimeService = Billing.Application.Interfaces.IDateTimeService;
 
 namespace Billing.Infrastructure
 {

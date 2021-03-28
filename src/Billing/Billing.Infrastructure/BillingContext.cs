@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Billing.Application.Interfaces;
 using Billing.Domain;
+using Hive.Common.Application.Interfaces;
 using Hive.Common.Domain;
 using Microsoft.EntityFrameworkCore;
 
