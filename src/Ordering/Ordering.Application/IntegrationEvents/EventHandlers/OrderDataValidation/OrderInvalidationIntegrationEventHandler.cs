@@ -1,34 +1,33 @@
 ﻿using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using DotNetCore.CAP;
-using Hive.Billing.Contracts.IntegrationEvents;
+using Hive.Gig.Domain.IntegrationEvents;
 using Microsoft.EntityFrameworkCore;
 using Ordering.Application.Interfaces;
 using Ordering.Domain.Entities;
 using Ordering.Domain.Enums;
 
-namespace Ordering.Application.IntegrationEvents.EventHandlers
+namespace Ordering.Application.IntegrationEvents.EventHandlers.OrderDataValidation
 {
-    public class OrderBalanceConfirmationIntegrationEventHandler : ICapSubscribe
+    public class OrderDataInvalidIntegrationEventHandler : ICapSubscribe
     {
         private readonly IOrderingContext _context;
 
-        public OrderBalanceConfirmationIntegrationEventHandler(IOrderingContext context)
+        public OrderDataInvalidIntegrationEventHandler(IOrderingContext context)
         {
             _context = context;
         }
         
-        [CapSubscribe(nameof(OrderBalanceConfirmationIntegrationEvent), Group = "cap.hive.ordering")] 
-        public async Task Handle(OrderBalanceConfirmationIntegrationEvent @event)
+        [CapSubscribe(nameof(OrderInvalidIntegrationEvent), Group = "cap.hive.ordering")] 
+        public async Task Handle(OrderInvalidIntegrationEvent @event)
         {
             var orderStatus = await _context.Orders
                 .Select(o => new { o.Id, o.OrderNumber })
                 .FirstOrDefaultAsync(o => o.OrderNumber == @event.OrderNumber);
 
-            var state = new State(OrderState.UserBalanceValid, @event.Reason, orderStatus.Id);
+            var state = new State(OrderState.Invalid, @event.Reason);
             _context.OrderStates.Add(state);
-            
+
             await _context.SaveChangesAsync(default);
         }
     }

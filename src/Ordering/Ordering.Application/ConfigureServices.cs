@@ -1,5 +1,7 @@
 ﻿using System.Reflection;
+using DotNetCore.CAP;
 using FluentValidation;
+using Hive.Common.Application;
 using Hive.Common.Application.Behaviours;
 using MediatR;
 using Microsoft.Extensions.Configuration;
@@ -19,7 +21,7 @@ namespace Ordering.Application
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PerformanceBehaviour<,>));
 
-            services.AddIntegrationEvents();
+            services.ScanFor<ICapSubscribe>(new []{ Assembly.GetExecutingAssembly() });
             
             return services;
         }

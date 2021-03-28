@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Hive.Common.Application.Interfaces;
 using Hive.Common.Domain;
 using Microsoft.EntityFrameworkCore;
 using Ordering.Application.Interfaces;
