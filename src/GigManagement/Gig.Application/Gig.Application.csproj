@@ -7,13 +7,13 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
+        <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="8.1.1" />
         <PackageReference Include="DotNetCore.CAP.Dashboard" Version="5.0.0-preview-132888327" />
-      <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="9.5.3" />
-      <PackageReference Include="MediatR" Version="9.0.0" />
-      <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.4" />
-      <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="5.0.0" />
+        <PackageReference Include="FluentValidation.DependencyInjectionExtensions" Version="9.5.3" />
+        <PackageReference Include="MediatR" Version="9.0.0" />
+        <PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="9.0.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.4" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="5.0.0" />
     </ItemGroup>
 
     <ItemGroup>
@@ -22,6 +22,10 @@
       <ProjectReference Include="..\..\Ordering\Ordering.Contracts\Ordering.Contracts.csproj" />
       <ProjectReference Include="..\Gig.Contracts\Gig.Contracts.csproj" />
       <ProjectReference Include="..\Gig.Domain\Gig.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Sellers" />
     </ItemGroup>
 
 </Project>

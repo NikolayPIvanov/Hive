@@ -1,6 +1,6 @@
 ﻿using Hive.Common.Domain;
 
-namespace Hive.Gig.Domain.IntegrationEvents
+namespace Hive.Gig.Contracts.IntegrationEvents
 {
     public record CategoryCreated(int CategoryId, string Title) 
         : IntegrationEvent(nameof(CategoryCreated));

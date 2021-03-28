@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using AutoMapper;
 using Hive.Gig.Application.Gigs.Commands;
+using Hive.Gig.Contracts.Objects;
 using Hive.Gig.Domain.Entities;
-using Hive.Gig.Domain.Objects;
 
 namespace Hive.Gig.Application.Gigs
 {

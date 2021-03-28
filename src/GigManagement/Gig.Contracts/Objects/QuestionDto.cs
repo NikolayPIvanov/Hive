@@ -1,4 +1,4 @@
-﻿namespace Hive.Gig.Domain.Objects
+﻿namespace Hive.Gig.Contracts.Objects
 {
     public class QuestionDto
     {

@@ -8,9 +8,9 @@ using Hive.Gig.Application.GigScopes.Command;
 using Hive.Gig.Application.GigScopes.Queries;
 using Hive.Gig.Application.Questions.Commands;
 using Hive.Gig.Application.Questions.Queries;
-using Hive.Gig.Domain.Objects;
+using Hive.Gig.Contracts.Objects;
+using Hive.Gig.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
-using UpdateGigCommand = Hive.Gig.Application.Gigs.Commands.UpdateGigCommand;
 
 namespace Hive.LooselyCoupled.Controllers
 {

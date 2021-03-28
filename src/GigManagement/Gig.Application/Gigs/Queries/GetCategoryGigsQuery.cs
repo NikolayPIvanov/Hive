@@ -6,7 +6,7 @@ using AutoMapper.QueryableExtensions;
 using Hive.Common.Application.Mappings;
 using Hive.Common.Application.Models;
 using Hive.Gig.Application.Interfaces;
-using Hive.Gig.Domain.Objects;
+using Hive.Gig.Contracts.Objects;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

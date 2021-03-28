@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Hive.Common.Application.Exceptions;
 using Hive.Gig.Application.Interfaces;
+using Hive.Gig.Contracts.Objects;
 using Hive.Gig.Domain.Entities;
-using Hive.Gig.Domain.Objects;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

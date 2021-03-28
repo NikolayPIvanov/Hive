@@ -3,7 +3,7 @@ using Hive.Common.Application.Models;
 using Hive.Gig.Application.Categories.Commands;
 using Hive.Gig.Application.Categories.Queries;
 using Hive.Gig.Application.Gigs.Queries;
-using Hive.Gig.Domain.Objects;
+using Hive.Gig.Contracts.Objects;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hive.LooselyCoupled.Controllers

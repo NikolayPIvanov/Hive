@@ -8,9 +8,9 @@ namespace Hive.Gig.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<Seller> builder)
         {
-            builder.HasMany(s => s.Gigs)
-                .WithOne(g => g.Seller)
-                .HasForeignKey(g => g.SellerId);
+            // builder.HasMany(s => s.Gigs)
+            //     .WithOne(g => g.Seller)
+            //     .HasForeignKey(g => g.SellerId);
         }
     }
 }

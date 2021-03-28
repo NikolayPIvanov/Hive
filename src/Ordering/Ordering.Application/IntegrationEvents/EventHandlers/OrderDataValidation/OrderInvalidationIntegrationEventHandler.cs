@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using DotNetCore.CAP;
-using Hive.Gig.Domain.IntegrationEvents;
+using Hive.Gig.Contracts.IntegrationEvents;
 using Microsoft.EntityFrameworkCore;
 using Ordering.Application.Interfaces;
 using Ordering.Domain.Entities;
