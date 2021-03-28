@@ -27,6 +27,8 @@ namespace Hive.Gig.Infrastructure.Persistence
         
         public DbSet<Tag> Tags { get; set; }
         public DbSet<Question> Questions { get; set; }
+
+        public DbSet<Seller> Sellers { get; set; }
         
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new())
         {

@@ -18,6 +18,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\Common\Common.Application\Common.Application.csproj" />
+      <ProjectReference Include="..\..\Identity\Hive.Identity.Contracts\Hive.Identity.Contracts.csproj" />
       <ProjectReference Include="..\..\Ordering\Ordering.Contracts\Ordering.Contracts.csproj" />
       <ProjectReference Include="..\Gig.Contracts\Gig.Contracts.csproj" />
       <ProjectReference Include="..\Gig.Domain\Gig.Domain.csproj" />

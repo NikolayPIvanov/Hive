@@ -63,7 +63,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Investing", "Investing", "{
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common.Infrastructure", "src\Common\Common.Infrastructure\Common.Infrastructure.csproj", "{C469D6AE-7295-4227-82D7-AD3DD6FCAD5A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hive.Contracts", "src\Identity\Hive.Contracts\Hive.Contracts.csproj", "{B456D47F-0F7F-4773-A3EF-8AD599F9BDF9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hive.Identity.Contracts", "src\Identity\Hive.Identity.Contracts\Hive.Identity.Contracts.csproj", "{B456D47F-0F7F-4773-A3EF-8AD599F9BDF9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
