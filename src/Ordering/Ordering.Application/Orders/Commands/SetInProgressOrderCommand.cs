@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentValidation.Results;
 using Hive.Common.Application.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -37,6 +38,14 @@ namespace Ordering.Application.Orders.Commands
                 throw new NotFoundException(nameof(Order), request.OrderNumber);
             }
             
+            var orderIsAccepted = order.OrderStates.Any(s => s.OrderState == OrderState.Accepted);
+            
+            if (!orderIsAccepted)
+            {
+                var failures = new ValidationFailure[] { };
+                throw new ValidationException(failures);
+            }
+
             var state = new State(OrderState.InProgress, "Order marked in progress");
             order.OrderStates.Add(state);
 

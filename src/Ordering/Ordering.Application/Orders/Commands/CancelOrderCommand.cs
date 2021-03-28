@@ -3,12 +3,14 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
+using FluentValidation.Results;
 using Hive.Common.Application.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Ordering.Application.Interfaces;
 using Ordering.Domain.Entities;
 using Ordering.Domain.Enums;
+using ValidationException = FluentValidation.ValidationException;
 
 namespace Ordering.Application.Orders.Commands
 {
@@ -48,6 +50,15 @@ namespace Ordering.Application.Orders.Commands
             }
             
             // TODO: V2: Check if order is in progress and compensate the seller a given amount.
+            if (order.OrderStates.Any(s => s.OrderState == OrderState.Invalid))
+            {
+                var failures = new ValidationFailure[]
+                {
+                    new("State", "Order was invalid.")
+                };
+                    
+                throw new ValidationException(failures);
+            }
 
             var state = new State(OrderState.Canceled, "Order canceled by user");
             order.OrderStates.Add(state);

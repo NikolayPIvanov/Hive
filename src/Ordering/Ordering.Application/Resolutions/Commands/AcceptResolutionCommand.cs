@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Hive.Billing.Contracts.IntegrationEvents;
@@ -26,6 +27,7 @@ namespace Ordering.Application.Resolutions.Commands
         {
             var resolution = await _context.Resolutions
                 .Include(o => o.Order)
+                .ThenInclude(o => o.OrderStates)
                 .FirstOrDefaultAsync(x => x.Id == request.ResolutionId, cancellationToken: cancellationToken);
 
             if (resolution == null)
@@ -33,14 +35,13 @@ namespace Ordering.Application.Resolutions.Commands
                 throw new NotFoundException(nameof(Resolution), request.ResolutionId);
             }
 
-            // TODO: Check if order is completed.       
-            if (resolution.Order.IsClosed)
+            if (resolution.Order.OrderStates.All(x => x.OrderState != OrderState.InProgress))
             {
                 throw new Exception();
             }
 
-            resolution.Order.OrderStates.Add(new State(OrderState.Completed, "Buyer accepted resolution"));
-            
+            resolution.Order.OrderStates.Add(new State(OrderState.Completed, $"Buyer accepted resolution - {request.ResolutionId}"));
+            await _context.SaveChangesAsync(cancellationToken);
             
             return Unit.Value;
         }

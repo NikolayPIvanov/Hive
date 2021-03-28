@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentValidation.Results;
 using Hive.Common.Application.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -35,6 +36,15 @@ namespace Ordering.Application.Orders.Commands
             if (order is null)
             {
                 throw new NotFoundException(nameof(Order), request.OrderNumber);
+            }
+
+            var dataIsValid = order.OrderStates.Any(s => s.OrderState == OrderState.OrderValid);
+            var balanceIsValid = order.OrderStates.Any(s => s.OrderState == OrderState.OrderValid);
+            
+            if (!dataIsValid || !balanceIsValid)
+            {
+                var failures = new ValidationFailure[] { };
+                throw new ValidationException(failures);
             }
             
             var state = new State(OrderState.Accepted, "Order accepted by seller");
