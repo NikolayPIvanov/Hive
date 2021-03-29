@@ -24,8 +24,4 @@
         <ProjectReference Include="..\Billing.Domain\Billing.Domain.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Features" />
-    </ItemGroup>
-
 </Project>

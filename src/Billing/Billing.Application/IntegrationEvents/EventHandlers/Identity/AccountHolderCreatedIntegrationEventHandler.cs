@@ -26,8 +26,8 @@ namespace Billing.Application.IntegrationEvents.EventHandlers.Identity
                 return;
             }
 
-            var accountHolder = new AccountHolder(@event.UserId);
-            _context.AccountHolders.Add(accountHolder);
+            var account = new Account(@event.UserId);
+            _context.Accounts.Add(account);
             await _context.SaveChangesAsync(default);
         }
     }
