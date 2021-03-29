@@ -76,10 +76,8 @@ namespace Billing.Application.IntegrationEvents.EventHandlers.Ordering
                 await _publisher.Publish(integrationEvent);
                 return;
             }
-
-            var mockPaymentId = Guid.NewGuid();
-            var newTransaction = new Transaction(TransactionType.Hold, @event.UnitPrice, @event.OrderNumber, account.Id,
-                mockPaymentId);
+            
+            var newTransaction = new Transaction(TransactionType.Hold, @event.UnitPrice, account.Id, 1, @event.OrderNumber);
             _context.Transactions.Add(newTransaction);
             
             await _publisher.Publish(integrationEvent with {Reason = "User has enough balance", IsValid = true});

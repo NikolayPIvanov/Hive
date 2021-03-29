@@ -34,7 +34,7 @@ namespace Billing.Domain
             AccountHolder = new AccountHolder(userId);
         }
         
-        public Guid Id { get; set; }
+        public int Id { get; set; }
 
         public int AccountHolderId { get; set; }
         

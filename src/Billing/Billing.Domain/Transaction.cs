@@ -9,7 +9,7 @@ namespace Billing.Domain
         {
         }
         
-        public Transaction(TransactionType type, decimal amount, Guid orderNumber, Guid accountId, Guid paymentMethodId) : this()
+        public Transaction(TransactionType type, decimal amount, int accountId, int paymentMethodId, Guid? orderNumber) : this()
         {
             Amount = amount;
             OrderNumber = orderNumber;
@@ -24,12 +24,12 @@ namespace Billing.Domain
 
         public decimal Amount { get; set; }
 
-        public Guid OrderNumber { get; set; }
+        public Guid? OrderNumber { get; set; }
 
-        public Guid AccountId { get; set; }
+        public int AccountId { get; set; }
 
         public Account Account { get; set; }
         
-        public Guid PaymentMethodId { get; set; }
+        public int PaymentMethodId { get; set; }
     }
 }
