@@ -11,10 +11,6 @@ namespace Hive.Gig.Infrastructure.Persistence.Configurations
             builder.HasKey(g => g.Id);
             builder.Property(g => g.Title).HasMaxLength(50).IsRequired();
             builder.Property(g => g.IsDraft).IsRequired();
-            
-            builder.HasOne(g => g.Seller)
-                .WithMany(s => s.Gigs)
-                .HasForeignKey(g => g.SellerId);
 
             builder.HasOne(g => g.Category)
                 .WithMany()
