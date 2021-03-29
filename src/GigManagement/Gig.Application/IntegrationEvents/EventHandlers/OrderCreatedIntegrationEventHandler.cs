@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Consul;
 using DotNetCore.CAP;
 using Hive.Common.Application.Interfaces;
 using Hive.Gig.Application.Interfaces;
@@ -27,7 +28,6 @@ namespace Hive.Gig.Application.IntegrationEvents
             var reason = $"Gig with id {@event.GigId} was not found";
             var gig = await _context.Gigs
                 .Include(g => g.Packages)
-                // TODO: Include seller
                 .FirstOrDefaultAsync(g => g.Id == @event.GigId);
         
             if (gig is null)
@@ -50,6 +50,15 @@ namespace Hive.Gig.Application.IntegrationEvents
             if (!priceIsSame)
             {
                 reason = $"Order for package with id {@event.PackageId} was passed with price {@event.UnitPrice} but it was {package.Price}";
+                var invalidationEvent = new OrderInvalidIntegrationEvent(@event.OrderNumber, reason);
+                await _publisher.Publish(invalidationEvent);
+                return;
+            }
+
+            var sellerIdIsValid = gig.SellerId == @event.SellerId;
+            if (!sellerIdIsValid) 
+            {
+                reason = $"Order {@event.OrderNumber} had invalid seller id {@event.SellerId}";
                 var invalidationEvent = new OrderInvalidIntegrationEvent(@event.OrderNumber, reason);
                 await _publisher.Publish(invalidationEvent);
                 return;

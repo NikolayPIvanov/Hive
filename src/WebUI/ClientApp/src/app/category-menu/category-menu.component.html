@@ -1,9 +1,0 @@
-<mat-nav-list class="inline-list" *ngIf="(isAuthenticated | async)">
-    <a mat-list-item *ngFor="let category of $categories | async"> 
-        <button mat-button [matMenuTriggerFor]="animals">{{ category.title }}</button>
-        <mat-menu #animals="matMenu">
-            <button mat-menu-item [matMenuTriggerFor]="vertebrates">Vertebrates</button>
-            <button mat-menu-item [matMenuTriggerFor]="invertebrates">Invertebrates</button>
-        </mat-menu>          
-    </a>
-</mat-nav-list>

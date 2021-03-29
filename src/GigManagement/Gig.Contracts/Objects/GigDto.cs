@@ -13,6 +13,8 @@ namespace Hive.Gig.Contracts.Objects
         public int CategoryId { get; set; }
 
         public string Category { get; set; }
+        
+        public string SellerId { get; set; }
 
         public ICollection<string> Tags { get; set; }
         

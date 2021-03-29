@@ -20,6 +20,8 @@ namespace Hive.Gig.Application.Interfaces
         
         DbSet<Question> Questions { get; set; }
         
+        DbSet<Seller> Sellers { get; set; }
+        
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }
 }

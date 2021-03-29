@@ -9,6 +9,11 @@ namespace Hive.Gig.Domain.Entities
         {
             Gigs = new HashSet<Gig>();
         }
+
+        public Seller(string userId) : this()
+        {
+            UserId = userId;
+        }
         
         public int Id { get; set; }
 
