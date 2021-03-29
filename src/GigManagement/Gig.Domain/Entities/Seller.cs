@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Hive.Common.Domain;
 
 namespace Hive.Gig.Domain.Entities

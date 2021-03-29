@@ -7,7 +7,6 @@ namespace Ordering.Application.Interfaces
 {
     public interface IOrderingContext
     {
-        public string Schema { get; }
         DbSet<Order> Orders { get; set; }
         
         DbSet<State> OrderStates { get; set; }

@@ -20,8 +20,6 @@ namespace Ordering.Infrastructure.Persistence
         {
             _dateTimeService = dateTimeService;
         }
-
-        public string Schema => DefaultSchema;
         
         public DbSet<Order> Orders { get; set; }
         public DbSet<State> OrderStates { get; set; }

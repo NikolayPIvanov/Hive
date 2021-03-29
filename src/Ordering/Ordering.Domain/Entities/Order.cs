@@ -21,7 +21,10 @@ namespace Ordering.Domain.Entities
             OrderedBy = userId;
             SellerId = sellerId;
             Requirement = new Requirement(requirements);
-            OrderStates = new HashSet<State> {State.Initial()};
+            OrderStates = new HashSet<State>
+            {
+                State.Initial()
+            };
         }
         
         public int Id { get; set; }
