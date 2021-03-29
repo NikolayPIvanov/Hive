@@ -39,7 +39,7 @@ namespace Ordering.Application.Orders.Commands
             }
 
             var dataIsValid = order.OrderStates.Any(s => s.OrderState == OrderState.OrderValid);
-            var balanceIsValid = order.OrderStates.Any(s => s.OrderState == OrderState.OrderValid);
+            var balanceIsValid = order.OrderStates.Any(s => s.OrderState == OrderState.UserBalanceValid);
             
             if (!dataIsValid || !balanceIsValid)
             {
