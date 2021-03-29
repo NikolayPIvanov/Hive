@@ -31,7 +31,7 @@ namespace Ordering.Application.Orders.Queries
             return await _context.Orders
                 .Include(o => o.Requirement)
                 .Include(o => o.OrderStates)
-                .Where(o => o.OrderedBy == userId)
+                .Where(o => o.BuyerId == 1)
                 .AsNoTracking()
                 .ProjectToListAsync<OrderDto>(_mapper.ConfigurationProvider);
         }

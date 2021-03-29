@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Consul;
 using DotNetCore.CAP;
 using Hive.Common.Application.Interfaces;
 using Hive.Gig.Application.Interfaces;
@@ -8,31 +7,32 @@ using Hive.Gig.Contracts.IntegrationEvents;
 using Microsoft.EntityFrameworkCore;
 using Ordering.Contracts.IntegrationEvents;
 
-namespace Hive.Gig.Application.IntegrationEvents
+namespace Hive.Gig.Application.IntegrationEvents.EventHandlers
 {
-    public class OrderCreatedIntegrationEventHandler : ICapSubscribe
+    public class OrderPlacedIntegrationEventHandler : ICapSubscribe
     {
         private readonly IGigManagementContext _context;
         private readonly IIntegrationEventPublisher _publisher;
 
-        public OrderCreatedIntegrationEventHandler(IGigManagementContext context, IIntegrationEventPublisher publisher)
+        public OrderPlacedIntegrationEventHandler(IGigManagementContext context, IIntegrationEventPublisher publisher)
         {
             _context = context;
             _publisher = publisher;
         }
         
-        // TODO: Refactor
-        [CapSubscribe(nameof(OrderCreatedIntegrationEvent))] 
-        public async Task Handle(OrderCreatedIntegrationEvent @event)
+        [CapSubscribe(nameof(OrderPlacedIntegrationEvent))] 
+        public async Task Handle(OrderPlacedIntegrationEvent @event)
         {
-            var reason = $"Gig with id {@event.GigId} was not found";
             var gig = await _context.Gigs
                 .Include(g => g.Packages)
                 .FirstOrDefaultAsync(g => g.Id == @event.GigId);
-        
+            
+            var reason = $"Gig with id {@event.GigId} was not found";
+            var integrationEvent = new OrderValidatedIntegrationEvent(@event.OrderNumber, reason, IsValid: false);
+            
             if (gig is null)
             {
-                var invalidationEvent = new OrderInvalidIntegrationEvent(@event.OrderNumber, reason);
+                var invalidationEvent = new OrderValidatedIntegrationEvent(@event.OrderNumber, reason);
                 await _publisher.Publish(invalidationEvent);
                 return;
             }
@@ -41,8 +41,7 @@ namespace Hive.Gig.Application.IntegrationEvents
             if (package is null)
             {
                 reason = $"Package with id {@event.PackageId} was not found for gig with id {@event.GigId}";
-                var invalidationEvent = new OrderInvalidIntegrationEvent(@event.OrderNumber, reason);
-                await _publisher.Publish(invalidationEvent);
+                await _publisher.Publish(integrationEvent  with { Reason = reason});
                 return;
             }
 
@@ -50,8 +49,7 @@ namespace Hive.Gig.Application.IntegrationEvents
             if (!priceIsSame)
             {
                 reason = $"Order for package with id {@event.PackageId} was passed with price {@event.UnitPrice} but it was {package.Price}";
-                var invalidationEvent = new OrderInvalidIntegrationEvent(@event.OrderNumber, reason);
-                await _publisher.Publish(invalidationEvent);
+                await _publisher.Publish(integrationEvent  with { Reason = reason});
                 return;
             }
 
@@ -59,13 +57,12 @@ namespace Hive.Gig.Application.IntegrationEvents
             if (!sellerIdIsValid) 
             {
                 reason = $"Order {@event.OrderNumber} had invalid seller id {@event.SellerId}";
-                var invalidationEvent = new OrderInvalidIntegrationEvent(@event.OrderNumber, reason);
-                await _publisher.Publish(invalidationEvent);
+                await _publisher.Publish(integrationEvent  with { Reason = reason});
                 return;
             }
 
-            var confirmationEvent = new OrderDataConfirmationIntegrationEvent(@event.OrderNumber, "Order details are valid.");
-            await _publisher.Publish(confirmationEvent);
+            reason = "Order details are valid.";
+            await _publisher.Publish(integrationEvent  with { Reason = reason, IsValid = true});
         }
     }
 }

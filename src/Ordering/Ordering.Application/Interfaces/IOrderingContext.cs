@@ -14,6 +14,8 @@ namespace Ordering.Application.Interfaces
         DbSet<Requirement> Requirements { get; set; }
         
         DbSet<Resolution> Resolutions { get; set; }
+        DbSet<Buyer> Buyers { get; set; }
+        
         
         Task<int> SaveChangesAsync(CancellationToken cancellationToken);
     }

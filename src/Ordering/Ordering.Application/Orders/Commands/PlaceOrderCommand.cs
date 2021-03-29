@@ -1,25 +1,24 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
 using Hive.Common.Application.Interfaces;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Ordering.Application.Interfaces;
 using Ordering.Contracts.IntegrationEvents;
 using Ordering.Domain.Entities;
 
 namespace Ordering.Application.Orders.Commands
 {
-    public record PlaceOrderCommand(string OrderedBy, decimal UnitPrice, string Requirements,
+    public record PlaceOrderCommand(decimal UnitPrice, string Requirements,
             int SellerId, int GigId, int PackageId) : IRequest<Guid>;
 
     public class PlaceOrderCommandValidator : AbstractValidator<PlaceOrderCommand>
     {
         public PlaceOrderCommandValidator()
         {
-            RuleFor(x => x.OrderedBy)
-                .NotEmpty().WithMessage("A {PropertyName} must be provided");
-            
             RuleFor(x => x.Requirements)
                 .NotEmpty().WithMessage("A {PropertyName} must be provided");
 
@@ -54,11 +53,15 @@ namespace Ordering.Application.Orders.Commands
         
         public async Task<Guid> Handle(PlaceOrderCommand request, CancellationToken cancellationToken)
         {
+            var currentUserId = "100";
+            var buyerId = await _context.Buyers.Select(b => new {b.Id, b.UserId})
+                .FirstOrDefaultAsync(b => b.UserId == currentUserId, cancellationToken: cancellationToken);
             var order = new Order(request.UnitPrice, request.Requirements, request.GigId, request.PackageId,
-                request.OrderedBy, request.SellerId);
+                buyerId.Id, request.SellerId);
             
-            var orderCreated = new OrderCreatedIntegrationEvent(order.OrderNumber, order.UnitPrice, order.OrderedBy,
+            var orderCreated = new OrderPlacedIntegrationEvent(order.OrderNumber, order.UnitPrice, buyerId.UserId,
                 order.SellerId, order.GigId, order.PackageId);
+            
             await _publisher.Publish(orderCreated);
             
             _context.Orders.Add(order);

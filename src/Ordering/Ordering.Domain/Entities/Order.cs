@@ -13,12 +13,12 @@ namespace Ordering.Domain.Entities
             IsClosed = false;
         }
         
-        public Order(decimal price, string requirements, int gigId, int packageId, string userId, int sellerId) : this()
+        public Order(decimal price, string requirements, int gigId, int packageId, int buyerId, int sellerId) : this()
         {
             UnitPrice = price;
             GigId = gigId;
             PackageId = packageId;
-            OrderedBy = userId;
+            BuyerId = buyerId;
             SellerId = sellerId;
             Requirement = new Requirement(requirements);
             OrderStates = new HashSet<State>
@@ -32,7 +32,9 @@ namespace Ordering.Domain.Entities
         public Guid OrderNumber { get; private init; }
         public DateTime OrderedAt { get; private init; }
         public int SellerId { get; private init; }
-        public string OrderedBy { get; private init; }
+        public int BuyerId { get; private init; }
+        
+        public Buyer Buyer { get; private init; }
         
         public decimal UnitPrice { get; set; }
         public bool IsClosed { get; set; }

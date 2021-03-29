@@ -25,7 +25,8 @@ namespace Ordering.Infrastructure.Persistence
         public DbSet<State> OrderStates { get; set; }
         public DbSet<Requirement> Requirements { get; set; }
         public DbSet<Resolution> Resolutions { get; set; }
-        
+        public DbSet<Buyer> Buyers { get; set; }
+
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
          {
              foreach (Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<AuditableEntity> entry in ChangeTracker.Entries<AuditableEntity>())

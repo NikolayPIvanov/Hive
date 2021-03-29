@@ -7,27 +7,27 @@ using Ordering.Application.Interfaces;
 using Ordering.Domain.Entities;
 using Ordering.Domain.Enums;
 
-namespace Ordering.Application.IntegrationEvents.EventHandlers.OrderDataValidation
+namespace Ordering.Application.IntegrationEvents.EventHandlers.GigManagement
 {
-    public class OrderDataInvalidIntegrationEventHandler : ICapSubscribe
+    public class OrderValidatedIntegrationEventHandler : ICapSubscribe
     {
         private readonly IOrderingContext _context;
 
-        public OrderDataInvalidIntegrationEventHandler(IOrderingContext context)
+        public OrderValidatedIntegrationEventHandler(IOrderingContext context)
         {
             _context = context;
         }
         
-        [CapSubscribe(nameof(OrderInvalidIntegrationEvent), Group = "cap.hive.ordering")] 
-        public async Task Handle(OrderInvalidIntegrationEvent @event)
+        [CapSubscribe(nameof(OrderValidatedIntegrationEvent), Group = "cap.hive.ordering")] 
+        public async Task Handle(OrderValidatedIntegrationEvent @event)
         {
-            var orderStatus = await _context.Orders
+            var order = await _context.Orders
                 .Select(o => new { o.Id, o.OrderNumber })
                 .FirstOrDefaultAsync(o => o.OrderNumber == @event.OrderNumber);
 
-            var state = new State(OrderState.Invalid, @event.Reason);
+            var orderState = @event.IsValid ? OrderState.OrderValid : OrderState.Invalid;
+            var state = new State(orderState, @event.Reason, order.Id);
             _context.OrderStates.Add(state);
-
             await _context.SaveChangesAsync(default);
         }
     }
