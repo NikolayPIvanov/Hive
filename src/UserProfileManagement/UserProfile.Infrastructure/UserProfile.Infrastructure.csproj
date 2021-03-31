@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+        <AssemblyName>Hive.UserProfile.Infrastructure</AssemblyName>
+        <RootNamespace>Hive.UserProfile.Infrastructure</RootNamespace>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\UserProfile.Application\UserProfile.Application.csproj" />
+    </ItemGroup>
+
+</Project>
