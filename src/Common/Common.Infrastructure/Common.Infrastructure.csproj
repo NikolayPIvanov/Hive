@@ -10,6 +10,7 @@
 
     <ItemGroup>
       <PackageReference Include="DotNetCore.CAP" Version="5.0.0-preview-132888327" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="5.0.4" />
     </ItemGroup>
 
 </Project>

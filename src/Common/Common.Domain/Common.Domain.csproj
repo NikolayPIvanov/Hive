@@ -6,4 +6,8 @@
         <AssemblyName>Hive.Common.Domain</AssemblyName>
     </PropertyGroup>
 
+    <ItemGroup>
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="5.0.4" />
+    </ItemGroup>
+
 </Project>

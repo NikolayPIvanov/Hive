@@ -4,10 +4,15 @@
         <TargetFramework>net5.0</TargetFramework>
         <AssemblyName>Hive.UserProfile.Domain</AssemblyName>
         <RootNamespace>Hive.UserProfile.Domain</RootNamespace>
+        <Nullable>enable</Nullable>
     </PropertyGroup>
 
     <ItemGroup>
       <ProjectReference Include="..\..\Common\Common.Domain\Common.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="5.0.4" />
     </ItemGroup>
 
 </Project>
