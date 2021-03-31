@@ -2,6 +2,8 @@
 
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
+        <AssemblyName>Hive.UserProfile.Domain</AssemblyName>
+        <RootNamespace>Hive.UserProfile.Domain</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>

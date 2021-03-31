@@ -1,12 +1,9 @@
-﻿using System.Collections.Generic;
-using Hive.Common.Domain;
-
-namespace UserProfile.Domain
+﻿namespace Hive.UserProfile.Domain
 {
-    public record Language(string Value);
-
-    public record Skill(string Value);
+    using Hive.Common.Domain;
     
+    using System.Collections.Generic;
+
     public class UserProfile : AuditableEntity
     {
         private UserProfile()
@@ -16,7 +13,7 @@ namespace UserProfile.Domain
         }
         
         // TODO
-        public UserProfile(string userId, string firstName, string lastName)
+        public UserProfile(string userId, string firstName, string lastName) : this()
         {
             UserId = userId;
             FirstName = firstName;
