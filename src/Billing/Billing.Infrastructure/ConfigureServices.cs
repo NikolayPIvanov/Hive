@@ -26,7 +26,6 @@ namespace Billing.Infrastructure
                         b => b.MigrationsAssembly(typeof(BillingContext).Assembly.FullName)));
             }
             
-            
             services.AddCap(x =>
             {
                 x.UseEntityFramework<BillingContext>();
