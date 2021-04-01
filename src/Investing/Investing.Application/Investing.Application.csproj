@@ -19,6 +19,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\Common\Common.Application\Common.Application.csproj" />
+      <ProjectReference Include="..\..\Identity\Hive.Identity.Contracts\Hive.Identity.Contracts.csproj" />
       <ProjectReference Include="..\Investing.Domain\Investing.Domain.csproj" />
     </ItemGroup>
 
