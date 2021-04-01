@@ -34,10 +34,5 @@
         public ICollection<Skill> Skills { get; private set; }
         
         public ICollection<Language> Languages { get; private set; }
-
-        public void AddSkill(string value)
-        {
-            Skills.Add(new Skill(value));
-        }
     }
 }

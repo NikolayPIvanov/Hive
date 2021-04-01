@@ -23,8 +23,4 @@
       <ProjectReference Include="..\UserProfile.Domain\UserProfile.Domain.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="UserProfiles\Queries" />
-    </ItemGroup>
-
 </Project>
