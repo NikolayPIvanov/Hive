@@ -7,7 +7,7 @@ using MediatR;
 
 namespace Hive.UserProfile.Application.UserProfiles.Queries
 {
-    public record GetUserProfileQuery(string UserProfileId) : IRequest<UserProfileDto>;
+    public record GetUserProfileQuery(int UserProfileId) : IRequest<UserProfileDto>;
 
     public class GetUserProfileQueryHandler : IRequestHandler<GetUserProfileQuery, UserProfileDto>
     {
@@ -31,5 +31,5 @@ namespace Hive.UserProfile.Application.UserProfiles.Queries
 
             return _mapper.Map<UserProfileDto>(userProfile);
         }
-    };
+    }
 }
