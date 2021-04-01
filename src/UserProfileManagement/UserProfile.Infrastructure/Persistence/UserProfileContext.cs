@@ -1,21 +1,21 @@
-﻿using System.Reflection;
-using System.Threading;
-using System.Threading.Tasks;
-using Hive.Common.Application.Interfaces;
-using Hive.Common.Domain;
-using Microsoft.EntityFrameworkCore.ChangeTracking;
-
-namespace Hive.UserProfile.Infrastructure.Persistence
+﻿namespace Hive.UserProfile.Infrastructure.Persistence
 {
     using Domain;
     using Application.Interfaces;
     
+    using Common.Application.Interfaces;
+    using Common.Domain;
+    
+    using System.Reflection;
+    using System.Threading;
+    using System.Threading.Tasks;
+
     using Microsoft.EntityFrameworkCore;
 
     public class UserProfileContext : DbContext, IUserProfileContext
     {
         private readonly IDateTimeService _dateTimeService;
-        private const string DefaultSchema = "userprofile";
+        private const string DefaultSchema = "up";
         
         public UserProfileContext(
             DbContextOptions<UserProfileContext> options,

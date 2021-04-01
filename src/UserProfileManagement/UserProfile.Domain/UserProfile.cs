@@ -1,6 +1,4 @@
-﻿using System.Collections.Immutable;
-
-namespace Hive.UserProfile.Domain
+﻿namespace Hive.UserProfile.Domain
 {
     using Hive.Common.Domain;
     
@@ -8,13 +6,10 @@ namespace Hive.UserProfile.Domain
 
     public class UserProfile : AuditableEntity
     {
-        private HashSet<Skill> _skills;
-        private HashSet<Language> _languages;
-
         private UserProfile()
         {
-            _languages = new HashSet<Language>(5);
-            _skills = new HashSet<Skill>(5);
+            Languages = new HashSet<Language>(5);
+            Skills = new HashSet<Skill>(5);
         }
         
         // TODO♦
@@ -27,23 +22,24 @@ namespace Hive.UserProfile.Domain
         
         public int Id { get; set; }
         
-        public string UserId { get; set; } = null!;
+        public string UserId { get; set; }
 
-        public string FirstName { get; set; } = null!;
+        public string FirstName { get; set; }
 
-        public string LastName { get; set; } = null!;
+        public string LastName { get; set; }
 
         public string? Description { get; set; }
         
         public string? Education { get; set; }
 
-        public IReadOnlyCollection<Skill> Skills => _skills.ToImmutableHashSet();
-
-        public IReadOnlyCollection<Language> Languages => _languages.ToImmutableHashSet();
+        // TODO: Set to readonly
+        public ICollection<Skill> Skills { get; private set; }
+        
+        public ICollection<Language> Languages { get; private set; }
 
         public void AddSkill(string value)
         {
-            _skills.Add(new Skill(value));
+            Skills.Add(new Skill(value));
         }
     }
 }
