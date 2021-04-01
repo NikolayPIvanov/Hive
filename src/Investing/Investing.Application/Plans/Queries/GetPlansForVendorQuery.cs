@@ -10,9 +10,6 @@ using MediatR;
 
 namespace Hive.Investing.Application.Plans.Queries
 {
-    // TODO: describe dto
-    public record PlanDto;
-
     public record GetPlansForVendorQuery(int VendorId) : IRequest<IEnumerable<PlanDto>>;
 
     public class GetPlansForVendorQueryHandler : IRequestHandler<GetPlansForVendorQuery, IEnumerable<PlanDto>>
