@@ -2,15 +2,15 @@
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Ordering.Domain.Entities;
 
-namespace Ordering.Infrastructure.Configurations
+namespace Ordering.Infrastructure.Persistence.Configurations
 {
     public class ResolutionConfiguration : IEntityTypeConfiguration<Resolution>
     {
         public void Configure(EntityTypeBuilder<Resolution> builder)
         {
-            builder.HasOne(r => r.Order)
-                .WithOne(o => o.Resolution)
-                .HasForeignKey<Order>(o => o.ResolutionId);
+            builder.Property(x => x.Version).IsRequired();
+            builder.Property(x => x.Location).IsRequired();
+            builder.Property(x => x.IsApproved).IsRequired();
         }
     }
 }

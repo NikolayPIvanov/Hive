@@ -1,21 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
-using Hive.Common.Domain;
+using System.Linq;
 using Hive.Common.Domain.SeedWork;
+using Ordering.Domain.Enums;
+using Ordering.Domain.ValueObjects;
 
 namespace Ordering.Domain.Entities
 {
     public class Order : Entity
     {
-        private Order() : base()
+        private Order()
         {
-            OrderNumber = Guid.NewGuid();
-            OrderedAt = DateTime.UtcNow;
-            IsClosed = false;
+            Resolutions = new HashSet<Resolution>();
+            IsClosed = OrderStates.Any(s => s.OrderState == OrderState.Canceled || s.OrderState == OrderState.Declined || s.OrderState == OrderState.Completed);
         }
         
         public Order(decimal price, string requirements, int gigId, int packageId, int buyerId, int sellerId) : this()
         {
+            OrderNumber = Guid.NewGuid();
+            OrderedAt = DateTime.UtcNow;
             UnitPrice = price;
             GigId = gigId;
             PackageId = packageId;
@@ -27,9 +30,7 @@ namespace Ordering.Domain.Entities
                 State.Initial()
             };
         }
-        
-        public int Id { get; set; }
-        
+                
         public Guid OrderNumber { get; private init; }
         public DateTime OrderedAt { get; private init; }
         public int SellerId { get; private init; }
@@ -38,17 +39,15 @@ namespace Ordering.Domain.Entities
         public Buyer Buyer { get; private init; }
         
         public decimal UnitPrice { get; set; }
-        public bool IsClosed { get; set; }
+        public bool IsClosed { get; private set; }
         
         public int GigId { get; private init; }
         public int PackageId { get; private init; }
-        public int RequirementId { get; private init; }
+        public int RequirementId { get; private set; }
         public Requirement Requirement { get; private init; }
         
-        public int? ResolutionId { get; set; }
+        public ICollection<Resolution> Resolutions { get; private set; }
         
-        public Resolution Resolution { get; set; }
-        
-        public ICollection<State> OrderStates { get; set; }
+        public ICollection<State> OrderStates { get; private set; }
     }
 }

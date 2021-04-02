@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Ordering.Application.Interfaces;
 using Ordering.Domain.Entities;
 using Ordering.Domain.Enums;
+using Ordering.Domain.ValueObjects;
 
 namespace Ordering.Application.IntegrationEvents.EventHandlers.Billing
 {
@@ -22,12 +23,12 @@ namespace Ordering.Application.IntegrationEvents.EventHandlers.Billing
         public async Task Handle(BuyerBalanceVerifiedIntegrationEvent @event)
         {
             var order = await _context.Orders
-                .Select(o => new {o.Id, o.OrderNumber})
+                .Select(o => new {o.Id, o.OrderNumber, o.OrderStates})
                 .FirstOrDefaultAsync(o => o.OrderNumber == @event.OrderNumber);
 
             var orderState = @event.IsValid ? OrderState.UserBalanceValid : OrderState.Invalid;
-            var state = new State(orderState, @event.Reason, order.Id);
-            _context.OrderStates.Add(state);
+            var state = new State(orderState, @event.Reason);
+            order.OrderStates.Add(state);
 
             await _context.SaveChangesAsync(default);
         }

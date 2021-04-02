@@ -10,20 +10,19 @@ using Ordering.Domain.Entities;
 
 namespace Ordering.Infrastructure.Persistence
 {
-    public class OrderingContext : DbContext, IOrderingContext
+    public class OrderingDbContext : DbContext, IOrderingContext
     {
         private readonly IDateTimeService _dateTimeService;
         private const string DefaultSchema = "ordering";
         
-        public OrderingContext(
-            DbContextOptions<OrderingContext> options,
+        public OrderingDbContext(
+            DbContextOptions<OrderingDbContext> options,
             IDateTimeService dateTimeService) : base(options)
         {
             _dateTimeService = dateTimeService;
         }
         
         public DbSet<Order> Orders { get; set; }
-        public DbSet<State> OrderStates { get; set; }
         public DbSet<Requirement> Requirements { get; set; }
         public DbSet<Resolution> Resolutions { get; set; }
         public DbSet<Buyer> Buyers { get; set; }

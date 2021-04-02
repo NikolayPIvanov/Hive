@@ -1,10 +1,10 @@
-﻿using Common.Infrastructure.Services;
-using Hive.Common.Core.Interfaces;
+﻿using Hive.Common.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Ordering.Application.Interfaces;
 using Ordering.Infrastructure.Persistence;
+using Ordering.Infrastructure.Services;
 
 namespace Ordering.Infrastructure
 {
@@ -16,20 +16,20 @@ namespace Ordering.Infrastructure
             var sqlServerConnectionString = configuration.GetConnectionString("DefaultConnection");
             if (useInMemory)
             {
-                services.AddDbContext<OrderingContext>(options =>
+                services.AddDbContext<OrderingDbContext>(options =>
                     options.UseInMemoryDatabase("LooselyHive"));
             }
             else
             {
-                services.AddDbContext<OrderingContext>(options =>
+                services.AddDbContext<OrderingDbContext>(options =>
                     options.UseSqlServer(
                         sqlServerConnectionString,
-                        b => b.MigrationsAssembly(typeof(OrderingContext).Assembly.FullName)));
+                        b => b.MigrationsAssembly(typeof(OrderingDbContext).Assembly.FullName)));
             }
 
             services.AddCap(x =>
             {
-                x.UseEntityFramework<OrderingContext>();
+                x.UseEntityFramework<OrderingDbContext>();
 
                 if (!useInMemory)
                 {
@@ -48,7 +48,7 @@ namespace Ordering.Infrastructure
                 x.UseDashboard(opt => { opt.PathMatch = "/cap"; });
             });
 
-            services.AddScoped<IOrderingContext>(provider => provider.GetService<OrderingContext>());
+            services.AddScoped<IOrderingContext>(provider => provider.GetService<OrderingDbContext>());
             services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
             services.AddScoped<IDateTimeService, DateTimeService>();
 

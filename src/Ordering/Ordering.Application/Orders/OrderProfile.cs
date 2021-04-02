@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Ordering.Contracts;
 using Ordering.Domain.Entities;
+using Ordering.Domain.ValueObjects;
 
 namespace Ordering.Application.Orders
 {

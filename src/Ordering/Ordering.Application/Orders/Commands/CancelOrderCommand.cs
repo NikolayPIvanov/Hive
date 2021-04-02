@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using Ordering.Application.Interfaces;
 using Ordering.Domain.Entities;
 using Ordering.Domain.Enums;
+using Ordering.Domain.ValueObjects;
 using ValidationException = FluentValidation.ValidationException;
 
 namespace Ordering.Application.Orders.Commands

@@ -9,8 +9,6 @@ namespace Ordering.Application.Interfaces
     {
         DbSet<Order> Orders { get; set; }
         
-        DbSet<State> OrderStates { get; set; }
-
         DbSet<Requirement> Requirements { get; set; }
         
         DbSet<Resolution> Resolutions { get; set; }

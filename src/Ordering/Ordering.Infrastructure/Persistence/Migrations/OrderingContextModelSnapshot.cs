@@ -8,7 +8,7 @@ using Ordering.Infrastructure.Persistence;
 
 namespace Ordering.Infrastructure.Persistence.Migrations
 {
-    [DbContext(typeof(OrderingContext))]
+    [DbContext(typeof(OrderingDbContext))]
     partial class OrderingContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

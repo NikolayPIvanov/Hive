@@ -1,18 +1,27 @@
-﻿using Hive.Common.Domain;
-using Hive.Common.Domain.SeedWork;
+﻿using Hive.Common.Domain.SeedWork;
 
 namespace Ordering.Domain.Entities
 {
     public class Resolution : Entity
     {
-        public int Id { get; set; }
+        private Resolution()
+        {
+        }
 
-        public string Version { get; set; }
+        public Resolution(string version, string location, int orderId) : this()
+        {
+            Version = version;
+            Location = location;
+            OrderId = orderId;
+            IsApproved = false;
+        }
+        
+        public string Version { get; init; }
 
-        public string Location { get; set; }
+        public string Location { get; init; }
 
-        public int OrderId { get; set; }
+        public int OrderId { get; init; }
 
-        public Order Order { get; set; }
+        public bool IsApproved { get; set; }
     }
 }

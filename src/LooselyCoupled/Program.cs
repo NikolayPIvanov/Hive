@@ -26,7 +26,7 @@ namespace Hive.LooselyCoupled
                 try
                 {
                     // TODO: Refactor
-                    var context = services.GetRequiredService<OrderingContext>();
+                    var context = services.GetRequiredService<OrderingDbContext>();
 
                     if (context.Database.IsSqlServer())
                     {

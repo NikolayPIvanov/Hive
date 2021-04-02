@@ -8,6 +8,7 @@ using Ordering.Application.Interfaces;
 using Ordering.Application.Orders.EventHandlers;
 using Ordering.Domain.Entities;
 using Ordering.Domain.Enums;
+using Ordering.Domain.ValueObjects;
 
 namespace Ordering.Application.IntegrationEvents.EventHandlers.GigManagement
 {
@@ -26,18 +27,18 @@ namespace Ordering.Application.IntegrationEvents.EventHandlers.GigManagement
         public async Task Handle(OrderValidatedIntegrationEvent @event)
         {
             var order = await _context.Orders
-                .Select(o => new { o.Id, o.OrderNumber, o.UnitPrice, UserId = o.Buyer.UserId})
+                .Select(o => new { o.Id, o.OrderNumber, o.UnitPrice, o.Buyer.UserId, o.OrderStates})
                 .FirstOrDefaultAsync(o => o.OrderNumber == @event.OrderNumber);
 
             var orderState = @event.IsValid ? OrderState.OrderValid : OrderState.Invalid;
-            var state = new State(orderState, @event.Reason, order.Id);
+            var state = new State(orderState, @event.Reason);
 
             if (orderState == OrderState.OrderValid)
             {
                 await _mediator.Publish(new OrderValidatedEvent(@event.OrderNumber, order.UnitPrice, order.UserId));
             }
 
-            _context.OrderStates.Add(state);
+            order.OrderStates.Add(state);
             await _context.SaveChangesAsync(default);
         }
     }
