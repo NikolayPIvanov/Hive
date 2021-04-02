@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
-using Hive.Common.Application.Mappings;
+using Hive.Common.Core.Mappings;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Ordering.Application.Interfaces;

@@ -3,7 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Billing.Application.Interfaces;
 using Billing.Domain;
-using Hive.Common.Application.Exceptions;
+using Hive.Common.Core.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

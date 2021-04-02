@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Hive.Common.Application.Exceptions;
+using Hive.Common.Core.Exceptions;
 using Hive.UserProfile.Application.Interfaces;
 using Hive.UserProfile.Domain;
 using MediatR;

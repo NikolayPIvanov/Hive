@@ -6,7 +6,7 @@ using Hive.Common.Domain.SeedWork;
 using Hive.Gig.Application.Interfaces;
 using Hive.Gig.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
-using IDateTimeService = Hive.Common.Application.Interfaces.IDateTimeService;
+using IDateTimeService = Hive.Common.Core.Interfaces.IDateTimeService;
 
 namespace Hive.Gig.Infrastructure.Persistence
 {

@@ -5,7 +5,7 @@ using Billing.Application.Interfaces;
 using Billing.Domain;
 using DotNetCore.CAP;
 using Hive.Billing.Contracts.IntegrationEvents;
-using Hive.Common.Application.Interfaces;
+using Hive.Common.Core.Interfaces;
 using Hive.Gig.Contracts.IntegrationEvents;
 using Microsoft.EntityFrameworkCore;
 using Ordering.Contracts.IntegrationEvents;

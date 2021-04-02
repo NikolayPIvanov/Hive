@@ -2,7 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
-using Hive.Common.Application.Exceptions;
+using Hive.Common.Core.Exceptions;
 using Hive.Gig.Application.Interfaces;
 using Hive.Gig.Contracts.Objects;
 using MediatR;

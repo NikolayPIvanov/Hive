@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
-using Hive.Common.Application.Mappings;
+using Hive.Common.Core.Mappings;
 using Hive.Investing.Application.Interfaces;
 using MediatR;
 

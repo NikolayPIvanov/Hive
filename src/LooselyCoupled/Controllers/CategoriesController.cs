@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Hive.Common.Application.Models;
+using Hive.Common.Core.Models;
 using Hive.Gig.Application.Categories.Commands;
 using Hive.Gig.Application.Categories.Queries;
 using Hive.Gig.Application.Gigs.Queries;

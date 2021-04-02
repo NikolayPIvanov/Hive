@@ -1,10 +1,11 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
-using MediatR.Pipeline;
-using Microsoft.Extensions.Logging;
-
-namespace Hive.Common.Application.Behaviours
+﻿namespace Hive.Common.Core.Behaviours
 {
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
+    
+    using MediatR.Pipeline;
+
     public class LoggingBehaviour<TRequest> : IRequestPreProcessor<TRequest>
     {
         private readonly ILogger _logger;
@@ -18,7 +19,7 @@ namespace Hive.Common.Application.Behaviours
         {
             var requestName = typeof(TRequest).Name;
             var userId = string.Empty;
-            string userName = string.Empty;
+            var userName = string.Empty;
 
             _logger.LogInformation("Hive Request: {Name} {@UserId} {@UserName} {@Request}",
                 requestName, userId, userName, request);

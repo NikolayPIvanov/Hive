@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Hive.Common.Application.Exceptions
+namespace Hive.Common.Core.Exceptions
 {
     public class ForbiddenAccessException : Exception
     {

@@ -8,7 +8,7 @@ using Common.Infrastructure.Services;
 using Duende.IdentityServer;
 using Duende.IdentityServer.EntityFramework.DbContexts;
 using Duende.IdentityServer.EntityFramework.Mappers;
-using Hive.Common.Application.Interfaces;
+using Hive.Common.Core.Interfaces;
 using Hive.Identity.Data;
 using Hive.Identity.Services;
 using IdentityServerHost.Models;

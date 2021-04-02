@@ -1,11 +1,11 @@
 ﻿using System.Reflection;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Hive.Common.Application
+namespace Hive.Common.Core
 {
     public static class ScrutorRegister
     {
-        public static IServiceCollection ScanFor<T>(this IServiceCollection services, Assembly[] assemblies)
+        public static IServiceCollection AddOfType<T>(this IServiceCollection services, Assembly[] assemblies)
         {
             services.Scan(scan =>
                 scan.FromAssemblies(assemblies)

@@ -3,10 +3,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Hive.Common.Application.Models;
+using Hive.Common.Core.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Hive.Common.Application.Mappings
+namespace Hive.Common.Core.Mappings
 {
     public static class MappingExtensions
     {

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-namespace Hive.Common.Application.Models
+namespace Hive.Common.Core.Models
 {
     public class Result
     {

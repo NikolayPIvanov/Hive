@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Hive.Common.Application.Interfaces
+namespace Hive.Common.Core.Interfaces
 {
     public interface IDateTimeService
     {

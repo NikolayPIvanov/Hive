@@ -2,8 +2,8 @@
 using Billing.Application.IntegrationEvents;
 using DotNetCore.CAP;
 using FluentValidation;
-using Hive.Common.Application;
-using Hive.Common.Application.Behaviours;
+using Hive.Common.Core;
+using Hive.Common.Core.Behaviours;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

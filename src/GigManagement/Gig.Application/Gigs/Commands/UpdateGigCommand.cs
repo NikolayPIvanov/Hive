@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation;
-using Hive.Common.Application.Exceptions;
+using Hive.Common.Core.Exceptions;
 using Hive.Gig.Application.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

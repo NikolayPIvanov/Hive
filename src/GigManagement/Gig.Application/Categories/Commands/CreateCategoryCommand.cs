@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
-using Hive.Common.Application.Interfaces;
+using Hive.Common.Core.Interfaces;
 using Hive.Gig.Application.Interfaces;
 using Hive.Gig.Contracts.IntegrationEvents;
 using Hive.Gig.Domain.Entities;

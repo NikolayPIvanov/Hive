@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
-using Hive.Common.Application.Interfaces;
+using Hive.Common.Core.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Ordering.Application.Interfaces;

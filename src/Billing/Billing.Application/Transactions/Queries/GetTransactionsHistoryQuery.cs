@@ -8,9 +8,9 @@ using AutoMapper.QueryableExtensions;
 using Billing.Application.Interfaces;
 using Billing.Domain;
 using Hive.Billing.Contracts.Objects;
-using Hive.Common.Application.Exceptions;
-using Hive.Common.Application.Mappings;
-using Hive.Common.Application.Models;
+using Hive.Common.Core.Exceptions;
+using Hive.Common.Core.Mappings;
+using Hive.Common.Core.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 

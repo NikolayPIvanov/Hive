@@ -4,9 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
 using MediatR;
-using ValidationException = Hive.Common.Application.Exceptions;
 
-namespace Hive.Common.Application.Behaviours
+namespace Hive.Common.Core.Behaviours
 {
     public class ValidationBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
         where TRequest : IRequest<TResponse>

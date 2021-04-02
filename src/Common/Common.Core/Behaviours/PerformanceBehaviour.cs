@@ -1,11 +1,12 @@
-﻿using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
-using MediatR;
-using Microsoft.Extensions.Logging;
-
-namespace Hive.Common.Application.Behaviours
+﻿namespace Hive.Common.Core.Behaviours
 {
+    using System.Diagnostics;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Microsoft.Extensions.Logging;
+    
+    using MediatR;
+
     public class PerformanceBehaviour<TRequest, TResponse> : IPipelineBehavior<TRequest, TResponse>
     {
         private readonly Stopwatch _timer;
@@ -31,15 +32,13 @@ namespace Hive.Common.Application.Behaviours
 
             var elapsedMilliseconds = _timer.ElapsedMilliseconds;
 
-            if (elapsedMilliseconds > 500)
-            {
-                var requestName = typeof(TRequest).Name;
-                var userId = string.Empty;
-                var userName = string.Empty;
+            if (elapsedMilliseconds <= 500) return response;
+            var requestName = typeof(TRequest).Name;
+            var userId = string.Empty;
+            var userName = string.Empty;
 
-                _logger.LogWarning("Hive Long Running Request: {Name} ({ElapsedMilliseconds} milliseconds) {@UserId} {@UserName} {@Request}",
-                    requestName, elapsedMilliseconds, userId, userName, request);
-            }
+            _logger.LogWarning("Hive Long Running Request: {Name} ({ElapsedMilliseconds} milliseconds) {@UserId} {@UserName} {@Request}",
+                requestName, elapsedMilliseconds, userId, userName, request);
 
             return response;
         }

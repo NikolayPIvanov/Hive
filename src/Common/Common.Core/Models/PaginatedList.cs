@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 
-namespace Hive.Common.Application.Models
+namespace Hive.Common.Core.Models
 {
     public record PaginatedQuery(int PageNumber = 1, int PageSize = 10);
     public class PaginatedList<T> 

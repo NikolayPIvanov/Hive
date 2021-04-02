@@ -1,11 +1,10 @@
-﻿using Hive.Common.Domain.SeedWork;
+﻿using Hive.Common.Core.Interfaces;
+using Hive.Common.Domain.SeedWork;
 
 namespace Hive.UserProfile.Infrastructure.Persistence
 {
     using Domain;
     using Application.Interfaces;
-    
-    using Common.Application.Interfaces;
     using Common.Domain;
     
     using System.Reflection;

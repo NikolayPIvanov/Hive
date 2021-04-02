@@ -5,12 +5,12 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Common.Application\Common.Application.csproj" />
+      <PackageReference Include="DotNetCore.CAP" Version="5.0.0-preview-132888327" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="5.0.4" />
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="DotNetCore.CAP" Version="5.0.0-preview-132888327" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="5.0.4" />
+      <ProjectReference Include="..\Common.Core\Common.Core.csproj" />
     </ItemGroup>
 
 </Project>

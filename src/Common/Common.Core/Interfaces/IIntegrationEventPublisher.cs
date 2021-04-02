@@ -1,8 +1,7 @@
 ﻿using System.Threading.Tasks;
-using Hive.Common.Domain;
 using Hive.Common.Domain.SeedWork;
 
-namespace Hive.Common.Application.Interfaces
+namespace Hive.Common.Core.Interfaces
 {
     public interface IIntegrationEventPublisher
     {

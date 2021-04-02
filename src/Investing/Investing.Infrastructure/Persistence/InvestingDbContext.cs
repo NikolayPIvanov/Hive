@@ -1,4 +1,4 @@
-﻿using Hive.Common.Application.Interfaces;
+﻿using Hive.Common.Core.Interfaces;
 using Hive.Investing.Application.Interfaces;
 using Hive.Investing.Domain.Entities;
 using Microsoft.EntityFrameworkCore;

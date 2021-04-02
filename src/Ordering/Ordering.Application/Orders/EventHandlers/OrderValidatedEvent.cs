@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Hive.Common.Application.Interfaces;
+using Hive.Common.Core.Interfaces;
 using MediatR;
 using Ordering.Contracts.IntegrationEvents;
 

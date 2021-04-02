@@ -1,6 +1,6 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Hive.Common.Application.Interfaces;
+using Hive.Common.Core.Interfaces;
 using Hive.Identity.Contracts.IntegrationEvents;
 
 namespace Hive.Identity.Services
