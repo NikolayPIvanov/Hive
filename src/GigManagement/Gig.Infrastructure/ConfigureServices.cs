@@ -1,7 +1,7 @@
-﻿using Common.Infrastructure.Services;
-using Hive.Common.Core.Interfaces;
+﻿using Hive.Common.Core.Interfaces;
 using Hive.Gig.Application.Interfaces;
 using Hive.Gig.Infrastructure.Persistence;
+using Hive.Gig.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -49,8 +49,8 @@ namespace Hive.Gig.Infrastructure
             });
 
             services.AddScoped<IGigManagementDbContext>(provider => provider.GetService<GigManagementDbContext>());
-            // services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
-            // services.AddScoped<IDateTimeService, DateTimeService>();
+            services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
+            services.AddScoped<IDateTimeService, DateTimeService>();
 
             return services;
         }

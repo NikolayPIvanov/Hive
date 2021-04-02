@@ -1,5 +1,4 @@
-﻿using Hive.Common.Domain;
-using Hive.Common.Domain.SeedWork;
+﻿using Hive.Common.Domain.SeedWork;
 
 namespace Hive.Identity.Contracts.IntegrationEvents
 {

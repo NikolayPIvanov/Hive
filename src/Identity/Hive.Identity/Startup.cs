@@ -1,10 +1,7 @@
 ﻿// Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
-
 using System.Linq;
-using System.Reflection;
-using Common.Infrastructure.Services;
 using Duende.IdentityServer;
 using Duende.IdentityServer.EntityFramework.DbContexts;
 using Duende.IdentityServer.EntityFramework.Mappers;
@@ -65,7 +62,6 @@ namespace Hive.Identity
 
             services.AddScoped<IDispatcher, EventDispatcher>();
             services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
-
             
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
