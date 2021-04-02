@@ -1,9 +1,10 @@
 ﻿using Hive.Common.Domain;
+using Hive.Common.Domain.SeedWork;
 
 namespace Billing.Domain
 {
     // TODO: Not used in business logic
-    public class PaymentMethod : AuditableEntity
+    public class PaymentMethod : Entity
     {
         private PaymentMethod()
         {

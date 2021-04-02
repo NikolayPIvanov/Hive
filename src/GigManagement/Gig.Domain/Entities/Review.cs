@@ -1,8 +1,9 @@
 ﻿using Hive.Common.Domain;
+using Hive.Common.Domain.SeedWork;
 
 namespace Hive.Gig.Domain.Entities
 {
-    public class Review : AuditableEntity
+    public class Review : Entity
     {
         public int Id { get; set; }
 

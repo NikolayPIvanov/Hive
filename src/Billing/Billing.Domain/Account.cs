@@ -2,10 +2,11 @@
 using System.Collections;
 using System.Collections.Generic;
 using Hive.Common.Domain;
+using Hive.Common.Domain.SeedWork;
 
 namespace Billing.Domain
 {
-    public class AccountHolder : AuditableEntity
+    public class AccountHolder : Entity
     {
         public AccountHolder(string userId)
         {
@@ -21,7 +22,7 @@ namespace Billing.Domain
         public int AccountId { get; set; }
     }
     
-    public class Account : AuditableEntity
+    public class Account : Entity
     {
         private Account()
         {

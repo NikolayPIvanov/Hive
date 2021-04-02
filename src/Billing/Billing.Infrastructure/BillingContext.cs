@@ -5,6 +5,7 @@ using Billing.Application.Interfaces;
 using Billing.Domain;
 using Hive.Common.Application.Interfaces;
 using Hive.Common.Domain;
+using Hive.Common.Domain.SeedWork;
 using Microsoft.EntityFrameworkCore;
 
 namespace Billing.Infrastructure
@@ -30,7 +31,7 @@ namespace Billing.Infrastructure
         
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
         {
-            foreach (Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<AuditableEntity> entry in ChangeTracker.Entries<AuditableEntity>())
+            foreach (Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<Entity> entry in ChangeTracker.Entries<Entity>())
             {
                 switch (entry.State)
                 {

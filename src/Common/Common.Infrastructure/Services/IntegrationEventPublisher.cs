@@ -2,6 +2,7 @@
 using DotNetCore.CAP;
 using Hive.Common.Application.Interfaces;
 using Hive.Common.Domain;
+using Hive.Common.Domain.SeedWork;
 
 namespace Common.Infrastructure.Services
 {

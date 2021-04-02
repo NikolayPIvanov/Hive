@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using Hive.Common.Domain;
+using Hive.Common.Domain.SeedWork;
 
 namespace Hive.Investing.Domain.Entities
 {
-    public class Vendor : AuditableEntity
+    public class Vendor : Entity
     {
         private Vendor()
         {

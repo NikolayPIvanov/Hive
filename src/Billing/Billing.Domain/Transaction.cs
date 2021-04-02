@@ -1,9 +1,10 @@
 ﻿using System;
 using Hive.Common.Domain;
+using Hive.Common.Domain.SeedWork;
 
 namespace Billing.Domain
 {
-    public class Transaction : AuditableEntity
+    public class Transaction : Entity
     {
         private Transaction()
         {

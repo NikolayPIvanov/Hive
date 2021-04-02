@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using Hive.Common.Domain;
+using Hive.Common.Domain.SeedWork;
 
 namespace Ordering.Domain.Entities
 {
-    public class Order : AuditableEntity
+    public class Order : Entity
     {
         private Order() : base()
         {

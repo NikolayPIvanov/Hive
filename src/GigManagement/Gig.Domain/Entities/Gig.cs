@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using Hive.Common.Domain;
+using Hive.Common.Domain.SeedWork;
 
 namespace Hive.Gig.Domain.Entities
 {
-    public class Gig : AuditableEntity
+    public class Gig : Entity
     {
         private Gig()
         {

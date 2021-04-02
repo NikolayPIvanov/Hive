@@ -1,4 +1,5 @@
 ﻿using Hive.Common.Domain;
+using Hive.Common.Domain.SeedWork;
 
 namespace Hive.Gig.Contracts.IntegrationEvents
 {

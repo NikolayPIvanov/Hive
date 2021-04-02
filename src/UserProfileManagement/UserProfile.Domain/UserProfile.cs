@@ -1,10 +1,12 @@
-﻿namespace Hive.UserProfile.Domain
+﻿using Hive.Common.Domain.SeedWork;
+
+namespace Hive.UserProfile.Domain
 {
     using Hive.Common.Domain;
     
     using System.Collections.Generic;
 
-    public class UserProfile : AuditableEntity
+    public class UserProfile : Entity
     {
         private UserProfile()
         {

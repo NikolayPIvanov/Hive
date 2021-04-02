@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-
-namespace Hive.Common.Domain
+﻿namespace Hive.Common.Domain.SeedWork
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    
     // Learn more: https://docs.microsoft.com/en-us/dotnet/standard/microservices-architecture/microservice-ddd-cqrs-patterns/implement-value-objects
     public abstract class ValueObject
     {
@@ -40,5 +40,11 @@ namespace Hive.Common.Domain
                 .Select(x => x != null ? x.GetHashCode() : 0)
                 .Aggregate((x, y) => x ^ y);
         }
+        
+        public ValueObject GetCopy()
+        {
+            return this.MemberwiseClone() as ValueObject;
+        }
+        
     }
 }

@@ -1,10 +1,12 @@
-﻿namespace Hive.Investing.Domain.Entities
+﻿using Hive.Common.Domain.SeedWork;
+
+namespace Hive.Investing.Domain.Entities
 {
     using Hive.Common.Domain;
     
     using System.Collections.Generic;
 
-    public class Investor : AuditableEntity
+    public class Investor : Entity
     {
         private Investor()
         {

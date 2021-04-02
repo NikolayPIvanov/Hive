@@ -1,9 +1,10 @@
 ﻿using Hive.Common.Domain;
+using Hive.Common.Domain.SeedWork;
 using Hive.Gig.Domain.Enums;
 
 namespace Hive.Gig.Domain.Entities
 {
-    public class Package : AuditableEntity
+    public class Package : Entity
     {
         public int Id { get; set; }
         

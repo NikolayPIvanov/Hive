@@ -1,8 +1,9 @@
 ﻿using Hive.Common.Domain;
+using Hive.Common.Domain.SeedWork;
 
 namespace Ordering.Domain.Entities
 {
-    public class Resolution : AuditableEntity
+    public class Resolution : Entity
     {
         public int Id { get; set; }
 

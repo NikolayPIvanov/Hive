@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Hive.Common.Domain
+namespace Hive.Common.Domain.SeedWork
 {
     public record IntegrationEvent
     {

@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Hive.Common.Domain;
+using Hive.Common.Domain.SeedWork;
 using Hive.Gig.Application.Interfaces;
 using Hive.Gig.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -32,7 +33,7 @@ namespace Hive.Gig.Infrastructure.Persistence
         
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new())
         {
-            foreach (Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<AuditableEntity> entry in ChangeTracker.Entries<AuditableEntity>())
+            foreach (Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<Entity> entry in ChangeTracker.Entries<Entity>())
             {
                 switch (entry.State)
                 {

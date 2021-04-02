@@ -1,9 +1,10 @@
 ﻿using Hive.Common.Domain;
+using Hive.Common.Domain.SeedWork;
 using Ordering.Domain.Enums;
 
 namespace Ordering.Domain.Entities
 {
-    public class State : AuditableEntity
+    public class State : Entity
     {
         private State()
         {

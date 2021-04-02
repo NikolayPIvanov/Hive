@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Hive.Common.Application.Interfaces;
 using Hive.Common.Domain;
+using Hive.Common.Domain.SeedWork;
 using Microsoft.EntityFrameworkCore;
 using Ordering.Application.Interfaces;
 using Ordering.Domain.Entities;
@@ -29,7 +30,7 @@ namespace Ordering.Infrastructure.Persistence
 
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
          {
-             foreach (Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<AuditableEntity> entry in ChangeTracker.Entries<AuditableEntity>())
+             foreach (Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<Entity> entry in ChangeTracker.Entries<Entity>())
              {
                  switch (entry.State)
                  {

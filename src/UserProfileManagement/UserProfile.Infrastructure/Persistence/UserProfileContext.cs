@@ -1,4 +1,6 @@
-﻿namespace Hive.UserProfile.Infrastructure.Persistence
+﻿using Hive.Common.Domain.SeedWork;
+
+namespace Hive.UserProfile.Infrastructure.Persistence
 {
     using Domain;
     using Application.Interfaces;
@@ -30,7 +32,7 @@
         
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new())
         {
-            foreach (var entry in ChangeTracker.Entries<AuditableEntity>())
+            foreach (var entry in ChangeTracker.Entries<Entity>())
             {
                 switch (entry.State)
                 {

@@ -1,8 +1,9 @@
 ﻿using Hive.Common.Domain;
+using Hive.Common.Domain.SeedWork;
 
 namespace Hive.Gig.Domain.Entities
 {
-    public class Question : AuditableEntity
+    public class Question : Entity
     {
         private Question()
         {

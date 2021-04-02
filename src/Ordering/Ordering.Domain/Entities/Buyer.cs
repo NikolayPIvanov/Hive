@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using Hive.Common.Domain;
+using Hive.Common.Domain.SeedWork;
 
 namespace Ordering.Domain.Entities
 {
-    public class Buyer : AuditableEntity
+    public class Buyer : Entity
     {
         private Buyer()
         {
