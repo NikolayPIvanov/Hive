@@ -10,7 +10,7 @@
         }
 
         public Package(string title, string description, decimal price, double deliveryTime, DeliveryFrequency deliveryFrequency,
-            int revisions, RevisionType revisionType, int gigId) : this()
+            int? revisions, RevisionType revisionType, int gigId) : this()
         {
             Title = title;
             Description = description;

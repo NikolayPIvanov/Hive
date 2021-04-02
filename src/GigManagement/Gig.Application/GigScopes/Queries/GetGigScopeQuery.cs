@@ -14,18 +14,18 @@ namespace Hive.Gig.Application.GigScopes.Queries
 
     public class GetGigScopeQueryHandler : IRequestHandler<GetGigScopeQuery, GigScopeDto>
     {
-        private readonly IGigManagementContext _context;
+        private readonly IGigManagementDbContext _dbContext;
         private readonly IMapper _mapper;
 
-        public GetGigScopeQueryHandler(IGigManagementContext context, IMapper mapper)
+        public GetGigScopeQueryHandler(IGigManagementDbContext dbContext, IMapper mapper)
         {
-            _context = context;
+            _dbContext = dbContext;
             _mapper = mapper;
         }
         
         public async Task<GigScopeDto> Handle(GetGigScopeQuery request, CancellationToken cancellationToken)
         {
-            var gig = await _context.Gigs
+            var gig = await _dbContext.Gigs
                 .Select(x => new
                 {
                     x.Id,

@@ -14,18 +14,18 @@ namespace Hive.Gig.Application.Questions.Queries
 
     public class GetQuestionsQueryHandler : IRequestHandler<GetQuestionsQuery, IEnumerable<QuestionDto>>
     {
-        private readonly IGigManagementContext _context;
+        private readonly IGigManagementDbContext _dbContext;
         private readonly IMapper _mapper;
 
-        public GetQuestionsQueryHandler(IGigManagementContext context, IMapper mapper)
+        public GetQuestionsQueryHandler(IGigManagementDbContext dbContext, IMapper mapper)
         {
-            _context = context;
+            _dbContext = dbContext;
             _mapper = mapper;
         }
         
         public async Task<IEnumerable<QuestionDto>> Handle(GetQuestionsQuery request, CancellationToken cancellationToken)
         {
-            return await _context.Questions
+            return await _dbContext.Questions
                 .Where(q => q.GigId == request.GigId)
                 .ProjectToListAsync<QuestionDto>(_mapper.ConfigurationProvider);
         }

@@ -11,24 +11,24 @@ namespace Hive.Gig.Application.GigPackages.Commands
 
     public class DeletePackageCommandHandler : IRequestHandler<DeletePackageCommand>
     {
-        private readonly IGigManagementContext _context;
+        private readonly IGigManagementDbContext _dbContext;
 
-        public DeletePackageCommandHandler(IGigManagementContext context)
+        public DeletePackageCommandHandler(IGigManagementDbContext dbContext)
         {
-            _context = context;
+            _dbContext = dbContext;
         }
         
         public async Task<Unit> Handle(DeletePackageCommand request, CancellationToken cancellationToken)
         {
-            var entity = await _context.Packages.FindAsync(request.Id);
+            var entity = await _dbContext.Packages.FindAsync(request.Id);
 
             if (entity is null)
             {
                 throw new NotFoundException(nameof(Package), request.Id);
             }
 
-            _context.Packages.Remove(entity);
-            await _context.SaveChangesAsync(cancellationToken);
+            _dbContext.Packages.Remove(entity);
+            await _dbContext.SaveChangesAsync(cancellationToken);
             
             return Unit.Value;
         }

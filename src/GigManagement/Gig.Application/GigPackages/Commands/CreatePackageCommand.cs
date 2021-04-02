@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
 using Hive.Gig.Application.Interfaces;
@@ -6,31 +7,17 @@ using Hive.Gig.Domain.Entities;
 using Hive.Gig.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Hive.Gig.Application.GigPackages.Commands
 {
-    public class CreatePackageCommand : IRequest<int>
-    {
-        public PackageTier PackageTier { get; set; }
-        
-        public string Title { get; set; }
-        
-        public string Description { get; set; }
-        
-        public decimal Price { get; set; }
-        
-        public double DeliveryTime { get; set; }
-        
-        public DeliveryFrequency DeliveryFrequency { get; set; }
-        
-        public int Revisions { get; set; }
-        
-        public int GigId { get; set; }
-    }
+    public record CreatePackageCommand(string Title, string Description, decimal Price, PackageTier PackageTier,
+        double DeliveryTime, DeliveryFrequency DeliveryFrequency, int? Revisions, RevisionType RevisionType, int GigId) 
+        : IRequest<int>;
 
     public class CreatePackageCommandValidator : AbstractValidator<CreatePackageCommand>
     {
-        public CreatePackageCommandValidator(IGigManagementContext context)
+        public CreatePackageCommandValidator(IGigManagementDbContext dbContext)
         {
             RuleFor(x => x.Title)
                 .MaximumLength(50).WithMessage("{PropertyName} cannot have more than {MaxLength} characters.")
@@ -55,36 +42,31 @@ namespace Hive.Gig.Application.GigPackages.Commands
                 .GreaterThanOrEqualTo(1).WithMessage("{PropertyName} cannot be below {ComparisonValue}.");
 
             RuleFor(x => x.GigId)
-                .MustAsync(async (id, token) => await context.Gigs.AnyAsync(x => x.Id == id, token))
+                .MustAsync(async (id, token) => await dbContext.Gigs.AnyAsync(x => x.Id == id, token))
                 .WithMessage("Must specify a valid gig.");
         }
     }
 
     public class CreatePackageCommandHandler : IRequestHandler<CreatePackageCommand, int>
     {
-        private readonly IGigManagementContext _context;
+        private readonly IGigManagementDbContext _dbContext;
+        private readonly ILogger<CreatePackageCommand> _logger;
 
-        public CreatePackageCommandHandler(IGigManagementContext context)
+        public CreatePackageCommandHandler(IGigManagementDbContext dbContext, ILogger<CreatePackageCommand> logger)
         {
-            _context = context;
+            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
         public async Task<int> Handle(CreatePackageCommand request, CancellationToken cancellationToken)
         {
-            var package = new Package()
-            {
-                Description = request.Description,
-                Price = request.Price,
-                Revisions = request.Revisions,
-                Title = request.Title,
-                DeliveryFrequency = request.DeliveryFrequency,
-                DeliveryTime = request.DeliveryTime,
-                PackageTier = request.PackageTier,
-                GigId = request.GigId
-            };
+            var package = new Package(request.Title, request.Description, request.Price, request.DeliveryTime,
+                request.DeliveryFrequency, request.Revisions, request.RevisionType, request.GigId);
 
-            _context.Packages.Add(package);
-            await _context.SaveChangesAsync(cancellationToken);
+            await _dbContext.Packages.AddAsync(package, cancellationToken);
+            await _dbContext.SaveChangesAsync(cancellationToken);
+            
+            _logger.LogInformation("Package {@Id} for Gig with {@GigId} was created", package.Id, package.GigId);
 
             return package.Id;
         }

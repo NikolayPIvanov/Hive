@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Hive.Gig.Infrastructure.Persistence.Migrations
 {
-    [DbContext(typeof(GigManagementContext))]
+    [DbContext(typeof(GigManagementDbContext))]
     [Migration("20210320120123_Adding constraints to auditable entity")]
     partial class Addingconstraintstoauditableentity
     {

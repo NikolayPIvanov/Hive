@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Hive.Gig.Infrastructure.Persistence.Migrations
 {
-    [DbContext(typeof(GigManagementContext))]
+    [DbContext(typeof(GigManagementDbContext))]
     [Migration("20210321152007_AddingUniqueConstrantToScope")]
     partial class AddingUniqueConstrantToScope
     {

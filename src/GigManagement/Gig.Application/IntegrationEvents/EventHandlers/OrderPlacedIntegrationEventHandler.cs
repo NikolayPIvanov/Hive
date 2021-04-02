@@ -11,19 +11,19 @@ namespace Hive.Gig.Application.IntegrationEvents.EventHandlers
 {
     public class OrderPlacedIntegrationEventHandler : ICapSubscribe
     {
-        private readonly IGigManagementContext _context;
+        private readonly IGigManagementDbContext _dbContext;
         private readonly IIntegrationEventPublisher _publisher;
 
-        public OrderPlacedIntegrationEventHandler(IGigManagementContext context, IIntegrationEventPublisher publisher)
+        public OrderPlacedIntegrationEventHandler(IGigManagementDbContext dbContext, IIntegrationEventPublisher publisher)
         {
-            _context = context;
+            _dbContext = dbContext;
             _publisher = publisher;
         }
         
         [CapSubscribe(nameof(OrderPlacedIntegrationEvent))] 
         public async Task Handle(OrderPlacedIntegrationEvent @event)
         {
-            var gig = await _context.Gigs
+            var gig = await _dbContext.Gigs
                 .Include(g => g.Packages)
                 .FirstOrDefaultAsync(g => g.Id == @event.GigId);
             

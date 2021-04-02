@@ -15,18 +15,18 @@ namespace Hive.Gig.Application.Questions.Queries
     
     public class GetQuestionByIdQueryHandler : IRequestHandler<GetQuestionByIdQuery, QuestionDto>
     {
-        private readonly IGigManagementContext _context;
+        private readonly IGigManagementDbContext _dbContext;
         private readonly IMapper _mapper;
 
-        public GetQuestionByIdQueryHandler(IGigManagementContext context, IMapper mapper)
+        public GetQuestionByIdQueryHandler(IGigManagementDbContext dbContext, IMapper mapper)
         {
-            _context = context;
+            _dbContext = dbContext;
             _mapper = mapper;
         }
         
         public async Task<QuestionDto> Handle(GetQuestionByIdQuery request, CancellationToken cancellationToken)
         {
-            var entity = await _context.Questions.FindAsync(request.QuestionId);
+            var entity = await _dbContext.Questions.FindAsync(request.QuestionId);
 
             if (entity is null)
             {

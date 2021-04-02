@@ -30,7 +30,7 @@ namespace Hive.Gig.Application.GigPackages.Commands
     
     public class UpdatePackageCommandValidator : AbstractValidator<UpdatePackageCommand>
     {
-        public UpdatePackageCommandValidator(IGigManagementContext context)
+        public UpdatePackageCommandValidator(IGigManagementDbContext dbContext)
         {
             RuleFor(x => x.Title)
                 .MaximumLength(50).WithMessage("{PropertyName} cannot have more than {MaxLength} characters.")
@@ -58,16 +58,16 @@ namespace Hive.Gig.Application.GigPackages.Commands
 
     public class UpdatePackageCommandHandler : IRequestHandler<UpdatePackageCommand>
     {
-        private readonly IGigManagementContext _context;
+        private readonly IGigManagementDbContext _dbContext;
 
-        public UpdatePackageCommandHandler(IGigManagementContext context)
+        public UpdatePackageCommandHandler(IGigManagementDbContext dbContext)
         {
-            _context = context;
+            _dbContext = dbContext;
         }
         
         public async Task<Unit> Handle(UpdatePackageCommand request, CancellationToken cancellationToken)
         {
-            var entity = await _context.Packages.FindAsync(request.Id);
+            var entity = await _dbContext.Packages.FindAsync(request.Id);
 
             if (entity is null)
             {
@@ -83,8 +83,8 @@ namespace Hive.Gig.Application.GigPackages.Commands
             entity.DeliveryTime = request.DeliveryTime;
             entity.PackageTier = request.PackageTier;
 
-            _context.Packages.Update(entity);
-            await _context.SaveChangesAsync(cancellationToken);
+            _dbContext.Packages.Update(entity);
+            await _dbContext.SaveChangesAsync(cancellationToken);
 
             return Unit.Value;
         }

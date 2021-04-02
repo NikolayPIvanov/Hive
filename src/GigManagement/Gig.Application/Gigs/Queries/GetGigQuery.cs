@@ -13,18 +13,18 @@ namespace Hive.Gig.Application.Gigs.Queries
     
     public class GetGigQueryHandler : IRequestHandler<GetGigQuery, GigDto>
     {
-        private readonly IGigManagementContext _context;
+        private readonly IGigManagementDbContext _dbContext;
         private readonly IMapper _mapper;
 
-        public GetGigQueryHandler(IGigManagementContext context, IMapper mapper)
+        public GetGigQueryHandler(IGigManagementDbContext dbContext, IMapper mapper)
         {
-            _context = context;
+            _dbContext = dbContext;
             _mapper = mapper;
         }
         
         public async Task<GigDto> Handle(GetGigQuery request, CancellationToken cancellationToken)
         {
-            var entity = await _context.Gigs
+            var entity = await _dbContext.Gigs
                 .Include(g => g.GigScope)
                 .Include(g => g.Tags)
                 .Include(g => g.Category)

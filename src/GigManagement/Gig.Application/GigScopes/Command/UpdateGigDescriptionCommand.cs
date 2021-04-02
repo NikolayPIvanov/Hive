@@ -23,16 +23,16 @@ namespace Hive.Gig.Application.GigScopes.Command
     
     public class UpdateGigCommandHandler : IRequestHandler<UpdateGigScopeCommand>
     {
-        private readonly IGigManagementContext _context;
+        private readonly IGigManagementDbContext _dbContext;
 
-        public UpdateGigCommandHandler(IGigManagementContext context)
+        public UpdateGigCommandHandler(IGigManagementDbContext dbContext)
         {
-            _context = context;
+            _dbContext = dbContext;
         }
         
         public async Task<Unit> Handle(UpdateGigScopeCommand request, CancellationToken cancellationToken)
         {
-            var gig = await _context.Gigs
+            var gig = await _dbContext.Gigs
                 .Include(g => g.GigScope)
                 .FirstOrDefaultAsync(g => g.Id == request.GigId, cancellationToken: cancellationToken);
 
@@ -43,7 +43,7 @@ namespace Hive.Gig.Application.GigScopes.Command
 
             gig.GigScope.Description = request.Description;
             
-            await _context.SaveChangesAsync(cancellationToken);
+            await _dbContext.SaveChangesAsync(cancellationToken);
 
             return Unit.Value;
         }

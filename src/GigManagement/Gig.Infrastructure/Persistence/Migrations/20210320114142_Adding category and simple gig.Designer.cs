@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Hive.Gig.Infrastructure.Persistence.Migrations
 {
-    [DbContext(typeof(GigManagementContext))]
+    [DbContext(typeof(GigManagementDbContext))]
     [Migration("20210320114142_Adding category and simple gig")]
     partial class Addingcategoryandsimplegig
     {

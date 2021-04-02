@@ -12,7 +12,7 @@ namespace Hive.Gig.Application.Questions.Commands
 
     public class CreateQuestionCommandValidator : AbstractValidator<CreateQuestionCommand>
     {
-        public CreateQuestionCommandValidator(IGigManagementContext context)
+        public CreateQuestionCommandValidator(IGigManagementDbContext dbContext)
         {
             RuleFor(x => x.Question)
                 .MaximumLength(50).WithMessage("{PropertyName} cannot have more than {MaxLength} characters.")
@@ -25,26 +25,26 @@ namespace Hive.Gig.Application.Questions.Commands
                 .NotEmpty().WithMessage("A {PropertyName} must be provided");
             
             RuleFor(x => x.GigId)
-                .MustAsync(async (id, token) => await context.Gigs.AnyAsync(x => x.Id == id, token))
+                .MustAsync(async (id, token) => await dbContext.Gigs.AnyAsync(x => x.Id == id, token))
                 .WithMessage("Must specify a valid gig.");
         }
     }
     
     public class CreateQuestionCommandHandler : IRequestHandler<CreateQuestionCommand, int>
     {
-        private readonly IGigManagementContext _context;
+        private readonly IGigManagementDbContext _dbContext;
 
-        public CreateQuestionCommandHandler(IGigManagementContext context)
+        public CreateQuestionCommandHandler(IGigManagementDbContext dbContext)
         {
-            _context = context;
+            _dbContext = dbContext;
         }
         
         public async Task<int> Handle(CreateQuestionCommand request, CancellationToken cancellationToken)
         {
             var question = new Question(request.Question, request.Answer, request.GigId);
 
-            _context.Questions.Add(question);
-            await _context.SaveChangesAsync(cancellationToken);
+            _dbContext.Questions.Add(question);
+            await _dbContext.SaveChangesAsync(cancellationToken);
 
             return question.Id;
         }

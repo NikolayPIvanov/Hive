@@ -2,7 +2,7 @@
 using Hive.Gig.Contracts.Objects;
 using Hive.Gig.Domain.Entities;
 
-namespace Hive.Gig.Application.Categories
+namespace Hive.Gig.Application.Features.Categories
 {
     public class CategoriesProfile : Profile
     {

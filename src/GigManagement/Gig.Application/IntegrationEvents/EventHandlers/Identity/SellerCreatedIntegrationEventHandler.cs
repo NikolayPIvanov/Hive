@@ -9,26 +9,26 @@ namespace Hive.Gig.Application.IntegrationEvents.EventHandlers.Identity
 {
     public class SellerCreatedIntegrationEventHandler : ICapSubscribe
     {
-        private readonly IGigManagementContext _context;
+        private readonly IGigManagementDbContext _dbContext;
 
-        public SellerCreatedIntegrationEventHandler(IGigManagementContext context)
+        public SellerCreatedIntegrationEventHandler(IGigManagementDbContext dbContext)
         {
-            _context = context;
+            _dbContext = dbContext;
         }
         
         // TODO: Refactor
         [CapSubscribe(nameof(SellerCreatedIntegrationEvent))]
         public async Task Handle(SellerCreatedIntegrationEvent @event)
         {
-            var sellerIsRegistered = await _context.Sellers.AnyAsync(s => s.UserId == @event.UserId);
+            var sellerIsRegistered = await _dbContext.Sellers.AnyAsync(s => s.UserId == @event.UserId);
             if (!sellerIsRegistered)
             {
                 return;
             }
 
             var seller = new Seller(@event.UserId);
-            _context.Sellers.Add(seller);
-            await _context.SaveChangesAsync(default);
+            _dbContext.Sellers.Add(seller);
+            await _dbContext.SaveChangesAsync(default);
         }
     }
 }

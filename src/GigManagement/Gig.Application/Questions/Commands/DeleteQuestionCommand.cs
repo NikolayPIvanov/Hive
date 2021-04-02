@@ -11,24 +11,24 @@ namespace Hive.Gig.Application.Questions.Commands
     
     public class DeleteQuestionCommandHandler : IRequestHandler<DeleteQuestionCommand>
     {
-        private readonly IGigManagementContext _context;
+        private readonly IGigManagementDbContext _dbContext;
 
-        public DeleteQuestionCommandHandler(IGigManagementContext context)
+        public DeleteQuestionCommandHandler(IGigManagementDbContext dbContext)
         {
-            _context = context;
+            _dbContext = dbContext;
         }
         
         public async Task<Unit> Handle(DeleteQuestionCommand request, CancellationToken cancellationToken)
         {
-            var question = await _context.Questions.FindAsync(request.Id);
+            var question = await _dbContext.Questions.FindAsync(request.Id);
 
             if (question is null)
             {
                 throw new NotFoundException(nameof(Question), request.Id);
             }
 
-            _context.Questions.Remove(question);
-            await _context.SaveChangesAsync(cancellationToken);
+            _dbContext.Questions.Remove(question);
+            await _dbContext.SaveChangesAsync(cancellationToken);
 
             return Unit.Value;
         }

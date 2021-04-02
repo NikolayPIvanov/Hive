@@ -10,12 +10,12 @@ using IDateTimeService = Hive.Common.Core.Interfaces.IDateTimeService;
 
 namespace Hive.Gig.Infrastructure.Persistence
 {
-    public class GigManagementContext : DbContext, IGigManagementContext
+    public class GigManagementDbContext : DbContext, IGigManagementDbContext
     {
         private readonly IDateTimeService _dateTimeService;
 
-        public GigManagementContext(
-            DbContextOptions<GigManagementContext> options,
+        public GigManagementDbContext(
+            DbContextOptions<GigManagementDbContext> options,
             IDateTimeService dateTimeService) : base(options)
         {
             _dateTimeService = dateTimeService;

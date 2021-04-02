@@ -12,7 +12,7 @@ namespace Hive.Gig.Application.GigScopes.Command
 
     public class CreateGigScopeValidator : AbstractValidator<CreateGigScopeCommand>
     {
-        public CreateGigScopeValidator(IGigManagementContext context)
+        public CreateGigScopeValidator(IGigManagementDbContext dbContext)
         {
             RuleFor(x => x.Description)
                 .MaximumLength(2000).WithMessage("Description should be below 2000 characters.")
@@ -20,33 +20,33 @@ namespace Hive.Gig.Application.GigScopes.Command
                 .NotNull().WithMessage("Must provide description for gig.");
 
             RuleFor(x => x.GigId)
-                .MustAsync(async (id, token) => await context.Gigs.AnyAsync(x => x.Id == id, token))
+                .MustAsync(async (id, token) => await dbContext.Gigs.AnyAsync(x => x.Id == id, token))
                 .WithMessage("Must specify an existing gig.");
 
             RuleFor(x => x.GigId)
-                .MustAsync(async (id, token) => !(await context.GigScopes.AnyAsync(x => x.GigId == id, token)))
+                .MustAsync(async (id, token) => !(await dbContext.GigScopes.AnyAsync(x => x.GigId == id, token)))
                 .WithMessage("This gig already contains scope.");
         }
     }
 
     public class CreateGigScopeCommandHandler : IRequestHandler<CreateGigScopeCommand, int>
     {
-        private readonly IGigManagementContext _context;
+        private readonly IGigManagementDbContext _dbContext;
 
-        public CreateGigScopeCommandHandler(IGigManagementContext context)
+        public CreateGigScopeCommandHandler(IGigManagementDbContext dbContext)
         {
-            _context = context;
+            _dbContext = dbContext;
         }
         
         public async Task<int> Handle(CreateGigScopeCommand request, CancellationToken cancellationToken)
         {
             var gigScope = new GigScope(request.Description, request.GigId);
 
-            var gig = await _context.Gigs.FindAsync(request.GigId);
+            var gig = await _dbContext.Gigs.FindAsync(request.GigId);
             gig.GigScope = gigScope;
 
-            _context.GigScopes.Add(gigScope);
-            await _context.SaveChangesAsync(cancellationToken);
+            _dbContext.GigScopes.Add(gigScope);
+            await _dbContext.SaveChangesAsync(cancellationToken);
 
             return gigScope.Id;
         }

@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Hive.Gig.Application.Interfaces
 {
-    public interface IGigManagementContext
+    public interface IGigManagementDbContext
     {
         DbSet<Category> Categories { get; set; }
         

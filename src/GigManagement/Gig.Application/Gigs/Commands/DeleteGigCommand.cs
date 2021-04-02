@@ -10,24 +10,24 @@ namespace Hive.Gig.Application.Gigs.Commands
 
     public class DeleteGigCommandHandler : IRequestHandler<DeleteGigCommand>
     {
-        private readonly IGigManagementContext _context;
+        private readonly IGigManagementDbContext _dbContext;
 
-        public DeleteGigCommandHandler(IGigManagementContext context)
+        public DeleteGigCommandHandler(IGigManagementDbContext dbContext)
         {
-            _context = context;
+            _dbContext = dbContext;
         }
 
         public async Task<Unit> Handle(DeleteGigCommand request, CancellationToken cancellationToken)
         {
-            var entity = await _context.Gigs.FindAsync(request.Id);
+            var entity = await _dbContext.Gigs.FindAsync(request.Id);
 
             if (entity is null)
             {
                 throw new NotFoundException(nameof(Gig), request.Id);
             }
 
-            _context.Gigs.Remove(entity);
-            await _context.SaveChangesAsync(cancellationToken);
+            _dbContext.Gigs.Remove(entity);
+            await _dbContext.SaveChangesAsync(cancellationToken);
 
             return Unit.Value;
         }

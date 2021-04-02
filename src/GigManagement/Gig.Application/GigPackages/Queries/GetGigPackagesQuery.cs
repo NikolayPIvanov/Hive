@@ -14,18 +14,18 @@ namespace Hive.Gig.Application.GigPackages.Queries
 
     public class GetGigPackagesQueryHandler : IRequestHandler<GetGigPackagesQuery, IEnumerable<PackageDto>>
     {
-        private readonly IGigManagementContext _context;
+        private readonly IGigManagementDbContext _dbContext;
         private readonly IMapper _mapper;
 
-        public GetGigPackagesQueryHandler(IGigManagementContext context, IMapper mapper)
+        public GetGigPackagesQueryHandler(IGigManagementDbContext dbContext, IMapper mapper)
         {
-            _context = context;
+            _dbContext = dbContext;
             _mapper = mapper;
         }
         
         public async Task<IEnumerable<PackageDto>> Handle(GetGigPackagesQuery request, CancellationToken cancellationToken)
         {
-            return await _context.Packages
+            return await _dbContext.Packages
                 .Where(p => p.GigId == request.GigId)
                 .ProjectToListAsync<PackageDto>(_mapper.ConfigurationProvider);
         }

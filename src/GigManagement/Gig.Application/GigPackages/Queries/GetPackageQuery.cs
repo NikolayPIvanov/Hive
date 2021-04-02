@@ -14,18 +14,18 @@ namespace Hive.Gig.Application.GigPackages.Queries
 
     public class GetPackageQueryHandler : IRequestHandler<GetPackageQuery, PackageDto>
     {
-        private readonly IGigManagementContext _context;
+        private readonly IGigManagementDbContext _dbContext;
         private readonly IMapper _mapper;
 
-        public GetPackageQueryHandler(IGigManagementContext context, IMapper mapper)
+        public GetPackageQueryHandler(IGigManagementDbContext dbContext, IMapper mapper)
         {
-            _context = context;
+            _dbContext = dbContext;
             _mapper = mapper;
         }
         
         public async Task<PackageDto> Handle(GetPackageQuery request, CancellationToken cancellationToken)
         {
-            var entity = await _context.Packages
+            var entity = await _dbContext.Packages
                 .FirstOrDefaultAsync(g => g.Id == request.Id, cancellationToken);
 
             if (entity is null)

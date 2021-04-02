@@ -20,9 +20,7 @@ namespace Hive.Gig.Application
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PerformanceBehaviour<,>));
 
-            // Integration Events
-            services.ScanFor<ICapSubscribe>(new[] {Assembly.GetExecutingAssembly()});
-            
+            services.AddOfType<ICapSubscribe>(new[] {Assembly.GetExecutingAssembly()});
 
             return services;
         }

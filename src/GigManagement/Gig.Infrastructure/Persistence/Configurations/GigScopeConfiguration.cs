@@ -14,10 +14,6 @@ namespace Hive.Gig.Infrastructure.Persistence.Configurations
                 .IsRequired();
 
             builder.HasIndex(gs => gs.GigId).IsUnique();
-            
-            builder.HasOne(g => g.Gig)
-                .WithOne(gs => gs.GigScope)
-                .HasForeignKey<Domain.Entities.Gig>(gs => gs.GigScopeId);
         }
     }
 }

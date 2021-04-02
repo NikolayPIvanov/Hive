@@ -16,20 +16,20 @@ namespace Hive.Gig.Infrastructure
             var sqlServerConnectionString = configuration.GetConnectionString("DefaultConnection");
             if (useInMemory)
             {
-                services.AddDbContext<GigManagementContext>(options =>
+                services.AddDbContext<GigManagementDbContext>(options =>
                     options.UseInMemoryDatabase("LooselyHive"));
             }
             else
             {
-                services.AddDbContext<GigManagementContext>(options =>
+                services.AddDbContext<GigManagementDbContext>(options =>
                     options.UseSqlServer(
                         sqlServerConnectionString,
-                        b => b.MigrationsAssembly(typeof(GigManagementContext).Assembly.FullName)));
+                        b => b.MigrationsAssembly(typeof(GigManagementDbContext).Assembly.FullName)));
             }
 
             services.AddCap(x =>
             {
-                x.UseEntityFramework<GigManagementContext>();
+                x.UseEntityFramework<GigManagementDbContext>();
 
                 if (!useInMemory)
                 {
@@ -48,9 +48,9 @@ namespace Hive.Gig.Infrastructure
                 x.UseDashboard(opt => { opt.PathMatch = "/cap"; });
             });
 
-            services.AddScoped<IGigManagementContext>(provider => provider.GetService<GigManagementContext>());
-            services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
-            services.AddScoped<IDateTimeService, DateTimeService>();
+            services.AddScoped<IGigManagementDbContext>(provider => provider.GetService<GigManagementDbContext>());
+            // services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
+            // services.AddScoped<IDateTimeService, DateTimeService>();
 
             return services;
         }

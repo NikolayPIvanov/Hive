@@ -13,7 +13,7 @@ namespace Hive.Gig.Application.Questions.Commands
 
     public class UpdateQuestionCommandValidator : AbstractValidator<UpdateQuestionCommand>
     {
-        public UpdateQuestionCommandValidator(IGigManagementContext context)
+        public UpdateQuestionCommandValidator(IGigManagementDbContext dbContext)
         {
             RuleFor(x => x.Question)
                 .MaximumLength(50).WithMessage("{PropertyName} cannot have more than {MaxLength} characters.")
@@ -29,16 +29,16 @@ namespace Hive.Gig.Application.Questions.Commands
     
     public class UpdateQuestionCommandHandler : IRequestHandler<UpdateQuestionCommand>
     {
-        private readonly IGigManagementContext _context;
+        private readonly IGigManagementDbContext _dbContext;
         
-        public UpdateQuestionCommandHandler(IGigManagementContext context)
+        public UpdateQuestionCommandHandler(IGigManagementDbContext dbContext)
         {
-            _context = context;
+            _dbContext = dbContext;
         }
         
         public async Task<Unit> Handle(UpdateQuestionCommand request, CancellationToken cancellationToken)
         {
-            var question = await _context.Questions.FindAsync(request.Id);
+            var question = await _dbContext.Questions.FindAsync(request.Id);
 
             if (question is null)
             {
@@ -48,7 +48,7 @@ namespace Hive.Gig.Application.Questions.Commands
             question.Answer = request.Answer;
             question.Title = request.Question;
 
-            await _context.SaveChangesAsync(cancellationToken);
+            await _dbContext.SaveChangesAsync(cancellationToken);
 
             return Unit.Value;
         }

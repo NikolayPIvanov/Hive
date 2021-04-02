@@ -16,18 +16,18 @@ namespace Hive.Gig.Application.Gigs.Queries
 
     public class GetCategoryGigsQueryHandler : IRequestHandler<GetCategoryGigsQuery, PaginatedList<GigDto>>
     {
-        private readonly IGigManagementContext _context;
+        private readonly IGigManagementDbContext _dbContext;
         private readonly IMapper _mapper;
 
-        public GetCategoryGigsQueryHandler(IGigManagementContext context, IMapper mapper)
+        public GetCategoryGigsQueryHandler(IGigManagementDbContext dbContext, IMapper mapper)
         {
-            _context = context;
+            _dbContext = dbContext;
             _mapper = mapper;
         }
         
         public async Task<PaginatedList<GigDto>> Handle(GetCategoryGigsQuery request, CancellationToken cancellationToken)
         {
-            return await _context.Gigs
+            return await _dbContext.Gigs
                 .Include(g => g.GigScope)
                 .Include(g => g.Tags)
                 .Include(g => g.Category)

@@ -22,7 +22,7 @@ namespace Hive.Gig.Application.Gigs.Commands
 
     public class CreateGigCommandValidator : AbstractValidator<CreateGigCommand>
     {
-        public CreateGigCommandValidator(IGigManagementContext context)
+        public CreateGigCommandValidator(IGigManagementDbContext dbContext)
         {
             RuleFor(x => x.Title)
                 .MaximumLength(50).WithMessage("Title length must not be above 50 characters.")
@@ -30,7 +30,7 @@ namespace Hive.Gig.Application.Gigs.Commands
                 .NotEmpty().WithMessage("Title should be provided.");
 
             RuleFor(x => x.CategoryId)
-                .MustAsync(async (id, token) => await context.Categories.AnyAsync(x => x.Id == id, cancellationToken: token))
+                .MustAsync(async (id, token) => await dbContext.Categories.AnyAsync(x => x.Id == id, cancellationToken: token))
                 .WithMessage("Must provide an existing category id.");
 
             RuleFor(x => x.Tags)
@@ -44,11 +44,11 @@ namespace Hive.Gig.Application.Gigs.Commands
     
     public class CreateGigCommandHandler : IRequestHandler<CreateGigCommand, int>
     {
-        private readonly IGigManagementContext _context;
+        private readonly IGigManagementDbContext _dbContext;
 
-        public CreateGigCommandHandler(IGigManagementContext context)
+        public CreateGigCommandHandler(IGigManagementDbContext dbContext)
         {
-            _context = context;
+            _dbContext = dbContext;
         }
         
         public async Task<int> Handle(CreateGigCommand request, CancellationToken cancellationToken)
@@ -56,8 +56,8 @@ namespace Hive.Gig.Application.Gigs.Commands
             var tags = request.Tags.Select(t => new Tag(t)).ToHashSet();
             var gig = new Domain.Entities.Gig(request.Title, request.CategoryId, tags);
 
-            _context.Gigs.Add(gig);
-            await _context.SaveChangesAsync(cancellationToken);
+            _dbContext.Gigs.Add(gig);
+            await _dbContext.SaveChangesAsync(cancellationToken);
 
             return gig.Id;
         }
