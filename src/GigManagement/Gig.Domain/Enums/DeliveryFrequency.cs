@@ -2,7 +2,7 @@
 {
     public enum DeliveryFrequency
     {
-        Hours,
+        Hours = 0,
         Days,
         Weeks
     }

@@ -1,27 +1,24 @@
-﻿using Hive.Common.Domain;
-using Hive.Common.Domain.SeedWork;
-
-namespace Hive.Gig.Domain.Entities
+﻿namespace Hive.Gig.Domain.Entities
 {
+    using Hive.Common.Domain.SeedWork;
+
     public class Question : Entity
     {
         private Question()
         {
         }
         
-        public Question(string title, string answer, int gigId)
+        public Question(string title, string answer, int gigId) : this()
         {
             Title = title;
             Answer = answer;
             GigId = gigId;
         }
         
-        public int Id { get; set; }
-
         public string Title { get; set; }
 
         public string Answer { get; set; }
 
-        public int GigId { get; set; }
+        public int GigId { get; private init; }
     }
 }

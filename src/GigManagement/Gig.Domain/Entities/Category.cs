@@ -1,8 +1,7 @@
-﻿using Hive.Common.Domain.SeedWork;
-
-namespace Hive.Gig.Domain.Entities
+﻿namespace Hive.Gig.Domain.Entities
 {
-    using Hive.Common.Domain;
+    using Hive.Common.Domain.SeedWork;
+
     using System.Collections.Generic;
 
     public class Category : Entity
@@ -17,8 +16,6 @@ namespace Hive.Gig.Domain.Entities
             Title = title;
             ParentId = parentId;
         }
-        
-        public int Id { get; set; }
 
         public string Title { get; set; }
         

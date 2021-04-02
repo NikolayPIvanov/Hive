@@ -1,20 +1,26 @@
-﻿using Hive.Common.Domain;
-using Hive.Common.Domain.SeedWork;
-
-namespace Hive.Gig.Domain.Entities
+﻿namespace Hive.Gig.Domain.Entities
 {
+    using Hive.Common.Domain.SeedWork;
+
     public class Review : Entity
     {
-        public int Id { get; set; }
+        private Review()
+        {
+        }
 
+        public Review(string userId, int gigId, string comment, double rating) : this()
+        {
+            UserId = userId;
+            GigId = gigId;
+            Comment = comment;
+            Rating = rating;
+        }
         public string Comment { get; set; }
         
         public double Rating { get; set; }
 
-        public string UserId { get; set; }
+        public string UserId { get; private init; }
 
         public int GigId { get; set; }
-
-        public Gig Gig { get; set; }
     }
 }

@@ -1,17 +1,19 @@
-﻿using System.Collections.Generic;
-using Hive.Common.Domain;
-using Hive.Common.Domain.SeedWork;
-
-namespace Hive.Gig.Domain.Entities
+﻿namespace Hive.Gig.Domain.Entities
 {
+    using Hive.Common.Domain.SeedWork;
+    
+    using System.Collections.Generic;
+
+    public record Tag(string Value);
+    
     public class Gig : Entity
     {
         private Gig()
         {
             Tags = new HashSet<Tag>(5);
             Packages = new HashSet<Package>(3);
-            Questions = new HashSet<Question>();
-            Reviews = new HashSet<Review>();
+            Questions = new HashSet<Question>(10);
+            Reviews = new HashSet<Review>(50);
         }
         
         public Gig(string title, int categoryId, ICollection<Tag> tags) : this()
@@ -21,11 +23,9 @@ namespace Hive.Gig.Domain.Entities
             Tags = tags;
         }
         
-        public int Id { get; set; }
-        
         public string Title { get; set; }
 
-        public bool IsDraft { get; set; } = true;
+        public bool IsDraft { get; set; }
 
         public int? GigScopeId { get; set; }
 

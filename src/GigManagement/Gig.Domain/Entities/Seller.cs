@@ -1,11 +1,11 @@
-﻿using System.Collections.Generic;
-using Hive.Common.Domain;
-using Hive.Common.Domain.SeedWork;
-
-namespace Hive.Gig.Domain.Entities
+﻿namespace Hive.Gig.Domain.Entities
 {
+    using System.Collections.Generic;
+    using Hive.Common.Domain.SeedWork;
+    
     public class Seller : Entity
     {
+        
         private Seller()
         {
             Gigs = new HashSet<Gig>();
@@ -16,9 +16,7 @@ namespace Hive.Gig.Domain.Entities
             UserId = userId;
         }
         
-        public int Id { get; set; }
-
-        public string UserId { get; set; }
+        public string UserId { get; private init; }
 
         public ICollection<Gig> Gigs { get; private set; }
     }
