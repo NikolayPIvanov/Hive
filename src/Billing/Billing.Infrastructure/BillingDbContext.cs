@@ -2,7 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Billing.Application.Interfaces;
-using Billing.Domain;
+using Hive.Billing.Domain;
+using Hive.Billing.Domain.Entities;
 using Hive.Common.Core.Interfaces;
 using Hive.Common.Domain;
 using Hive.Common.Domain.SeedWork;
@@ -10,13 +11,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Billing.Infrastructure
 {
-    public class BillingContext : DbContext, IBillingContext
+    public class BillingDbContext : DbContext, IBillingDbContext
     {
         private readonly IDateTimeService _dateTimeService;
         private const string DefaultSchema = "billing";
         
-        public BillingContext(
-            DbContextOptions<BillingContext> options,
+        public BillingDbContext(
+            DbContextOptions<BillingDbContext> options,
             IDateTimeService dateTimeService) : base(options)
         {
             _dateTimeService = dateTimeService;

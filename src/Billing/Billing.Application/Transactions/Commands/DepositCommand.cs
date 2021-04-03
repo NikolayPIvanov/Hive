@@ -3,39 +3,60 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Billing.Application.Interfaces;
-using Billing.Domain;
+using Hive.Billing.Domain;
+using Hive.Billing.Domain.Entities;
+using Hive.Billing.Domain.Enums;
+using Hive.Common.Core.Exceptions;
+using Hive.Common.Core.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Billing.Application.Transactions.Commands
 {
-    public record DepositCommand(int PaymentMethodId, decimal Amount) : IRequest<Guid>;
+    public record DepositCommand(int PaymentMethodId, decimal Amount) : IRequest<int>;
     
-    public class DepositCommandHandler : IRequestHandler<DepositCommand, Guid>
+    public class DepositCommandHandler : IRequestHandler<DepositCommand, int>
     {
-        private readonly IBillingContext _context;
-    
-        public DepositCommandHandler(IBillingContext context)
+        private readonly IBillingDbContext _context;
+        private readonly ICurrentUserService _currentUserService;
+        private readonly ILogger<DepositCommandHandler> _logger;
+
+        public DepositCommandHandler(IBillingDbContext context, ICurrentUserService currentUserService, ILogger<DepositCommandHandler> logger)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
+            _logger = logger ?? throw new ArgumentNullException(nameof(context));
         }
         
-        public async Task<Guid> Handle(DepositCommand request, CancellationToken cancellationToken)
+        public async Task<int> Handle(DepositCommand request, CancellationToken cancellationToken)
         {
-            var currentUserId = "str";
-            var accountId =
+            var currentUserId = _currentUserService.UserId;
+            var account =
                 await _context.AccountHolders
                     .AsNoTracking()
-                    .Select(x => new {x.UserId, x.AccountId})
+                    .Select(x => new {x.UserId, x.Account.DefaultPaymentMethodId})
                     .FirstOrDefaultAsync(x => x.UserId == currentUserId, cancellationToken);
 
-            var transaction = new Transaction(TransactionType.Deposit, request.Amount, accountId.AccountId,
-                request.PaymentMethodId, null);
+            if (account is null)
+            {
+                _logger.LogWarning("Account for the logged in user {@UserId} has not been found.", currentUserId);
+                throw new NotFoundException(nameof(Account));
+            }
+           
+            // TODO: this should be in validation
+            if (!account.DefaultPaymentMethodId.HasValue)
+            {
+                _logger.LogWarning("Default method for the logged in user {@UserId} account has not been found.", currentUserId);
+                throw new NotFoundException(nameof(Account));
+            }
+            
+            var transaction = new Transaction(TransactionType.Deposit, request.Amount, account.DefaultPaymentMethodId.Value, null);
 
             _context.Transactions.Add(transaction);
             await _context.SaveChangesAsync(cancellationToken);
 
-            return transaction.Id;
+            return transaction.TransactionId;
         }
     }
 }

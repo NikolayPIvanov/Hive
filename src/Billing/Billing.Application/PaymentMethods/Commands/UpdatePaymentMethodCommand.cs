@@ -2,27 +2,27 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Billing.Application.Interfaces;
-using Billing.Domain;
+using Hive.Billing.Domain.Entities;
 using Hive.Common.Core.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Billing.Application.PaymentMethods.Commands
 {
-    public record UpdatePaymentMethodCommand(int PaymentMethodId, string Type) : IRequest;
+    public record UpdatePaymentMethodCommand(int PaymentMethodId, string Alias) : IRequest;
     
     public class UpdatePaymentMethodCommandHandler : IRequestHandler<UpdatePaymentMethodCommand>
     {
-        private readonly IBillingContext _context;
+        private readonly IBillingDbContext _dbContext;
 
-        public UpdatePaymentMethodCommandHandler(IBillingContext context)
+        public UpdatePaymentMethodCommandHandler(IBillingDbContext dbContext)
         {
-            _context = context;
+            _dbContext = dbContext;
         }
         
         public async Task<Unit> Handle(UpdatePaymentMethodCommand request, CancellationToken cancellationToken)
         {
-            var paymentMethod = await _context.PaymentMethods
+            var paymentMethod = await _dbContext.PaymentMethods
                 .FirstOrDefaultAsync(x => x.Id == request.PaymentMethodId, cancellationToken);
             // TODO: Validation
             if (paymentMethod is null)
@@ -30,8 +30,8 @@ namespace Billing.Application.PaymentMethods.Commands
                 throw new NotFoundException(nameof(PaymentMethod), request.PaymentMethodId);
             }
 
-            paymentMethod.Type = request.Type;
-            await _context.SaveChangesAsync(cancellationToken);
+            paymentMethod.Alias = request.Alias;
+            await _dbContext.SaveChangesAsync(cancellationToken);
             
             return Unit.Value;
         }

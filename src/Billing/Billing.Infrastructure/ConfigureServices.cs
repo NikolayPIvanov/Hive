@@ -1,5 +1,5 @@
 ﻿using Billing.Application.Interfaces;
-using Common.Infrastructure.Services;
+using Billing.Infrastructure.Services;
 using Hive.Common.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -15,20 +15,20 @@ namespace Billing.Infrastructure
             var sqlServerConnectionString = configuration.GetConnectionString("DefaultConnection");
             if (useInMemory)
             {
-                services.AddDbContext<BillingContext>(options =>
+                services.AddDbContext<BillingDbContext>(options =>
                     options.UseInMemoryDatabase("LooselyHive"));
             }
             else
             {
-                services.AddDbContext<BillingContext>(options =>
+                services.AddDbContext<BillingDbContext>(options =>
                     options.UseSqlServer(
                         sqlServerConnectionString,
-                        b => b.MigrationsAssembly(typeof(BillingContext).Assembly.FullName)));
+                        b => b.MigrationsAssembly(typeof(BillingDbContext).Assembly.FullName)));
             }
             
             services.AddCap(x =>
             {
-                x.UseEntityFramework<BillingContext>();
+                x.UseEntityFramework<BillingDbContext>();
 
                 if (!useInMemory)
                 {
@@ -47,7 +47,7 @@ namespace Billing.Infrastructure
                 x.UseDashboard(opt => { opt.PathMatch = "/cap"; });
             });
 
-            services.AddScoped<IBillingContext>(provider => provider.GetService<BillingContext>());
+            services.AddScoped<IBillingDbContext>(provider => provider.GetService<BillingDbContext>());
             services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
             services.AddScoped<IDateTimeService, DateTimeService>();
 

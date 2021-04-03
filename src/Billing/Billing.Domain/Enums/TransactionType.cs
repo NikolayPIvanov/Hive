@@ -1,4 +1,4 @@
-﻿namespace Billing.Domain
+﻿namespace Hive.Billing.Domain.Enums
 {
     public enum TransactionType
     {

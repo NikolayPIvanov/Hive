@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Billing.Infrastructure.Persistence.Migrations
 {
-    [DbContext(typeof(BillingContext))]
+    [DbContext(typeof(BillingDbContext))]
     [Migration("20210329134629_AddingAccountHolder")]
     partial class AddingAccountHolder
     {

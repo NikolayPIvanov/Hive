@@ -1,11 +1,12 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Billing.Domain;
+using Hive.Billing.Domain;
+using Hive.Billing.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace Billing.Application.Interfaces
 {
-    public interface IBillingContext
+    public interface IBillingDbContext
     {
         public DbSet<Account> Accounts { get; set; }
         

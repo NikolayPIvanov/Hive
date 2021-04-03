@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Hive.Billing.Contracts.Objects
+namespace Billing.Application.Objects
 {
     public class TransactionDto
     {
