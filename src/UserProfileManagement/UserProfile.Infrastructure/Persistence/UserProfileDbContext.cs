@@ -13,13 +13,13 @@ namespace Hive.UserProfile.Infrastructure.Persistence
 
     using Microsoft.EntityFrameworkCore;
 
-    public class UserProfileContext : DbContext, IUserProfileContext
+    public class UserProfileDbContext : DbContext, IUserProfileDbContext
     {
         private readonly IDateTimeService _dateTimeService;
         private const string DefaultSchema = "up";
         
-        public UserProfileContext(
-            DbContextOptions<UserProfileContext> options,
+        public UserProfileDbContext(
+            DbContextOptions<UserProfileDbContext> options,
             IDateTimeService dateTimeService) : base(options)
         {
             _dateTimeService = dateTimeService;

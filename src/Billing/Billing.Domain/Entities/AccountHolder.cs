@@ -18,6 +18,6 @@ namespace Hive.Billing.Domain.Entities
 
         public Account Account { get; private set; }
 
-        public int AccountId => Account.Id;
+        public int AccountId { get; private set; }
     }
 }

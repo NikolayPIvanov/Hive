@@ -20,21 +20,6 @@ namespace Hive.Gig.Infrastructure.Persistence.Migrations
                 .HasAnnotation("ProductVersion", "5.0.4")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("GigTag", b =>
-                {
-                    b.Property<int>("GigsId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TagsId")
-                        .HasColumnType("int");
-
-                    b.HasKey("GigsId", "TagsId");
-
-                    b.HasIndex("TagsId");
-
-                    b.ToTable("GigTag");
-                });
-
             modelBuilder.Entity("Hive.Gig.Domain.Entities.Category", b =>
                 {
                     b.Property<int>("Id")
@@ -193,7 +178,11 @@ namespace Hive.Gig.Infrastructure.Persistence.Migrations
                         .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int>("Revisions")
+                    b.Property<int>("RevisionType")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Revisions")
+                        .IsRequired()
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
@@ -316,38 +305,6 @@ namespace Hive.Gig.Infrastructure.Persistence.Migrations
                     b.ToTable("Sellers");
                 });
 
-            modelBuilder.Entity("Hive.Gig.Domain.Entities.Tag", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Value")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Tags");
-                });
-
-            modelBuilder.Entity("GigTag", b =>
-                {
-                    b.HasOne("Hive.Gig.Domain.Entities.Gig", null)
-                        .WithMany()
-                        .HasForeignKey("GigsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Hive.Gig.Domain.Entities.Tag", null)
-                        .WithMany()
-                        .HasForeignKey("TagsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Hive.Gig.Domain.Entities.Category", b =>
                 {
                     b.HasOne("Hive.Gig.Domain.Entities.Category", null)
@@ -365,7 +322,7 @@ namespace Hive.Gig.Infrastructure.Persistence.Migrations
                         .IsRequired();
 
                     b.HasOne("Hive.Gig.Domain.Entities.GigScope", "GigScope")
-                        .WithOne("Gig")
+                        .WithOne()
                         .HasForeignKey("Hive.Gig.Domain.Entities.Gig", "GigScopeId");
 
                     b.HasOne("Hive.Gig.Domain.Entities.Seller", "Seller")
@@ -374,22 +331,45 @@ namespace Hive.Gig.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.OwnsMany("Hive.Gig.Domain.Entities.Tag", "Tags", b1 =>
+                        {
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int")
+                                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                            b1.Property<int>("GigId")
+                                .HasColumnType("int");
+
+                            b1.Property<string>("Value")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("Id");
+
+                            b1.HasIndex("GigId");
+
+                            b1.ToTable("Tags");
+
+                            b1.WithOwner()
+                                .HasForeignKey("GigId");
+                        });
+
                     b.Navigation("Category");
 
                     b.Navigation("GigScope");
 
                     b.Navigation("Seller");
+
+                    b.Navigation("Tags");
                 });
 
             modelBuilder.Entity("Hive.Gig.Domain.Entities.Package", b =>
                 {
-                    b.HasOne("Hive.Gig.Domain.Entities.Gig", "Gig")
+                    b.HasOne("Hive.Gig.Domain.Entities.Gig", null)
                         .WithMany("Packages")
                         .HasForeignKey("GigId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Gig");
                 });
 
             modelBuilder.Entity("Hive.Gig.Domain.Entities.Question", b =>
@@ -403,13 +383,11 @@ namespace Hive.Gig.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Hive.Gig.Domain.Entities.Review", b =>
                 {
-                    b.HasOne("Hive.Gig.Domain.Entities.Gig", "Gig")
+                    b.HasOne("Hive.Gig.Domain.Entities.Gig", null)
                         .WithMany("Reviews")
                         .HasForeignKey("GigId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Gig");
                 });
 
             modelBuilder.Entity("Hive.Gig.Domain.Entities.Category", b =>
@@ -424,11 +402,6 @@ namespace Hive.Gig.Infrastructure.Persistence.Migrations
                     b.Navigation("Questions");
 
                     b.Navigation("Reviews");
-                });
-
-            modelBuilder.Entity("Hive.Gig.Domain.Entities.GigScope", b =>
-                {
-                    b.Navigation("Gig");
                 });
 
             modelBuilder.Entity("Hive.Gig.Domain.Entities.Seller", b =>

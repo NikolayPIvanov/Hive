@@ -21,15 +21,15 @@ namespace Hive.Billing.Domain.Entities
         
         public TransactionType TransactionType { get; private init; }
 
-        public int TransactionId { get; init; }
+        public int TransactionId { get; private init; }
 
         public decimal Amount { get; private init; }
 
-        public Guid? OrderNumber { get; init; }
+        public Guid? OrderNumber { get; private init; }
         
         public int PaymentMethodId { get; private init; }
 
-        private int GenerateTransactionId()
+        private static int GenerateTransactionId()
         {
             Random jitter = new ((int)DateTime.Now.Ticks);
             var id = jitter.Next(1, 100000000);

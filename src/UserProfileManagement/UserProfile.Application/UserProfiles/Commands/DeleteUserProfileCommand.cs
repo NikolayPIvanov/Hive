@@ -10,24 +10,24 @@ namespace Hive.UserProfile.Application.UserProfiles.Commands
 
     public class DeleteUserProfileCommandHandler : IRequestHandler<DeleteUserProfileCommand>
     {
-        private readonly IUserProfileContext _context;
+        private readonly IUserProfileDbContext _dbContext;
 
-        public DeleteUserProfileCommandHandler(IUserProfileContext context)
+        public DeleteUserProfileCommandHandler(IUserProfileDbContext dbContext)
         {
-            _context = context;
+            _dbContext = dbContext;
         }
         
         public async Task<Unit> Handle(DeleteUserProfileCommand request, CancellationToken cancellationToken)
         {
-            var userProfile = await _context.UserProfiles.FindAsync(new[] {request.UserProfileId}, cancellationToken);
+            var userProfile = await _dbContext.UserProfiles.FindAsync(new[] {request.UserProfileId}, cancellationToken);
 
             if (userProfile is null)
             {
                 throw new NotFoundException(nameof(Domain.UserProfile), request.UserProfileId);
             }
 
-            _context.UserProfiles.Remove(userProfile);
-            await _context.SaveChangesAsync(cancellationToken);
+            _dbContext.UserProfiles.Remove(userProfile);
+            await _dbContext.SaveChangesAsync(cancellationToken);
             
             return Unit.Value;
         }

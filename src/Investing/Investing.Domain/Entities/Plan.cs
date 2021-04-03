@@ -35,6 +35,10 @@ namespace Hive.Investing.Domain.Entities
         public decimal FundingNeeded { get; set; }
         
         public int VendorId { get; set; }
+        
+        public int? InvestmentId { get; set; }
+
+        public Investment Investment { get; set; }
 
         public ICollection<Tag> Tags { get; private set; }
     }

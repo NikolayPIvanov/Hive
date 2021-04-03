@@ -27,7 +27,6 @@ namespace Hive.Investing.Infrastructure
                         b => b.MigrationsAssembly(typeof(InvestingDbContext).Assembly.FullName)));
             }
             
-            
             services.AddCap(x =>
             {
                 x.UseEntityFramework<InvestingDbContext>();

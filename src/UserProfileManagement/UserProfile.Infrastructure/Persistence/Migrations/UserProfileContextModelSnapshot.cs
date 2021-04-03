@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Hive.UserProfile.Infrastructure.Persistence.Migrations
 {
-    [DbContext(typeof(UserProfileContext))]
+    [DbContext(typeof(UserProfileDbContext))]
     partial class UserProfileContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)

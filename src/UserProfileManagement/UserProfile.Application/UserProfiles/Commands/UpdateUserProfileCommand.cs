@@ -15,16 +15,16 @@ namespace Hive.UserProfile.Application.UserProfiles.Commands
     
     public class UpdateUserProfileCommandHandler : IRequestHandler<UpdateUserProfileCommand>
     {
-        private readonly IUserProfileContext _context;
+        private readonly IUserProfileDbContext _dbContext;
 
-        public UpdateUserProfileCommandHandler(IUserProfileContext context)
+        public UpdateUserProfileCommandHandler(IUserProfileDbContext dbContext)
         {
-            _context = context;
+            _dbContext = dbContext;
         }
         
         public async Task<Unit> Handle(UpdateUserProfileCommand request, CancellationToken cancellationToken)
         {
-            var userProfile = await _context.UserProfiles.FindAsync(new[] {request.UserProfileId}, cancellationToken);
+            var userProfile = await _dbContext.UserProfiles.FindAsync(new[] {request.UserProfileId}, cancellationToken);
 
             if (userProfile is null)
             {
@@ -38,7 +38,7 @@ namespace Hive.UserProfile.Application.UserProfiles.Commands
             SetSkills(request, userProfile);
             SetLanguages(request, userProfile);
 
-            await _context.SaveChangesAsync(cancellationToken);
+            await _dbContext.SaveChangesAsync(cancellationToken);
 
             return Unit.Value;
         }

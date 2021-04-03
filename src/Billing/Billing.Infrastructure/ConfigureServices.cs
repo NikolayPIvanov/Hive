@@ -1,4 +1,5 @@
 ﻿using Billing.Application.Interfaces;
+using Billing.Infrastructure.Persistence;
 using Billing.Infrastructure.Services;
 using Hive.Common.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;

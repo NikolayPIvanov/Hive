@@ -6,7 +6,7 @@
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
 
-    public interface IUserProfileContext
+    public interface IUserProfileDbContext
     {
         public DbSet<UserProfile> UserProfiles { get; set; }
 

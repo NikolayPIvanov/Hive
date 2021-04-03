@@ -18,7 +18,7 @@ namespace Hive.Billing.Domain.Entities
         
         public string Alias { get; set; }
 
-        public int AccountId { get; set; }
+        public int AccountId { get; private set; }
         
         public Account Account { get; set; }
         

@@ -7,7 +7,7 @@ namespace Hive.UserProfile.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<Domain.UserProfile> builder)
         {
-            builder.ToTable("profiles", UserProfileContext.Schema);
+            builder.ToTable("profiles", UserProfileDbContext.Schema);
             builder.HasKey(p => p.Id);
 
             builder.Property(p => p.FirstName).HasMaxLength(50).IsRequired();

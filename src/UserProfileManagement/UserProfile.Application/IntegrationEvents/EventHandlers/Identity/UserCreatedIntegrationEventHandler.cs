@@ -7,11 +7,11 @@ namespace Hive.UserProfile.Application.IntegrationEvents.EventHandlers.Identity
 {
     public class UserCreatedIntegrationEventHandler : ICapSubscribe
     {
-        private readonly IUserProfileContext _context;
+        private readonly IUserProfileDbContext _dbContext;
 
-        public UserCreatedIntegrationEventHandler(IUserProfileContext context)
+        public UserCreatedIntegrationEventHandler(IUserProfileDbContext dbContext)
         {
-            _context = context;
+            _dbContext = dbContext;
         }
 
         [CapSubscribe(nameof(UserCreatedIntegrationEvent))]
@@ -19,8 +19,8 @@ namespace Hive.UserProfile.Application.IntegrationEvents.EventHandlers.Identity
         {
             var profile = new Domain.UserProfile(@event.UserId);
 
-            _context.UserProfiles.Add(profile);
-            await _context.SaveChangesAsync();
+            _dbContext.UserProfiles.Add(profile);
+            await _dbContext.SaveChangesAsync();
         }
     }
 }

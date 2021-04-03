@@ -20,12 +20,42 @@ namespace Ordering.Infrastructure.Persistence.Migrations
                 .HasAnnotation("ProductVersion", "5.0.4")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("Ordering.Domain.Entities.Buyer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Buyers");
+                });
+
             modelBuilder.Entity("Ordering.Domain.Entities.Order", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("BuyerId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
@@ -51,16 +81,10 @@ namespace Ordering.Infrastructure.Persistence.Migrations
                     b.Property<DateTime>("OrderedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("OrderedBy")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("PackageId")
                         .HasColumnType("int");
 
                     b.Property<int>("RequirementId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("ResolutionId")
                         .HasColumnType("int");
 
                     b.Property<int>("SellerId")
@@ -71,12 +95,13 @@ namespace Ordering.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("BuyerId");
+
                     b.HasIndex("OrderNumber")
                         .IsUnique();
 
-                    b.HasIndex("ResolutionId")
-                        .IsUnique()
-                        .HasFilter("[ResolutionId] IS NOT NULL");
+                    b.HasIndex("RequirementId")
+                        .IsUnique();
 
                     b.ToTable("Orders");
                 });
@@ -110,9 +135,6 @@ namespace Ordering.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrderId")
-                        .IsUnique();
-
                     b.ToTable("Requirements");
                 });
 
@@ -129,6 +151,9 @@ namespace Ordering.Infrastructure.Persistence.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
 
@@ -136,87 +161,65 @@ namespace Ordering.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Location")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("OrderId")
                         .HasColumnType("int");
 
                     b.Property<string>("Version")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Resolutions");
-                });
-
-            modelBuilder.Entity("Ordering.Domain.Entities.State", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("OrderId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("OrderState")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Reason")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("OrderId");
 
-                    b.ToTable("OrderStates");
+                    b.ToTable("Resolutions");
                 });
 
             modelBuilder.Entity("Ordering.Domain.Entities.Order", b =>
                 {
-                    b.HasOne("Ordering.Domain.Entities.Resolution", "Resolution")
-                        .WithOne("Order")
-                        .HasForeignKey("Ordering.Domain.Entities.Order", "ResolutionId");
-
-                    b.Navigation("Resolution");
-                });
-
-            modelBuilder.Entity("Ordering.Domain.Entities.Requirement", b =>
-                {
-                    b.HasOne("Ordering.Domain.Entities.Order", "Order")
-                        .WithOne("Requirement")
-                        .HasForeignKey("Ordering.Domain.Entities.Requirement", "OrderId")
+                    b.HasOne("Ordering.Domain.Entities.Buyer", "Buyer")
+                        .WithMany("Orders")
+                        .HasForeignKey("BuyerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Order");
-                });
-
-            modelBuilder.Entity("Ordering.Domain.Entities.State", b =>
-                {
-                    b.HasOne("Ordering.Domain.Entities.Order", "Order")
-                        .WithMany("OrderStates")
-                        .HasForeignKey("OrderId")
+                    b.HasOne("Ordering.Domain.Entities.Requirement", "Requirement")
+                        .WithOne()
+                        .HasForeignKey("Ordering.Domain.Entities.Order", "RequirementId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Order");
-                });
+                    b.OwnsMany("Ordering.Domain.ValueObjects.State", "OrderStates", b1 =>
+                        {
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int")
+                                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Ordering.Domain.Entities.Order", b =>
-                {
+                            b1.Property<int>("OrderId")
+                                .HasColumnType("int");
+
+                            b1.Property<int>("OrderState")
+                                .HasColumnType("int");
+
+                            b1.Property<string>("Reason")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("Id");
+
+                            b1.HasIndex("OrderId");
+
+                            b1.ToTable("State");
+
+                            b1.WithOwner()
+                                .HasForeignKey("OrderId");
+                        });
+
+                    b.Navigation("Buyer");
+
                     b.Navigation("OrderStates");
 
                     b.Navigation("Requirement");
@@ -224,7 +227,21 @@ namespace Ordering.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Ordering.Domain.Entities.Resolution", b =>
                 {
-                    b.Navigation("Order");
+                    b.HasOne("Ordering.Domain.Entities.Order", null)
+                        .WithMany("Resolutions")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Ordering.Domain.Entities.Buyer", b =>
+                {
+                    b.Navigation("Orders");
+                });
+
+            modelBuilder.Entity("Ordering.Domain.Entities.Order", b =>
+                {
+                    b.Navigation("Resolutions");
                 });
 #pragma warning restore 612, 618
         }

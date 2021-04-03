@@ -11,18 +11,18 @@ namespace Hive.UserProfile.Application.UserProfiles.Queries
 
     public class GetUserProfileQueryHandler : IRequestHandler<GetUserProfileQuery, UserProfileDto>
     {
-        private readonly IUserProfileContext _context;
+        private readonly IUserProfileDbContext _dbContext;
         private readonly IMapper _mapper;
 
-        public GetUserProfileQueryHandler(IUserProfileContext context, IMapper mapper)
+        public GetUserProfileQueryHandler(IUserProfileDbContext dbContext, IMapper mapper)
         {
-            _context = context;
+            _dbContext = dbContext;
             _mapper = mapper;
         }
         
         public async Task<UserProfileDto> Handle(GetUserProfileQuery request, CancellationToken cancellationToken)
         {
-            var userProfile = await _context.UserProfiles.FindAsync(new[] {request.UserProfileId}, cancellationToken);
+            var userProfile = await _dbContext.UserProfiles.FindAsync(new[] {request.UserProfileId}, cancellationToken);
 
             if (userProfile is null)
             {
