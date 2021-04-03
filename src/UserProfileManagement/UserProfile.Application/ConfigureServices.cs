@@ -20,7 +20,7 @@ namespace Hive.UserProfile.Application
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PerformanceBehaviour<,>));
 
-            services.ScanFor<ICapSubscribe>(new []{ Assembly.GetExecutingAssembly() });
+            services.AddOfType<ICapSubscribe>(new []{ Assembly.GetExecutingAssembly() });
             
             return services;
         }

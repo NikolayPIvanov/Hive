@@ -2,8 +2,6 @@
 
 namespace Hive.UserProfile.Domain
 {
-    using Hive.Common.Domain;
-    
     using System.Collections.Generic;
 
     public class UserProfile : Entity
@@ -14,15 +12,12 @@ namespace Hive.UserProfile.Domain
             Skills = new HashSet<Skill>(5);
         }
         
-        // TODO♦
         public UserProfile(string userId) : this()
         {
             UserId = userId;
         }
-        
-        public int Id { get; set; }
-        
-        public string UserId { get; set; }
+
+        public string UserId { get; private init; }
 
         public string? FirstName { get; set; }
 
