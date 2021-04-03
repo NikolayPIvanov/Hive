@@ -8,7 +8,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\Common\Common.Core\Common.Core.csproj" />
-      <ProjectReference Include="..\..\Common\Common.SeedWork\Common.SeedWork.csproj" />
     </ItemGroup>
 
 </Project>
