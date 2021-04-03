@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using Hive.Common.Domain;
+using Hive.Common.Core.Interfaces;
 using Hive.Common.Domain.SeedWork;
 using Hive.Gig.Application.Interfaces;
 using Hive.Gig.Domain.Entities;
@@ -12,12 +12,15 @@ namespace Hive.Gig.Infrastructure.Persistence
 {
     public class GigManagementDbContext : DbContext, IGigManagementDbContext
     {
+        private readonly ICurrentUserService _currentUserService;
         private readonly IDateTimeService _dateTimeService;
 
         public GigManagementDbContext(
             DbContextOptions<GigManagementDbContext> options,
+            ICurrentUserService currentUserService,
             IDateTimeService dateTimeService) : base(options)
         {
+            _currentUserService = currentUserService;
             _dateTimeService = dateTimeService;
         }
 
@@ -38,21 +41,19 @@ namespace Hive.Gig.Infrastructure.Persistence
                 switch (entry.State)
                 {
                     case EntityState.Added:
-                        entry.Entity.CreatedBy = null;
+                        entry.Entity.CreatedBy = _currentUserService.UserId;
                         entry.Entity.Created = _dateTimeService.Now;
                         break;
 
                     case EntityState.Modified:
-                        entry.Entity.LastModifiedBy = null;
+                        entry.Entity.LastModifiedBy = _currentUserService.UserId;
                         entry.Entity.LastModified = _dateTimeService.Now;
                         break;
                 }
             }
 
             var result = await base.SaveChangesAsync(cancellationToken);
-
-            //await DispatchEvents();
-
+            
             return result;
         }
 

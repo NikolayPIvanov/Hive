@@ -12,13 +12,16 @@ namespace Ordering.Infrastructure.Persistence
 {
     public class OrderingDbContext : DbContext, IOrderingContext
     {
+        private readonly ICurrentUserService _currentUserService;
         private readonly IDateTimeService _dateTimeService;
         private const string DefaultSchema = "ordering";
         
         public OrderingDbContext(
             DbContextOptions<OrderingDbContext> options,
+            ICurrentUserService currentUserService,
             IDateTimeService dateTimeService) : base(options)
         {
+            _currentUserService = currentUserService;
             _dateTimeService = dateTimeService;
         }
         
@@ -34,21 +37,19 @@ namespace Ordering.Infrastructure.Persistence
                  switch (entry.State)
                  {
                      case EntityState.Added:
-                         entry.Entity.CreatedBy = null;
+                         entry.Entity.CreatedBy = _currentUserService.UserId;
                          entry.Entity.Created = _dateTimeService.Now;
                          break;
 
                      case EntityState.Modified:
-                         entry.Entity.LastModifiedBy = null;
+                         entry.Entity.LastModifiedBy = _currentUserService.UserId;
                          entry.Entity.LastModified = _dateTimeService.Now;
                          break;
                  }
              }
 
              var result = await base.SaveChangesAsync(cancellationToken);
-
-             //await DispatchEvents();
-
+             
              return result;
          }
 
