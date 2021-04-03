@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Hive.Common.Domain;
 using Hive.Common.Domain.SeedWork;
 
 namespace Hive.Investing.Domain.Entities
@@ -24,9 +23,7 @@ namespace Hive.Investing.Domain.Entities
             EstimatedReleaseDate = estimatedReleaseDate;
             FundingNeeded = fundingNeeded;
         }
-
-        public int Id { get; set; }
-
+        
         public string Title { get; set; }
 
         public string Description { get; set; }

@@ -21,8 +21,6 @@ namespace Hive.Investing.Domain.Entities
             PlanId = planId;
         }
         
-        public int Id { get; set; }
-
         public DateTime EffectiveDate { get; set; }
         
         public DateTime? ExpirationDate { get; set; }

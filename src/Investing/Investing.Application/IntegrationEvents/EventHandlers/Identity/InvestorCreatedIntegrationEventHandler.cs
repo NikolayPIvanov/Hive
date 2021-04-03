@@ -15,7 +15,7 @@ namespace Hive.Investing.Application.IntegrationEvents.EventHandlers.Identity
             _context = context;
         }
         
-        [CapSubscribe(nameof(InvestorCreatedIntegrationEvent))]
+        [CapSubscribe(nameof(InvestorCreatedIntegrationEvent), Group = "hive.investing")]
         public async Task Handle(InvestorCreatedIntegrationEvent @event)
         {
             var investor = new Investor(@event.UserId);
