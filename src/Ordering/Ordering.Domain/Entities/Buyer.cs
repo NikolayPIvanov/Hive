@@ -15,7 +15,7 @@ namespace Ordering.Domain.Entities
             UserId = userId;
         }
         
-        public string UserId { get; set; }
+        public string UserId { get; private set; }
 
         public ICollection<Order> Orders { get; private set; }
     }

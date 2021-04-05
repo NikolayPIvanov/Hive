@@ -15,7 +15,7 @@ namespace Ordering.Domain.Entities
             IsClosed = OrderStates.Any(s => s.OrderState == OrderState.Canceled || s.OrderState == OrderState.Declined || s.OrderState == OrderState.Completed);
         }
         
-        public Order(decimal price, string requirements, int gigId, int packageId, int buyerId, int sellerId) : this()
+        public Order(decimal price, string requirements, int gigId, int packageId, int buyerId, string sellerId) : this()
         {
             OrderNumber = Guid.NewGuid();
             OrderedAt = DateTime.UtcNow;
@@ -33,7 +33,7 @@ namespace Ordering.Domain.Entities
                 
         public Guid OrderNumber { get; private init; }
         public DateTime OrderedAt { get; private init; }
-        public int SellerId { get; private init; }
+        public string SellerId { get; private init; }
         public int BuyerId { get; private init; }
         
         public Buyer Buyer { get; private init; }

@@ -53,10 +53,11 @@ namespace Hive.Gig.Application.IntegrationEvents.EventHandlers
                 return;
             }
 
-            var sellerIdIsValid = gig.SellerId == @event.SellerId;
+            var sellerIdIsValid =
+                await _dbContext.Sellers.AnyAsync(x => x.UserId == @event.SellerUserId && x.Id == gig.SellerId);
             if (!sellerIdIsValid) 
             {
-                reason = $"Order {@event.OrderNumber} had invalid seller id {@event.SellerId}";
+                reason = $"Order {@event.OrderNumber} had invalid seller id {@event.SellerUserId}";
                 await _publisher.Publish(integrationEvent  with { Reason = reason});
                 return;
             }

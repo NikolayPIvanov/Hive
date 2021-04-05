@@ -10,8 +10,9 @@ namespace Hive.Billing.Domain.Entities
         {
         }
         
-        public Transaction(TransactionType type, decimal amount, int paymentMethodId, Guid? orderNumber) : this()
+        public Transaction(string userId, TransactionType type, decimal amount, int paymentMethodId, Guid? orderNumber) : this()
         {
+            UserId = userId;
             Amount = amount;
             OrderNumber = orderNumber;
             PaymentMethodId = paymentMethodId;
@@ -19,9 +20,11 @@ namespace Hive.Billing.Domain.Entities
             TransactionId = GenerateTransactionId();
         }
         
-        public TransactionType TransactionType { get; private init; }
+        public TransactionType TransactionType { get; private set; }
 
         public int TransactionId { get; private init; }
+
+        public string UserId { get; set; }
 
         public decimal Amount { get; private init; }
 
@@ -34,6 +37,14 @@ namespace Hive.Billing.Domain.Entities
             Random jitter = new ((int)DateTime.Now.Ticks);
             var id = jitter.Next(1, 100000000);
             return id;
+        }
+
+        public void ChangeFromHoldToPayment()
+        {
+            if (TransactionType == TransactionType.Hold)
+            {
+                TransactionType = TransactionType.Payment;
+            }
         }
     }
 }

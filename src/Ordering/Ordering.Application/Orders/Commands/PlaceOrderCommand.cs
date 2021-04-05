@@ -13,7 +13,7 @@ using Ordering.Domain.Entities;
 namespace Ordering.Application.Orders.Commands
 {
     public record PlaceOrderCommand(decimal UnitPrice, string Requirements,
-            int SellerId, int GigId, int PackageId) : IRequest<Guid>;
+            string SellerUserId, int GigId, int PackageId) : IRequest<Guid>;
 
     public class PlaceOrderCommandValidator : AbstractValidator<PlaceOrderCommand>
     {
@@ -26,8 +26,7 @@ namespace Ordering.Application.Orders.Commands
                 .GreaterThan(0.0m).WithMessage("{PropertyName} cannot be below {ComparisonValue}.")
                 .NotNull().WithMessage("A {PropertyName} must be provided");
             
-            RuleFor(x => x.SellerId)
-                .GreaterThan(0).WithMessage("{PropertyName} cannot be below {ComparisonValue}.")
+            RuleFor(x => x.SellerUserId)
                 .NotNull().WithMessage("A {PropertyName} must be provided");
             
             RuleFor(x => x.GigId)
@@ -57,7 +56,7 @@ namespace Ordering.Application.Orders.Commands
             var buyerId = await _context.Buyers.Select(b => new {b.Id, b.UserId})
                 .FirstOrDefaultAsync(b => b.UserId == currentUserId, cancellationToken: cancellationToken);
             var order = new Order(request.UnitPrice, request.Requirements, request.GigId, request.PackageId,
-                buyerId.Id, request.SellerId);
+                buyerId.Id, request.SellerUserId);
             
             var orderCreated = new OrderPlacedIntegrationEvent(order.OrderNumber, order.UnitPrice, buyerId.UserId,
                 order.SellerId, order.GigId, order.PackageId);

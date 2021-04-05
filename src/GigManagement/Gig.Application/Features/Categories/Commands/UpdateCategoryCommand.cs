@@ -30,21 +30,20 @@ namespace Hive.Gig.Application.Features.Categories.Commands
                 .MustAsync(BeValidAsync).WithMessage("Either parent category does not exist, title already is taken or trying to set invalid parent id");
         }
         
-        // TODO: Bug - Might update a category so that it has it's parent category as one of it's subcategories
         private async Task<bool> ParentCategoryExistsAsync(int parentCategoryId, CancellationToken cancellationToken)
         {
-            return await _dbContext.Categories.AnyAsync(c => c.Id == parentCategoryId, cancellationToken);
+            return await _dbContext.Categories.AnyAsync(c => c.Id == parentCategoryId && c.ParentId == null, cancellationToken);
         }
         
         private async Task<bool> BeValidAsync(UpdateCategoryCommand command, CancellationToken cancellationToken)
         {
             var (id, title, parentId) = command;
-            var titleExists = await _dbContext.Categories
+            var titleExists = _dbContext.Categories
                 .AnyAsync(r => r.Title == title && r.Id != id, cancellationToken);
             
-            var titleIsValid = !titleExists;
             var parentCategoryIsValid = !parentId.HasValue || await ParentCategoryExistsAsync(parentId.Value, cancellationToken);
-            
+            var titleIsValid = !(await titleExists);
+
             return titleIsValid && parentCategoryIsValid;
         }
     }

@@ -12,7 +12,7 @@ using Ordering.Contracts;
 
 namespace Ordering.Application.Orders.Queries
 {
-    public record GetSellerOrdersQuery(int SellerId) : IRequest<IEnumerable<OrderDto>>;
+    public record GetSellerOrdersQuery(string SellerUserId) : IRequest<IEnumerable<OrderDto>>;
 
     public class GetSellerOrdersQueryHandler : IRequestHandler<GetSellerOrdersQuery, IEnumerable<OrderDto>>
     {
@@ -30,7 +30,7 @@ namespace Ordering.Application.Orders.Queries
             var orders = await _context.Orders
                 .Include(o => o.Requirement)
                 .Include(o => o.OrderStates)
-                .Where(o => o.SellerId == request.SellerId)
+                .Where(o => o.SellerId == request.SellerUserId)
                 .AsNoTracking()
                 .ProjectToListAsync<OrderDto>(_mapper.ConfigurationProvider);
 

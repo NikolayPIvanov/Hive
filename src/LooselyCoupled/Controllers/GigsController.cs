@@ -48,7 +48,7 @@ namespace Hive.LooselyCoupled.Controllers
             return NoContent();
         }
         
-        
+        // Scopes
         [HttpGet("{id}/scopes")]
         public async Task<ActionResult<GigScopeDto>> GetScope([FromRoute] int id)
         {
@@ -87,7 +87,7 @@ namespace Hive.LooselyCoupled.Controllers
             return NoContent();
         }
         
-        
+        // Packages  
         [HttpGet("{id}/packages")]
         public async Task<ActionResult<IEnumerable<PackageDto>>> GetPackages(int id)
         {
@@ -134,7 +134,7 @@ namespace Hive.LooselyCoupled.Controllers
             return NoContent();
         }
         
-        
+        // Questions
         [HttpGet("{id}/questions")]
         public async Task<ActionResult<IEnumerable<QuestionDto>>> GetQuestions(int id)
         {
@@ -162,7 +162,7 @@ namespace Hive.LooselyCoupled.Controllers
         }
         
         [HttpPut("{id}/questions/{questionId}")]
-        public async Task<IActionResult> UpdateQuestion(int id, int questionId, [FromBody] UpdateQuestionCommand command)
+        public async Task<IActionResult> UpdateQuestion(int questionId, [FromBody] UpdateQuestionCommand command)
         {
             if (questionId != command.Id)
             {
@@ -179,5 +179,8 @@ namespace Hive.LooselyCoupled.Controllers
             await Mediator.Send(new DeleteQuestionCommand(questionId));
             return NoContent();
         }
+        
+        // Reviews
+        // TODO
     }
 }

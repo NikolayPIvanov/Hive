@@ -30,7 +30,7 @@ namespace Billing.Application.IntegrationEvents.EventHandlers.Ordering
         [CapSubscribe(nameof(OrderPlacedIntegrationEvent), Group = "cap.hive.billing")]
         public async Task Handle(OrderPlacedIntegrationEvent @event)
         {
-            var accountHolderId = @event.UserId;
+            var accountHolderId = @event.BuyerUserId;
             
             // TODO: Need to implement uplock
             var account = await _context.AccountHolders
@@ -46,14 +46,14 @@ namespace Billing.Application.IntegrationEvents.EventHandlers.Ordering
 
             if (account == null)
             {
-                _logger.LogWarning("Account holder with {@UserId} has not been found.", @event.UserId);
+                _logger.LogWarning("Account holder with {@UserId} has not been found.", accountHolderId);
                 await _publisher.Publish(integrationEvent);
                 return;
             }
             
             if (account.DefaultPaymentMethod == null)
             {
-                _logger.LogWarning("Account holder with {@UserId} has not set up a default payment method.", @event.UserId);
+                _logger.LogWarning("Account holder with {@UserId} has not set up a default payment method.", accountHolderId);
                 integrationEvent = integrationEvent with {Reason = "A default payment method has not been found."};
                 await _publisher.Publish(integrationEvent);
                 return;
@@ -82,17 +82,17 @@ namespace Billing.Application.IntegrationEvents.EventHandlers.Ordering
             
             if (balance < @event.UnitPrice || balance < 0.0m)
             {
-                _logger.LogWarning("Account balance for {@AccountHolder} does not have enough funds {@Funds}", @event.UserId, balance);
+                _logger.LogWarning("Account balance for {@AccountHolder} does not have enough funds {@Funds}", accountHolderId, balance);
                 integrationEvent = integrationEvent with {Reason = "User account does not have enough resources."};
                 await _publisher.Publish(integrationEvent);
                 return;
             }
-            
-            var holdTransaction = new Transaction(TransactionType.Hold, @event.UnitPrice, account.DefaultPaymentMethod.Id, @event.OrderNumber);
-            _context.Transactions.Add(holdTransaction);
-            
-            await _context.SaveChangesAsync(default);
-            
+            //
+            // var holdTransaction = new Transaction(TransactionType.Hold, @event.UnitPrice, account.DefaultPaymentMethod.Id, @event.OrderNumber);
+            // _context.Transactions.Add(holdTransaction);
+            //
+            // await _context.SaveChangesAsync(default);
+            //
             await _publisher.Publish(integrationEvent with {Reason = "User has enough balance", IsValid = true});
         }
     }

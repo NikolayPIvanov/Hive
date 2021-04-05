@@ -24,7 +24,7 @@ namespace Hive.Gig.Application.Features.Categories.Commands
             _dbContext = dbContext;
             
             RuleFor(c => c.Title)
-                .MustAsync(UniqueTitleAsync)
+                .MustAsync(BeUniqueTitleAsync)
                 .MaximumLength(50)
                 .NotEmpty();
 
@@ -36,13 +36,12 @@ namespace Hive.Gig.Application.Features.Categories.Commands
         {
             if (parentCategoryId is null) return true;
 
-            return (await _dbContext.Categories.AnyAsync(c => c.Id == parentCategoryId, cancellationToken));
+            return await _dbContext.Categories.AnyAsync(c => c.Id == parentCategoryId, cancellationToken);
         }
         
-        private async Task<bool> UniqueTitleAsync(string title, CancellationToken cancellationToken)
+        private async Task<bool> BeUniqueTitleAsync(string title, CancellationToken cancellationToken)
         {
-            var hasWithTitle = await _dbContext.Categories.AnyAsync(r => r.Title == title, cancellationToken);
-            return !hasWithTitle;
+            return await _dbContext.Categories.AllAsync(r => r.Title != title, cancellationToken);
         }
     }
 
@@ -62,8 +61,7 @@ namespace Hive.Gig.Application.Features.Categories.Commands
             var (title, parentId) = request;
             var category = new Category(title, parentId);
             
-            // TODO: Use sequence
-            await _dbContext.Categories.AddAsync(category, cancellationToken);
+            _dbContext.Categories.Add(category);
             await _dbContext.SaveChangesAsync(cancellationToken);
 
             _logger.LogInformation("Category with {@Title} and {@ParentId} was created.", title, parentId);

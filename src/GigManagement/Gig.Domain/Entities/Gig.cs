@@ -12,15 +12,17 @@
         {
             Tags = new HashSet<Tag>(5);
             Packages = new HashSet<Package>(3);
-            Questions = new HashSet<Question>(10);
-            Reviews = new HashSet<Review>(50);
+            Questions = new HashSet<Question>();
+            Reviews = new HashSet<Review>();
         }
         
-        public Gig(string title, int categoryId, ICollection<Tag> tags) : this()
+        public Gig(string title, int categoryId, int sellerId, ICollection<Tag> tags) : this()
         {
             Title = title;
             CategoryId = categoryId;
             Tags = tags;
+            SellerId = sellerId;
+            IsDraft = true;
         }
         
         public string Title { get; set; }

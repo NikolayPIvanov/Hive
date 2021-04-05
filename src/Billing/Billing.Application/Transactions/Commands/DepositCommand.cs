@@ -51,7 +51,7 @@ namespace Billing.Application.Transactions.Commands
                 throw new NotFoundException(nameof(Account));
             }
             
-            var transaction = new Transaction(TransactionType.Deposit, request.Amount, account.DefaultPaymentMethodId.Value, null);
+            var transaction = new Transaction(currentUserId, TransactionType.Deposit, request.Amount, account.DefaultPaymentMethodId.Value, null);
 
             _context.Transactions.Add(transaction);
             await _context.SaveChangesAsync(cancellationToken);
