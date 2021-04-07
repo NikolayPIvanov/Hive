@@ -1,68 +1,53 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Hive.Domain.Common;
 using Hive.Domain.Enums;
+using Hive.Domain.ValueObjects;
 
 namespace Hive.Domain.Entities.Orders
 {
     public class Order : AuditableEntity
     {
-        public Order()
+        private Order()
+        {
+            Resolutions = new HashSet<Resolution>();
+            IsClosed = OrderStates.Any(s => s.OrderState == OrderState.Canceled || s.OrderState == OrderState.Declined || s.OrderState == OrderState.Completed);
+        }
+        
+        public Order(decimal price, string requirements, int gigId, int packageId, int buyerId, string sellerId) : this()
         {
             OrderNumber = Guid.NewGuid();
             OrderedAt = DateTime.UtcNow;
-            Status = OrderStatus.Pending;
-            IsCanceled = false;
+            UnitPrice = price;
+            GigId = gigId;
+            PackageId = packageId;
+            BuyerId = buyerId;
+            SellerId = sellerId;
+            Requirement = new Requirement(requirements);
+            OrderStates = new HashSet<State>
+            {
+                State.Initial()
+            };
         }
-        
-        public int Id { get; set; }
-        
+                
         public Guid OrderNumber { get; private init; }
         public DateTime OrderedAt { get; private init; }
-        public string OrderedById { get; set; }
-        public bool IsCanceled { get; private set; }
-        public OrderStatus Status { get; set; }
-        public int OfferedById { get; set; }
+        public string SellerId { get; private init; }
+        public int BuyerId { get; private init; }
         
-        public decimal TotalAmount { get; set; }
+        public Buyer Buyer { get; private init; }
         
-        public DateTime? AcceptedAt { get; private set; } = null;
-        public DateTime? DeclinedAt { get; private set; } = null;
-        public string CanceledBy { get; private set; } = null;
+        public decimal UnitPrice { get; set; }
+        public bool IsClosed { get; private set; }
         
+        public int GigId { get; private init; }
+        public int PackageId { get; private init; }
+        public int RequirementId { get; private set; }
+        public Requirement Requirement { get; private init; }
         
-        public int GigId { get; set; }
+        public ICollection<Resolution> Resolutions { get; private set; }
         
-        public int PackageId { get; set; }
-        
-        public int RequirementId { get; set; }
-
-        public Requirement Requirement { get; set; }
-        
-        
-        // TODO: Gig Extras
-
-        public void SetInProgress()
-        {
-            Status = OrderStatus.InProgress;
-        }
-        
-        public void Cancel(string canceledBy)
-        {
-            IsCanceled = true;
-            CanceledBy = canceledBy;
-        }
-        
-        public void Accept()
-        {
-            AcceptedAt = DateTime.UtcNow;
-            Status = OrderStatus.Accepted;
-        }
-        
-        public void Decline()
-        {
-            DeclinedAt = DateTime.UtcNow;
-            Status = OrderStatus.Declined;
-        }
-        
+        public ICollection<State> OrderStates { get; private set; }
     }
 }

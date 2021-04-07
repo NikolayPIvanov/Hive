@@ -20,7 +20,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Sellers\Commands" />
+    <Folder Include="GigsManagement" />
+    <Folder Include="Ordering" />
   </ItemGroup>
 
 </Project>

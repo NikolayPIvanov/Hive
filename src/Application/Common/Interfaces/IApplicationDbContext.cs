@@ -19,20 +19,24 @@ namespace Hive.Application.Common.Interfaces
         DbSet<Package> Packages { get; set; }
         
         DbSet<Question> Questions { get; set; }
+        
+        DbSet<Review> Reviews { get; set; }
 
         DbSet<Seller> Sellers { get; set; }
         
         
-        
+        // Ordering
+        DbSet<Order> Orders { get; set; }
+        DbSet<Requirement> Requirements { get; set; }
+        DbSet<Resolution> Resolutions { get; set; }
+        DbSet<Buyer> Buyers { get; set; }
+
         
         DbSet<UserProfile> Profiles { get; set; }
         
         
-        DbSet<Order> Orders { get; set; }
         
-        DbSet<Requirement> Requirements { get; set; }
         
-        DbSet<Review> Reviews { get; set; }
         
         DbSet<Plan> Plans { get; set; }
         DbSet<Investor> Investors { get; set; }

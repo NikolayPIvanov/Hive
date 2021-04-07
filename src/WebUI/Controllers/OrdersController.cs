@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Net.Mime;
 using System.Threading.Tasks;
+using Hive.Application.Ordering.Orders.Commands.CancelOrder;
 using Hive.Application.Orders.Commands.AcceptOrder;
-using Hive.Application.Orders.Commands.CancelOrder;
 using Hive.Application.Orders.Commands.PlaceOrder;
 using Hive.Application.Orders.Queries.GetOrderByNumber;
 using Hive.Application.Orders.Queries.GetOrderRequirements;
