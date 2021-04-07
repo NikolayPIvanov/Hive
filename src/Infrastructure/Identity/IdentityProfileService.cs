@@ -4,6 +4,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Hive.Application.Common.Interfaces;
 using Hive.Domain.Entities.Accounts;
+using Hive.Domain.Entities.Gigs;
 using IdentityServer4.Extensions;
 using IdentityServer4.Models;
 using IdentityServer4.Services;

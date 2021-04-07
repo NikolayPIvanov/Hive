@@ -7,31 +7,28 @@ using MediatR;
 
 namespace Hive.Application.Gigs.Commands.DeleteGig
 {
-    public class DeleteGigCommand : IRequest
-    {
-        public int Id { get; set; }
-    }
+    public record DeleteGigCommand(int Id) : IRequest;
 
     public class DeleteGigCommandHandler : IRequestHandler<DeleteGigCommand>
     {
-        private readonly IApplicationDbContext _context;
+        private readonly IApplicationDbContext _dbContext;
 
-        public DeleteGigCommandHandler(IApplicationDbContext context)
+        public DeleteGigCommandHandler(IApplicationDbContext dbContext)
         {
-            _context = context;
+            _dbContext = dbContext;
         }
-        
+
         public async Task<Unit> Handle(DeleteGigCommand request, CancellationToken cancellationToken)
         {
-            var entity = await _context.Gigs.FindAsync(request.Id, cancellationToken);
-            
+            var entity = await _dbContext.Gigs.FindAsync(request.Id);
+
             if (entity is null)
             {
                 throw new NotFoundException(nameof(Gig), request.Id);
             }
 
-            _context.Gigs.Remove(entity);
-            await _context.SaveChangesAsync(cancellationToken);
+            _dbContext.Gigs.Remove(entity);
+            await _dbContext.SaveChangesAsync(cancellationToken);
 
             return Unit.Value;
         }

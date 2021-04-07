@@ -4,9 +4,11 @@ using Hive.Application.GigPackages.Queries.GetGigPackages;
 using Hive.Application.Gigs.Commands.CreateGig;
 using Hive.Application.Gigs.Commands.DeleteGig;
 using Hive.Application.Gigs.Commands.UpdateGig;
+using Hive.Application.Gigs.Queries;
 using Hive.Application.Gigs.Queries.GetGig;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using PackageDto = Hive.Application.GigPackages.Queries.GetGigPackages.PackageDto;
 
 namespace Hive.WebUI.Controllers
 {
@@ -42,7 +44,7 @@ namespace Hive.WebUI.Controllers
         [HttpDelete("{id:int}")]
         public async Task<ActionResult<GigDto>> Post(int id)
         {
-            await Mediator.Send(new DeleteGigCommand { Id = id });
+            await Mediator.Send(new DeleteGigCommand(id));
             return NoContent();
         }
         

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using Bogus;
-using Hive.Domain.Entities.Categories;
+using Hive.Domain.Entities.Gigs;
 
 namespace Hive.Infrastructure.Persistence
 {

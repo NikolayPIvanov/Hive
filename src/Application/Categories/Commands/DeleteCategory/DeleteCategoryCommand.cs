@@ -1,49 +1,42 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Hive.Application.Common.Exceptions;
 using Hive.Application.Common.Interfaces;
+using Hive.Domain.Entities.Gigs;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Hive.Application.Categories.Commands.DeleteCategory
 {
-    public class DeleteCategoryCommand : IRequest
-    {
-        public int Id { get; set; }
-
-        public bool IncludeSubCategories { get; set; } = false;
-    }
-
+    public record DeleteCategoryCommand(int Id) : IRequest;
+    
     public class DeleteCategoryCommandHandler : IRequestHandler<DeleteCategoryCommand>
     {
-        private readonly IApplicationDbContext _context;
+        private readonly IApplicationDbContext _dbContext;
+        private readonly ILogger<DeleteCategoryCommandHandler> _logger;
 
-        public DeleteCategoryCommandHandler(IApplicationDbContext context)
+        public DeleteCategoryCommandHandler(IApplicationDbContext dbContext, ILogger<DeleteCategoryCommandHandler> logger)
         {
-            _context = context;
+            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
-
+        
         public async Task<Unit> Handle(DeleteCategoryCommand request, CancellationToken cancellationToken)
         {
-            var entity = await _context.Categories
-                .Include(c => c.SubCategories)
-                .FirstOrDefaultAsync(c => c.Id == request.Id, cancellationToken);
-            
-            if (entity is null)
+            var category = await _dbContext.Categories
+                .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
+
+            if (category == null)
             {
-                throw new NotFoundException("Category", request.Id);
+                _logger.LogError("Category with {@Id} was not found.", request.Id);
+                throw new NotFoundException(nameof(Category), request.Id);
             }
 
-            _context.Categories.Remove(entity);
-            if (request.IncludeSubCategories)
-            {
-                foreach (var category in entity.SubCategories)
-                {
-                    _context.Categories.Remove(category);
-                }
-            }
-
-            await _context.SaveChangesAsync(cancellationToken);
+            _dbContext.Categories.Remove(category);
+            await _dbContext.SaveChangesAsync(cancellationToken);
+            _logger.LogInformation("Category with {@Id} was deleted.", request.Id);
 
             return Unit.Value;
         }

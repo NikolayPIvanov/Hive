@@ -1,38 +1,68 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
+using FluentValidation;
 using Hive.Application.Common.Interfaces;
 using Hive.Domain.Entities;
-using Hive.Domain.Entities.Categories;
+using Hive.Domain.Entities.Gigs;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Hive.Application.Categories.Commands.CreateCategory
 {
-    public class CreateCategoryCommand : IRequest<int>
+    public record CreateCategoryCommand(string Title, int? ParentId = null) : IRequest<int>;
+    
+    public class CreateCategoryCommandValidator : AbstractValidator<CreateCategoryCommand>
     {
-        public string Title { get; set; }
+        private readonly IApplicationDbContext _dbContext;
+        
+        public CreateCategoryCommandValidator(IApplicationDbContext dbContext)
+        {
+            _dbContext = dbContext;
+            
+            RuleFor(c => c.Title)
+                .MustAsync(BeUniqueTitleAsync)
+                .MaximumLength(50)
+                .NotEmpty();
 
-        public int? ParentId { get; set; } = null;
+            RuleFor(c => c.ParentId)
+                .MustAsync(ParentCategoryExistsAsync);
+        }
+
+        private async Task<bool> ParentCategoryExistsAsync(int? parentCategoryId, CancellationToken cancellationToken)
+        {
+            if (parentCategoryId is null) return true;
+
+            return await _dbContext.Categories.AnyAsync(c => c.Id == parentCategoryId, cancellationToken);
+        }
+        
+        private async Task<bool> BeUniqueTitleAsync(string title, CancellationToken cancellationToken)
+        {
+            return await _dbContext.Categories.AllAsync(r => r.Title != title, cancellationToken);
+        }
     }
 
     public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, int>
     {
-        private readonly IApplicationDbContext _context;
+        private readonly IApplicationDbContext _dbContext;
+        private readonly ILogger<CreateCategoryCommandHandler> _logger;
 
-        public CreateCategoryCommandHandler(IApplicationDbContext context)
+        public CreateCategoryCommandHandler(IApplicationDbContext dbContext, ILogger<CreateCategoryCommandHandler> logger)
         {
-            _context = context;
+            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
         public async Task<int> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
         {
-            var category = new Category()
-            {
-                Title = request.Title,
-                ParentCategoryId = request.ParentId
-            };
+            var (title, parentId) = request;
+            var category = new Category(title, parentId);
+            
+            _dbContext.Categories.Add(category);
+            await _dbContext.SaveChangesAsync(cancellationToken);
 
-            _context.Categories.Add(category);
-            await _context.SaveChangesAsync(cancellationToken);
+            _logger.LogInformation("Category with {@Title} and {@ParentId} was created.", title, parentId);
 
             return category.Id;
         }

@@ -1,59 +1,71 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
+using FluentValidation;
 using Hive.Application.Common.Interfaces;
 using Hive.Domain.Entities.Gigs;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Hive.Application.Gigs.Commands.CreateGig
 {
-    public class CreateGigCommand : IRequest<int>
+    public record CreateGigCommand : IRequest<int>
     {
-        public string Title { get; set; }
-        
-        public string Description { get; set; }
+        public string Title { get; private init; }
+        public int CategoryId { get; private init; }
+        public HashSet<string> Tags { get; private init; }
 
-        public string Metadata { get; set; }
-        
-        public string Tags { get; set; }
-
-        public int CategoryId { get; set; }
-
-
-        public int SellerId { get; set; }
-
-        public List<QuestionDto> Questions { get; set; }
+        public CreateGigCommand(string title, int categoryId, HashSet<string> tags)
+            => (Title, CategoryId, Tags) = (title, categoryId, tags ?? new HashSet<string>(5));
     }
 
+    public class CreateGigCommandValidator : AbstractValidator<CreateGigCommand>
+    {
+        public CreateGigCommandValidator(IApplicationDbContext dbContext)
+        {
+            RuleFor(x => x.Title)
+                .MaximumLength(50).WithMessage("Title length must not be above 50 characters.")
+                .MinimumLength(3).WithMessage("Title length must not be below 3 characters.")
+                .NotEmpty().WithMessage("Title should be provided.");
+
+            RuleFor(x => x.CategoryId)
+                .MustAsync(async (id, token) => await dbContext.Categories.AnyAsync(x => x.Id == id, cancellationToken: token))
+                .WithMessage("Must provide an existing category id.");
+
+            RuleFor(x => x.Tags)
+                .Must(tags => tags.Count <= 5).WithMessage("Can provide up to 5 tags.");
+
+            RuleForEach(x => x.Tags)
+                .MinimumLength(3).WithMessage("Tag length must not be below 3 characters.")
+                .MaximumLength(20).WithMessage("Tag length must not be above 20 characters.");
+        }    
+    }
+    
     public class CreateGigCommandHandler : IRequestHandler<CreateGigCommand, int>
     {
-        private readonly IApplicationDbContext _context;
-        private readonly IMapper _mapper;
+        private readonly IApplicationDbContext _dbContext;
+        private readonly ICurrentUserService _currentUserService;
 
-        public CreateGigCommandHandler(IApplicationDbContext context, IMapper mapper)
+        public CreateGigCommandHandler(IApplicationDbContext dbContext, ICurrentUserService currentUserService)
         {
-            _context = context;
-            _mapper = mapper;
+            _dbContext = dbContext;
+            _currentUserService = currentUserService;
         }
         
         public async Task<int> Handle(CreateGigCommand request, CancellationToken cancellationToken)
         {
-            var entity = new Gig
-            {
-                Title = request.Title,
-                Description = request.Description,
-                Metadata = request.Metadata,
-                Tags = request.Tags,
-                Questions = _mapper.Map<List<GigQuestion>>(request.Questions),
-                SellerId = request.SellerId,
-                CategoryId = request.CategoryId
-            };
+            var seller =
+                await _dbContext.Sellers.FirstOrDefaultAsync(s => s.UserId == _currentUserService.UserId,
+                    cancellationToken);
+            var tags = request.Tags.Select(t => new Tag(t)).ToHashSet();
+            var gig = new Gig(request.Title, request.CategoryId, seller.Id, tags);
 
-            _context.Gigs.Add(entity);
-            await _context.SaveChangesAsync(cancellationToken);
+            _dbContext.Gigs.Add(gig);
+            await _dbContext.SaveChangesAsync(cancellationToken);
 
-            return entity.Id;
+            return gig.Id;
         }
     }
 }

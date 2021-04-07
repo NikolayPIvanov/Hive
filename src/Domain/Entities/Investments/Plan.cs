@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Hive.Domain.Common;
 using Hive.Domain.Entities.Accounts;
-using Hive.Domain.Entities.Categories;
+using Hive.Domain.Entities.Gigs;
 
 namespace Hive.Domain.Entities.Investments
 {

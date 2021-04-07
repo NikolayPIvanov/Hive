@@ -1,62 +1,83 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using AutoMapper;
+using FluentValidation;
 using Hive.Application.Common.Exceptions;
 using Hive.Application.Common.Interfaces;
-using Hive.Domain.Entities.Categories;
+using Hive.Domain.Entities.Gigs;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Hive.Application.Categories.Commands.UpdateCategory
 {
-    public class UpdateCategoryCommand : IRequest
+    public record UpdateCategoryCommand(int Id, string Title, int? ParentId = null) : IRequest;
+    
+    public class UpdateCategoryCommandValidator : AbstractValidator<UpdateCategoryCommand>
     {
-        public UpdateCategoryCommand()
+        private readonly IApplicationDbContext _dbContext;
+        
+        public UpdateCategoryCommandValidator(IApplicationDbContext dbContext)
         {
-            SubCategoriesIds = new();
+            _dbContext = dbContext;
+            
+            RuleFor(c => c.Title)
+                .MinimumLength(3).WithMessage("Title should be at minimum 3 characters")
+                .MaximumLength(50).WithMessage("Title should be at maximum 50 characters")
+                .NotEmpty().WithMessage("Title cannot be empty");
+            
+            RuleFor(c => c)
+                .MustAsync(BeValidAsync).WithMessage("Either parent category does not exist, title already is taken or trying to set invalid parent id");
         }
         
-        public int Id { get; set; }
+        private async Task<bool> ParentCategoryExistsAsync(int parentCategoryId, CancellationToken cancellationToken)
+        {
+            return await _dbContext.Categories.AnyAsync(c => c.Id == parentCategoryId && c.ParentId == null, cancellationToken);
+        }
         
-        public string Title { get; set; }
+        private async Task<bool> BeValidAsync(UpdateCategoryCommand command, CancellationToken cancellationToken)
+        {
+            var (id, title, parentId) = command;
+            var titleExists = _dbContext.Categories
+                .AnyAsync(r => r.Title == title && r.Id != id, cancellationToken);
+            
+            var parentCategoryIsValid = !parentId.HasValue || await ParentCategoryExistsAsync(parentId.Value, cancellationToken);
+            var titleIsValid = !(await titleExists);
 
-        public int? ParentCategoryId { get; set; }
-
-        public List<int> SubCategoriesIds { get; set; }
+            return titleIsValid && parentCategoryIsValid;
+        }
     }
     
     public class UpdateCategoryCommandHandler : IRequestHandler<UpdateCategoryCommand>
     {
-        private readonly IApplicationDbContext _context;
-        private readonly IMapper _mapper;
+        private readonly IApplicationDbContext _dbContext;
+        private readonly ILogger<UpdateCategoryCommandHandler> _logger;
 
-        public UpdateCategoryCommandHandler(IApplicationDbContext context, IMapper mapper)
+        public UpdateCategoryCommandHandler(IApplicationDbContext dbContext, ILogger<UpdateCategoryCommandHandler> logger)
         {
-            _context = context;
-            _mapper = mapper;
+            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
         public async Task<Unit> Handle(UpdateCategoryCommand request, CancellationToken cancellationToken)
         {
-            var entity = await _context.Categories
-                .Include(c => c.SubCategories)
-                .FirstOrDefaultAsync(c => c.Id == request.Id, cancellationToken);
+            var (id, title, parentId) = request;
+            var category = await _dbContext.Categories
+                .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
-            if (entity is null)
+            if (category == null)
             {
-                throw new NotFoundException(nameof(Category), request.Id);
+                _logger.LogError("Category with {@Id} was not found.", request.Id);
+                throw new NotFoundException(nameof(Category), id);
             }
+
+            category.Title = title;
+            category.ParentId = parentId;
+            await _dbContext.SaveChangesAsync(cancellationToken);
+            _logger.LogError("Category with {@Id} was updated.", request.Id);
             
-            var updatedSubCategories = _context.Categories.Where(c => request.SubCategoriesIds.Contains(c.Id));
-
-            entity.Title = request.Title;
-            entity.ParentCategoryId = request.ParentCategoryId;
-            entity.SubCategories = await updatedSubCategories.ToListAsync(cancellationToken);
-
-            await _context.SaveChangesAsync(cancellationToken);
-
             return Unit.Value;
         }
     }

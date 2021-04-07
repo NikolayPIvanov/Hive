@@ -6,7 +6,7 @@ using Hive.Application.Categories.Commands.UpdateCategory;
 using Hive.Application.Categories.Queries.GetCategories;
 using Hive.Application.Categories.Queries.GetCategory;
 using Hive.Application.Common.Models;
-using Hive.Application.Gigs.Queries.GetGigsForCategory;
+using Hive.Application.Gigs.Queries.GetCategoryGigs;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hive.WebUI.Controllers
@@ -17,19 +17,19 @@ namespace Hive.WebUI.Controllers
         [HttpGet("{id:int}")]
         public async Task<ActionResult<CategoryDto>> Get(int id)
         {
-            return await Mediator.Send(new GetCategoryQuery { Id = id});
+            return await Mediator.Send(new GetCategoryQuery(id));
         }
         
         [HttpGet]
         public async Task<ActionResult<IEnumerable<CategoryDto>>> Get([FromQuery] GetCategoriesQuery query)
         {
-            return await Mediator.Send(query);
+            return Ok(await Mediator.Send(query));
         }
         
         [HttpGet("{id:int}/gigs")]
         public async Task<ActionResult<PaginatedList<CategoryDto>>> GetGigs([FromRoute] int id, [FromQuery] int? pageNumber, [FromQuery] int? pageSize)
         {
-            var query = new GetGigsForCategoryQuery(id);
+            var query = new GetCategoryGigsQuery(id);
             if(pageNumber.HasValue)
             {
                 query = query with {PageNumber = pageNumber.Value};
@@ -63,7 +63,7 @@ namespace Hive.WebUI.Controllers
         [HttpDelete("{id:int}")]
         public async Task<ActionResult> Delete(int id)
         {
-            await Mediator.Send(new DeleteCategoryCommand() { Id = id});
+            await Mediator.Send(new DeleteCategoryCommand(id));
             return NoContent();
         }
     }

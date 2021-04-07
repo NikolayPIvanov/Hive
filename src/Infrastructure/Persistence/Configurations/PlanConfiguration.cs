@@ -12,9 +12,9 @@ namespace Hive.Infrastructure.Persistence.Configurations
             builder.Property(p => p.Description).HasMaxLength(5000).IsRequired();
             builder.Property(p => p.IsReleased).HasDefaultValue(false);
 
-            builder.HasOne(p => p.Seller)
-                .WithMany(s => s.Plans)
-                .HasForeignKey(p => p.SellerId);
+            // builder.HasOne(p => p.Seller)
+            //     .WithMany(s => s.Plans)
+            //     .HasForeignKey(p => p.SellerId);
 
             builder.HasMany(x => x.Investments)
                 .WithOne(x => x.Plan)

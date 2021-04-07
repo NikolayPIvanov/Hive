@@ -1,29 +1,18 @@
 ﻿using System.Collections.Generic;
 using AutoMapper;
 using Hive.Application.Common.Mappings;
-using Hive.Domain.Entities.Categories;
+using Hive.Domain.Entities.Gigs;
 
 namespace Hive.Application.Categories.Queries.GetCategory
 {
-    public class CategoryDto : IMapFrom<Category>
+    public class CategoryDto
     {
-        public CategoryDto()
-        {
-            SubCategories = new List<CategoryDto>();
-        }
-        
         public int Id { get; set; }
-        
-        public string Title { get; set; }
-        
-        public int? ParentId { get; set; }
 
-        public List<CategoryDto> SubCategories { get; set; }
-        
-        public void Mapping(Profile profile)
-        {
-            profile.CreateMap<Category, CategoryDto>()
-                .ForMember(d => d.ParentId, opt => opt.MapFrom(s => s.ParentCategoryId));
-        }
+        public string Title { get; set; }
+
+        public int ParentId { get; set; }
+
+        public IEnumerable<CategoryDto> SubCategories { get; set; }
     }
 }

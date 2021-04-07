@@ -6,7 +6,7 @@ using Hive.Application.Categories.Commands.CreateCategory;
 using Hive.Application.Categories.Commands.DeleteCategory;
 using Hive.Application.Common.Exceptions;
 using Hive.Domain.Entities;
-using Hive.Domain.Entities.Categories;
+using Hive.Domain.Entities.Gigs;
 using NUnit.Framework;
 
 namespace Hive.Application.IntegrationTests.Categories.Commands

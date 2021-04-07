@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
 using FluentAssertions;
 using Hive.Application.Categories.Commands.CreateCategory;
-using Hive.Domain.Entities.Categories;
+using Hive.Domain.Entities.Gigs;
 using NUnit.Framework;
 using ValidationException = Hive.Application.Common.Exceptions.ValidationException;
 

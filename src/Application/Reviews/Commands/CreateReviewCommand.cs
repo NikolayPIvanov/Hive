@@ -1,11 +1,10 @@
-﻿using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Hive.Application.Common.Interfaces;
 using Hive.Domain.Entities.Gigs;
 using MediatR;
 
-namespace Hive.Application.Gigs.Commands.CreateReview
+namespace Hive.Application.Reviews.Commands.CreateReview
 {
     public class CreateReviewCommand : IRequest<int>
     {
@@ -29,13 +28,7 @@ namespace Hive.Application.Gigs.Commands.CreateReview
         
         public async Task<int> Handle(CreateReviewCommand request, CancellationToken cancellationToken)
         {
-            var review = new Review
-            {
-                Comment = request.Comment,
-                Rating = request.Rating,
-                GigId = request.GigId,
-                UserId = request.UserId
-            };
+            var review = new Review(request.UserId, request.GigId, request.Comment, request.Rating);
 
             _context.Reviews.Add(review);
             await _context.SaveChangesAsync(cancellationToken);

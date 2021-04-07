@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using Hive.Application.Categories.Queries.GetCategories;
 using Hive.Domain.Entities;
-using Hive.Domain.Entities.Categories;
+using Hive.Domain.Entities.Gigs;
 using NUnit.Framework;
 
 namespace Hive.Application.IntegrationTests.Categories.Queries

@@ -11,7 +11,6 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Hive.Domain.Entities.Accounts;
-using Hive.Domain.Entities.Categories;
 using Hive.Domain.Entities.Gigs;
 using Hive.Domain.Entities.Investments;
 using Hive.Domain.Entities.Orders;
@@ -35,15 +34,18 @@ namespace Hive.Infrastructure.Persistence
             _domainEventService = domainEventService;
             _dateTime = dateTime;
         }
-
+        // Gigs
         public DbSet<Gig> Gigs { get; set; }
+        public DbSet<GigScope> GigScopes { get; set; }
+        public DbSet<Review> Reviews { get; set; }
         
-        public DbSet<GigQuestion> GigQuestions { get; set; }
-        
+        public DbSet<Question> Questions { get; set; }
         public DbSet<Category> Categories { get; set; }
         
-        // Accounts
         public DbSet<Seller> Sellers { get; set; }
+        
+        // Orderning
+        // Accounts
         
         public DbSet<UserProfile> Profiles { get; set; }
         
@@ -52,7 +54,6 @@ namespace Hive.Infrastructure.Persistence
         public DbSet<Order> Orders { get; set; }
         
         public DbSet<Requirement> Requirements { get; set; }
-        public DbSet<Review> Reviews { get; set; }
         
         
         public DbSet<Plan> Plans { get; set; }

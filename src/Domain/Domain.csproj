@@ -6,9 +6,4 @@
     <AssemblyName>Hive.Domain</AssemblyName>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Folder Include="Events" />
-    <Folder Include="ValueObjects" />
-  </ItemGroup>
-
 </Project>

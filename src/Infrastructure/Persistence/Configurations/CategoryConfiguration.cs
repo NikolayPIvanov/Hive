@@ -1,5 +1,5 @@
 ﻿using Hive.Domain.Entities;
-using Hive.Domain.Entities.Categories;
+using Hive.Domain.Entities.Gigs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -13,7 +13,8 @@ namespace Hive.Infrastructure.Persistence.Configurations
 
             builder.HasMany(c => c.SubCategories)
                 .WithOne()
-                .HasForeignKey(c => c.ParentCategoryId);
+                .HasForeignKey(c => c.ParentId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

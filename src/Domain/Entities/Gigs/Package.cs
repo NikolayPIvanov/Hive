@@ -7,7 +7,22 @@ namespace Hive.Domain.Entities.Gigs
 {
     public class Package : AuditableEntity
     {
-        public int Id { get; set; }
+        private Package()
+        {
+        }
+
+        public Package(string title, string description, decimal price, double deliveryTime, DeliveryFrequency deliveryFrequency,
+            int? revisions, RevisionType revisionType, int gigId) : this()
+        {
+            Title = title;
+            Description = description;
+            Price = price;
+            DeliveryTime = deliveryTime;
+            DeliveryFrequency = deliveryFrequency;
+            Revisions = revisions;
+            RevisionType = revisionType;
+            GigId = gigId;
+        }
         
         public PackageTier PackageTier { get; set; }
         
@@ -18,11 +33,11 @@ namespace Hive.Domain.Entities.Gigs
         public decimal Price { get; set; }
         
         public double DeliveryTime { get; set; }
-        
         public DeliveryFrequency DeliveryFrequency { get; set; }
         
-        public int GigId { get; set; }
-
-        public Gig Gig { get; set; }
+        public RevisionType RevisionType { get; set; }
+        public int? Revisions { get; set; }
+        
+        public int GigId { get; init; }
     }
 }
