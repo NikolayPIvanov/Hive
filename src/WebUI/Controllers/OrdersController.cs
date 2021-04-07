@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Net.Mime;
 using System.Threading.Tasks;
-using Hive.Application.Ordering.Orders.Commands.CancelOrder;
-using Hive.Application.Orders.Commands.AcceptOrder;
-using Hive.Application.Orders.Commands.PlaceOrder;
-using Hive.Application.Orders.Queries.GetOrderByNumber;
-using Hive.Application.Orders.Queries.GetOrderRequirements;
-using Hive.Application.Orders.Queries.GetSellerOrders;
+using Hive.Application.Ordering.Orders.Commands;
+using Hive.Application.Ordering.Orders.Queries;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,15 +14,8 @@ namespace Hive.WebUI.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<OrderDto>> GetOrder(Guid orderNumber)
         {
-            var order = await Mediator.Send(new GetOrderByNumberQuery() {OrderNumber = orderNumber});
+            var order = await Mediator.Send(new GetOrderByOrderNumberQuery(orderNumber));
             return Ok(order);
-        }
-
-        [HttpGet("{orderNumber:guid}/requirements")]
-        public async Task<ActionResult<RequirementDto>> GetRequirements(Guid orderNumber)
-        {
-            var requirements = await Mediator.Send(new GetOrderRequirements() {OrderNumber = orderNumber});
-            return Ok(requirements);
         }
         
         [HttpPost]
@@ -41,16 +30,16 @@ namespace Hive.WebUI.Controllers
         }
         
         [HttpPut("{orderNumber:guid}/cancellation")]
-        public async Task<ActionResult<int>> CancelOrder(Guid orderNumber)
+        public async Task<ActionResult<int>> CancelOrder(CancelOrderCommand cancelOrderCommand)
         {
-            await Mediator.Send(new CancelOrderCommand { OrderNumber = orderNumber });
+            await Mediator.Send(cancelOrderCommand);
             return NoContent();
         }
         
         [HttpPut("{orderNumber:guid}/acceptance")]
-        public async Task<ActionResult<int>> AcceptOrder(Guid orderNumber)
+        public async Task<ActionResult<int>> AcceptOrder(AcceptOrderCommand command)
         {
-            var id = await Mediator.Send(new AcceptOrderCommand() { OrderNumber = orderNumber });
+            var id = await Mediator.Send(command);
             return Ok(id);
         }
     }

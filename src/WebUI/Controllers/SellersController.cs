@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Hive.Application.Orders.Queries.GetSellerOrders;
-using Hive.Domain.Enums;
+using Hive.Application.Ordering.Orders.Queries;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hive.WebUI.Controllers
@@ -9,9 +8,9 @@ namespace Hive.WebUI.Controllers
     public class SellersController : ApiControllerBase
     {
         [HttpGet("{sellerId:int}/orders")]
-        public async Task<ActionResult<IEnumerable<OrderDto>>> GetSellerOrders(int sellerId, [FromQuery] OrderStatus? orderStatus)
+        public async Task<ActionResult<IEnumerable<OrderDto>>> GetSellerOrders(string sellerId)
         {
-            return Ok(await Mediator.Send(new GetSellerOrdersQuery.Query(sellerId, orderStatus)));
+            return Ok(await Mediator.Send(new GetSellerOrdersQuery(sellerId)));
         } 
     }
 }

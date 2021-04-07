@@ -8,10 +8,7 @@ namespace Hive.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<Requirement> builder)
         {
-            builder.Property(r => r.Details).HasMaxLength(1000).IsRequired();
-            builder.HasOne(r => r.Order)
-                .WithOne(o => o.Requirement)
-                .HasForeignKey<Requirement>(r => r.OrderId);
+            builder.Property(r => r.Details).HasMaxLength(2500).IsRequired();
         }
     }
 }

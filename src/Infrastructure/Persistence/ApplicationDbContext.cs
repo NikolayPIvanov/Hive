@@ -41,21 +41,20 @@ namespace Hive.Infrastructure.Persistence
         
         public DbSet<Question> Questions { get; set; }
         public DbSet<Category> Categories { get; set; }
-        
+        public DbSet<Package> Packages { get; set; }
+
         public DbSet<Seller> Sellers { get; set; }
         
-        // Orderning
-        // Accounts
-        
-        public DbSet<UserProfile> Profiles { get; set; }
-        
-        public DbSet<Package> Packages { get; set; }
-        
+        // Ordering
         public DbSet<Order> Orders { get; set; }
-        
+        public DbSet<Buyer> Buyers { get; set; }
+
         public DbSet<Requirement> Requirements { get; set; }
-        
-        
+        public DbSet<Resolution> Resolutions { get; set; }
+        // Accounts
+
+        public DbSet<UserProfile> Profiles { get; set; }
+
         public DbSet<Plan> Plans { get; set; }
         public DbSet<Investor> Investors { get; set; }
         public DbSet<Investment> Investments { get; set; }
