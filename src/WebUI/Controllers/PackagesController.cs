@@ -11,7 +11,7 @@ namespace Hive.WebUI.Controllers
         [HttpGet("{id:int}")]
         public async Task<ActionResult<PackageDto>> Get(int id)
         {
-            var entity = await Mediator.Send(new GetPackageQuery() {Id = id});
+            var entity = await Mediator.Send(new GetPackageQuery(id));
             return Ok(entity);
         }
 
