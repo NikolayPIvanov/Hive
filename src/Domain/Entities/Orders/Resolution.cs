@@ -16,9 +16,9 @@ namespace Hive.Domain.Entities.Orders
             IsApproved = false;
         }
         
-        public string Version { get; init; }
+        public string Version { get; set; }
 
-        public string Location { get; init; }
+        public string Location { get; set; }
 
         public int OrderId { get; init; }
 
