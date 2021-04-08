@@ -8,7 +8,6 @@ namespace Hive.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<Gig> builder)
         {
-            
             builder.HasKey(g => g.Id);
             builder.Property(g => g.Title).HasMaxLength(50).IsRequired();
             builder.Property(g => g.IsDraft).IsRequired();
@@ -17,8 +16,26 @@ namespace Hive.Infrastructure.Persistence.Configurations
                 .WithMany()
                 .HasForeignKey(g => g.CategoryId);
             
+            builder.HasOne(g => g.Seller)
+                .WithMany()
+                .HasForeignKey(g => g.SellerId);
+            
             // https://docs.microsoft.com/en-us/ef/core/modeling/owned-entities#collections-of-owned-types
             builder.OwnsMany(g => g.Tags, t =>
+            {
+                t.WithOwner().HasForeignKey("GigId");
+                t.Property<int>("Id");
+                t.HasKey("Id");
+            });
+            
+            builder.OwnsMany(g => g.Questions, t =>
+            {
+                t.WithOwner().HasForeignKey("GigId");
+                t.Property<int>("Id");
+                t.HasKey("Id");
+            });
+            
+            builder.OwnsOne(g => g.GigScope, t =>
             {
                 t.WithOwner().HasForeignKey("GigId");
                 t.Property<int>("Id");
@@ -28,27 +45,10 @@ namespace Hive.Infrastructure.Persistence.Configurations
             builder.HasMany(g => g.Packages)
                 .WithOne()
                 .HasForeignKey(g => g.GigId);
-
-            builder.HasMany(g => g.Questions)
-                .WithOne()
-                .HasForeignKey(q => q.GigId);
             
-            builder.HasOne(g => g.GigScope)
+            builder.HasMany(g => g.Reviews)
                 .WithOne()
-                .HasForeignKey<Gig>(gs => gs.GigScopeId);
-        }
-    }
-    
-    public class GigScopeConfiguration : IEntityTypeConfiguration<GigScope>
-    {
-        public void Configure(EntityTypeBuilder<GigScope> builder)
-        {
-
-            builder.Property(gs => gs.Description)
-                .HasMaxLength(2000)
-                .IsRequired();
-
-            builder.HasIndex(gs => gs.GigId).IsUnique();
+                .HasForeignKey(g => g.GigId);
         }
     }
     

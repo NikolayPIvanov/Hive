@@ -10,7 +10,7 @@ using Hive.Domain.Entities.Gigs;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Hive.Application.Reviews.Queries
+namespace Hive.Application.GigsManagement.Reviews.Queries
 {
     public record GetGigReviewsQuery(int GigId, int PageNumber, int PageSize) : IRequest<PaginatedList<ReviewDto>>;
 

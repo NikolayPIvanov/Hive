@@ -8,7 +8,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace Hive.Application.Categories.Commands.DeleteCategory
+namespace Hive.Application.GigsManagement.Categories.Commands.DeleteCategory
 {
     public record DeleteCategoryCommand(int Id) : IRequest;
     

@@ -3,13 +3,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
 using Hive.Application.Common.Interfaces;
-using Hive.Domain.Entities;
 using Hive.Domain.Entities.Gigs;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace Hive.Application.Categories.Commands.CreateCategory
+namespace Hive.Application.GigsManagement.Categories.Commands.CreateCategory
 {
     public record CreateCategoryCommand(string Title, int? ParentId = null) : IRequest<int>;
     

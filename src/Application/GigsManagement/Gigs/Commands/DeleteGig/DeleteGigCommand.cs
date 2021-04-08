@@ -5,7 +5,7 @@ using Hive.Application.Common.Interfaces;
 using Hive.Domain.Entities.Gigs;
 using MediatR;
 
-namespace Hive.Application.Gigs.Commands.DeleteGig
+namespace Hive.Application.GigsManagement.Gigs.Commands.DeleteGig
 {
     public record DeleteGigCommand(int Id) : IRequest;
 

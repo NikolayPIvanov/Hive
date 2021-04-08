@@ -6,11 +6,10 @@ using AutoMapper.QueryableExtensions;
 using Hive.Application.Common.Interfaces;
 using Hive.Application.Common.Mappings;
 using Hive.Application.Common.Models;
-using Hive.Application.Gigs.Queries.GetGig;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Hive.Application.Gigs.Queries.GetCategoryGigs
+namespace Hive.Application.GigsManagement.Gigs.Queries.GetCategoryGigs
 {
     public record GetCategoryGigsQuery(int CategoryId, int PageNumber = 1, int PageSize = 10) : IRequest<PaginatedList<GigDto>>;
 

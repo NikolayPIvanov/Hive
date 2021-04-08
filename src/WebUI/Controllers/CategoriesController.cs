@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Hive.Application.Categories.Commands.CreateCategory;
-using Hive.Application.Categories.Commands.DeleteCategory;
-using Hive.Application.Categories.Commands.UpdateCategory;
-using Hive.Application.Categories.Queries.GetCategories;
-using Hive.Application.Categories.Queries.GetCategory;
 using Hive.Application.Common.Models;
-using Hive.Application.Gigs.Queries.GetCategoryGigs;
+using Hive.Application.GigsManagement.Categories.Commands.CreateCategory;
+using Hive.Application.GigsManagement.Categories.Commands.DeleteCategory;
+using Hive.Application.GigsManagement.Categories.Commands.UpdateCategory;
+using Hive.Application.GigsManagement.Categories.Queries.GetCategories;
+using Hive.Application.GigsManagement.Categories.Queries.GetCategory;
+using Hive.Application.GigsManagement.Gigs.Queries.GetCategoryGigs;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hive.WebUI.Controllers

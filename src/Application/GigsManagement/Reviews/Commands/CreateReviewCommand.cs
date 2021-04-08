@@ -4,14 +4,12 @@ using Hive.Application.Common.Interfaces;
 using Hive.Domain.Entities.Gigs;
 using MediatR;
 
-namespace Hive.Application.Reviews.Commands.CreateReview
+namespace Hive.Application.GigsManagement.Reviews.Commands
 {
     public class CreateReviewCommand : IRequest<int>
     {
         public int GigId { get; set; }
-
-        public string UserId { get; set; }
-
+        
         public double Rating { get; set; }
         
         public string? Comment { get; set; }
@@ -28,7 +26,8 @@ namespace Hive.Application.Reviews.Commands.CreateReview
         
         public async Task<int> Handle(CreateReviewCommand request, CancellationToken cancellationToken)
         {
-            var review = new Review(request.UserId, request.GigId, request.Comment, request.Rating);
+            var currentUser = "currentUserId";
+            var review = new Review(currentUser, request.GigId, request.Comment, request.Rating);
 
             _context.Reviews.Add(review);
             await _context.SaveChangesAsync(cancellationToken);

@@ -1,11 +1,10 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Hive.Application.Common.Interfaces;
-using Hive.Domain.Entities.Accounts;
 using Hive.Domain.Entities.Gigs;
 using MediatR;
 
-namespace Hive.Application.Sellers.Commands.CreateSeller
+namespace Hive.Application.GigsManagement.Sellers.Commands.CreateSeller
 {
     public static class CreateSellerCommand
     {
@@ -24,7 +23,7 @@ namespace Hive.Application.Sellers.Commands.CreateSeller
             public async Task<Response> Handle(Command request, CancellationToken cancellationToken)
             {
                 var (userId, userProfileId) = request;
-                var seller = new Seller(userId);
+                var seller = new Seller(userId, userProfileId);
 
                 _context.Sellers.Add(seller);
                 await _context.SaveChangesAsync(cancellationToken);

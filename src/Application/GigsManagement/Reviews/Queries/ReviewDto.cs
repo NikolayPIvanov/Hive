@@ -1,4 +1,4 @@
-﻿namespace Hive.Application.Reviews.Queries
+﻿namespace Hive.Application.GigsManagement.Reviews.Queries
 {
     public class ReviewDto
     {

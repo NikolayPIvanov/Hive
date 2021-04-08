@@ -1,10 +1,8 @@
-﻿using Hive.Application.Common.Mappings;
-using Hive.Domain.Entities.Gigs;
-using Hive.Domain.Enums;
+﻿using Hive.Domain.Enums;
 
-namespace Hive.Application.GigPackages.Queries.GetGigPackages
+namespace Hive.Application.GigsManagement.GigPackages.Queries
 {
-    public class PackageDto : IMapFrom<Package>
+    public class PackageDto
     {
         public int Id { get; set; }
         

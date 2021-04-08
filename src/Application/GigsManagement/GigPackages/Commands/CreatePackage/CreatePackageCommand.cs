@@ -7,7 +7,7 @@ using Hive.Domain.Entities.Gigs;
 using Hive.Domain.Enums;
 using MediatR;
 
-namespace Hive.Application.GigPackages.Commands.CreatePackage
+namespace Hive.Application.GigsManagement.GigPackages.Commands.CreatePackage
 {
     public class CreatePackageCommand : IRequest<int>, IMapFrom<Package>
     {

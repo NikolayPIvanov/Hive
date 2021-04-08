@@ -1,7 +1,7 @@
 ﻿using System.Threading.Tasks;
-using Hive.Application.GigPackages.Commands.CreatePackage;
-using Hive.Application.GigPackages.Queries.GetGigPackages;
-using Hive.Application.GigPackages.Queries.GetPackage;
+using Hive.Application.GigsManagement.GigPackages.Commands.CreatePackage;
+using Hive.Application.GigsManagement.GigPackages.Queries;
+using Hive.Application.GigsManagement.GigPackages.Queries.GetPackage;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hive.WebUI.Controllers

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
@@ -11,7 +9,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace Hive.Application.Categories.Commands.UpdateCategory
+namespace Hive.Application.GigsManagement.Categories.Commands.UpdateCategory
 {
     public record UpdateCategoryCommand(int Id, string Title, int? ParentId = null) : IRequest;
     

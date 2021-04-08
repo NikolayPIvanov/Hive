@@ -1,18 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
-using Hive.Application.Categories.Queries.GetCategory;
 using Hive.Application.Common.Interfaces;
 using Hive.Application.Common.Mappings;
 using Hive.Application.Common.Models;
+using Hive.Application.GigsManagement.Categories.Queries.GetCategory;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Hive.Application.Categories.Queries.GetCategories
+namespace Hive.Application.GigsManagement.Categories.Queries.GetCategories
 {
     public record GetCategoriesQuery(int PageNumber = 1, int PageSize = 10, bool OnlyParents = false) : IRequest<PaginatedList<CategoryDto>>;
 

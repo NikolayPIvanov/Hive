@@ -9,7 +9,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace Hive.Application.Categories.Queries.GetCategory
+namespace Hive.Application.GigsManagement.Categories.Queries.GetCategory
 {
     public record GetCategoryQuery(int Id) : IRequest<CategoryDto>;
 

@@ -3,16 +3,12 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Hive.Application.Common.Exceptions;
 using Hive.Application.Common.Interfaces;
-using Hive.Application.GigPackages.Queries.GetGigPackages;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Hive.Application.GigPackages.Queries.GetPackage
+namespace Hive.Application.GigsManagement.GigPackages.Queries.GetPackage
 {
-    public class GetPackageQuery : IRequest<PackageDto>
-    {
-        public int Id { get; set; }
-    }
+    public record GetPackageQuery(int Id) : IRequest<PackageDto>;
 
     public class GetPackageQueryHandler : IRequestHandler<GetPackageQuery, PackageDto>
     {

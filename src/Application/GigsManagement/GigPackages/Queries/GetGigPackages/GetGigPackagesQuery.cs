@@ -7,12 +7,9 @@ using Hive.Application.Common.Interfaces;
 using Hive.Application.Common.Mappings;
 using MediatR;
 
-namespace Hive.Application.GigPackages.Queries.GetGigPackages
+namespace Hive.Application.GigsManagement.GigPackages.Queries.GetGigPackages
 {
-    public class GetGigPackagesQuery : IRequest<IEnumerable<PackageDto>>
-    {
-        public int GigId { get; set; }
-    }
+    public record GetGigPackagesQuery(int GigId) : IRequest<IEnumerable<PackageDto>>;
 
     public class GetGigPackagesQueryHandler : IRequestHandler<GetGigPackagesQuery, IEnumerable<PackageDto>>
     {

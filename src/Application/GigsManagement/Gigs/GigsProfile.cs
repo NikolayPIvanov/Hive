@@ -1,10 +1,10 @@
 ﻿using System.Linq;
 using AutoMapper;
-using Hive.Application.Gigs.Commands.UpdateGig;
-using Hive.Application.Gigs.Queries;
+using Hive.Application.GigsManagement.Gigs.Commands.UpdateGig;
+using Hive.Application.GigsManagement.Gigs.Queries;
 using Hive.Domain.Entities.Gigs;
 
-namespace Hive.Application.Gigs
+namespace Hive.Application.GigsManagement.Gigs
 {
     public class GigsProfile : Profile
     {
@@ -18,7 +18,6 @@ namespace Hive.Application.Gigs
                 .ForMember(d => d.Description, x => x.MapFrom(s => s.GigScope.Description));
 
             CreateMap<UpdateGigCommand, Gig>()
-                .ForMember(d => d.GigScopeId, x => x.Ignore())
                 .ForMember(d => d.Tags,
                     x => x.MapFrom(s =>
                         s.Tags.Select(t => new Tag(t))))

@@ -14,11 +14,8 @@ namespace Hive.Application.Common.Interfaces
         DbSet<Category> Categories { get; set; }
         
         DbSet<Gig> Gigs { get; set; }
-        DbSet<GigScope> GigScopes { get; set; }
         
         DbSet<Package> Packages { get; set; }
-        
-        DbSet<Question> Questions { get; set; }
         
         DbSet<Review> Reviews { get; set; }
 

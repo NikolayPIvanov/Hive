@@ -5,7 +5,7 @@ using Hive.Application.Common.Interfaces;
 using Hive.Domain.Entities.Gigs;
 using MediatR;
 
-namespace Hive.Application.Reviews.Commands
+namespace Hive.Application.GigsManagement.Reviews.Commands
 {
     public record DeleteReviewCommand(int Id) : IRequest;
     

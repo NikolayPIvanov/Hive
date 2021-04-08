@@ -1,4 +1,4 @@
-﻿namespace Hive.Application.Gigs.Queries
+﻿namespace Hive.Application.GigsManagement.Gigs.Queries
 {
     public class PackageDto
     {

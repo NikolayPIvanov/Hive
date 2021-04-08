@@ -1,8 +1,8 @@
 ﻿using AutoMapper;
-using Hive.Application.Reviews.Queries;
+using Hive.Application.GigsManagement.Reviews.Queries;
 using Hive.Domain.Entities.Gigs;
 
-namespace Hive.Application.Reviews
+namespace Hive.Application.GigsManagement.Reviews
 {
     public class ReviewProfile : Profile
     {

@@ -1,14 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Hive.Application.GigPackages.Queries.GetGigPackages;
-using Hive.Application.Gigs.Commands.CreateGig;
-using Hive.Application.Gigs.Commands.DeleteGig;
-using Hive.Application.Gigs.Commands.UpdateGig;
-using Hive.Application.Gigs.Queries;
-using Hive.Application.Gigs.Queries.GetGig;
+using Hive.Application.GigsManagement.GigPackages.Queries.GetGigPackages;
+using Hive.Application.GigsManagement.Gigs.Commands.CreateGig;
+using Hive.Application.GigsManagement.Gigs.Commands.DeleteGig;
+using Hive.Application.GigsManagement.Gigs.Commands.UpdateGig;
+using Hive.Application.GigsManagement.Gigs.Queries;
+using Hive.Application.GigsManagement.Gigs.Queries.GetGig;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PackageDto = Hive.Application.GigPackages.Queries.GetGigPackages.PackageDto;
+using PackageDto = Hive.Application.GigsManagement.GigPackages.Queries.PackageDto;
 
 namespace Hive.WebUI.Controllers
 {

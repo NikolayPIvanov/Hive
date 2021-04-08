@@ -1,9 +1,6 @@
 ﻿using System.Collections.Generic;
-using AutoMapper;
-using Hive.Application.Common.Mappings;
-using Hive.Domain.Entities.Gigs;
 
-namespace Hive.Application.Categories.Queries.GetCategory
+namespace Hive.Application.GigsManagement.Categories.Queries.GetCategory
 {
     public class CategoryDto
     {

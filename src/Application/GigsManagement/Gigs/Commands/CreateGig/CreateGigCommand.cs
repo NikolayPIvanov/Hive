@@ -2,23 +2,27 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using AutoMapper;
 using FluentValidation;
 using Hive.Application.Common.Interfaces;
 using Hive.Domain.Entities.Gigs;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Hive.Application.Gigs.Commands.CreateGig
+namespace Hive.Application.GigsManagement.Gigs.Commands.CreateGig
 {
+    public record QuestionModel(string Title, string Answer);
     public record CreateGigCommand : IRequest<int>
     {
         public string Title { get; private init; }
+        public string Description { get; private init; }
         public int CategoryId { get; private init; }
         public HashSet<string> Tags { get; private init; }
+        
+        public HashSet<QuestionModel> Questions { get; private init; }
 
-        public CreateGigCommand(string title, int categoryId, HashSet<string> tags)
-            => (Title, CategoryId, Tags) = (title, categoryId, tags ?? new HashSet<string>(5));
+        public CreateGigCommand(string title, string description, int categoryId, HashSet<string> tags, HashSet<QuestionModel> questions)
+            => (Title, Description, CategoryId, Tags, Questions) = 
+                (title, description, categoryId, tags ?? new HashSet<string>(5), questions ?? new HashSet<QuestionModel>());
     }
 
     public class CreateGigCommandValidator : AbstractValidator<CreateGigCommand>
@@ -60,7 +64,7 @@ namespace Hive.Application.Gigs.Commands.CreateGig
                 await _dbContext.Sellers.FirstOrDefaultAsync(s => s.UserId == _currentUserService.UserId,
                     cancellationToken);
             var tags = request.Tags.Select(t => new Tag(t)).ToHashSet();
-            var gig = new Gig(request.Title, request.CategoryId, seller.Id, tags);
+            var gig = new Gig(request.Title, request.Description, request.CategoryId, seller.Id, tags);
 
             _dbContext.Gigs.Add(gig);
             await _dbContext.SaveChangesAsync(cancellationToken);

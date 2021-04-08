@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
-using Hive.Application.Sellers.Commands.CreateSeller;
+using Hive.Application.GigsManagement.Sellers.Commands.CreateSeller;
 using Hive.Application.UserProfiles.Commands.CreateUserProfile;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;

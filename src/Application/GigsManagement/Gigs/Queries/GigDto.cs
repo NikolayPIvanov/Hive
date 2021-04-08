@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Hive.Application.Gigs.Queries
+namespace Hive.Application.GigsManagement.Gigs.Queries
 {
     public record GigScopeDto(int Id, string Description);
     public class GigDto

@@ -4,7 +4,7 @@ using FluentValidation;
 using Hive.Application.Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace Hive.Application.Sellers.Commands.CreateSeller
+namespace Hive.Application.GigsManagement.Sellers.Commands.CreateSeller
 {
     public class CreateSellerCommandValidator : AbstractValidator<CreateSellerCommand.Command>
     {
