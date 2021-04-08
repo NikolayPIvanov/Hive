@@ -26,8 +26,6 @@ namespace Hive.Application.Ordering.Orders.Queries
         public async Task<OrderDto> Handle(GetOrderByOrderNumberQuery request, CancellationToken cancellationToken)
         {
             var order = await _context.Orders
-                .Include(o => o.Requirement)
-                .Include(o => o.OrderStates)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(o => o.OrderNumber == request.OrderNumber, cancellationToken: cancellationToken);
 

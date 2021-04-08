@@ -89,24 +89,27 @@ namespace Hive.WebUI.Areas.Identity.Pages.Account
                 return Page();
             }
 
-            var user = new ApplicationUser
+            var user = new ApplicationUser(Input.AccountType)
             {
                 UserName = Input.Email, 
-                Email = Input.Email,
-                AccountType = Input.AccountType
+                Email = Input.Email
             };
+            
             var result = await _userManager.CreateAsync(user, Input.Password);
             if (result.Succeeded)
             {
                 _logger.LogInformation("User created a new account with password.");
-
-                var userProfileId = await _mediator.Send(new CreateUserProfileCommand {UserId = user.Id});
                 
                 if (Input.AccountType == AccountType.Seller)
                 {
-                    await _mediator.Send(new CreateSellerCommand.Command(user.Id, userProfileId));
+                    await _mediator.Send(new CreateSellerCommand.Command(user.Id, user.UserProfileId));
                 }
-
+                
+                if (Input.AccountType == AccountType.Buyer)
+                {
+                    await _mediator.Send(new CreateSellerCommand.Command(user.Id, user.UserProfileId));
+                }
+                
                 var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                 code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
                 var callbackUrl = Url.Page(

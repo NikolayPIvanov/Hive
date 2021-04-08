@@ -50,7 +50,7 @@ namespace Hive.Infrastructure.Identity
 
         public async Task<(Result Result, string UserId)> CreateUserAsync(string userName, string password)
         {
-            var user = new ApplicationUser
+            var user = new ApplicationUser(AccountType.Buyer)
             {
                 UserName = userName,
                 Email = userName,

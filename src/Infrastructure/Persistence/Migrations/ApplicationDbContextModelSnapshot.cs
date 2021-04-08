@@ -19,44 +19,6 @@ namespace Hive.Infrastructure.Persistence.Migrations
                 .HasAnnotation("ProductVersion", "5.0.3")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Hive.Domain.Entities.Accounts.Seller", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDraft")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(true);
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("UserProfileId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserProfileId")
-                        .IsUnique();
-
-                    b.ToTable("Sellers");
-                });
-
             modelBuilder.Entity("Hive.Domain.Entities.Accounts.UserProfile", b =>
                 {
                     b.Property<int>("Id")
@@ -102,7 +64,7 @@ namespace Hive.Infrastructure.Persistence.Migrations
                     b.ToTable("Profiles");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Categories.Category", b =>
+            modelBuilder.Entity("Hive.Domain.Entities.Gigs.Category", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -121,7 +83,7 @@ namespace Hive.Infrastructure.Persistence.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ParentCategoryId")
+                    b.Property<int?>("ParentId")
                         .HasColumnType("int");
 
                     b.Property<string>("Title")
@@ -131,7 +93,7 @@ namespace Hive.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ParentCategoryId");
+                    b.HasIndex("ParentId");
 
                     b.ToTable("Categories");
                 });
@@ -146,19 +108,14 @@ namespace Hive.Infrastructure.Persistence.Migrations
                     b.Property<int>("CategoryId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("CategoryId1")
-                        .HasColumnType("int");
-
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasMaxLength(255)
-                        .HasColumnType("nvarchar(255)");
+                    b.Property<bool>("IsDraft")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
@@ -166,20 +123,11 @@ namespace Hive.Infrastructure.Persistence.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Metadata")
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<int?>("PlanId")
-                        .HasColumnType("int");
-
                     b.Property<int>("SellerId")
                         .HasColumnType("int");
 
-                    b.Property<string>("Tags")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
+                    b.Property<int?>("SellerId1")
+                        .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -188,55 +136,13 @@ namespace Hive.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CategoryId")
-                        .IsUnique();
-
-                    b.HasIndex("CategoryId1");
-
-                    b.HasIndex("PlanId");
+                    b.HasIndex("CategoryId");
 
                     b.HasIndex("SellerId");
 
+                    b.HasIndex("SellerId1");
+
                     b.ToTable("Gigs");
-                });
-
-            modelBuilder.Entity("Hive.Domain.Entities.Gigs.GigQuestion", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Answer")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("GigId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Question")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("GigId");
-
-                    b.ToTable("GigQuestions");
                 });
 
             modelBuilder.Entity("Hive.Domain.Entities.Gigs.Package", b =>
@@ -260,8 +166,8 @@ namespace Hive.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(75)
-                        .HasColumnType("nvarchar(75)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<int>("GigId")
                         .HasColumnType("int");
@@ -276,7 +182,15 @@ namespace Hive.Infrastructure.Persistence.Migrations
                         .HasColumnType("int");
 
                     b.Property<decimal>("Price")
+                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
+
+                    b.Property<int>("RevisionType")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("Revisions")
+                        .IsRequired()
+                        .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .IsRequired()
@@ -330,6 +244,36 @@ namespace Hive.Infrastructure.Persistence.Migrations
                     b.ToTable("Reviews");
 
                     b.HasCheckConstraint("CK_Review_Rating", "[Rating] BETWEEN 1.0 AND 5.0");
+                });
+
+            modelBuilder.Entity("Hive.Domain.Entities.Gigs.Seller", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ProfileId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Sellers");
                 });
 
             modelBuilder.Entity("Hive.Domain.Entities.Investments.Investment", b =>
@@ -462,18 +406,12 @@ namespace Hive.Infrastructure.Persistence.Migrations
                     b.ToTable("PlanCategory");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Orders.Order", b =>
+            modelBuilder.Entity("Hive.Domain.Entities.Orders.Buyer", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime?>("AcceptedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CanceledBy")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
@@ -481,16 +419,41 @@ namespace Hive.Infrastructure.Persistence.Migrations
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime?>("DeclinedAt")
+                    b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Buyers");
+                });
+
+            modelBuilder.Entity("Hive.Domain.Entities.Orders.Order", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<int>("BuyerId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("GigId")
                         .HasColumnType("int");
 
-                    b.Property<bool>("IsCanceled")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
+                    b.Property<bool>("IsClosed")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
@@ -498,18 +461,11 @@ namespace Hive.Infrastructure.Persistence.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("OfferedById")
-                        .HasColumnType("int");
-
                     b.Property<Guid>("OrderNumber")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime>("OrderedAt")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("OrderedById")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("PackageId")
                         .HasColumnType("int");
@@ -517,17 +473,20 @@ namespace Hive.Infrastructure.Persistence.Migrations
                     b.Property<int>("RequirementId")
                         .HasColumnType("int");
 
-                    b.Property<int>("Status")
-                        .HasColumnType("int");
+                    b.Property<string>("SellerId")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<decimal>("TotalAmount")
+                    b.Property<decimal>("UnitPrice")
                         .HasColumnType("decimal(18,2)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("GigId");
+                    b.HasIndex("BuyerId");
 
                     b.HasIndex("OrderNumber")
+                        .IsUnique();
+
+                    b.HasIndex("RequirementId")
                         .IsUnique();
 
                     b.ToTable("Orders");
@@ -548,8 +507,8 @@ namespace Hive.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("Details")
                         .IsRequired()
-                        .HasMaxLength(1000)
-                        .HasColumnType("nvarchar(1000)");
+                        .HasMaxLength(2500)
+                        .HasColumnType("nvarchar(2500)");
 
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
@@ -562,10 +521,47 @@ namespace Hive.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("OrderId")
-                        .IsUnique();
-
                     b.ToTable("Requirements");
+                });
+
+            modelBuilder.Entity("Hive.Domain.Entities.Orders.Resolution", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsApproved")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Location")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("OrderId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Version")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("OrderId");
+
+                    b.ToTable("Resolutions");
                 });
 
             modelBuilder.Entity("Hive.Infrastructure.Identity.ApplicationUser", b =>
@@ -880,71 +876,123 @@ namespace Hive.Infrastructure.Persistence.Migrations
                     b.ToTable("AspNetUserTokens");
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Accounts.Seller", b =>
+            modelBuilder.Entity("Hive.Domain.Entities.Gigs.Category", b =>
                 {
-                    b.HasOne("Hive.Domain.Entities.Accounts.UserProfile", "UserProfile")
-                        .WithOne()
-                        .HasForeignKey("Hive.Domain.Entities.Accounts.Seller", "UserProfileId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("UserProfile");
-                });
-
-            modelBuilder.Entity("Hive.Domain.Entities.Categories.Category", b =>
-                {
-                    b.HasOne("Hive.Domain.Entities.Categories.Category", null)
+                    b.HasOne("Hive.Domain.Entities.Gigs.Category", null)
                         .WithMany("SubCategories")
-                        .HasForeignKey("ParentCategoryId");
+                        .HasForeignKey("ParentId")
+                        .OnDelete(DeleteBehavior.NoAction);
                 });
 
             modelBuilder.Entity("Hive.Domain.Entities.Gigs.Gig", b =>
                 {
-                    b.HasOne("Hive.Domain.Entities.Categories.Category", "Category")
-                        .WithOne()
-                        .HasForeignKey("Hive.Domain.Entities.Gigs.Gig", "CategoryId")
+                    b.HasOne("Hive.Domain.Entities.Gigs.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Hive.Domain.Entities.Categories.Category", null)
-                        .WithMany("Gigs")
-                        .HasForeignKey("CategoryId1");
-
-                    b.HasOne("Hive.Domain.Entities.Investments.Plan", "Plan")
+                    b.HasOne("Hive.Domain.Entities.Gigs.Seller", "Seller")
                         .WithMany()
-                        .HasForeignKey("PlanId");
-
-                    b.HasOne("Hive.Domain.Entities.Accounts.Seller", "Seller")
-                        .WithMany("Gigs")
                         .HasForeignKey("SellerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Hive.Domain.Entities.Gigs.Seller", null)
+                        .WithMany("Gigs")
+                        .HasForeignKey("SellerId1");
+
+                    b.OwnsOne("Hive.Domain.Entities.Gigs.GigScope", "GigScope", b1 =>
+                        {
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int")
+                                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                            b1.Property<string>("Description")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<int>("GigId")
+                                .HasColumnType("int");
+
+                            b1.HasKey("Id");
+
+                            b1.HasIndex("GigId")
+                                .IsUnique();
+
+                            b1.ToTable("GigScopes");
+
+                            b1.WithOwner()
+                                .HasForeignKey("GigId");
+                        });
+
+                    b.OwnsMany("Hive.Domain.Entities.Gigs.Question", "Questions", b1 =>
+                        {
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int")
+                                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                            b1.Property<string>("Answer")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.Property<int>("GigId")
+                                .HasColumnType("int");
+
+                            b1.Property<string>("Title")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("Id");
+
+                            b1.HasIndex("GigId");
+
+                            b1.ToTable("Questions");
+
+                            b1.WithOwner()
+                                .HasForeignKey("GigId");
+                        });
+
+                    b.OwnsMany("Hive.Domain.Entities.Gigs.Tag", "Tags", b1 =>
+                        {
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int")
+                                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                            b1.Property<int>("GigId")
+                                .HasColumnType("int");
+
+                            b1.Property<string>("Value")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("Id");
+
+                            b1.HasIndex("GigId");
+
+                            b1.ToTable("Tag");
+
+                            b1.WithOwner()
+                                .HasForeignKey("GigId");
+                        });
+
                     b.Navigation("Category");
 
-                    b.Navigation("Plan");
+                    b.Navigation("GigScope");
+
+                    b.Navigation("Questions");
 
                     b.Navigation("Seller");
-                });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Gigs.GigQuestion", b =>
-                {
-                    b.HasOne("Hive.Domain.Entities.Gigs.Gig", null)
-                        .WithMany("Questions")
-                        .HasForeignKey("GigId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Navigation("Tags");
                 });
 
             modelBuilder.Entity("Hive.Domain.Entities.Gigs.Package", b =>
                 {
-                    b.HasOne("Hive.Domain.Entities.Gigs.Gig", "Gig")
+                    b.HasOne("Hive.Domain.Entities.Gigs.Gig", null)
                         .WithMany("Packages")
                         .HasForeignKey("GigId")
-                        .OnDelete(DeleteBehavior.NoAction)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Gig");
                 });
 
             modelBuilder.Entity("Hive.Domain.Entities.Gigs.Review", b =>
@@ -975,8 +1023,8 @@ namespace Hive.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Hive.Domain.Entities.Investments.Plan", b =>
                 {
-                    b.HasOne("Hive.Domain.Entities.Accounts.Seller", "Seller")
-                        .WithMany("Plans")
+                    b.HasOne("Hive.Domain.Entities.Gigs.Seller", "Seller")
+                        .WithMany()
                         .HasForeignKey("SellerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -995,22 +1043,58 @@ namespace Hive.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Hive.Domain.Entities.Orders.Order", b =>
                 {
-                    b.HasOne("Hive.Domain.Entities.Gigs.Gig", null)
+                    b.HasOne("Hive.Domain.Entities.Orders.Buyer", "Buyer")
                         .WithMany("Orders")
-                        .HasForeignKey("GigId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Hive.Domain.Entities.Orders.Requirement", b =>
-                {
-                    b.HasOne("Hive.Domain.Entities.Orders.Order", "Order")
-                        .WithOne("Requirement")
-                        .HasForeignKey("Hive.Domain.Entities.Orders.Requirement", "OrderId")
+                        .HasForeignKey("BuyerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Order");
+                    b.HasOne("Hive.Domain.Entities.Orders.Requirement", "Requirement")
+                        .WithOne()
+                        .HasForeignKey("Hive.Domain.Entities.Orders.Order", "RequirementId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.OwnsMany("Hive.Domain.ValueObjects.State", "OrderStates", b1 =>
+                        {
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int")
+                                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                            b1.Property<int>("OrderId")
+                                .HasColumnType("int");
+
+                            b1.Property<int>("OrderState")
+                                .HasColumnType("int");
+
+                            b1.Property<string>("Reason")
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("Id");
+
+                            b1.HasIndex("OrderId");
+
+                            b1.ToTable("State");
+
+                            b1.WithOwner()
+                                .HasForeignKey("OrderId");
+                        });
+
+                    b.Navigation("Buyer");
+
+                    b.Navigation("OrderStates");
+
+                    b.Navigation("Requirement");
+                });
+
+            modelBuilder.Entity("Hive.Domain.Entities.Orders.Resolution", b =>
+                {
+                    b.HasOne("Hive.Domain.Entities.Orders.Order", null)
+                        .WithMany("Resolutions")
+                        .HasForeignKey("OrderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("Hive.Infrastructure.Identity.ApplicationUser", b =>
@@ -1075,29 +1159,21 @@ namespace Hive.Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("Hive.Domain.Entities.Accounts.Seller", b =>
+            modelBuilder.Entity("Hive.Domain.Entities.Gigs.Category", b =>
                 {
-                    b.Navigation("Gigs");
-
-                    b.Navigation("Plans");
-                });
-
-            modelBuilder.Entity("Hive.Domain.Entities.Categories.Category", b =>
-                {
-                    b.Navigation("Gigs");
-
                     b.Navigation("SubCategories");
                 });
 
             modelBuilder.Entity("Hive.Domain.Entities.Gigs.Gig", b =>
                 {
-                    b.Navigation("Orders");
-
                     b.Navigation("Packages");
 
-                    b.Navigation("Questions");
-
                     b.Navigation("Reviews");
+                });
+
+            modelBuilder.Entity("Hive.Domain.Entities.Gigs.Seller", b =>
+                {
+                    b.Navigation("Gigs");
                 });
 
             modelBuilder.Entity("Hive.Domain.Entities.Investments.Investor", b =>
@@ -1112,9 +1188,14 @@ namespace Hive.Infrastructure.Persistence.Migrations
                     b.Navigation("Investments");
                 });
 
+            modelBuilder.Entity("Hive.Domain.Entities.Orders.Buyer", b =>
+                {
+                    b.Navigation("Orders");
+                });
+
             modelBuilder.Entity("Hive.Domain.Entities.Orders.Order", b =>
                 {
-                    b.Navigation("Requirement");
+                    b.Navigation("Resolutions");
                 });
 #pragma warning restore 612, 618
         }

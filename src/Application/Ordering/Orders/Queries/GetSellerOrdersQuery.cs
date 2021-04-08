@@ -25,10 +25,9 @@ namespace Hive.Application.Ordering.Orders.Queries
         
         public async Task<IEnumerable<OrderDto>> Handle(GetSellerOrdersQuery request, CancellationToken cancellationToken)
         {
+            var seller = await _context.Sellers.FindAsync(request.SellerUserId);
             var orders = await _context.Orders
-                .Include(o => o.Requirement)
-                .Include(o => o.OrderStates)
-                .Where(o => o.SellerId == request.SellerUserId)
+                .Where(o => o.SellerId == seller.Id)
                 .AsNoTracking()
                 .ProjectToListAsync<OrderDto>(_mapper.ConfigurationProvider);
 

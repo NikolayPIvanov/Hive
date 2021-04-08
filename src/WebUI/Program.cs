@@ -33,10 +33,7 @@ namespace Hive.WebUI
                     var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
                     var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
 
-                    //await ApplicationDbContextSeed.SeedDefaultUserAsync(userManager, roleManager);
-                    //await ApplicationDbContextSeed.SeedSampleDataAsync(context);
-
-                    await ApplicationDbContextSeed.Seed(context);
+                    await ApplicationDbContextSeed.SeedDefaultUserAsync(userManager, roleManager);
                 }
                 catch (Exception ex)
                 {

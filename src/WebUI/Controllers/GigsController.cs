@@ -6,7 +6,6 @@ using Hive.Application.GigsManagement.Gigs.Commands.DeleteGig;
 using Hive.Application.GigsManagement.Gigs.Commands.UpdateGig;
 using Hive.Application.GigsManagement.Gigs.Queries;
 using Hive.Application.GigsManagement.Gigs.Queries.GetGig;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using PackageDto = Hive.Application.GigsManagement.GigPackages.Queries.PackageDto;
 

@@ -124,22 +124,30 @@
         "operationId": "Categories_GetAll",
         "parameters": [
           {
-            "name": "Limit",
+            "name": "PageNumber",
             "in": "query",
             "schema": {
               "type": "integer",
-              "format": "int32",
-              "nullable": true
+              "format": "int32"
             },
             "x-position": 1
           },
           {
-            "name": "OnlyParent",
+            "name": "PageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 2
+          },
+          {
+            "name": "OnlyParents",
             "in": "query",
             "schema": {
               "type": "boolean"
             },
-            "x-position": 2
+            "x-position": 3
           }
         ],
         "responses": {
@@ -280,7 +288,7 @@
         "tags": [
           "Gigs"
         ],
-        "operationId": "Gigs_Post",
+        "operationId": "Gigs_Update",
         "parameters": [
           {
             "name": "id",
@@ -326,7 +334,7 @@
         "tags": [
           "Gigs"
         ],
-        "operationId": "Gigs_Post2",
+        "operationId": "Gigs_Delete",
         "parameters": [
           {
             "name": "id",
@@ -358,7 +366,7 @@
         "tags": [
           "Gigs"
         ],
-        "operationId": "Gigs_Post3",
+        "operationId": "Gigs_Post",
         "requestBody": {
           "x-name": "command",
           "content": {
@@ -415,7 +423,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/PackageDto"
+                    "$ref": "#/components/schemas/PackageDto2"
                   }
                 }
               }
@@ -449,38 +457,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/OrderDto"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/Orders/{orderNumber}/requirements": {
-      "get": {
-        "tags": [
-          "Orders"
-        ],
-        "operationId": "Orders_GetRequirements",
-        "parameters": [
-          {
-            "name": "orderNumber",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            },
-            "x-position": 1
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/RequirementDto"
                 }
               }
             }
@@ -557,12 +533,27 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "guid"
+              "type": "string"
             },
-            "x-position": 1
+            "x-position": 2
           }
         ],
+        "requestBody": {
+          "x-name": "cancelOrderCommand",
+          "content": {
+            "application/json": {
+              "schema": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/CancelOrderCommand"
+                  }
+                ]
+              }
+            }
+          },
+          "x-position": 1
+        },
         "responses": {
           "200": {
             "description": "",
@@ -590,12 +581,27 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string",
-              "format": "guid"
+              "type": "string"
             },
-            "x-position": 1
+            "x-position": 2
           }
         ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/AcceptOrderCommand"
+                  }
+                ]
+              }
+            }
+          },
+          "x-position": 1
+        },
         "responses": {
           "200": {
             "description": "",
@@ -635,7 +641,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PackageDto"
+                  "$ref": "#/components/schemas/PackageDto2"
                 }
               }
             }
@@ -671,7 +677,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PackageDto"
+                  "$ref": "#/components/schemas/PackageDto2"
                 }
               }
             }
@@ -691,23 +697,10 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "type": "string",
+              "nullable": true
             },
             "x-position": 1
-          },
-          {
-            "name": "orderStatus",
-            "in": "query",
-            "schema": {
-              "nullable": true,
-              "oneOf": [
-                {
-                  "$ref": "#/components/schemas/OrderStatus"
-                }
-              ]
-            },
-            "x-position": 2
           }
         ],
         "responses": {
@@ -744,8 +737,7 @@
           },
           "parentId": {
             "type": "integer",
-            "format": "int32",
-            "nullable": true
+            "format": "int32"
           },
           "subCategories": {
             "type": "array",
@@ -814,18 +806,10 @@
             "type": "string",
             "nullable": true
           },
-          "parentCategoryId": {
+          "parentId": {
             "type": "integer",
             "format": "int32",
             "nullable": true
-          },
-          "subCategoriesIds": {
-            "type": "array",
-            "nullable": true,
-            "items": {
-              "type": "integer",
-              "format": "int32"
-            }
           }
         }
       },
@@ -845,42 +829,73 @@
             "type": "string",
             "nullable": true
           },
-          "metadata": {
-            "type": "string",
-            "nullable": true
-          },
-          "tags": {
-            "type": "string",
-            "nullable": true
-          },
           "categoryId": {
             "type": "integer",
             "format": "int32"
           },
-          "questions": {
+          "category": {
+            "type": "string",
+            "nullable": true
+          },
+          "sellerId": {
+            "type": "string",
+            "nullable": true
+          },
+          "tags": {
             "type": "array",
             "nullable": true,
             "items": {
-              "$ref": "#/components/schemas/QuestionDto"
+              "type": "string"
             }
           },
-          "sellerId": {
-            "type": "integer",
-            "format": "int32"
+          "packages": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/PackageDto"
+            }
           }
         }
       },
-      "QuestionDto": {
+      "PackageDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "question": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "packageTier": {
             "type": "string",
             "nullable": true
           },
-          "answer": {
+          "title": {
             "type": "string",
             "nullable": true
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "price": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "deliveryTime": {
+            "type": "number",
+            "format": "double"
+          },
+          "deliveryFrequency": {
+            "type": "string",
+            "nullable": true
+          },
+          "revisions": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "gigId": {
+            "type": "integer",
+            "format": "int32"
           }
         }
       },
@@ -896,28 +911,37 @@
             "type": "string",
             "nullable": true
           },
-          "metadata": {
-            "type": "string",
-            "nullable": true
-          },
-          "tags": {
-            "type": "string",
-            "nullable": true
-          },
           "categoryId": {
             "type": "integer",
             "format": "int32"
           },
-          "sellerId": {
-            "type": "integer",
-            "format": "int32"
+          "tags": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "string"
+            }
           },
           "questions": {
             "type": "array",
             "nullable": true,
             "items": {
-              "$ref": "#/components/schemas/QuestionDto"
+              "$ref": "#/components/schemas/QuestionModel"
             }
+          }
+        }
+      },
+      "QuestionModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "answer": {
+            "type": "string",
+            "nullable": true
           }
         }
       },
@@ -937,17 +961,30 @@
             "type": "string",
             "nullable": true
           },
-          "tags": {
-            "type": "string",
-            "nullable": true
+          "isDraft": {
+            "type": "boolean"
           },
           "categoryId": {
             "type": "integer",
             "format": "int32"
+          },
+          "tags": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "string"
+            }
+          },
+          "questions": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/QuestionModel"
+            }
           }
         }
       },
-      "PackageDto": {
+      "PackageDto2": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -1015,6 +1052,10 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
           "orderNumber": {
             "type": "string",
             "format": "guid"
@@ -1023,12 +1064,24 @@
             "type": "string",
             "format": "date-time"
           },
-          "status": {
-            "$ref": "#/components/schemas/OrderStatus"
+          "sellerId": {
+            "type": "integer",
+            "format": "int32"
           },
-          "totalAmount": {
+          "orderedBy": {
+            "type": "string",
+            "nullable": true
+          },
+          "unitPrice": {
             "type": "number",
             "format": "decimal"
+          },
+          "isClosed": {
+            "type": "boolean"
+          },
+          "requirements": {
+            "type": "string",
+            "nullable": true
           },
           "gigId": {
             "type": "integer",
@@ -1037,28 +1090,25 @@
           "packageId": {
             "type": "integer",
             "format": "int32"
+          },
+          "requirementId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "resolutionId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "orderStates": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/StateDto"
+            }
           }
         }
       },
-      "OrderStatus": {
-        "type": "integer",
-        "description": "",
-        "x-enumNames": [
-          "Pending",
-          "Accepted",
-          "Declined",
-          "InProgress",
-          "Completed"
-        ],
-        "enum": [
-          0,
-          1,
-          2,
-          3,
-          4
-        ]
-      },
-      "RequirementDto": {
+      "StateDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -1066,7 +1116,19 @@
             "type": "integer",
             "format": "int32"
           },
-          "details": {
+          "orderState": {
+            "type": "string",
+            "nullable": true
+          },
+          "reason": {
+            "type": "string",
+            "nullable": true
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "createdBy": {
             "type": "string",
             "nullable": true
           }
@@ -1110,13 +1172,17 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "offeredById": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "totalAmount": {
+          "unitPrice": {
             "type": "number",
             "format": "decimal"
+          },
+          "requirements": {
+            "type": "string",
+            "nullable": true
+          },
+          "sellerUserId": {
+            "type": "string",
+            "nullable": true
           },
           "gigId": {
             "type": "integer",
@@ -1125,10 +1191,30 @@
           "packageId": {
             "type": "integer",
             "format": "int32"
+          }
+        }
+      },
+      "CancelOrderCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "orderNumber": {
+            "type": "string",
+            "format": "guid"
           },
-          "orderRequirement": {
+          "reason": {
             "type": "string",
             "nullable": true
+          }
+        }
+      },
+      "AcceptOrderCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "orderNumber": {
+            "type": "string",
+            "format": "guid"
           }
         }
       },

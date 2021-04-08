@@ -75,22 +75,7 @@ namespace Hive.Infrastructure.Persistence.Configurations
                 .IsRequired();
         }
     }
-    
-    public class QuestionConfiguration : IEntityTypeConfiguration<Question>
-    {
-        public void Configure(EntityTypeBuilder<Question> builder)
-        {
-            
-            builder.Property(x => x.Title)
-                .HasMaxLength(50)
-                .IsRequired();
 
-            builder.Property(x => x.Answer)
-                .HasMaxLength(1000)
-                .IsRequired();
-        }
-    }
-    
     public class ReviewConfiguration : IEntityTypeConfiguration<Review>
     {
         public void Configure(EntityTypeBuilder<Review> builder)

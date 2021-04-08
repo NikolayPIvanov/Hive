@@ -17,30 +17,13 @@ namespace Hive.Infrastructure.Persistence
                 await roleManager.CreateAsync(administratorRole);
             }
 
-            var administrator = new ApplicationUser { UserName = "administrator@localhost", Email = "administrator@localhost" };
+            var administrator = new ApplicationUser(AccountType.Buyer) { UserName = "administrator@localhost", Email = "administrator@localhost" };
 
             if (userManager.Users.All(u => u.UserName != administrator.UserName))
             {
                 await userManager.CreateAsync(administrator, "Administrator1!");
                 await userManager.AddToRolesAsync(administrator, new [] { administratorRole.Name });
             }
-        }
-        
-        public static async Task Seed(ApplicationDbContext context)
-        {
-            FakeData.Init(10);
-            await SeedCategories(context);
-        }
-
-        private static Task SeedCategories(ApplicationDbContext context)
-        {
-            if (!context.Categories.Any())
-            {
-                context.AddRange(FakeData.Categories);
-                return context.SaveChangesAsync();
-            }
-
-            return Task.CompletedTask;
         }
     }
 }

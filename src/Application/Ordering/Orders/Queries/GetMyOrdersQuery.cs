@@ -3,8 +3,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
+using Hive.Application.Common.Exceptions;
 using Hive.Application.Common.Interfaces;
 using Hive.Application.Common.Mappings;
+using Hive.Domain.Entities.Orders;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,23 +18,35 @@ namespace Hive.Application.Ordering.Orders.Queries
     {
         private readonly IApplicationDbContext _context;
         private readonly IMapper _mapper;
+        private readonly ICurrentUserService _currentUserService;
 
-        public GetMyOrdersQueryHandler(IApplicationDbContext context, IMapper mapper)
+        public GetMyOrdersQueryHandler(IApplicationDbContext context, IMapper mapper, ICurrentUserService currentUserService)
         {
             _context = context;
             _mapper = mapper;
+            _currentUserService = currentUserService;
         }
         
         public async Task<IEnumerable<OrderDto>> Handle(GetMyOrdersQuery request, CancellationToken cancellationToken)
         {
-            // TODO: Use Identity Service
-            var userId = "test";
+            var buyerId = await GetBuyer(cancellationToken);
             return await _context.Orders
-                .Include(o => o.Requirement)
-                .Include(o => o.OrderStates)
-                .Where(o => o.BuyerId == 1)
+                .Where(o => o.BuyerId == buyerId)
                 .AsNoTracking()
                 .ProjectToListAsync<OrderDto>(_mapper.ConfigurationProvider);
+        }
+        
+        private async Task<int> GetBuyer(CancellationToken cancellationToken)
+        {
+            var buyer = await _context.Buyers.Select(b => new {b.Id, b.UserId})
+                .FirstOrDefaultAsync(b => b.UserId == _currentUserService.UserId, cancellationToken: cancellationToken);
+
+            if (buyer == null)
+            {
+                throw new NotFoundException(nameof(Buyer));
+            }
+
+            return buyer.Id;
         }
     }
 }

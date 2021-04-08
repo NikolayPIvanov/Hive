@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
+using Hive.Application.Common.Exceptions;
 using Hive.Application.Common.Interfaces;
 using Hive.Domain.Entities.Gigs;
 using MediatR;
@@ -63,6 +64,12 @@ namespace Hive.Application.GigsManagement.Gigs.Commands.CreateGig
             var seller =
                 await _dbContext.Sellers.FirstOrDefaultAsync(s => s.UserId == _currentUserService.UserId,
                     cancellationToken);
+
+            if (seller == null)
+            {
+                throw new NotFoundException();
+            }
+            
             var tags = request.Tags.Select(t => new Tag(t)).ToHashSet();
             var gig = new Gig(request.Title, request.Description, request.CategoryId, seller.Id, tags);
 

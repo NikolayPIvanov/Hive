@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Hive.Domain.Common;
+using Hive.Domain.Entities.Gigs;
 using Hive.Domain.Enums;
 using Hive.Domain.ValueObjects;
 
@@ -15,12 +16,11 @@ namespace Hive.Domain.Entities.Orders
             IsClosed = OrderStates.Any(s => s.OrderState == OrderState.Canceled || s.OrderState == OrderState.Declined || s.OrderState == OrderState.Completed);
         }
         
-        public Order(decimal price, string requirements, int gigId, int packageId, int buyerId, string sellerId) : this()
+        public Order(decimal price, string requirements, int packageId, int buyerId, int sellerId) : this()
         {
             OrderNumber = Guid.NewGuid();
             OrderedAt = DateTime.UtcNow;
             UnitPrice = price;
-            GigId = gigId;
             PackageId = packageId;
             BuyerId = buyerId;
             SellerId = sellerId;
@@ -33,19 +33,21 @@ namespace Hive.Domain.Entities.Orders
                 
         public Guid OrderNumber { get; private init; }
         public DateTime OrderedAt { get; private init; }
-        public string SellerId { get; private init; }
+        
+        public int PackageId { get; private init; }
+
+        public Package Package { get; set; }
+        
+        public int SellerId { get; private init; }
+        public Seller Seller { get; set; }
         public int BuyerId { get; private init; }
         
         public Buyer Buyer { get; private init; }
         
-        public decimal UnitPrice { get; set; }
-        public bool IsClosed { get; private set; }
-        
-        public int GigId { get; private init; }
-        public int PackageId { get; private init; }
-        public int RequirementId { get; private set; }
         public Requirement Requirement { get; private init; }
         
+        public decimal UnitPrice { get; set; }
+        public bool IsClosed { get; private set; }
         public ICollection<Resolution> Resolutions { get; private set; }
         
         public ICollection<State> OrderStates { get; private set; }

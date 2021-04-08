@@ -23,7 +23,7 @@ export class CategoryMenuComponent implements OnInit {
   }
 
   getParentCategories() {
-    return this.categoriesClient.getAll(this.MENU_LIMIT, this.ONLY_PARENTS)
+    return this.categoriesClient.getAll(1, 10, this.ONLY_PARENTS)
   }
 
 }

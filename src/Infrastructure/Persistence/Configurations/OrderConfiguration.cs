@@ -14,9 +14,12 @@ namespace Hive.Infrastructure.Persistence.Configurations
                 .HasColumnType("decimal(18,2)")
                 .IsRequired();
 
-            builder.HasOne(o => o.Requirement)
-                .WithOne()
-                .HasForeignKey<Order>(o => o.RequirementId);
+            builder.OwnsOne(o => o.Requirement, r =>
+            {
+                r.WithOwner().HasForeignKey("OrderId");
+                r.Property<int>("Id");
+                r.HasKey("Id");
+            });
             
             builder.HasMany(o => o.Resolutions)
                 .WithOne()

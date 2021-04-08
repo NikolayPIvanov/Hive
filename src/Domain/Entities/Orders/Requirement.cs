@@ -1,9 +1,9 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using Hive.Domain.Common;
 
 namespace Hive.Domain.Entities.Orders
 {
-    public class Requirement : AuditableEntity
+    public class Requirement : ValueObject
     {
         private Requirement()
         {
@@ -13,9 +13,12 @@ namespace Hive.Domain.Entities.Orders
         {
             Details = details;
         }
-                
-        public string Details { get; set; }
 
-        public int OrderId { get; set; }
+        public string Details { get; private init; }
+        
+        protected override IEnumerable<object> GetEqualityComponents()
+        {
+            yield return Details;
+        }
     }
 }
