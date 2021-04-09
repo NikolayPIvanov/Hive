@@ -11,9 +11,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Hive.Application.GigsManagement.Categories.Queries.GetCategory
 {
-    public record GetCategoryQuery(int Id) : IRequest<CategoryDto>;
+    public record GetCategoryByIdQuery(int Id) : IRequest<CategoryDto>;
 
-    public class GetCategoryQueryHandler : IRequestHandler<GetCategoryQuery, CategoryDto>
+    public class GetCategoryQueryHandler : IRequestHandler<GetCategoryByIdQuery, CategoryDto>
     {
         private readonly IApplicationDbContext _dbContext;
         private readonly IMapper _mapper;
@@ -26,7 +26,7 @@ namespace Hive.Application.GigsManagement.Categories.Queries.GetCategory
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
         
-        public async Task<CategoryDto> Handle(GetCategoryQuery request, CancellationToken cancellationToken)
+        public async Task<CategoryDto> Handle(GetCategoryByIdQuery request, CancellationToken cancellationToken)
         {
             var category = await _dbContext.Categories
                 .Include(c => c.SubCategories)
@@ -38,8 +38,7 @@ namespace Hive.Application.GigsManagement.Categories.Queries.GetCategory
                 throw new NotFoundException(nameof(Category), request.Id);
             }
 
-            var dto = _mapper.Map<CategoryDto>(category);
-            return dto;
+            return _mapper.Map<CategoryDto>(category);
         }
     }
 }

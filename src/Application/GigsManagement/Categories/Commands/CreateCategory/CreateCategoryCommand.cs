@@ -22,7 +22,8 @@ namespace Hive.Application.GigsManagement.Categories.Commands.CreateCategory
             
             RuleFor(c => c.Title)
                 .MustAsync(BeUniqueTitleAsync)
-                .MaximumLength(50)
+                .MinimumLength(3).WithMessage("Title should be at minimum 3 characters")
+                .MaximumLength(50).WithMessage("Title should be at maximum 50 characters")
                 .NotEmpty();
 
             RuleFor(c => c.ParentId)

@@ -366,7 +366,7 @@ export interface IGigsClient {
     update(id: number, command: UpdateGigCommand | null | undefined): Observable<GigDto>;
     delete(id: number): Observable<GigDto>;
     post(command: CreateGigCommand | null | undefined): Observable<GigDto>;
-    getPackages(id: number): Observable<PackageDto2[]>;
+    getPackages(id: number): Observable<PackageDto[]>;
 }
 
 @Injectable({
@@ -591,7 +591,7 @@ export class GigsClient implements IGigsClient {
         return _observableOf<GigDto>(<any>null);
     }
 
-    getPackages(id: number): Observable<PackageDto2[]> {
+    getPackages(id: number): Observable<PackageDto[]> {
         let url_ = this.baseUrl + "/api/Gigs/{id}/packages";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -613,14 +613,14 @@ export class GigsClient implements IGigsClient {
                 try {
                     return this.processGetPackages(<any>response_);
                 } catch (e) {
-                    return <Observable<PackageDto2[]>><any>_observableThrow(e);
+                    return <Observable<PackageDto[]>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<PackageDto2[]>><any>_observableThrow(response_);
+                return <Observable<PackageDto[]>><any>_observableThrow(response_);
         }));
     }
 
-    protected processGetPackages(response: HttpResponseBase): Observable<PackageDto2[]> {
+    protected processGetPackages(response: HttpResponseBase): Observable<PackageDto[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -634,7 +634,7 @@ export class GigsClient implements IGigsClient {
             if (Array.isArray(resultData200)) {
                 result200 = [] as any;
                 for (let item of resultData200)
-                    result200!.push(PackageDto2.fromJS(item));
+                    result200!.push(PackageDto.fromJS(item));
             }
             return _observableOf(result200);
             }));
@@ -643,7 +643,7 @@ export class GigsClient implements IGigsClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<PackageDto2[]>(<any>null);
+        return _observableOf<PackageDto[]>(<any>null);
     }
 }
 
@@ -955,8 +955,8 @@ export class OrdersClient implements IOrdersClient {
 }
 
 export interface IPackagesClient {
-    get(id: number): Observable<PackageDto2>;
-    post(command: CreatePackageCommand | null | undefined): Observable<PackageDto2>;
+    get(id: number): Observable<PackageDto>;
+    post(command: CreatePackageCommand | null | undefined): Observable<PackageDto>;
 }
 
 @Injectable({
@@ -972,7 +972,7 @@ export class PackagesClient implements IPackagesClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    get(id: number): Observable<PackageDto2> {
+    get(id: number): Observable<PackageDto> {
         let url_ = this.baseUrl + "/api/Packages/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -994,14 +994,14 @@ export class PackagesClient implements IPackagesClient {
                 try {
                     return this.processGet(<any>response_);
                 } catch (e) {
-                    return <Observable<PackageDto2>><any>_observableThrow(e);
+                    return <Observable<PackageDto>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<PackageDto2>><any>_observableThrow(response_);
+                return <Observable<PackageDto>><any>_observableThrow(response_);
         }));
     }
 
-    protected processGet(response: HttpResponseBase): Observable<PackageDto2> {
+    protected processGet(response: HttpResponseBase): Observable<PackageDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1012,7 +1012,7 @@ export class PackagesClient implements IPackagesClient {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = PackageDto2.fromJS(resultData200);
+            result200 = PackageDto.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -1020,10 +1020,10 @@ export class PackagesClient implements IPackagesClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<PackageDto2>(<any>null);
+        return _observableOf<PackageDto>(<any>null);
     }
 
-    post(command: CreatePackageCommand | null | undefined): Observable<PackageDto2> {
+    post(command: CreatePackageCommand | null | undefined): Observable<PackageDto> {
         let url_ = this.baseUrl + "/api/Packages";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -1046,14 +1046,14 @@ export class PackagesClient implements IPackagesClient {
                 try {
                     return this.processPost(<any>response_);
                 } catch (e) {
-                    return <Observable<PackageDto2>><any>_observableThrow(e);
+                    return <Observable<PackageDto>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<PackageDto2>><any>_observableThrow(response_);
+                return <Observable<PackageDto>><any>_observableThrow(response_);
         }));
     }
 
-    protected processPost(response: HttpResponseBase): Observable<PackageDto2> {
+    protected processPost(response: HttpResponseBase): Observable<PackageDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1064,7 +1064,7 @@ export class PackagesClient implements IPackagesClient {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = PackageDto2.fromJS(resultData200);
+            result200 = PackageDto.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -1072,7 +1072,7 @@ export class PackagesClient implements IPackagesClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<PackageDto2>(<any>null);
+        return _observableOf<PackageDto>(<any>null);
     }
 }
 
@@ -1435,13 +1435,12 @@ export interface IGigDto {
 
 export class PackageDto implements IPackageDto {
     id?: number;
-    packageTier?: string | undefined;
+    packageTier?: PackageTier;
     title?: string | undefined;
     description?: string | undefined;
     price?: number;
     deliveryTime?: number;
-    deliveryFrequency?: string | undefined;
-    revisions?: number;
+    deliveryFrequency?: DeliveryFrequency;
     gigId?: number;
 
     constructor(data?: IPackageDto) {
@@ -1462,7 +1461,6 @@ export class PackageDto implements IPackageDto {
             this.price = _data["price"];
             this.deliveryTime = _data["deliveryTime"];
             this.deliveryFrequency = _data["deliveryFrequency"];
-            this.revisions = _data["revisions"];
             this.gigId = _data["gigId"];
         }
     }
@@ -1483,7 +1481,6 @@ export class PackageDto implements IPackageDto {
         data["price"] = this.price;
         data["deliveryTime"] = this.deliveryTime;
         data["deliveryFrequency"] = this.deliveryFrequency;
-        data["revisions"] = this.revisions;
         data["gigId"] = this.gigId;
         return data; 
     }
@@ -1491,14 +1488,25 @@ export class PackageDto implements IPackageDto {
 
 export interface IPackageDto {
     id?: number;
-    packageTier?: string | undefined;
+    packageTier?: PackageTier;
     title?: string | undefined;
     description?: string | undefined;
     price?: number;
     deliveryTime?: number;
-    deliveryFrequency?: string | undefined;
-    revisions?: number;
+    deliveryFrequency?: DeliveryFrequency;
     gigId?: number;
+}
+
+export enum PackageTier {
+    Basic = 0,
+    Standard = 1,
+    Premium = 2,
+}
+
+export enum DeliveryFrequency {
+    Hours = 0,
+    Days = 1,
+    Weeks = 2,
 }
 
 export class CreateGigCommand implements ICreateGigCommand {
@@ -1683,82 +1691,6 @@ export interface IUpdateGigCommand {
     categoryId?: number;
     tags?: string[] | undefined;
     questions?: QuestionModel[] | undefined;
-}
-
-export class PackageDto2 implements IPackageDto2 {
-    id?: number;
-    packageTier?: PackageTier;
-    title?: string | undefined;
-    description?: string | undefined;
-    price?: number;
-    deliveryTime?: number;
-    deliveryFrequency?: DeliveryFrequency;
-    gigId?: number;
-
-    constructor(data?: IPackageDto2) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.packageTier = _data["packageTier"];
-            this.title = _data["title"];
-            this.description = _data["description"];
-            this.price = _data["price"];
-            this.deliveryTime = _data["deliveryTime"];
-            this.deliveryFrequency = _data["deliveryFrequency"];
-            this.gigId = _data["gigId"];
-        }
-    }
-
-    static fromJS(data: any): PackageDto2 {
-        data = typeof data === 'object' ? data : {};
-        let result = new PackageDto2();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["packageTier"] = this.packageTier;
-        data["title"] = this.title;
-        data["description"] = this.description;
-        data["price"] = this.price;
-        data["deliveryTime"] = this.deliveryTime;
-        data["deliveryFrequency"] = this.deliveryFrequency;
-        data["gigId"] = this.gigId;
-        return data; 
-    }
-}
-
-export interface IPackageDto2 {
-    id?: number;
-    packageTier?: PackageTier;
-    title?: string | undefined;
-    description?: string | undefined;
-    price?: number;
-    deliveryTime?: number;
-    deliveryFrequency?: DeliveryFrequency;
-    gigId?: number;
-}
-
-export enum PackageTier {
-    Basic = 0,
-    Standard = 1,
-    Premium = 2,
-}
-
-export enum DeliveryFrequency {
-    Hours = 0,
-    Days = 1,
-    Weeks = 2,
 }
 
 export class OrderDto implements IOrderDto {

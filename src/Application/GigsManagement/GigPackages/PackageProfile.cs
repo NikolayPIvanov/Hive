@@ -12,7 +12,7 @@ namespace Hive.Application.GigsManagement.GigPackages
             CreateMap<UpdatePackageCommand, Package>()
                 .ForMember(d => d.Id, x => x.Ignore());
 
-            CreateMap<PackageDto, Package>();
+            CreateMap<PackageDto, Package>().ReverseMap();
         }
     }
 }

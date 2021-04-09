@@ -27,8 +27,6 @@ namespace Hive.Application.GigsManagement.Gigs.Queries.GetCategoryGigs
         public async Task<PaginatedList<GigDto>> Handle(GetCategoryGigsQuery request, CancellationToken cancellationToken)
         {
             return await _dbContext.Gigs
-                .Include(g => g.GigScope)
-                .Include(g => g.Tags)
                 .Include(g => g.Category)
                 .Where(g => g.CategoryId == request.CategoryId && !g.IsDraft)
                 .ProjectTo<GigDto>(_mapper.ConfigurationProvider) 

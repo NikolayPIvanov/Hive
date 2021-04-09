@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Hive.Application.GigsManagement.GigPackages.Queries;
 
 namespace Hive.Application.GigsManagement.Gigs.Queries
 {

@@ -6,47 +6,23 @@ using Hive.Application.GigsManagement.Categories.Commands.DeleteCategory;
 using Hive.Application.GigsManagement.Categories.Commands.UpdateCategory;
 using Hive.Application.GigsManagement.Categories.Queries.GetCategories;
 using Hive.Application.GigsManagement.Categories.Queries.GetCategory;
+using Hive.Application.GigsManagement.Gigs.Queries;
 using Hive.Application.GigsManagement.Gigs.Queries.GetCategoryGigs;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hive.WebUI.Controllers
 {
-    //[Authorize]
     public class CategoriesController : ApiControllerBase
     {
         [HttpGet("{id:int}")]
-        public async Task<ActionResult<CategoryDto>> Get(int id)
-        {
-            return await Mediator.Send(new GetCategoryQuery(id));
-        }
+        public async Task<ActionResult<CategoryDto>> Get(int id) => await Mediator.Send(new GetCategoryByIdQuery(id));
         
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CategoryDto>>> Get([FromQuery] GetCategoriesQuery query)
-        {
-            return Ok(await Mediator.Send(query));
-        }
-        
-        [HttpGet("{id:int}/gigs")]
-        public async Task<ActionResult<PaginatedList<CategoryDto>>> GetGigs([FromRoute] int id, [FromQuery] int? pageNumber, [FromQuery] int? pageSize)
-        {
-            var query = new GetCategoryGigsQuery(id);
-            if(pageNumber.HasValue)
-            {
-                query = query with {PageNumber = pageNumber.Value};
-            }
+        public async Task<ActionResult<IEnumerable<CategoryDto>>> Get([FromQuery] GetCategoriesQuery query) => Ok(await Mediator.Send(query));
 
-            if (pageSize.HasValue)
-            {
-                query = query with {PageSize = pageSize.Value};
-            }
-
-            var list = await Mediator.Send(query);
-            
-            return Ok(list);
-        }
 
         [HttpPost]
-        public async Task<ActionResult<CategoryDto>> Post([FromBody] CreateCategoryCommand command)
+        public async Task<ActionResult<CategoryDto>> Create([FromBody] CreateCategoryCommand command)
         {
             var id = await Mediator.Send(command);
             return CreatedAtAction(nameof(Get), new { id }, id);
@@ -55,7 +31,10 @@ namespace Hive.WebUI.Controllers
         [HttpPut("{id:int}")]
         public async Task<ActionResult> Put([FromRoute] int id, [FromBody] UpdateCategoryCommand command)
         {
-            // TODO: Check command
+            if (id != command.Id)
+            {
+                return BadRequest();
+            }
             await Mediator.Send(command);
             return NoContent();
         }
@@ -65,6 +44,14 @@ namespace Hive.WebUI.Controllers
         {
             await Mediator.Send(new DeleteCategoryCommand(id));
             return NoContent();
+        }
+        
+        
+        [HttpGet("{id:int}/gigs")]
+        public async Task<ActionResult<PaginatedList<GigDto>>> GetGigs([FromRoute] int id, [FromQuery] int pageNumber = 1, int pageSize = 10)
+        {
+            var list = await Mediator.Send(new GetCategoryGigsQuery(id, pageNumber, pageSize));
+            return Ok(list);
         }
     }
 }

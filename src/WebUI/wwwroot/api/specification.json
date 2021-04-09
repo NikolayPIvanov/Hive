@@ -423,7 +423,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "$ref": "#/components/schemas/PackageDto2"
+                    "$ref": "#/components/schemas/PackageDto"
                   }
                 }
               }
@@ -694,7 +694,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PackageDto2"
+                  "$ref": "#/components/schemas/PackageDto"
                 }
               }
             }
@@ -730,7 +730,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PackageDto2"
+                  "$ref": "#/components/schemas/PackageDto"
                 }
               }
             }
@@ -919,8 +919,7 @@
             "format": "int32"
           },
           "packageTier": {
-            "type": "string",
-            "nullable": true
+            "$ref": "#/components/schemas/PackageTier"
           },
           "title": {
             "type": "string",
@@ -939,18 +938,41 @@
             "format": "double"
           },
           "deliveryFrequency": {
-            "type": "string",
-            "nullable": true
-          },
-          "revisions": {
-            "type": "integer",
-            "format": "int32"
+            "$ref": "#/components/schemas/DeliveryFrequency"
           },
           "gigId": {
             "type": "integer",
             "format": "int32"
           }
         }
+      },
+      "PackageTier": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "Basic",
+          "Standard",
+          "Premium"
+        ],
+        "enum": [
+          0,
+          1,
+          2
+        ]
+      },
+      "DeliveryFrequency": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "Hours",
+          "Days",
+          "Weeks"
+        ],
+        "enum": [
+          0,
+          1,
+          2
+        ]
       },
       "CreateGigCommand": {
         "type": "object",
@@ -1036,70 +1058,6 @@
             }
           }
         }
-      },
-      "PackageDto2": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "packageTier": {
-            "$ref": "#/components/schemas/PackageTier"
-          },
-          "title": {
-            "type": "string",
-            "nullable": true
-          },
-          "description": {
-            "type": "string",
-            "nullable": true
-          },
-          "price": {
-            "type": "number",
-            "format": "decimal"
-          },
-          "deliveryTime": {
-            "type": "number",
-            "format": "double"
-          },
-          "deliveryFrequency": {
-            "$ref": "#/components/schemas/DeliveryFrequency"
-          },
-          "gigId": {
-            "type": "integer",
-            "format": "int32"
-          }
-        }
-      },
-      "PackageTier": {
-        "type": "integer",
-        "description": "",
-        "x-enumNames": [
-          "Basic",
-          "Standard",
-          "Premium"
-        ],
-        "enum": [
-          0,
-          1,
-          2
-        ]
-      },
-      "DeliveryFrequency": {
-        "type": "integer",
-        "description": "",
-        "x-enumNames": [
-          "Hours",
-          "Days",
-          "Weeks"
-        ],
-        "enum": [
-          0,
-          1,
-          2
-        ]
       },
       "OrderDto": {
         "type": "object",
