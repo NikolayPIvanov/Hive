@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net.Mime;
 using System.Threading.Tasks;
 using Hive.Application.Ordering.Orders.Commands;
 using Hive.Application.Ordering.Orders.Queries;
+using Hive.Application.Ordering.Resolutions.Commands;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -42,5 +44,20 @@ namespace Hive.WebUI.Controllers
             var id = await Mediator.Send(command);
             return Ok(id);
         }
+        
+        [HttpPost("{orderNumber:guid}/resolutions")]
+        public async Task<ActionResult<Guid>> SubmitResolution([FromRoute] Guid orderNumber, [FromForm] FileUploadForm model)
+        {
+            var command = new CreateResolutionCommand(orderNumber, model.Version, model.File);
+            var resolutionId = await Mediator.Send(command);
+            return CreatedAtAction(nameof(GetOrder), new { resolutionId }, resolutionId);
+        }
+    }
+
+    public class FileUploadForm
+    {
+        public string Version { get; set; }
+
+        public IFormFile File { get; set; }
     }
 }

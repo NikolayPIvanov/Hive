@@ -652,6 +652,7 @@ export interface IOrdersClient {
     placeOrder(command: PlaceOrderCommand | null | undefined): Observable<string>;
     cancelOrder(orderNumber: string, cancelOrderCommand: CancelOrderCommand | null | undefined): Observable<number>;
     acceptOrder(orderNumber: string, command: AcceptOrderCommand | null | undefined): Observable<number>;
+    submitResolution(orderNumber: string, version: string | null | undefined, file: FileParameter | null | undefined): Observable<string>;
 }
 
 @Injectable({
@@ -892,6 +893,64 @@ export class OrdersClient implements IOrdersClient {
             }));
         }
         return _observableOf<number>(<any>null);
+    }
+
+    submitResolution(orderNumber: string, version: string | null | undefined, file: FileParameter | null | undefined): Observable<string> {
+        let url_ = this.baseUrl + "/api/Orders/{orderNumber}/resolutions";
+        if (orderNumber === undefined || orderNumber === null)
+            throw new Error("The parameter 'orderNumber' must be defined.");
+        url_ = url_.replace("{orderNumber}", encodeURIComponent("" + orderNumber));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (version !== null && version !== undefined)
+            content_.append("Version", version.toString());
+        if (file !== null && file !== undefined)
+            content_.append("File", file.data, file.fileName ? file.fileName : "File");
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSubmitResolution(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSubmitResolution(<any>response_);
+                } catch (e) {
+                    return <Observable<string>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<string>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processSubmitResolution(response: HttpResponseBase): Observable<string> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 !== undefined ? resultData200 : <any>null;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<string>(<any>null);
     }
 }
 
@@ -1915,9 +1974,7 @@ export interface IProblemDetails {
 }
 
 export class PlaceOrderCommand implements IPlaceOrderCommand {
-    unitPrice?: number;
     requirements?: string | undefined;
-    sellerUserId?: string | undefined;
     gigId?: number;
     packageId?: number;
 
@@ -1932,9 +1989,7 @@ export class PlaceOrderCommand implements IPlaceOrderCommand {
 
     init(_data?: any) {
         if (_data) {
-            this.unitPrice = _data["unitPrice"];
             this.requirements = _data["requirements"];
-            this.sellerUserId = _data["sellerUserId"];
             this.gigId = _data["gigId"];
             this.packageId = _data["packageId"];
         }
@@ -1949,9 +2004,7 @@ export class PlaceOrderCommand implements IPlaceOrderCommand {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["unitPrice"] = this.unitPrice;
         data["requirements"] = this.requirements;
-        data["sellerUserId"] = this.sellerUserId;
         data["gigId"] = this.gigId;
         data["packageId"] = this.packageId;
         return data; 
@@ -1959,9 +2012,7 @@ export class PlaceOrderCommand implements IPlaceOrderCommand {
 }
 
 export interface IPlaceOrderCommand {
-    unitPrice?: number;
     requirements?: string | undefined;
-    sellerUserId?: string | undefined;
     gigId?: number;
     packageId?: number;
 }
@@ -2100,6 +2151,11 @@ export interface ICreatePackageCommand {
     deliveryTime?: number;
     deliveryFrequency?: DeliveryFrequency;
     gigId?: number;
+}
+
+export interface FileParameter {
+    data: any;
+    fileName: string;
 }
 
 export interface FileResponse {

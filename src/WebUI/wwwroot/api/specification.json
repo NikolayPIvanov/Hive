@@ -617,6 +617,59 @@
         }
       }
     },
+    "/api/Orders/{orderNumber}/resolutions": {
+      "post": {
+        "tags": [
+          "Orders"
+        ],
+        "operationId": "Orders_SubmitResolution",
+        "parameters": [
+          {
+            "name": "orderNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "Version": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "File": {
+                    "type": "string",
+                    "format": "binary",
+                    "nullable": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "guid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Packages/{id}": {
       "get": {
         "tags": [
@@ -1172,15 +1225,7 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "unitPrice": {
-            "type": "number",
-            "format": "decimal"
-          },
           "requirements": {
-            "type": "string",
-            "nullable": true
-          },
-          "sellerUserId": {
             "type": "string",
             "nullable": true
           },
