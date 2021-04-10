@@ -19,8 +19,8 @@ export interface ICategoriesClient {
     put(id: number, command: UpdateCategoryCommand | null | undefined): Observable<FileResponse>;
     delete(id: number): Observable<FileResponse>;
     getAll(pageNumber: number | undefined, pageSize: number | undefined, onlyParents: boolean | undefined): Observable<CategoryDto[]>;
-    post(command: CreateCategoryCommand | null | undefined): Observable<CategoryDto>;
-    getGigs(id: number, pageNumber: number | null | undefined, pageSize: number | null | undefined): Observable<PaginatedListOfCategoryDto>;
+    create(command: CreateCategoryCommand | null | undefined): Observable<CategoryDto>;
+    getGigs(id: number, pageNumber: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfGigDto>;
 }
 
 @Injectable({
@@ -253,7 +253,7 @@ export class CategoriesClient implements ICategoriesClient {
         return _observableOf<CategoryDto[]>(<any>null);
     }
 
-    post(command: CreateCategoryCommand | null | undefined): Observable<CategoryDto> {
+    create(command: CreateCategoryCommand | null | undefined): Observable<CategoryDto> {
         let url_ = this.baseUrl + "/api/Categories";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -270,11 +270,11 @@ export class CategoriesClient implements ICategoriesClient {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processPost(response_);
+            return this.processCreate(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processPost(<any>response_);
+                    return this.processCreate(<any>response_);
                 } catch (e) {
                     return <Observable<CategoryDto>><any>_observableThrow(e);
                 }
@@ -283,7 +283,7 @@ export class CategoriesClient implements ICategoriesClient {
         }));
     }
 
-    protected processPost(response: HttpResponseBase): Observable<CategoryDto> {
+    protected processCreate(response: HttpResponseBase): Observable<CategoryDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -305,14 +305,18 @@ export class CategoriesClient implements ICategoriesClient {
         return _observableOf<CategoryDto>(<any>null);
     }
 
-    getGigs(id: number, pageNumber: number | null | undefined, pageSize: number | null | undefined): Observable<PaginatedListOfCategoryDto> {
+    getGigs(id: number, pageNumber: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfGigDto> {
         let url_ = this.baseUrl + "/api/Categories/{id}/gigs?";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        if (pageNumber !== undefined && pageNumber !== null)
+        if (pageNumber === null)
+            throw new Error("The parameter 'pageNumber' cannot be null.");
+        else if (pageNumber !== undefined)
             url_ += "pageNumber=" + encodeURIComponent("" + pageNumber) + "&";
-        if (pageSize !== undefined && pageSize !== null)
+        if (pageSize === null)
+            throw new Error("The parameter 'pageSize' cannot be null.");
+        else if (pageSize !== undefined)
             url_ += "pageSize=" + encodeURIComponent("" + pageSize) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -331,14 +335,14 @@ export class CategoriesClient implements ICategoriesClient {
                 try {
                     return this.processGetGigs(<any>response_);
                 } catch (e) {
-                    return <Observable<PaginatedListOfCategoryDto>><any>_observableThrow(e);
+                    return <Observable<PaginatedListOfGigDto>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<PaginatedListOfCategoryDto>><any>_observableThrow(response_);
+                return <Observable<PaginatedListOfGigDto>><any>_observableThrow(response_);
         }));
     }
 
-    protected processGetGigs(response: HttpResponseBase): Observable<PaginatedListOfCategoryDto> {
+    protected processGetGigs(response: HttpResponseBase): Observable<PaginatedListOfGigDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -349,7 +353,7 @@ export class CategoriesClient implements ICategoriesClient {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = PaginatedListOfCategoryDto.fromJS(resultData200);
+            result200 = PaginatedListOfGigDto.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -357,7 +361,7 @@ export class CategoriesClient implements ICategoriesClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<PaginatedListOfCategoryDto>(<any>null);
+        return _observableOf<PaginatedListOfGigDto>(<any>null);
     }
 }
 
@@ -365,8 +369,18 @@ export interface IGigsClient {
     get(id: number): Observable<GigDto>;
     update(id: number, command: UpdateGigCommand | null | undefined): Observable<GigDto>;
     delete(id: number): Observable<GigDto>;
-    post(command: CreateGigCommand | null | undefined): Observable<GigDto>;
+    getPackagesAll(): Observable<GigDto[]>;
+    post(command: CreateGigCommand | null | undefined): Observable<number>;
+    getPackageById(id: number, packageId: number): Observable<PackageDto>;
+    updatePackage(id: number, packageId: number, command: UpdatePackageCommand | null | undefined): Observable<FileResponse>;
+    updatePackage2(id: number, packageId: number): Observable<FileResponse>;
     getPackages(id: number): Observable<PackageDto[]>;
+    createPackage(id: string, command: CreatePackageCommand | null | undefined): Observable<PackageDto[]>;
+    getReviewById(gigId: number, reviewId: number): Observable<ReviewDto>;
+    updateReview(gigId: number, reviewId: number, command: UpdateReviewCommand | null | undefined): Observable<FileResponse>;
+    deleteReview(gigId: number, reviewId: number): Observable<FileResponse>;
+    getReviewsList(gigId: number, pageNumber: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfReviewDto>;
+    createReview(gigId: number, command: CreateReviewCommand | null | undefined): Observable<FileResponse>;
 }
 
 @Injectable({
@@ -539,7 +553,59 @@ export class GigsClient implements IGigsClient {
         return _observableOf<GigDto>(<any>null);
     }
 
-    post(command: CreateGigCommand | null | undefined): Observable<GigDto> {
+    getPackagesAll(): Observable<GigDto[]> {
+        let url_ = this.baseUrl + "/api/Gigs/personal";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetPackagesAll(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetPackagesAll(<any>response_);
+                } catch (e) {
+                    return <Observable<GigDto[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<GigDto[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetPackagesAll(response: HttpResponseBase): Observable<GigDto[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(GigDto.fromJS(item));
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<GigDto[]>(<any>null);
+    }
+
+    post(command: CreateGigCommand | null | undefined): Observable<number> {
         let url_ = this.baseUrl + "/api/Gigs";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -562,14 +628,14 @@ export class GigsClient implements IGigsClient {
                 try {
                     return this.processPost(<any>response_);
                 } catch (e) {
-                    return <Observable<GigDto>><any>_observableThrow(e);
+                    return <Observable<number>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<GigDto>><any>_observableThrow(response_);
+                return <Observable<number>><any>_observableThrow(response_);
         }));
     }
 
-    protected processPost(response: HttpResponseBase): Observable<GigDto> {
+    protected processPost(response: HttpResponseBase): Observable<number> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -580,7 +646,7 @@ export class GigsClient implements IGigsClient {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = GigDto.fromJS(resultData200);
+            result200 = resultData200 !== undefined ? resultData200 : <any>null;
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -588,7 +654,169 @@ export class GigsClient implements IGigsClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<GigDto>(<any>null);
+        return _observableOf<number>(<any>null);
+    }
+
+    getPackageById(id: number, packageId: number): Observable<PackageDto> {
+        let url_ = this.baseUrl + "/api/Gigs/{id}/packages/{packageId}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        if (packageId === undefined || packageId === null)
+            throw new Error("The parameter 'packageId' must be defined.");
+        url_ = url_.replace("{packageId}", encodeURIComponent("" + packageId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetPackageById(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetPackageById(<any>response_);
+                } catch (e) {
+                    return <Observable<PackageDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<PackageDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetPackageById(response: HttpResponseBase): Observable<PackageDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PackageDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PackageDto>(<any>null);
+    }
+
+    updatePackage(id: number, packageId: number, command: UpdatePackageCommand | null | undefined): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/Gigs/{id}/packages/{packageId}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        if (packageId === undefined || packageId === null)
+            throw new Error("The parameter 'packageId' must be defined.");
+        url_ = url_.replace("{packageId}", encodeURIComponent("" + packageId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/octet-stream"
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdatePackage(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdatePackage(<any>response_);
+                } catch (e) {
+                    return <Observable<FileResponse>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<FileResponse>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processUpdatePackage(response: HttpResponseBase): Observable<FileResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            return _observableOf({ fileName: fileName, data: <any>responseBlob, status: status, headers: _headers });
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<FileResponse>(<any>null);
+    }
+
+    updatePackage2(id: number, packageId: number): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/Gigs/{id}/packages/{packageId}";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        if (packageId === undefined || packageId === null)
+            throw new Error("The parameter 'packageId' must be defined.");
+        url_ = url_.replace("{packageId}", encodeURIComponent("" + packageId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/octet-stream"
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdatePackage2(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdatePackage2(<any>response_);
+                } catch (e) {
+                    return <Observable<FileResponse>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<FileResponse>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processUpdatePackage2(response: HttpResponseBase): Observable<FileResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            return _observableOf({ fileName: fileName, data: <any>responseBlob, status: status, headers: _headers });
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<FileResponse>(<any>null);
     }
 
     getPackages(id: number): Observable<PackageDto[]> {
@@ -645,14 +873,351 @@ export class GigsClient implements IGigsClient {
         }
         return _observableOf<PackageDto[]>(<any>null);
     }
+
+    createPackage(id: string, command: CreatePackageCommand | null | undefined): Observable<PackageDto[]> {
+        let url_ = this.baseUrl + "/api/Gigs/{id}/packages";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreatePackage(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreatePackage(<any>response_);
+                } catch (e) {
+                    return <Observable<PackageDto[]>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<PackageDto[]>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCreatePackage(response: HttpResponseBase): Observable<PackageDto[]> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(PackageDto.fromJS(item));
+            }
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PackageDto[]>(<any>null);
+    }
+
+    getReviewById(gigId: number, reviewId: number): Observable<ReviewDto> {
+        let url_ = this.baseUrl + "/api/Gigs/{gigId}/reviews/{reviewId}";
+        if (gigId === undefined || gigId === null)
+            throw new Error("The parameter 'gigId' must be defined.");
+        url_ = url_.replace("{gigId}", encodeURIComponent("" + gigId));
+        if (reviewId === undefined || reviewId === null)
+            throw new Error("The parameter 'reviewId' must be defined.");
+        url_ = url_.replace("{reviewId}", encodeURIComponent("" + reviewId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetReviewById(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetReviewById(<any>response_);
+                } catch (e) {
+                    return <Observable<ReviewDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<ReviewDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetReviewById(response: HttpResponseBase): Observable<ReviewDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = ReviewDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<ReviewDto>(<any>null);
+    }
+
+    updateReview(gigId: number, reviewId: number, command: UpdateReviewCommand | null | undefined): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/Gigs/{gigId}/reviews/{reviewId}";
+        if (gigId === undefined || gigId === null)
+            throw new Error("The parameter 'gigId' must be defined.");
+        url_ = url_.replace("{gigId}", encodeURIComponent("" + gigId));
+        if (reviewId === undefined || reviewId === null)
+            throw new Error("The parameter 'reviewId' must be defined.");
+        url_ = url_.replace("{reviewId}", encodeURIComponent("" + reviewId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/octet-stream"
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdateReview(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdateReview(<any>response_);
+                } catch (e) {
+                    return <Observable<FileResponse>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<FileResponse>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processUpdateReview(response: HttpResponseBase): Observable<FileResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            return _observableOf({ fileName: fileName, data: <any>responseBlob, status: status, headers: _headers });
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<FileResponse>(<any>null);
+    }
+
+    deleteReview(gigId: number, reviewId: number): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/Gigs/{gigId}/reviews/{reviewId}";
+        if (gigId === undefined || gigId === null)
+            throw new Error("The parameter 'gigId' must be defined.");
+        url_ = url_.replace("{gigId}", encodeURIComponent("" + gigId));
+        if (reviewId === undefined || reviewId === null)
+            throw new Error("The parameter 'reviewId' must be defined.");
+        url_ = url_.replace("{reviewId}", encodeURIComponent("" + reviewId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/octet-stream"
+            })
+        };
+
+        return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDeleteReview(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDeleteReview(<any>response_);
+                } catch (e) {
+                    return <Observable<FileResponse>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<FileResponse>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processDeleteReview(response: HttpResponseBase): Observable<FileResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            return _observableOf({ fileName: fileName, data: <any>responseBlob, status: status, headers: _headers });
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<FileResponse>(<any>null);
+    }
+
+    getReviewsList(gigId: number, pageNumber: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfReviewDto> {
+        let url_ = this.baseUrl + "/api/Gigs/{gigId}/reviews?";
+        if (gigId === undefined || gigId === null)
+            throw new Error("The parameter 'gigId' must be defined.");
+        url_ = url_.replace("{gigId}", encodeURIComponent("" + gigId));
+        if (pageNumber === null)
+            throw new Error("The parameter 'pageNumber' cannot be null.");
+        else if (pageNumber !== undefined)
+            url_ += "pageNumber=" + encodeURIComponent("" + pageNumber) + "&";
+        if (pageSize === null)
+            throw new Error("The parameter 'pageSize' cannot be null.");
+        else if (pageSize !== undefined)
+            url_ += "pageSize=" + encodeURIComponent("" + pageSize) + "&";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetReviewsList(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetReviewsList(<any>response_);
+                } catch (e) {
+                    return <Observable<PaginatedListOfReviewDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<PaginatedListOfReviewDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetReviewsList(response: HttpResponseBase): Observable<PaginatedListOfReviewDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = PaginatedListOfReviewDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<PaginatedListOfReviewDto>(<any>null);
+    }
+
+    createReview(gigId: number, command: CreateReviewCommand | null | undefined): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/Gigs/{gigId}/reviews";
+        if (gigId === undefined || gigId === null)
+            throw new Error("The parameter 'gigId' must be defined.");
+        url_ = url_.replace("{gigId}", encodeURIComponent("" + gigId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/octet-stream"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreateReview(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreateReview(<any>response_);
+                } catch (e) {
+                    return <Observable<FileResponse>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<FileResponse>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCreateReview(response: HttpResponseBase): Observable<FileResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            return _observableOf({ fileName: fileName, data: <any>responseBlob, status: status, headers: _headers });
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<FileResponse>(<any>null);
+    }
 }
 
 export interface IOrdersClient {
     getOrder(orderNumber: string): Observable<OrderDto>;
+    getMyOrders(): Observable<OrderDto>;
     placeOrder(command: PlaceOrderCommand | null | undefined): Observable<string>;
-    cancelOrder(orderNumber: string, cancelOrderCommand: CancelOrderCommand | null | undefined): Observable<number>;
+    cancelOrder(orderNumber: string, command: CancelOrderCommand | null | undefined): Observable<number>;
     acceptOrder(orderNumber: string, command: AcceptOrderCommand | null | undefined): Observable<number>;
+    declineOrder(orderNumber: string, command: DeclineOrderCommand | null | undefined): Observable<number>;
+    setInProgress(orderNumber: string, command: SetInProgressOrderCommand | null | undefined): Observable<number>;
     submitResolution(orderNumber: string, version: string | null | undefined, file: FileParameter | null | undefined): Observable<string>;
+    updateResolution(orderNumber: string, resolutionId: number, version: string | null | undefined, file: FileParameter | null | undefined): Observable<string>;
 }
 
 @Injectable({
@@ -698,6 +1263,54 @@ export class OrdersClient implements IOrdersClient {
     }
 
     protected processGetOrder(response: HttpResponseBase): Observable<OrderDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = OrderDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<OrderDto>(<any>null);
+    }
+
+    getMyOrders(): Observable<OrderDto> {
+        let url_ = this.baseUrl + "/api/Orders/personal";
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetMyOrders(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetMyOrders(<any>response_);
+                } catch (e) {
+                    return <Observable<OrderDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<OrderDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetMyOrders(response: HttpResponseBase): Observable<OrderDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -785,14 +1398,14 @@ export class OrdersClient implements IOrdersClient {
         return _observableOf<string>(<any>null);
     }
 
-    cancelOrder(orderNumber: string, cancelOrderCommand: CancelOrderCommand | null | undefined): Observable<number> {
+    cancelOrder(orderNumber: string, command: CancelOrderCommand | null | undefined): Observable<number> {
         let url_ = this.baseUrl + "/api/Orders/{orderNumber}/cancellation";
         if (orderNumber === undefined || orderNumber === null)
             throw new Error("The parameter 'orderNumber' must be defined.");
         url_ = url_.replace("{orderNumber}", encodeURIComponent("" + orderNumber));
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(cancelOrderCommand);
+        const content_ = JSON.stringify(command);
 
         let options_ : any = {
             body: content_,
@@ -895,6 +1508,116 @@ export class OrdersClient implements IOrdersClient {
         return _observableOf<number>(<any>null);
     }
 
+    declineOrder(orderNumber: string, command: DeclineOrderCommand | null | undefined): Observable<number> {
+        let url_ = this.baseUrl + "/api/Orders/{orderNumber}/declination";
+        if (orderNumber === undefined || orderNumber === null)
+            throw new Error("The parameter 'orderNumber' must be defined.");
+        url_ = url_.replace("{orderNumber}", encodeURIComponent("" + orderNumber));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDeclineOrder(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDeclineOrder(<any>response_);
+                } catch (e) {
+                    return <Observable<number>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<number>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processDeclineOrder(response: HttpResponseBase): Observable<number> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 !== undefined ? resultData200 : <any>null;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<number>(<any>null);
+    }
+
+    setInProgress(orderNumber: string, command: SetInProgressOrderCommand | null | undefined): Observable<number> {
+        let url_ = this.baseUrl + "/api/Orders/{orderNumber}/progress";
+        if (orderNumber === undefined || orderNumber === null)
+            throw new Error("The parameter 'orderNumber' must be defined.");
+        url_ = url_.replace("{orderNumber}", encodeURIComponent("" + orderNumber));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSetInProgress(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSetInProgress(<any>response_);
+                } catch (e) {
+                    return <Observable<number>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<number>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processSetInProgress(response: HttpResponseBase): Observable<number> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 !== undefined ? resultData200 : <any>null;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<number>(<any>null);
+    }
+
     submitResolution(orderNumber: string, version: string | null | undefined, file: FileParameter | null | undefined): Observable<string> {
         let url_ = this.baseUrl + "/api/Orders/{orderNumber}/resolutions";
         if (orderNumber === undefined || orderNumber === null)
@@ -952,108 +1675,47 @@ export class OrdersClient implements IOrdersClient {
         }
         return _observableOf<string>(<any>null);
     }
-}
 
-export interface IPackagesClient {
-    get(id: number): Observable<PackageDto>;
-    post(command: CreatePackageCommand | null | undefined): Observable<PackageDto>;
-}
-
-@Injectable({
-    providedIn: 'root'
-})
-export class PackagesClient implements IPackagesClient {
-    private http: HttpClient;
-    private baseUrl: string;
-    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
-
-    constructor(@Inject(HttpClient) http: HttpClient, @Optional() @Inject(API_BASE_URL) baseUrl?: string) {
-        this.http = http;
-        this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
-    }
-
-    get(id: number): Observable<PackageDto> {
-        let url_ = this.baseUrl + "/api/Packages/{id}";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+    updateResolution(orderNumber: string, resolutionId: number, version: string | null | undefined, file: FileParameter | null | undefined): Observable<string> {
+        let url_ = this.baseUrl + "/api/Orders/{orderNumber}/resolutions/{resolutionId}";
+        if (orderNumber === undefined || orderNumber === null)
+            throw new Error("The parameter 'orderNumber' must be defined.");
+        url_ = url_.replace("{orderNumber}", encodeURIComponent("" + orderNumber));
+        if (resolutionId === undefined || resolutionId === null)
+            throw new Error("The parameter 'resolutionId' must be defined.");
+        url_ = url_.replace("{resolutionId}", encodeURIComponent("" + resolutionId));
         url_ = url_.replace(/[?&]$/, "");
 
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGet(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGet(<any>response_);
-                } catch (e) {
-                    return <Observable<PackageDto>><any>_observableThrow(e);
-                }
-            } else
-                return <Observable<PackageDto>><any>_observableThrow(response_);
-        }));
-    }
-
-    protected processGet(response: HttpResponseBase): Observable<PackageDto> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = PackageDto.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<PackageDto>(<any>null);
-    }
-
-    post(command: CreatePackageCommand | null | undefined): Observable<PackageDto> {
-        let url_ = this.baseUrl + "/api/Packages";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(command);
+        const content_ = new FormData();
+        if (version !== null && version !== undefined)
+            content_.append("Version", version.toString());
+        if (file !== null && file !== undefined)
+            content_.append("File", file.data, file.fileName ? file.fileName : "File");
 
         let options_ : any = {
             body: content_,
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
-                "Content-Type": "application/json",
                 "Accept": "application/json"
             })
         };
 
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processPost(response_);
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdateResolution(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processPost(<any>response_);
+                    return this.processUpdateResolution(<any>response_);
                 } catch (e) {
-                    return <Observable<PackageDto>><any>_observableThrow(e);
+                    return <Observable<string>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<PackageDto>><any>_observableThrow(response_);
+                return <Observable<string>><any>_observableThrow(response_);
         }));
     }
 
-    protected processPost(response: HttpResponseBase): Observable<PackageDto> {
+    protected processUpdateResolution(response: HttpResponseBase): Observable<string> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1064,7 +1726,7 @@ export class PackagesClient implements IPackagesClient {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = PackageDto.fromJS(resultData200);
+            result200 = resultData200 !== undefined ? resultData200 : <any>null;
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -1072,7 +1734,7 @@ export class PackagesClient implements IPackagesClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<PackageDto>(<any>null);
+        return _observableOf<string>(<any>null);
     }
 }
 
@@ -1205,70 +1867,6 @@ export interface ICategoryDto {
     subCategories?: CategoryDto[] | undefined;
 }
 
-export class PaginatedListOfCategoryDto implements IPaginatedListOfCategoryDto {
-    items?: CategoryDto[] | undefined;
-    pageIndex?: number;
-    totalPages?: number;
-    totalCount?: number;
-    hasPreviousPage?: boolean;
-    hasNextPage?: boolean;
-
-    constructor(data?: IPaginatedListOfCategoryDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            if (Array.isArray(_data["items"])) {
-                this.items = [] as any;
-                for (let item of _data["items"])
-                    this.items!.push(CategoryDto.fromJS(item));
-            }
-            this.pageIndex = _data["pageIndex"];
-            this.totalPages = _data["totalPages"];
-            this.totalCount = _data["totalCount"];
-            this.hasPreviousPage = _data["hasPreviousPage"];
-            this.hasNextPage = _data["hasNextPage"];
-        }
-    }
-
-    static fromJS(data: any): PaginatedListOfCategoryDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new PaginatedListOfCategoryDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.items)) {
-            data["items"] = [];
-            for (let item of this.items)
-                data["items"].push(item.toJSON());
-        }
-        data["pageIndex"] = this.pageIndex;
-        data["totalPages"] = this.totalPages;
-        data["totalCount"] = this.totalCount;
-        data["hasPreviousPage"] = this.hasPreviousPage;
-        data["hasNextPage"] = this.hasNextPage;
-        return data; 
-    }
-}
-
-export interface IPaginatedListOfCategoryDto {
-    items?: CategoryDto[] | undefined;
-    pageIndex?: number;
-    totalPages?: number;
-    totalCount?: number;
-    hasPreviousPage?: boolean;
-    hasNextPage?: boolean;
-}
-
 export class CreateCategoryCommand implements ICreateCategoryCommand {
     title?: string | undefined;
     parentId?: number | undefined;
@@ -1351,6 +1949,70 @@ export interface IUpdateCategoryCommand {
     id?: number;
     title?: string | undefined;
     parentId?: number | undefined;
+}
+
+export class PaginatedListOfGigDto implements IPaginatedListOfGigDto {
+    items?: GigDto[] | undefined;
+    pageIndex?: number;
+    totalPages?: number;
+    totalCount?: number;
+    hasPreviousPage?: boolean;
+    hasNextPage?: boolean;
+
+    constructor(data?: IPaginatedListOfGigDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(GigDto.fromJS(item));
+            }
+            this.pageIndex = _data["pageIndex"];
+            this.totalPages = _data["totalPages"];
+            this.totalCount = _data["totalCount"];
+            this.hasPreviousPage = _data["hasPreviousPage"];
+            this.hasNextPage = _data["hasNextPage"];
+        }
+    }
+
+    static fromJS(data: any): PaginatedListOfGigDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PaginatedListOfGigDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        data["pageIndex"] = this.pageIndex;
+        data["totalPages"] = this.totalPages;
+        data["totalCount"] = this.totalCount;
+        data["hasPreviousPage"] = this.hasPreviousPage;
+        data["hasNextPage"] = this.hasNextPage;
+        return data; 
+    }
+}
+
+export interface IPaginatedListOfGigDto {
+    items?: GigDto[] | undefined;
+    pageIndex?: number;
+    totalPages?: number;
+    totalCount?: number;
+    hasPreviousPage?: boolean;
+    hasNextPage?: boolean;
 }
 
 export class GigDto implements IGigDto {
@@ -1693,6 +2355,343 @@ export interface IUpdateGigCommand {
     questions?: QuestionModel[] | undefined;
 }
 
+export class CreatePackageCommand implements ICreatePackageCommand {
+    title?: string | undefined;
+    description?: string | undefined;
+    price?: number;
+    packageTier?: PackageTier;
+    deliveryTime?: number;
+    deliveryFrequency?: DeliveryFrequency;
+    revisions?: number | undefined;
+    revisionType?: RevisionType;
+    gigId?: number;
+
+    constructor(data?: ICreatePackageCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.title = _data["title"];
+            this.description = _data["description"];
+            this.price = _data["price"];
+            this.packageTier = _data["packageTier"];
+            this.deliveryTime = _data["deliveryTime"];
+            this.deliveryFrequency = _data["deliveryFrequency"];
+            this.revisions = _data["revisions"];
+            this.revisionType = _data["revisionType"];
+            this.gigId = _data["gigId"];
+        }
+    }
+
+    static fromJS(data: any): CreatePackageCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreatePackageCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["title"] = this.title;
+        data["description"] = this.description;
+        data["price"] = this.price;
+        data["packageTier"] = this.packageTier;
+        data["deliveryTime"] = this.deliveryTime;
+        data["deliveryFrequency"] = this.deliveryFrequency;
+        data["revisions"] = this.revisions;
+        data["revisionType"] = this.revisionType;
+        data["gigId"] = this.gigId;
+        return data; 
+    }
+}
+
+export interface ICreatePackageCommand {
+    title?: string | undefined;
+    description?: string | undefined;
+    price?: number;
+    packageTier?: PackageTier;
+    deliveryTime?: number;
+    deliveryFrequency?: DeliveryFrequency;
+    revisions?: number | undefined;
+    revisionType?: RevisionType;
+    gigId?: number;
+}
+
+export enum RevisionType {
+    Unlimited = 0,
+    Numeric = 1,
+}
+
+export class UpdatePackageCommand implements IUpdatePackageCommand {
+    packageId?: number;
+    gigId?: number;
+    packageTier?: PackageTier;
+    title?: string | undefined;
+    description?: string | undefined;
+    price?: number;
+    deliveryTime?: number;
+    deliveryFrequency?: DeliveryFrequency;
+    revisions?: number | undefined;
+    revisionType?: RevisionType;
+
+    constructor(data?: IUpdatePackageCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.packageId = _data["packageId"];
+            this.gigId = _data["gigId"];
+            this.packageTier = _data["packageTier"];
+            this.title = _data["title"];
+            this.description = _data["description"];
+            this.price = _data["price"];
+            this.deliveryTime = _data["deliveryTime"];
+            this.deliveryFrequency = _data["deliveryFrequency"];
+            this.revisions = _data["revisions"];
+            this.revisionType = _data["revisionType"];
+        }
+    }
+
+    static fromJS(data: any): UpdatePackageCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdatePackageCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["packageId"] = this.packageId;
+        data["gigId"] = this.gigId;
+        data["packageTier"] = this.packageTier;
+        data["title"] = this.title;
+        data["description"] = this.description;
+        data["price"] = this.price;
+        data["deliveryTime"] = this.deliveryTime;
+        data["deliveryFrequency"] = this.deliveryFrequency;
+        data["revisions"] = this.revisions;
+        data["revisionType"] = this.revisionType;
+        return data; 
+    }
+}
+
+export interface IUpdatePackageCommand {
+    packageId?: number;
+    gigId?: number;
+    packageTier?: PackageTier;
+    title?: string | undefined;
+    description?: string | undefined;
+    price?: number;
+    deliveryTime?: number;
+    deliveryFrequency?: DeliveryFrequency;
+    revisions?: number | undefined;
+    revisionType?: RevisionType;
+}
+
+export class ReviewDto implements IReviewDto {
+    comment?: string | undefined;
+    rating?: number;
+
+    constructor(data?: IReviewDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.comment = _data["comment"];
+            this.rating = _data["rating"];
+        }
+    }
+
+    static fromJS(data: any): ReviewDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ReviewDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["comment"] = this.comment;
+        data["rating"] = this.rating;
+        return data; 
+    }
+}
+
+export interface IReviewDto {
+    comment?: string | undefined;
+    rating?: number;
+}
+
+export class PaginatedListOfReviewDto implements IPaginatedListOfReviewDto {
+    items?: ReviewDto[] | undefined;
+    pageIndex?: number;
+    totalPages?: number;
+    totalCount?: number;
+    hasPreviousPage?: boolean;
+    hasNextPage?: boolean;
+
+    constructor(data?: IPaginatedListOfReviewDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(ReviewDto.fromJS(item));
+            }
+            this.pageIndex = _data["pageIndex"];
+            this.totalPages = _data["totalPages"];
+            this.totalCount = _data["totalCount"];
+            this.hasPreviousPage = _data["hasPreviousPage"];
+            this.hasNextPage = _data["hasNextPage"];
+        }
+    }
+
+    static fromJS(data: any): PaginatedListOfReviewDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PaginatedListOfReviewDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        data["pageIndex"] = this.pageIndex;
+        data["totalPages"] = this.totalPages;
+        data["totalCount"] = this.totalCount;
+        data["hasPreviousPage"] = this.hasPreviousPage;
+        data["hasNextPage"] = this.hasNextPage;
+        return data; 
+    }
+}
+
+export interface IPaginatedListOfReviewDto {
+    items?: ReviewDto[] | undefined;
+    pageIndex?: number;
+    totalPages?: number;
+    totalCount?: number;
+    hasPreviousPage?: boolean;
+    hasNextPage?: boolean;
+}
+
+export class CreateReviewCommand implements ICreateReviewCommand {
+    gigId?: number;
+    rating?: number;
+    comment?: string | undefined;
+
+    constructor(data?: ICreateReviewCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.gigId = _data["gigId"];
+            this.rating = _data["rating"];
+            this.comment = _data["comment"];
+        }
+    }
+
+    static fromJS(data: any): CreateReviewCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateReviewCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["gigId"] = this.gigId;
+        data["rating"] = this.rating;
+        data["comment"] = this.comment;
+        return data; 
+    }
+}
+
+export interface ICreateReviewCommand {
+    gigId?: number;
+    rating?: number;
+    comment?: string | undefined;
+}
+
+export class UpdateReviewCommand implements IUpdateReviewCommand {
+    id?: number;
+    rating?: number;
+    comment?: string | undefined;
+
+    constructor(data?: IUpdateReviewCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.rating = _data["rating"];
+            this.comment = _data["comment"];
+        }
+    }
+
+    static fromJS(data: any): UpdateReviewCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateReviewCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["rating"] = this.rating;
+        data["comment"] = this.comment;
+        return data; 
+    }
+}
+
+export interface IUpdateReviewCommand {
+    id?: number;
+    rating?: number;
+    comment?: string | undefined;
+}
+
 export class OrderDto implements IOrderDto {
     id?: number;
     orderNumber?: string;
@@ -2025,16 +3024,10 @@ export interface IAcceptOrderCommand {
     orderNumber?: string;
 }
 
-export class CreatePackageCommand implements ICreatePackageCommand {
-    packageTier?: PackageTier;
-    title?: string | undefined;
-    description?: string | undefined;
-    price?: number;
-    deliveryTime?: number;
-    deliveryFrequency?: DeliveryFrequency;
-    gigId?: number;
+export class DeclineOrderCommand implements IDeclineOrderCommand {
+    orderNumber?: string;
 
-    constructor(data?: ICreatePackageCommand) {
+    constructor(data?: IDeclineOrderCommand) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -2045,44 +3038,62 @@ export class CreatePackageCommand implements ICreatePackageCommand {
 
     init(_data?: any) {
         if (_data) {
-            this.packageTier = _data["packageTier"];
-            this.title = _data["title"];
-            this.description = _data["description"];
-            this.price = _data["price"];
-            this.deliveryTime = _data["deliveryTime"];
-            this.deliveryFrequency = _data["deliveryFrequency"];
-            this.gigId = _data["gigId"];
+            this.orderNumber = _data["orderNumber"];
         }
     }
 
-    static fromJS(data: any): CreatePackageCommand {
+    static fromJS(data: any): DeclineOrderCommand {
         data = typeof data === 'object' ? data : {};
-        let result = new CreatePackageCommand();
+        let result = new DeclineOrderCommand();
         result.init(data);
         return result;
     }
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["packageTier"] = this.packageTier;
-        data["title"] = this.title;
-        data["description"] = this.description;
-        data["price"] = this.price;
-        data["deliveryTime"] = this.deliveryTime;
-        data["deliveryFrequency"] = this.deliveryFrequency;
-        data["gigId"] = this.gigId;
+        data["orderNumber"] = this.orderNumber;
         return data; 
     }
 }
 
-export interface ICreatePackageCommand {
-    packageTier?: PackageTier;
-    title?: string | undefined;
-    description?: string | undefined;
-    price?: number;
-    deliveryTime?: number;
-    deliveryFrequency?: DeliveryFrequency;
-    gigId?: number;
+export interface IDeclineOrderCommand {
+    orderNumber?: string;
+}
+
+export class SetInProgressOrderCommand implements ISetInProgressOrderCommand {
+    orderNumber?: string;
+
+    constructor(data?: ISetInProgressOrderCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.orderNumber = _data["orderNumber"];
+        }
+    }
+
+    static fromJS(data: any): SetInProgressOrderCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new SetInProgressOrderCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["orderNumber"] = this.orderNumber;
+        return data; 
+    }
+}
+
+export interface ISetInProgressOrderCommand {
+    orderNumber?: string;
 }
 
 export interface FileParameter {

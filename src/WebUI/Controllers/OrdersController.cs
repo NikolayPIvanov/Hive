@@ -20,6 +20,14 @@ namespace Hive.WebUI.Controllers
             return Ok(order);
         }
         
+        [HttpGet("personal")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<OrderDto>> GetMyOrders()
+        {
+            var orders = await Mediator.Send(new GetMyOrdersQuery());
+            return Ok(orders);
+        }
+        
         [HttpPost]
         [Consumes(MediaTypeNames.Application.Json)]
         [ProducesResponseType(StatusCodes.Status201Created)]
@@ -32,17 +40,31 @@ namespace Hive.WebUI.Controllers
         }
         
         [HttpPut("{orderNumber:guid}/cancellation")]
-        public async Task<ActionResult<int>> CancelOrder(CancelOrderCommand cancelOrderCommand)
+        public async Task<ActionResult<int>> CancelOrder(CancelOrderCommand command)
         {
-            await Mediator.Send(cancelOrderCommand);
+            await Mediator.Send(command);
             return NoContent();
         }
         
         [HttpPut("{orderNumber:guid}/acceptance")]
         public async Task<ActionResult<int>> AcceptOrder(AcceptOrderCommand command)
         {
-            var id = await Mediator.Send(command);
-            return Ok(id);
+            await Mediator.Send(command);
+            return NoContent();
+        }
+        
+        [HttpPut("{orderNumber:guid}/declination")]
+        public async Task<ActionResult<int>> DeclineOrder(DeclineOrderCommand command)
+        {
+            await Mediator.Send(command);
+            return NoContent();
+        }
+        
+        [HttpPut("{orderNumber:guid}/progress")]
+        public async Task<ActionResult<int>> SetInProgress(SetInProgressOrderCommand command)
+        {
+            await Mediator.Send(command);
+            return NoContent();
         }
         
         [HttpPost("{orderNumber:guid}/resolutions")]
@@ -50,6 +72,13 @@ namespace Hive.WebUI.Controllers
         {
             var command = new CreateResolutionCommand(orderNumber, model.Version, model.File);
             var resolutionId = await Mediator.Send(command);
+            return CreatedAtAction(nameof(GetOrder), new { resolutionId }, resolutionId);
+        }
+        
+        [HttpPut("{orderNumber:guid}/resolutions/{resolutionId:int}")]
+        public async Task<ActionResult<Guid>> UpdateResolution([FromRoute] Guid orderNumber, int resolutionId, [FromForm] FileUploadForm model)
+        {
+            await Mediator.Send(new UpdateResolutionCommand(resolutionId, model.Version, model.File));
             return CreatedAtAction(nameof(GetOrder), new { resolutionId }, resolutionId);
         }
     }

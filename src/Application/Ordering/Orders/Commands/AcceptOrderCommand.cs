@@ -38,13 +38,18 @@ namespace Hive.Application.Ordering.Orders.Commands
             {
                 throw new NotFoundException(nameof(Order), request.OrderNumber);
             }
+            
+            if (order.OrderStates.Any(s => s.OrderState == OrderState.Accepted))
+            {
+                return Unit.Value;
+            }
 
             var dataIsValid = order.OrderStates.Any(s => s.OrderState == OrderState.OrderValid);
             var balanceIsValid = order.OrderStates.Any(s => s.OrderState == OrderState.UserBalanceValid);
             
             if (!dataIsValid || !balanceIsValid)
             {
-                var failures = new ValidationFailure[] { };
+                var failures = Array.Empty<ValidationFailure>();
                 throw new ValidationException(failures);
             }
             

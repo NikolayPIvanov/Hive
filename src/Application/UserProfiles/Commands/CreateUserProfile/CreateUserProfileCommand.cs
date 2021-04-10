@@ -6,7 +6,7 @@ using MediatR;
 
 namespace Hive.Application.UserProfiles.Commands.CreateUserProfile
 {
-    public class CreateUserProfileCommand : IRequest<int>
+    public record CreateUserProfileCommand : IRequest<int>
     {
         public string UserId { get; set; }
     }
@@ -22,10 +22,7 @@ namespace Hive.Application.UserProfiles.Commands.CreateUserProfile
         
         public async Task<int> Handle(CreateUserProfileCommand request, CancellationToken cancellationToken)
         {
-            var profile = new UserProfile
-            {
-                UserId = request.UserId
-            };
+            var profile = new UserProfile(request.UserId);
 
             _context.Profiles.Add(profile);
             await _context.SaveChangesAsync(cancellationToken);

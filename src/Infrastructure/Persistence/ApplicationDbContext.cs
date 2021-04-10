@@ -11,6 +11,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using Hive.Domain.Entities.Accounts;
+using Hive.Domain.Entities.Billing;
 using Hive.Domain.Entities.Gigs;
 using Hive.Domain.Entities.Investments;
 using Hive.Domain.Entities.Orders;
@@ -48,6 +49,9 @@ namespace Hive.Infrastructure.Persistence
         // Ordering
         public DbSet<Order> Orders { get; set; }
         public DbSet<Buyer> Buyers { get; set; }
+        public DbSet<AccountHolder> AccountHolders { get; set; }
+        public DbSet<Wallet> Wallets { get; set; }
+        public DbSet<Transaction> Transactions { get; set; }
 
         public DbSet<Requirement> Requirements { get; set; }
         public DbSet<Resolution> Resolutions { get; set; }

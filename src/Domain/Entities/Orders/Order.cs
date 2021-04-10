@@ -33,7 +33,11 @@ namespace Hive.Domain.Entities.Orders
                 
         public Guid OrderNumber { get; private init; }
         public DateTime OrderedAt { get; private init; }
-        
+        public Requirement Requirement { get; set; }
+
+        public decimal UnitPrice { get; set; }
+        public bool IsClosed { get; private set; }
+
         public int PackageId { get; private init; }
 
         public Package Package { get; set; }
@@ -44,10 +48,6 @@ namespace Hive.Domain.Entities.Orders
         
         public Buyer Buyer { get; private init; }
         
-        public Requirement Requirement { get; private init; }
-        
-        public decimal UnitPrice { get; set; }
-        public bool IsClosed { get; private set; }
         public ICollection<Resolution> Resolutions { get; private set; }
         
         public ICollection<State> OrderStates { get; private set; }

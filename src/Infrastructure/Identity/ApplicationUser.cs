@@ -20,5 +20,11 @@ namespace Hive.Infrastructure.Identity
         public int UserProfileId { get; set; }
 
         public UserProfile Profile { get; set; }
+
+        public int? BuyerId { get; set; }
+
+        public int? SellerId { get; set; }
+
+        public int? InvestorId { get; set; }
     }
 }

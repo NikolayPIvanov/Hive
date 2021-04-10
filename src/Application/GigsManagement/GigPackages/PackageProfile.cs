@@ -9,7 +9,7 @@ namespace Hive.Application.GigsManagement.GigPackages
     {
         public PackageProfile()
         {
-            CreateMap<UpdatePackageCommand, Package>()
+            CreateMap<UpdatePackageCommand, Package>().DisableCtorValidation()
                 .ForMember(d => d.Id, x => x.Ignore());
 
             CreateMap<PackageDto, Package>().ReverseMap();

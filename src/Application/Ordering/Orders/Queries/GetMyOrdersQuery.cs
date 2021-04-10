@@ -29,14 +29,14 @@ namespace Hive.Application.Ordering.Orders.Queries
         
         public async Task<IEnumerable<OrderDto>> Handle(GetMyOrdersQuery request, CancellationToken cancellationToken)
         {
-            var buyerId = await GetBuyer(cancellationToken);
+            var buyerId = await GetBuyerAsync(cancellationToken);
             return await _context.Orders
                 .Where(o => o.BuyerId == buyerId)
                 .AsNoTracking()
                 .ProjectToListAsync<OrderDto>(_mapper.ConfigurationProvider);
         }
         
-        private async Task<int> GetBuyer(CancellationToken cancellationToken)
+        private async Task<int> GetBuyerAsync(CancellationToken cancellationToken)
         {
             var buyer = await _context.Buyers.Select(b => new {b.Id, b.UserId})
                 .FirstOrDefaultAsync(b => b.UserId == _currentUserService.UserId, cancellationToken: cancellationToken);

@@ -42,6 +42,11 @@ namespace Hive.Application.GigsManagement.Gigs.Commands.UpdateGig
                 .MaximumLength(50).WithMessage("Title length must not be above 50 characters.")
                 .MinimumLength(3).WithMessage("Title length must not be below 3 characters.")
                 .NotEmpty().WithMessage("Title should be provided.");
+            
+            RuleFor(x => x.Description)
+                .MaximumLength(2500).WithMessage("Description length must not be above 2500 characters.")
+                .MinimumLength(10).WithMessage("Description length must not be below 10 characters.")
+                .NotEmpty().WithMessage("Description should be provided.");
 
             RuleFor(x => x.CategoryId)
                 .MustAsync(async (id, token) => await dbContext.Categories.AnyAsync(x => x.Id == id, cancellationToken: token))
@@ -53,6 +58,9 @@ namespace Hive.Application.GigsManagement.Gigs.Commands.UpdateGig
             RuleForEach(x => x.Tags)
                 .MinimumLength(3).WithMessage("Tag length must not be below 3 characters.")
                 .MaximumLength(20).WithMessage("Tag length must not be above 20 characters.");
+            
+            RuleForEach(x => x.Questions)
+                .SetValidator(x => new QuestionValidator());
         }
     }
 
@@ -70,7 +78,6 @@ namespace Hive.Application.GigsManagement.Gigs.Commands.UpdateGig
         public async Task<Unit> Handle(UpdateGigCommand request, CancellationToken cancellationToken)
         {
             var entity = await _dbContext.Gigs
-                .Include(g => g.Tags)
                 .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
             
             if (entity is null)

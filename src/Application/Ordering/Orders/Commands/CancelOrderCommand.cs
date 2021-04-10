@@ -50,6 +50,11 @@ namespace Hive.Application.Ordering.Orders.Commands
                 throw new NotFoundException(nameof(Order), request.OrderNumber);
             }
             
+            if (order.OrderStates.Any(s => s.OrderState == OrderState.Canceled))
+            {
+                return Unit.Value;
+            }
+            
             // TODO: V2: Check if order is in progress and compensate the seller a given amount.
             if (order.OrderStates.Any(s => s.OrderState == OrderState.Invalid))
             {

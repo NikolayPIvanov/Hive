@@ -9,24 +9,20 @@ namespace Hive.Domain.Entities.Gigs
         {
         }
         
-        public Question(string title, string answer, int gigId) : this()
+        public Question(string title, string answer) : this()
         {
             Title = title;
             Answer = answer;
-            GigId = gigId;
         }
         
-        public string Title { get; set; }
+        public string Title { get; init; }
 
-        public string Answer { get; set; }
-
-        public int GigId { get; private init; }
+        public string Answer { get; init; }
         
         protected override IEnumerable<object> GetEqualityComponents()
         {
             yield return Title;
             yield return Answer;
-            yield return GigId;
         }
     }
 }

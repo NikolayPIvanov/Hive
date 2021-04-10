@@ -25,8 +25,7 @@ namespace Hive.WebUI.Controllers
         public async Task<ActionResult<GigDto>> Get([FromRoute] int id) => Ok(await Mediator.Send(new GetGigQuery(id)));
 
         [HttpGet("personal")]
-        public async Task<ActionResult<IEnumerable<GigDto>>> GetPackages() =>
-            Ok(await Mediator.Send(new GetMyGigsQuery()));
+        public async Task<ActionResult<IEnumerable<GigDto>>> GetPackages() => Ok(await Mediator.Send(new GetMyGigsQuery()));
 
         [HttpPost]
         public async Task<ActionResult<int>> Post([FromBody] CreateGigCommand command)

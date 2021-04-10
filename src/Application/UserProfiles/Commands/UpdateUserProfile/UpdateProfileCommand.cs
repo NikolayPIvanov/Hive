@@ -1,4 +1,7 @@
 ﻿#nullable enable
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -11,8 +14,8 @@ namespace Hive.Application.UserProfiles.Commands.UpdateUserProfile
 {
     public static class UpdateProfileCommand
     {
-        public record Command(int ProfileId, string? FirstName, string? LastName, string? Description,
-            string? Languages, string? Skills, string? Education) : IRequest;
+        public record Command(int ProfileId, string? FirstName, string? LastName, string? Description, string? Education,
+            ICollection<string> Languages, ICollection<string> Skills) : IRequest;
 
         public class Handler : IRequestHandler<Command>
         {
@@ -34,12 +37,11 @@ namespace Hive.Application.UserProfiles.Commands.UpdateUserProfile
                     throw new NotFoundException(nameof(UserProfile), request.ProfileId);
                 }
 
-                // Bug: Automapper doesn't work with records
                 entity.FirstName = request.FirstName;
                 entity.LastName = request.LastName;
                 entity.Description = request.Description;
-                entity.Languages = request.Languages;
-                entity.Skills = request.Skills;
+                entity.Languages = request.Languages.Select(x => new Language(x)).ToHashSet();
+                entity.Skills = request.Skills.Select(x => new Skill(x)).ToHashSet();
                 entity.Education = request.Education;
                 
                 await _context.SaveChangesAsync(cancellationToken);

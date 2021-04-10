@@ -1,55 +1,74 @@
-﻿using System.Threading;
+﻿using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
+using FluentValidation;
 using Hive.Application.Common.Interfaces;
 using Hive.Application.Common.Mappings;
 using Hive.Domain.Entities.Gigs;
 using Hive.Domain.Enums;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Hive.Application.GigsManagement.GigPackages.Commands.CreatePackage
 {
-    public class CreatePackageCommand : IRequest<int>, IMapFrom<Package>
-    {
-        public PackageTier PackageTier { get; set; }
-        
-        public string Title { get; set; }
-        
-        public string Description { get; set; }
-        
-        public decimal Price { get; set; }
-        
-        public double DeliveryTime { get; set; }
-        
-        public DeliveryFrequency DeliveryFrequency { get; set; }
-        
-        public int GigId { get; set; }
+    public record CreatePackageCommand(string Title, string Description, decimal Price, PackageTier PackageTier,
+            double DeliveryTime, DeliveryFrequency DeliveryFrequency, int? Revisions, RevisionType RevisionType, int GigId) 
+        : IRequest<int>;
 
-        public void Mapping(Profile profile)
+    public class CreatePackageCommandValidator : AbstractValidator<CreatePackageCommand>
+    {
+        public CreatePackageCommandValidator(IApplicationDbContext context)
         {
-            profile.CreateMap<CreatePackageCommand, Package>(MemberList.Source);
+            RuleFor(x => new {x.GigId, x.PackageTier})
+                .MustAsync(async (pair, token) =>
+                {
+                    return await context.Packages.Where(x => x.GigId == pair.GigId)
+                        .AllAsync(p => p.PackageTier != pair.PackageTier, token);
+                }).WithMessage("Package with selected tier already is present on the gig or the gig does not exist.");
+            
+            RuleFor(x => x.Title)
+                .MaximumLength(50).WithMessage("{PropertyName} cannot have more than {MaxLength} characters.")
+                .MinimumLength(3).WithMessage("{PropertyName} cannot have less than {MinLength} characters.")
+                .NotEmpty().WithMessage("A {PropertyName} must be provided");
+            
+            RuleFor(x => x.Description)
+                .MaximumLength(100).WithMessage("{PropertyName} cannot have more than {MaxLength} characters.")
+                .MinimumLength(10).WithMessage("{PropertyName} cannot have less than {MinLength} characters.")
+                .NotEmpty().WithMessage("A {PropertyName} must be provided");
+            
+            RuleFor(x => x.Price)
+                .NotNull().WithMessage("A {PropertyName} must be provided")
+                .GreaterThan(0.0m).WithMessage("{PropertyName} cannot be below {ComparisonValue}.");
+            
+            RuleFor(x => x.DeliveryTime)
+                .NotNull().WithMessage("A {PropertyName} must be provided")
+                .GreaterThanOrEqualTo(1.0d).WithMessage("{PropertyName} cannot be below {ComparisonValue}.");
+            
+            RuleFor(x => x.Revisions)
+                .NotNull().WithMessage("A {PropertyName} must be provided").When(x => x.Revisions.HasValue)
+                .GreaterThanOrEqualTo(1).WithMessage("{PropertyName} cannot be below {ComparisonValue}.").When(x => x.Revisions.HasValue);
         }
     }
 
     public class CreatePackageCommandHandler : IRequestHandler<CreatePackageCommand, int>
     {
         private readonly IApplicationDbContext _context;
-        private readonly IMapper _mapper;
 
-        public CreatePackageCommandHandler(IApplicationDbContext context, IMapper mapper)
+        public CreatePackageCommandHandler(IApplicationDbContext context)
         {
             _context = context;
-            _mapper = mapper;
         }
         
         public async Task<int> Handle(CreatePackageCommand request, CancellationToken cancellationToken)
         {
-            var entity = _mapper.Map<Package>(request);
+            var package = new Package(request.Title, request.Description, request.Price, request.DeliveryTime,
+                request.DeliveryFrequency, request.Revisions, request.RevisionType, request.GigId);
 
-            _context.Packages.Add(entity);
+            _context.Packages.Add(package);
             await _context.SaveChangesAsync(cancellationToken);
 
-            return entity.Id;
+            return package.Id;
         }
     }
 }

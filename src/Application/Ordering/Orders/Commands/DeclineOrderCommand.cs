@@ -13,7 +13,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Hive.Application.Ordering.Orders.Commands
 {
-    // todo: might merge to one action
     public record DeclineOrderCommand(Guid OrderNumber) : IRequest;
     
     public class DeclineOrderCommandHandler : IRequestHandler<DeclineOrderCommand>
@@ -39,6 +38,11 @@ namespace Hive.Application.Ordering.Orders.Commands
             {
                 throw new NotFoundException(nameof(Order), request.OrderNumber);
             }
+
+            if (order.OrderStates.Any(s => s.OrderState == OrderState.Declined))
+            {
+                return Unit.Value;
+            }
             
             var dataIsValid = order.OrderStates.Any(s => s.OrderState == OrderState.OrderValid);
             var balanceIsValid = order.OrderStates.Any(s => s.OrderState == OrderState.OrderValid);
@@ -49,7 +53,6 @@ namespace Hive.Application.Ordering.Orders.Commands
                 throw new ValidationException(failures);
             }
 
-            
             var state = new State(OrderState.Declined, "Order declined by seller");
             order.OrderStates.Add(state);
 

@@ -1,13 +1,29 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
+using FluentValidation;
 using Hive.Application.Common.Exceptions;
 using Hive.Application.Common.Interfaces;
 using Hive.Domain.Entities.Gigs;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Hive.Application.GigsManagement.Reviews.Commands
 {
     public record UpdateReviewCommand(int Id, double Rating, string? Comment) : IRequest;
+    
+    public class UpdateReviewCommandValidator : AbstractValidator<CreateReviewCommand>
+    {
+        public UpdateReviewCommandValidator()
+        {
+            RuleFor(x => x.Comment)
+                .MaximumLength(50).WithMessage("{PropertyName} cannot have more than {MaxLength} characters.").When(x => !string.IsNullOrEmpty(x.Comment))
+                .MinimumLength(3).WithMessage("{PropertyName} cannot have less than {MinLength} characters.").When(x => !string.IsNullOrEmpty(x.Comment))
+                .NotEmpty().WithMessage("A {PropertyName} must be provided").When(x => !string.IsNullOrEmpty(x.Comment));
+
+            RuleFor(x => x.Rating)
+                .InclusiveBetween(1.0f, 5.0f).WithMessage("Rating must be between {From} to {To}");
+        }
+    }
     
     public class UpdateReviewCommandHandler : IRequestHandler<UpdateReviewCommand>
     {

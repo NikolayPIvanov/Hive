@@ -39,6 +39,11 @@ namespace Hive.Application.Ordering.Orders.Commands
                 throw new NotFoundException(nameof(Order), request.OrderNumber);
             }
             
+            if (order.OrderStates.Any(s => s.OrderState == OrderState.InProgress))
+            {
+                return Unit.Value;
+            }
+            
             var orderIsAccepted = order.OrderStates.Any(s => s.OrderState == OrderState.Accepted);
             
             if (!orderIsAccepted)

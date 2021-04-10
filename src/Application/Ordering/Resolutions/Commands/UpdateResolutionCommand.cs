@@ -4,18 +4,22 @@ using Hive.Application.Common.Exceptions;
 using Hive.Application.Common.Interfaces;
 using Hive.Domain.Entities.Orders;
 using MediatR;
+using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 
 namespace Hive.Application.Ordering.Resolutions.Commands
 {
-    public record UpdateResolutionCommand(int Id, string Version, string Location, bool IsApproved = false) : IRequest;
+    public record UpdateResolutionCommand(int Id, string Version, IFormFile File, bool IsApproved = false) : IRequest;
     
     public class UpdateResolutionCommandHandler : IRequestHandler<UpdateResolutionCommand>
     {
         private readonly IApplicationDbContext _context;
+        private readonly IFileService _fileService;
 
-        public UpdateResolutionCommandHandler(IApplicationDbContext context)
+        public UpdateResolutionCommandHandler(IApplicationDbContext context, IFileService fileService)
         {
             _context = context;
+            _fileService = fileService;
         }
         
         public async Task<Unit> Handle(UpdateResolutionCommand request, CancellationToken cancellationToken)
@@ -27,10 +31,19 @@ namespace Hive.Application.Ordering.Resolutions.Commands
                 throw new NotFoundException(nameof(Resolution), request.Id);
             }
 
-            resolution.Location = request.Location;
+            if (resolution.IsApproved)
+            {
+                // bad request
+                return Unit.Value;
+            }
+            
             resolution.Version = request.Version;
             resolution.IsApproved = request.IsApproved;
-
+            if (request.File != null)
+            {
+                resolution.Location = await _fileService.UploadAsync(request.File);
+            }
+            
             await _context.SaveChangesAsync(cancellationToken);
             
             return Unit.Value;

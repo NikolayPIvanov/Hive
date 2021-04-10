@@ -9,17 +9,18 @@ namespace Hive.Domain.Entities.Gigs
     {
         private Gig()
         {
-            Tags = new HashSet<Tag>(5);
             Packages = new HashSet<Package>(3);
-            Questions = new HashSet<Question>();
             Reviews = new HashSet<Review>();
+            Questions ??= new HashSet<Question>();
+            Tags ??= new HashSet<Tag>();
         }
         
-        public Gig(string title, string description, int categoryId, int sellerId, ICollection<Tag> tags) : this()
+        public Gig(string title, string description, int categoryId, int sellerId, ICollection<Tag> tags, ICollection<Question> questions) : this()
         {
             Title = title;
             CategoryId = categoryId;
             Tags = tags;
+            Questions = questions;
             SellerId = sellerId;
             GigScope = new GigScope(description);
             IsDraft = true;

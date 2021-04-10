@@ -34,8 +34,12 @@ namespace Hive.Application.Ordering.Resolutions.Commands
             {
                 throw new NotFoundException(nameof(Order), request.OrderNumber);
             }
+
+            if (request.File.Length == 0)
+            {
+                // throw bad request;
+            }
             
-            // todo: check files
             var location = await _fileService.UploadAsync(request.File);
             
             var resolution = new Resolution(request.Version, location, order.Id);
