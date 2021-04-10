@@ -1,4 +1,4 @@
-﻿using Hive.Domain.Entities.Investments;
+﻿using Hive.Domain.Entities.Investing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 

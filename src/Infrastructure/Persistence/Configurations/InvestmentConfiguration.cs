@@ -1,4 +1,4 @@
-﻿using Hive.Domain.Entities.Investments;
+﻿using Hive.Domain.Entities.Investing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -10,7 +10,7 @@ namespace Hive.Infrastructure.Persistence.Configurations
         {
             builder.Property(x => x.RoiPercentage).IsRequired();
             builder.Property(x => x.Amount).HasColumnType("decimal(18,2)").IsRequired();
-            builder.Property(x => x.EndDate).IsRequired();
+            builder.Property(x => x.ExpirationDate).IsRequired();
         }
     }
 }

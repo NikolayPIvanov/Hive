@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 using Hive.Domain.Entities.Accounts;
 using Hive.Domain.Entities.Billing;
 using Hive.Domain.Entities.Gigs;
-using Hive.Domain.Entities.Investments;
+using Hive.Domain.Entities.Investing;
 using Hive.Domain.Entities.Orders;
 
 namespace Hive.Infrastructure.Persistence

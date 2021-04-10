@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Hive.Domain.Common;
 
-namespace Hive.Domain.Entities.Investments
+namespace Hive.Domain.Entities.Investing
 {
     public class Investor : AuditableEntity
     {
@@ -9,8 +9,6 @@ namespace Hive.Domain.Entities.Investments
         {
             Investments = new();
         }
-        
-        public int Id { get; set; }
 
         public string UserId { get; set; }
 
