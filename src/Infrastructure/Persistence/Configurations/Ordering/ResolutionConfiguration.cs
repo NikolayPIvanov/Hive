@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Hive.Infrastructure.Persistence.Configurations
+namespace Hive.Infrastructure.Persistence.Configurations.Ordering
 {
     public class ResolutionConfiguration : IEntityTypeConfiguration<Resolution>
     {

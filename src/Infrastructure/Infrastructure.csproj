@@ -23,6 +23,8 @@
 
   <ItemGroup>
     <Folder Include="Files\Maps" />
+    <Folder Include="Persistence\Configurations\Billing" />
+    <Folder Include="Persistence\Configurations\Investing" />
   </ItemGroup>
 
 </Project>
