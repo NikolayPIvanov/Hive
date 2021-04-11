@@ -21,7 +21,7 @@ namespace Hive.Domain.Entities.Gigs
         public double Rating { get; set; }
 
         public string UserId { get; private init; }
-
+        
         public int GigId { get; private set; }
     }
 }

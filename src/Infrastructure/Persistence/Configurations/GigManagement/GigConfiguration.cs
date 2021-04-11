@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace Hive.Infrastructure.Persistence.Configurations
+namespace Hive.Infrastructure.Persistence.Configurations.GigManagement
 {
     public class GigConfiguration : IEntityTypeConfiguration<Gig>
     {
@@ -49,51 +49,6 @@ namespace Hive.Infrastructure.Persistence.Configurations
             builder.HasMany(g => g.Reviews)
                 .WithOne()
                 .HasForeignKey(g => g.GigId);
-        }
-    }
-    
-    public class PackageConfiguration : IEntityTypeConfiguration<Package>
-    {
-        public void Configure(EntityTypeBuilder<Package> builder)
-        {
-            builder.Property(x => x.Title)
-                .HasMaxLength(50)
-                .IsRequired();
-
-            builder.Property(x => x.Description)
-                .HasMaxLength(100)
-                .IsRequired();
-
-            builder.Property(x => x.Price)
-                .HasPrecision(18, 2)
-                .IsRequired();
-
-            builder.Property(x => x.DeliveryTime)
-                .IsRequired();
-
-            builder.Property(x => x.Revisions)
-                .IsRequired();
-        }
-    }
-
-    public class ReviewConfiguration : IEntityTypeConfiguration<Review>
-    {
-        public void Configure(EntityTypeBuilder<Review> builder)
-        {
-            builder.Property(x => x.Comment).HasMaxLength(1000).IsRequired();
-            builder.Property(x => x.Rating).IsRequired();
-
-            builder.HasCheckConstraint("CK_Review_Rating", "[Rating] BETWEEN 1.0 AND 5.0");
-        }
-    }
-    
-    public class SellerConfiguration : IEntityTypeConfiguration<Seller>
-    {
-        public void Configure(EntityTypeBuilder<Seller> builder)
-        {
-            // builder.HasMany(s => s.Gigs)
-            //     .WithOne(g => g.Seller)
-            //     .HasForeignKey(g => g.SellerId);
         }
     }
 }

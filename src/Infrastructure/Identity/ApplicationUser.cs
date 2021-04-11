@@ -1,4 +1,6 @@
-﻿using Hive.Domain.Entities.Accounts;
+﻿using System.Collections.Generic;
+using Hive.Domain.Entities.Accounts;
+using Hive.Domain.Entities.Gigs;
 using Microsoft.AspNetCore.Identity;
 
 namespace Hive.Infrastructure.Identity
