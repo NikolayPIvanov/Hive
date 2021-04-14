@@ -21,11 +21,11 @@ namespace Hive.Infrastructure.Persistence.Configurations.GigManagement
                 .HasForeignKey(g => g.SellerId);
             
             // https://docs.microsoft.com/en-us/ef/core/modeling/owned-entities#collections-of-owned-types
-            builder.OwnsMany(g => g.Tags, t =>
+            builder.OwnsMany<Tag>(g => g.Tags, a =>
             {
-                t.WithOwner().HasForeignKey("GigId");
-                t.Property<int>("Id");
-                t.HasKey("Id");
+                a.WithOwner().HasForeignKey("GigId");
+                a.Property<int>("Id");
+                a.HasKey("Id");
             });
             
             builder.OwnsMany(g => g.Questions, t =>
@@ -37,6 +37,7 @@ namespace Hive.Infrastructure.Persistence.Configurations.GigManagement
             
             builder.OwnsOne(g => g.GigScope, t =>
             {
+                t.ToTable("scopes");
                 t.WithOwner().HasForeignKey("GigId");
                 t.Property<int>("Id");
                 t.HasKey("Id");

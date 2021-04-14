@@ -5,13 +5,13 @@ using Hive.Domain.Entities.Gigs;
 
 namespace Hive.Domain.Entities.Investing
 {
-    public record Tag(string Value);
+    public record SearchTag(string Value);
     
     public class Plan : AuditableEntity
     {
         private Plan()
         {
-            Tags = new HashSet<Tag>(10);
+            SearchTags = new HashSet<SearchTag>(10);
             Investments = new HashSet<Investment>();
         }
 
@@ -43,7 +43,7 @@ namespace Hive.Domain.Entities.Investing
 
         public Seller Seller { get; set; }
 
-        public ICollection<Tag> Tags { get; private set; }
+        public ICollection<SearchTag> SearchTags { get; private set; }
 
         public ICollection<Investment> Investments { get; set; }
     }

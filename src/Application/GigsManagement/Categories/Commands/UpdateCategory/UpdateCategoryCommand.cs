@@ -38,11 +38,13 @@ namespace Hive.Application.GigsManagement.Categories.Commands.UpdateCategory
         private async Task<bool> BeValidAsync(UpdateCategoryCommand command, CancellationToken cancellationToken)
         {
             var (id, title, parentId) = command;
-            var titleExists = _dbContext.Categories
-                .AnyAsync(r => r.Title == title && r.Id != id, cancellationToken);
             
-            var parentCategoryIsValid = !parentId.HasValue || await ParentCategoryExistsAsync(parentId.Value, cancellationToken);
-            var titleIsValid = !(await titleExists);
+            var titleExists = await _dbContext.Categories
+                .AnyAsync(r => r.Title == title && r.Id != id, cancellationToken);
+
+            var parentCategoryIsValid =
+                !parentId.HasValue || (parentId.Value != id && await ParentCategoryExistsAsync(parentId.Value, cancellationToken));
+            var titleIsValid = !(titleExists);
 
             return titleIsValid && parentCategoryIsValid;
         }

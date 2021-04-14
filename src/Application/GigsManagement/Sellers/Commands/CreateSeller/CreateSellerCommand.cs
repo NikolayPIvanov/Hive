@@ -22,8 +22,7 @@ namespace Hive.Application.GigsManagement.Sellers.Commands.CreateSeller
             
             public async Task<Response> Handle(Command request, CancellationToken cancellationToken)
             {
-                var (userId) = request;
-                var seller = new Seller(userId);
+                var seller = new Seller(request.UserId);
 
                 _context.Sellers.Add(seller);
                 await _context.SaveChangesAsync(cancellationToken);

@@ -26,6 +26,7 @@ namespace Hive.Application.GigsManagement.Categories.Commands.DeleteCategory
         public async Task<Unit> Handle(DeleteCategoryCommand request, CancellationToken cancellationToken)
         {
             var category = await _dbContext.Categories
+                .Include(x => x.SubCategories)
                 .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
 
             if (category == null)

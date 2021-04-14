@@ -18,7 +18,6 @@ namespace Hive.Application.GigsManagement.Gigs.Commands.CreateGig
         public string Description { get; private init; }
         public int CategoryId { get; private init; }
         public HashSet<string> Tags { get; private init; }
-        
         public HashSet<QuestionModel> Questions { get; private init; }
 
         public CreateGigCommand(string title, string description, int categoryId, HashSet<string> tags, HashSet<QuestionModel> questions)
@@ -89,14 +88,14 @@ namespace Hive.Application.GigsManagement.Gigs.Commands.CreateGig
                 await _dbContext.Sellers.FirstOrDefaultAsync(s => s.UserId == _currentUserService.UserId,
                     cancellationToken);
 
-            if (seller == null)
-            {
-                throw new NotFoundException();
-            }
-            
+            // if (seller == null)
+            // {
+            //     throw new NotFoundException();
+            // }
+            var sellerId = seller?.Id ?? 1;
             var tags = request.Tags.Select(t => new Tag(t)).ToHashSet();
             var questions = request.Questions.Select(q => new Question(q.Title, q.Answer)).ToHashSet();
-            var gig = new Gig(request.Title, request.Description, request.CategoryId, seller.Id, tags, questions);
+            var gig = new Gig(request.Title, request.Description, request.CategoryId, sellerId, tags, questions);
 
             _dbContext.Gigs.Add(gig);
             await _dbContext.SaveChangesAsync(cancellationToken);

@@ -18,8 +18,7 @@ namespace Hive.WebUI.Controllers
         public async Task<ActionResult<CategoryDto>> Get(int id) => await Mediator.Send(new GetCategoryByIdQuery(id));
         
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<CategoryDto>>> Get([FromQuery] GetCategoriesQuery query) => Ok(await Mediator.Send(query));
-
+        public async Task<ActionResult<PaginatedList<CategoryDto>>> Get([FromQuery] GetCategoriesQuery query) => Ok(await Mediator.Send(query));
 
         [HttpPost]
         public async Task<ActionResult<CategoryDto>> Create([FromBody] CreateCategoryCommand command)

@@ -13,7 +13,7 @@ namespace Hive.Infrastructure.Persistence.Configurations.GigManagement
             builder.HasMany(c => c.SubCategories)
                 .WithOne()
                 .HasForeignKey(c => c.ParentId)
-                .OnDelete(DeleteBehavior.NoAction);
+                .OnDelete(DeleteBehavior.ClientSetNull);
         }
     }
 }

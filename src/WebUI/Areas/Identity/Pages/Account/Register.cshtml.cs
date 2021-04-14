@@ -102,12 +102,12 @@ namespace Hive.WebUI.Areas.Identity.Pages.Account
                 
                 if (Input.AccountType == AccountType.Seller)
                 {
-                    await _mediator.Send(new CreateSellerCommand.Command(user.Id, user.UserProfileId));
+                    await _mediator.Send(new CreateSellerCommand.Command(user.Id));
                 }
                 
                 if (Input.AccountType == AccountType.Buyer)
                 {
-                    await _mediator.Send(new CreateSellerCommand.Command(user.Id, user.UserProfileId));
+                    await _mediator.Send(new CreateSellerCommand.Command(user.Id));
                 }
                 
                 var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);

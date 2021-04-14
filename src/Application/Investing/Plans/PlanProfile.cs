@@ -10,7 +10,7 @@ namespace Hive.Application.Investing.Plans
         public PlanProfile()
         {
             CreateMap<Plan, PlanDto>()
-                .ForMember(d => d.Tags, x => x.MapFrom(s => s.Tags.Select(t => t.Value)));
+                .ForMember(d => d.Tags, x => x.MapFrom(s => s.SearchTags.Select(t => t.Value)));
         }
     }
 }

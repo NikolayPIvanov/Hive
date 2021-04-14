@@ -121,7 +121,7 @@
         "tags": [
           "Categories"
         ],
-        "operationId": "Categories_GetAll",
+        "operationId": "Categories_Get2",
         "parameters": [
           {
             "name": "PageNumber",
@@ -156,10 +156,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/CategoryDto"
-                  }
+                  "$ref": "#/components/schemas/PaginatedListOfCategoryDto"
                 }
               }
             }
@@ -366,7 +363,7 @@
         "tags": [
           "Gigs"
         ],
-        "operationId": "Gigs_GetPackagesAll",
+        "operationId": "Gigs_GetMyGigs",
         "responses": {
           "200": {
             "description": "",
@@ -633,10 +630,8 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/PackageDto"
-                  }
+                  "type": "integer",
+                  "format": "int32"
                 }
               }
             }
@@ -1835,7 +1830,8 @@
           },
           "parentId": {
             "type": "integer",
-            "format": "int32"
+            "format": "int32",
+            "nullable": true
           },
           "subCategories": {
             "type": "array",
@@ -1843,6 +1839,37 @@
             "items": {
               "$ref": "#/components/schemas/CategoryDto"
             }
+          }
+        }
+      },
+      "PaginatedListOfCategoryDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/CategoryDto"
+            }
+          },
+          "pageIndex": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "hasPreviousPage": {
+            "type": "boolean"
+          },
+          "hasNextPage": {
+            "type": "boolean"
           }
         }
       },

@@ -37,13 +37,9 @@ namespace Hive.Infrastructure.Persistence
         }
         // Gigs
         public DbSet<Gig> Gigs { get; set; }
-        public DbSet<GigScope> GigScopes { get; set; }
         public DbSet<Review> Reviews { get; set; }
-        
-        public DbSet<Question> Questions { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Package> Packages { get; set; }
-
         public DbSet<Seller> Sellers { get; set; }
         
         // Ordering
@@ -53,7 +49,6 @@ namespace Hive.Infrastructure.Persistence
         public DbSet<Wallet> Wallets { get; set; }
         public DbSet<Transaction> Transactions { get; set; }
 
-        public DbSet<Requirement> Requirements { get; set; }
         public DbSet<Resolution> Resolutions { get; set; }
         // Accounts
 

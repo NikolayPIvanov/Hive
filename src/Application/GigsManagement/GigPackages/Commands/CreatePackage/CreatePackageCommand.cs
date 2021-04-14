@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation;
+using Hive.Application.Common.Exceptions;
 using Hive.Application.Common.Interfaces;
 using Hive.Application.Common.Mappings;
 using Hive.Domain.Entities.Gigs;
@@ -20,11 +21,16 @@ namespace Hive.Application.GigsManagement.GigPackages.Commands.CreatePackage
     {
         public CreatePackageCommandValidator(IApplicationDbContext context)
         {
-            RuleFor(x => new {x.GigId, x.PackageTier})
-                .MustAsync(async (pair, token) =>
+            RuleFor(x => x)
+                .MustAsync(async (command, token) =>
                 {
-                    return await context.Packages.Where(x => x.GigId == pair.GigId)
-                        .AllAsync(p => p.PackageTier != pair.PackageTier, token);
+                    var uniqueNameInGig = await context.Packages.Where(x => x.GigId == command.GigId)
+                        .AllAsync(p => p.Title != command.Title, token);
+                    
+                    var uniqueTier = await context.Packages.Where(x => x.GigId == command.GigId)
+                        .AllAsync(p => p.PackageTier != command.PackageTier, token);
+
+                    return uniqueNameInGig && uniqueTier;
                 }).WithMessage("Package with selected tier already is present on the gig or the gig does not exist.");
             
             RuleFor(x => x.Title)
@@ -39,6 +45,7 @@ namespace Hive.Application.GigsManagement.GigPackages.Commands.CreatePackage
             
             RuleFor(x => x.Price)
                 .NotNull().WithMessage("A {PropertyName} must be provided")
+                .ScalePrecision(18, 2)
                 .GreaterThan(0.0m).WithMessage("{PropertyName} cannot be below {ComparisonValue}.");
             
             RuleFor(x => x.DeliveryTime)
@@ -46,7 +53,7 @@ namespace Hive.Application.GigsManagement.GigPackages.Commands.CreatePackage
                 .GreaterThanOrEqualTo(1.0d).WithMessage("{PropertyName} cannot be below {ComparisonValue}.");
             
             RuleFor(x => x.Revisions)
-                .NotNull().WithMessage("A {PropertyName} must be provided").When(x => x.Revisions.HasValue)
+                .NotNull().WithMessage("A {PropertyName} must be provided").When(x => x.RevisionType == RevisionType.Numeric)
                 .GreaterThanOrEqualTo(1).WithMessage("{PropertyName} cannot be below {ComparisonValue}.").When(x => x.Revisions.HasValue);
         }
     }
@@ -62,6 +69,12 @@ namespace Hive.Application.GigsManagement.GigPackages.Commands.CreatePackage
         
         public async Task<int> Handle(CreatePackageCommand request, CancellationToken cancellationToken)
         {
+            var gigIsValid = await _context.Gigs.AnyAsync(x => x.Id == request.GigId, cancellationToken);
+            if (!gigIsValid)
+            {
+                throw new NotFoundException(nameof(Gig), request.GigId);
+            }
+            
             var package = new Package(request.Title, request.Description, request.Price, request.DeliveryTime,
                 request.DeliveryFrequency, request.Revisions, request.RevisionType, request.GigId);
 

@@ -13,6 +13,6 @@ namespace Hive.Domain.Entities.Billing
         public int AccountHolderId { get; set; }
         
         public ICollection<Transaction> Transactions { get; private set; }
-
+        
     }
 }

@@ -7,7 +7,24 @@ namespace Hive.Infrastructure.Persistence.Configurations.UserProfile
     {
         public void Configure(EntityTypeBuilder<Domain.Entities.Accounts.UserProfile> builder)
         {
-            // TODO: Configuration
+            builder.Property(x => x.FirstName).HasMaxLength(50).IsRequired(false);
+            builder.Property(x => x.LastName).HasMaxLength(50).IsRequired(false);
+            builder.Property(x => x.Description).HasMaxLength(500).IsRequired(false);
+            builder.Property(x => x.Education).HasMaxLength(100).IsRequired(false);
+
+            builder.OwnsMany(g => g.Skills, s =>
+            {
+                s.WithOwner().HasForeignKey("ProfileId");
+                s.Property<int>("Id");
+                s.HasKey("Id");
+            });
+            
+            builder.OwnsMany(g => g.Languages, l =>
+            {
+                l.WithOwner().HasForeignKey("ProfileId");
+                l.Property<int>("Id");
+                l.HasKey("Id");
+            });
         }
     }
 }

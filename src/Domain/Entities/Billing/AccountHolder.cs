@@ -18,6 +18,6 @@ namespace Hive.Domain.Entities.Billing
 
         public Wallet Wallet { get; private set; }
 
-        public int WalletId => Wallet.Id;
+        public int WalletId { get; set; }
     }
 }

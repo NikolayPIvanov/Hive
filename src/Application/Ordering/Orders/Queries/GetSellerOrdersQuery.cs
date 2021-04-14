@@ -27,7 +27,7 @@ namespace Hive.Application.Ordering.Orders.Queries
         {
             var seller = await _context.Sellers.FindAsync(request.SellerUserId);
             var orders = await _context.Orders
-                .Where(o => o.SellerId == seller.Id)
+                // .Where(o => o.SellerId == seller.Id)
                 .AsNoTracking()
                 .ProjectToListAsync<OrderDto>(_mapper.ConfigurationProvider);
 

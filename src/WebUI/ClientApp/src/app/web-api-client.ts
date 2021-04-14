@@ -18,7 +18,7 @@ export interface ICategoriesClient {
     get(id: number): Observable<CategoryDto>;
     put(id: number, command: UpdateCategoryCommand | null | undefined): Observable<FileResponse>;
     delete(id: number): Observable<FileResponse>;
-    getAll(pageNumber: number | undefined, pageSize: number | undefined, onlyParents: boolean | undefined): Observable<CategoryDto[]>;
+    get2(pageNumber: number | undefined, pageSize: number | undefined, onlyParents: boolean | undefined): Observable<PaginatedListOfCategoryDto>;
     create(command: CreateCategoryCommand | null | undefined): Observable<CategoryDto>;
     getGigs(id: number, pageNumber: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfGigDto>;
 }
@@ -189,7 +189,7 @@ export class CategoriesClient implements ICategoriesClient {
         return _observableOf<FileResponse>(<any>null);
     }
 
-    getAll(pageNumber: number | undefined, pageSize: number | undefined, onlyParents: boolean | undefined): Observable<CategoryDto[]> {
+    get2(pageNumber: number | undefined, pageSize: number | undefined, onlyParents: boolean | undefined): Observable<PaginatedListOfCategoryDto> {
         let url_ = this.baseUrl + "/api/Categories?";
         if (pageNumber === null)
             throw new Error("The parameter 'pageNumber' cannot be null.");
@@ -214,20 +214,20 @@ export class CategoriesClient implements ICategoriesClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetAll(response_);
+            return this.processGet2(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetAll(<any>response_);
+                    return this.processGet2(<any>response_);
                 } catch (e) {
-                    return <Observable<CategoryDto[]>><any>_observableThrow(e);
+                    return <Observable<PaginatedListOfCategoryDto>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<CategoryDto[]>><any>_observableThrow(response_);
+                return <Observable<PaginatedListOfCategoryDto>><any>_observableThrow(response_);
         }));
     }
 
-    protected processGetAll(response: HttpResponseBase): Observable<CategoryDto[]> {
+    protected processGet2(response: HttpResponseBase): Observable<PaginatedListOfCategoryDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -238,11 +238,7 @@ export class CategoriesClient implements ICategoriesClient {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(CategoryDto.fromJS(item));
-            }
+            result200 = PaginatedListOfCategoryDto.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -250,7 +246,7 @@ export class CategoriesClient implements ICategoriesClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<CategoryDto[]>(<any>null);
+        return _observableOf<PaginatedListOfCategoryDto>(<any>null);
     }
 
     create(command: CreateCategoryCommand | null | undefined): Observable<CategoryDto> {
@@ -369,13 +365,13 @@ export interface IGigsClient {
     get(id: number): Observable<GigDto>;
     update(id: number, command: UpdateGigCommand | null | undefined): Observable<GigDto>;
     delete(id: number): Observable<GigDto>;
-    getPackagesAll(): Observable<GigDto[]>;
+    getMyGigs(): Observable<GigDto[]>;
     post(command: CreateGigCommand | null | undefined): Observable<number>;
     getPackageById(id: number, packageId: number): Observable<PackageDto>;
     updatePackage(id: number, packageId: number, command: UpdatePackageCommand | null | undefined): Observable<FileResponse>;
     updatePackage2(id: number, packageId: number): Observable<FileResponse>;
     getPackages(id: number): Observable<PackageDto[]>;
-    createPackage(id: string, command: CreatePackageCommand | null | undefined): Observable<PackageDto[]>;
+    createPackage(id: string, command: CreatePackageCommand | null | undefined): Observable<number>;
     getReviewById(gigId: number, reviewId: number): Observable<ReviewDto>;
     updateReview(gigId: number, reviewId: number, command: UpdateReviewCommand | null | undefined): Observable<FileResponse>;
     deleteReview(gigId: number, reviewId: number): Observable<FileResponse>;
@@ -553,7 +549,7 @@ export class GigsClient implements IGigsClient {
         return _observableOf<GigDto>(<any>null);
     }
 
-    getPackagesAll(): Observable<GigDto[]> {
+    getMyGigs(): Observable<GigDto[]> {
         let url_ = this.baseUrl + "/api/Gigs/personal";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -566,11 +562,11 @@ export class GigsClient implements IGigsClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetPackagesAll(response_);
+            return this.processGetMyGigs(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetPackagesAll(<any>response_);
+                    return this.processGetMyGigs(<any>response_);
                 } catch (e) {
                     return <Observable<GigDto[]>><any>_observableThrow(e);
                 }
@@ -579,7 +575,7 @@ export class GigsClient implements IGigsClient {
         }));
     }
 
-    protected processGetPackagesAll(response: HttpResponseBase): Observable<GigDto[]> {
+    protected processGetMyGigs(response: HttpResponseBase): Observable<GigDto[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -874,7 +870,7 @@ export class GigsClient implements IGigsClient {
         return _observableOf<PackageDto[]>(<any>null);
     }
 
-    createPackage(id: string, command: CreatePackageCommand | null | undefined): Observable<PackageDto[]> {
+    createPackage(id: string, command: CreatePackageCommand | null | undefined): Observable<number> {
         let url_ = this.baseUrl + "/api/Gigs/{id}/packages";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -900,14 +896,14 @@ export class GigsClient implements IGigsClient {
                 try {
                     return this.processCreatePackage(<any>response_);
                 } catch (e) {
-                    return <Observable<PackageDto[]>><any>_observableThrow(e);
+                    return <Observable<number>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<PackageDto[]>><any>_observableThrow(response_);
+                return <Observable<number>><any>_observableThrow(response_);
         }));
     }
 
-    protected processCreatePackage(response: HttpResponseBase): Observable<PackageDto[]> {
+    protected processCreatePackage(response: HttpResponseBase): Observable<number> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -918,11 +914,7 @@ export class GigsClient implements IGigsClient {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(PackageDto.fromJS(item));
-            }
+            result200 = resultData200 !== undefined ? resultData200 : <any>null;
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -930,7 +922,7 @@ export class GigsClient implements IGigsClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<PackageDto[]>(<any>null);
+        return _observableOf<number>(<any>null);
     }
 
     getReviewById(gigId: number, reviewId: number): Observable<ReviewDto> {
@@ -2553,7 +2545,7 @@ export class WalletsClient implements IWalletsClient {
 export class CategoryDto implements ICategoryDto {
     id?: number;
     title?: string | undefined;
-    parentId?: number;
+    parentId?: number | undefined;
     subCategories?: CategoryDto[] | undefined;
 
     constructor(data?: ICategoryDto) {
@@ -2602,8 +2594,72 @@ export class CategoryDto implements ICategoryDto {
 export interface ICategoryDto {
     id?: number;
     title?: string | undefined;
-    parentId?: number;
+    parentId?: number | undefined;
     subCategories?: CategoryDto[] | undefined;
+}
+
+export class PaginatedListOfCategoryDto implements IPaginatedListOfCategoryDto {
+    items?: CategoryDto[] | undefined;
+    pageIndex?: number;
+    totalPages?: number;
+    totalCount?: number;
+    hasPreviousPage?: boolean;
+    hasNextPage?: boolean;
+
+    constructor(data?: IPaginatedListOfCategoryDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(CategoryDto.fromJS(item));
+            }
+            this.pageIndex = _data["pageIndex"];
+            this.totalPages = _data["totalPages"];
+            this.totalCount = _data["totalCount"];
+            this.hasPreviousPage = _data["hasPreviousPage"];
+            this.hasNextPage = _data["hasNextPage"];
+        }
+    }
+
+    static fromJS(data: any): PaginatedListOfCategoryDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PaginatedListOfCategoryDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        data["pageIndex"] = this.pageIndex;
+        data["totalPages"] = this.totalPages;
+        data["totalCount"] = this.totalCount;
+        data["hasPreviousPage"] = this.hasPreviousPage;
+        data["hasNextPage"] = this.hasNextPage;
+        return data; 
+    }
+}
+
+export interface IPaginatedListOfCategoryDto {
+    items?: CategoryDto[] | undefined;
+    pageIndex?: number;
+    totalPages?: number;
+    totalCount?: number;
+    hasPreviousPage?: boolean;
+    hasNextPage?: boolean;
 }
 
 export class CreateCategoryCommand implements ICreateCategoryCommand {

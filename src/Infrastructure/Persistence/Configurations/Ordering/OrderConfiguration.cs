@@ -17,6 +17,7 @@ namespace Hive.Infrastructure.Persistence.Configurations.Ordering
 
             builder.OwnsOne(o => o.Requirement, r =>
             {
+                r.ToTable("requirements");
                 r.WithOwner().HasForeignKey("OrderId");
                 r.Property<int>("Id");
                 r.HasKey("Id");
@@ -33,14 +34,10 @@ namespace Hive.Infrastructure.Persistence.Configurations.Ordering
                 .WithOne()
                 .HasForeignKey(r => r.OrderId);
 
-            builder.HasOne(o => o.Seller)
-                .WithMany(s => s.Orders)
-                .HasForeignKey(r => r.SellerId);
-            
             builder.HasOne(o => o.Buyer)
                 .WithMany(b => b.Orders)
-                .HasForeignKey(r => r.BuyerId);
-            
+                .HasForeignKey(r => r.BuyerId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

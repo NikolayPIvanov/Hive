@@ -25,7 +25,7 @@ namespace Hive.WebUI.Controllers
         public async Task<ActionResult<GigDto>> Get([FromRoute] int id) => Ok(await Mediator.Send(new GetGigQuery(id)));
 
         [HttpGet("personal")]
-        public async Task<ActionResult<IEnumerable<GigDto>>> GetPackages() => Ok(await Mediator.Send(new GetMyGigsQuery()));
+        public async Task<ActionResult<IEnumerable<GigDto>>> GetMyGigs() => Ok(await Mediator.Send(new GetMyGigsQuery()));
 
         [HttpPost]
         public async Task<ActionResult<int>> Post([FromBody] CreateGigCommand command)
@@ -68,10 +68,16 @@ namespace Hive.WebUI.Controllers
         }
 
         [HttpPost("{id:int}/packages")]
-        public async Task<ActionResult<IEnumerable<PackageDto>>> CreatePackage([FromBody] CreatePackageCommand command)
+        public async Task<ActionResult<int>> CreatePackage([FromBody] CreatePackageCommand command)
         {
-            var id = await Mediator.Send(command);
-            return CreatedAtAction(nameof(Get), new {id}, id);
+            // if (command.GigId != id)
+            // {
+            //     return BadRequest();
+            // }
+            
+            var pId = await Mediator.Send(command);
+            return Ok(pId);
+            //return CreatedAtAction(nameof(GetPackageById), new {id, packageId = pId}, new {id, pId});
         }
 
         [HttpPut("{id:int}/packages/{packageId:int}")]

@@ -23,7 +23,7 @@ namespace Hive.Domain.Entities.Orders
             UnitPrice = price;
             PackageId = packageId;
             BuyerId = buyerId;
-            SellerId = sellerId;
+            //SellerId = sellerId;
             Requirement = new Requirement(requirements);
             OrderStates = new HashSet<State>
             {
@@ -42,8 +42,9 @@ namespace Hive.Domain.Entities.Orders
 
         public Package Package { get; set; }
         
-        public int SellerId { get; private init; }
-        public Seller Seller { get; set; }
+        // public int SellerId { get; private init; }
+        // public Seller Seller { get; set; }
+        
         public int BuyerId { get; private init; }
         
         public Buyer Buyer { get; private init; }

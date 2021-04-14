@@ -21,6 +21,9 @@ namespace Hive.Application.GigsManagement.Gigs
                 .ForMember(d => d.Tags,
                     x => x.MapFrom(s =>
                         s.Tags.Select(t => new Tag(t))))
+                .ForMember(d => d.Questions,
+                    x => x.MapFrom(s =>
+                        s.Questions.Select(t => new Question(t.Title, t.Answer))))
                 .AfterMap((command, gig) =>
                 {
                     if (gig.GigScope != null)
