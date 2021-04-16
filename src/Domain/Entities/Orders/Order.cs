@@ -13,7 +13,7 @@ namespace Hive.Domain.Entities.Orders
         private Order()
         {
             Resolutions = new HashSet<Resolution>();
-            IsClosed = OrderStates.Any(s => s.OrderState == OrderState.Canceled || s.OrderState == OrderState.Declined || s.OrderState == OrderState.Completed);
+            IsClosed = IsInClosedState();
         }
         
         public Order(decimal price, string requirements, int packageId, int buyerId, int sellerId) : this()
@@ -23,7 +23,7 @@ namespace Hive.Domain.Entities.Orders
             UnitPrice = price;
             PackageId = packageId;
             BuyerId = buyerId;
-            //SellerId = sellerId;
+            SellerId = sellerId;
             Requirement = new Requirement(requirements);
             OrderStates = new HashSet<State>
             {
@@ -42,8 +42,8 @@ namespace Hive.Domain.Entities.Orders
 
         public Package Package { get; set; }
         
-        // public int SellerId { get; private init; }
-        // public Seller Seller { get; set; }
+        public int SellerId { get; private init; }
+        public Seller Seller { get; set; }
         
         public int BuyerId { get; private init; }
         
@@ -52,5 +52,11 @@ namespace Hive.Domain.Entities.Orders
         public ICollection<Resolution> Resolutions { get; private set; }
         
         public ICollection<State> OrderStates { get; private set; }
+
+        private bool IsInClosedState()
+        {
+            var source = OrderStates ??= new HashSet<State>();
+            return source.Any(s => s.OrderState == OrderState.Canceled || s.OrderState == OrderState.Declined || s.OrderState == OrderState.Completed);
+        }
     }
 }

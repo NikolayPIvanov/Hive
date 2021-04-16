@@ -38,6 +38,12 @@ namespace Hive.Infrastructure.Persistence.Configurations.Ordering
                 .WithMany(b => b.Orders)
                 .HasForeignKey(r => r.BuyerId)
                 .OnDelete(DeleteBehavior.NoAction);
+
+            builder.HasOne(o => o.Seller)
+                .WithMany(s => s.Orders)
+                .HasForeignKey(o => o.SellerId)
+                .OnDelete(DeleteBehavior.ClientSetNull);
+
         }
     }
 }

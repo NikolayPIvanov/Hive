@@ -9,8 +9,13 @@ namespace Hive.Infrastructure.Persistence.Configurations.GigManagement
         public void Configure(EntityTypeBuilder<Seller> builder)
         {
             builder.HasMany(s => s.Gigs)
-                .WithOne(g => g.Seller)
+                .WithOne()
                 .HasForeignKey(g => g.SellerId);
+
+            builder.HasMany(s => s.Orders)
+                .WithOne(o => o.Seller)
+                .HasForeignKey(o => o.SellerId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

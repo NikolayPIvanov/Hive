@@ -45,7 +45,6 @@ namespace Hive.Application.GigsManagement.GigPackages.Commands.CreatePackage
             
             RuleFor(x => x.Price)
                 .NotNull().WithMessage("A {PropertyName} must be provided")
-                .ScalePrecision(18, 2)
                 .GreaterThan(0.0m).WithMessage("{PropertyName} cannot be below {ComparisonValue}.");
             
             RuleFor(x => x.DeliveryTime)

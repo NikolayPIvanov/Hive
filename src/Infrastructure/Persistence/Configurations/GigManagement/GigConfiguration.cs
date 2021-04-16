@@ -16,10 +16,6 @@ namespace Hive.Infrastructure.Persistence.Configurations.GigManagement
                 .WithMany()
                 .HasForeignKey(g => g.CategoryId);
             
-            builder.HasOne(g => g.Seller)
-                .WithMany()
-                .HasForeignKey(g => g.SellerId);
-            
             // https://docs.microsoft.com/en-us/ef/core/modeling/owned-entities#collections-of-owned-types
             builder.OwnsMany<Tag>(g => g.Tags, a =>
             {

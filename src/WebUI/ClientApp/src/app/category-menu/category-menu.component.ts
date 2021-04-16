@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AuthorizeService } from 'src/api-authorization/authorize.service';
-import { CategoriesClient, CategoryDto } from '../web-api-client';
+import {CategoriesClient, CategoryDto, PaginatedListOfCategoryDto} from '../web-api-client';
 
 @Component({
   selector: 'app-category-menu',
@@ -12,7 +12,7 @@ export class CategoryMenuComponent implements OnInit {
   MENU_LIMIT = 8;
   ONLY_PARENTS = true;
 
-  $categories: Observable<CategoryDto[]>
+  $categories: Observable<PaginatedListOfCategoryDto>
   isAuthenticated: Observable<boolean>;
 
   constructor(private categoriesClient: CategoriesClient, private authorizationService: AuthorizeService) { }
@@ -23,7 +23,7 @@ export class CategoryMenuComponent implements OnInit {
   }
 
   getParentCategories() {
-    return this.categoriesClient.getAll(1, 10, this.ONLY_PARENTS)
+    return this.categoriesClient.get2(1, 10, this.ONLY_PARENTS)
   }
 
 }

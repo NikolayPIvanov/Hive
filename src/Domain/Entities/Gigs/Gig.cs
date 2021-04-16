@@ -38,8 +38,6 @@ namespace Hive.Domain.Entities.Gigs
 
         public int SellerId { get; set; }
 
-        public Seller Seller { get; set; }
-
         public ICollection<Tag> Tags { get; private set; }
         
         public ICollection<Package> Packages { get; private set; }
