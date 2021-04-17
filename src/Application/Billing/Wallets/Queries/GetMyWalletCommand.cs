@@ -41,8 +41,8 @@ namespace Hive.Application.Billing.Wallets.Queries
                 .Select(x => new
                 {
                     x.UserId,
-                    Transactions = x.Wallet.Transactions,
-                    Wallet = x.Wallet
+                    x.Wallet.Transactions,
+                    x.Wallet
                 })
                 .FirstOrDefaultAsync(x => x.UserId == _currentUserService.UserId, cancellationToken: cancellationToken);
 

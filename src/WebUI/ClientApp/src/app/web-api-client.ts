@@ -1431,8 +1431,8 @@ export interface IOrdersClient {
     getMyOrders(): Observable<OrderDto>;
     placeOrder(command: PlaceOrderCommand | null | undefined): Observable<string>;
     cancelOrder(orderNumber: string, command: CancelOrderCommand | null | undefined): Observable<number>;
-    acceptOrder(orderNumber: string, command: AcceptOrderCommand | null | undefined): Observable<number>;
-    declineOrder(orderNumber: string, command: DeclineOrderCommand | null | undefined): Observable<number>;
+    acceptOrder(orderNumber: string, command: AcceptOrderCommand | null | undefined): Observable<FileResponse>;
+    declineOrder(orderNumber: string, command: DeclineOrderCommand | null | undefined): Observable<FileResponse>;
     setInProgress(orderNumber: string, command: SetInProgressOrderCommand | null | undefined): Observable<number>;
     submitResolution(orderNumber: string, version: string | null | undefined, file: FileParameter | null | undefined): Observable<string>;
     updateResolution(orderNumber: string, resolutionId: number, version: string | null | undefined, file: FileParameter | null | undefined): Observable<string>;
@@ -1671,7 +1671,7 @@ export class OrdersClient implements IOrdersClient {
         return _observableOf<number>(<any>null);
     }
 
-    acceptOrder(orderNumber: string, command: AcceptOrderCommand | null | undefined): Observable<number> {
+    acceptOrder(orderNumber: string, command: AcceptOrderCommand | null | undefined): Observable<FileResponse> {
         let url_ = this.baseUrl + "/api/Orders/{orderNumber}/acceptance";
         if (orderNumber === undefined || orderNumber === null)
             throw new Error("The parameter 'orderNumber' must be defined.");
@@ -1686,7 +1686,7 @@ export class OrdersClient implements IOrdersClient {
             responseType: "blob",
             headers: new HttpHeaders({
                 "Content-Type": "application/json",
-                "Accept": "application/json"
+                "Accept": "application/octet-stream"
             })
         };
 
@@ -1697,36 +1697,34 @@ export class OrdersClient implements IOrdersClient {
                 try {
                     return this.processAcceptOrder(<any>response_);
                 } catch (e) {
-                    return <Observable<number>><any>_observableThrow(e);
+                    return <Observable<FileResponse>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<number>><any>_observableThrow(response_);
+                return <Observable<FileResponse>><any>_observableThrow(response_);
         }));
     }
 
-    protected processAcceptOrder(response: HttpResponseBase): Observable<number> {
+    protected processAcceptOrder(response: HttpResponseBase): Observable<FileResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
             (<any>response).error instanceof Blob ? (<any>response).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = resultData200 !== undefined ? resultData200 : <any>null;
-            return _observableOf(result200);
-            }));
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            return _observableOf({ fileName: fileName, data: <any>responseBlob, status: status, headers: _headers });
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<number>(<any>null);
+        return _observableOf<FileResponse>(<any>null);
     }
 
-    declineOrder(orderNumber: string, command: DeclineOrderCommand | null | undefined): Observable<number> {
+    declineOrder(orderNumber: string, command: DeclineOrderCommand | null | undefined): Observable<FileResponse> {
         let url_ = this.baseUrl + "/api/Orders/{orderNumber}/declination";
         if (orderNumber === undefined || orderNumber === null)
             throw new Error("The parameter 'orderNumber' must be defined.");
@@ -1741,7 +1739,7 @@ export class OrdersClient implements IOrdersClient {
             responseType: "blob",
             headers: new HttpHeaders({
                 "Content-Type": "application/json",
-                "Accept": "application/json"
+                "Accept": "application/octet-stream"
             })
         };
 
@@ -1752,33 +1750,31 @@ export class OrdersClient implements IOrdersClient {
                 try {
                     return this.processDeclineOrder(<any>response_);
                 } catch (e) {
-                    return <Observable<number>><any>_observableThrow(e);
+                    return <Observable<FileResponse>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<number>><any>_observableThrow(response_);
+                return <Observable<FileResponse>><any>_observableThrow(response_);
         }));
     }
 
-    protected processDeclineOrder(response: HttpResponseBase): Observable<number> {
+    protected processDeclineOrder(response: HttpResponseBase): Observable<FileResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
             (<any>response).error instanceof Blob ? (<any>response).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = resultData200 !== undefined ? resultData200 : <any>null;
-            return _observableOf(result200);
-            }));
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            return _observableOf({ fileName: fileName, data: <any>responseBlob, status: status, headers: _headers });
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<number>(<any>null);
+        return _observableOf<FileResponse>(<any>null);
     }
 
     setInProgress(orderNumber: string, command: SetInProgressOrderCommand | null | undefined): Observable<number> {
@@ -2431,6 +2427,7 @@ export class SellersClient implements ISellersClient {
 export interface IWalletsClient {
     getMyWallet(): Observable<FileResponse>;
     getWalletTransactions(walletId: number): Observable<FileResponse>;
+    createTransaction(walletId: number, command: CreateTransactionCommand | null | undefined): Observable<FileResponse>;
 }
 
 @Injectable({
@@ -2522,6 +2519,59 @@ export class WalletsClient implements IWalletsClient {
     }
 
     protected processGetWalletTransactions(response: HttpResponseBase): Observable<FileResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            return _observableOf({ fileName: fileName, data: <any>responseBlob, status: status, headers: _headers });
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<FileResponse>(<any>null);
+    }
+
+    createTransaction(walletId: number, command: CreateTransactionCommand | null | undefined): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/Wallets/{walletId}/transactions";
+        if (walletId === undefined || walletId === null)
+            throw new Error("The parameter 'walletId' must be defined.");
+        url_ = url_.replace("{walletId}", encodeURIComponent("" + walletId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(command);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/octet-stream"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processCreateTransaction(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processCreateTransaction(<any>response_);
+                } catch (e) {
+                    return <Observable<FileResponse>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<FileResponse>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processCreateTransaction(response: HttpResponseBase): Observable<FileResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -4297,6 +4347,59 @@ export interface IPlanDto {
     fundingNeeded?: number;
     vendorId?: number;
     tags?: string[] | undefined;
+}
+
+export class CreateTransactionCommand implements ICreateTransactionCommand {
+    amount?: number;
+    orderNumber?: string | undefined;
+    walletId?: number;
+    transactionType?: TransactionType;
+
+    constructor(data?: ICreateTransactionCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.amount = _data["amount"];
+            this.orderNumber = _data["orderNumber"];
+            this.walletId = _data["walletId"];
+            this.transactionType = _data["transactionType"];
+        }
+    }
+
+    static fromJS(data: any): CreateTransactionCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreateTransactionCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["amount"] = this.amount;
+        data["orderNumber"] = this.orderNumber;
+        data["walletId"] = this.walletId;
+        data["transactionType"] = this.transactionType;
+        return data; 
+    }
+}
+
+export interface ICreateTransactionCommand {
+    amount?: number;
+    orderNumber?: string | undefined;
+    walletId?: number;
+    transactionType?: TransactionType;
+}
+
+export enum TransactionType {
+    Fund = 0,
+    Expense = 1,
 }
 
 export interface FileParameter {

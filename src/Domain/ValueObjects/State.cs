@@ -8,6 +8,7 @@ namespace Hive.Domain.ValueObjects
     {
         private State()
         {
+            OrderState = OrderState.Validation;
         }
 
         public State(OrderState state, string reason) : this()

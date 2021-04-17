@@ -8,7 +8,7 @@ using MediatR;
 
 namespace Hive.Application.Billing.Transactions.Commands
 {
-    public record CreateTransactionCommand(decimal Amount, TransactionType TransactionType, Guid? OrderNumber, int WalletId) : IRequest<int>;
+    public record CreateTransactionCommand(decimal Amount, Guid? OrderNumber, int WalletId, TransactionType TransactionType = TransactionType.Fund) : IRequest<int>;
 
     public class CreateTransactionCommandHandler : IRequestHandler<CreateTransactionCommand, int>
     {

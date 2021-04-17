@@ -1238,10 +1238,10 @@
           "200": {
             "description": "",
             "content": {
-              "application/json": {
+              "application/octet-stream": {
                 "schema": {
-                  "type": "integer",
-                  "format": "int32"
+                  "type": "string",
+                  "format": "binary"
                 }
               }
             }
@@ -1286,10 +1286,10 @@
           "200": {
             "description": "",
             "content": {
-              "application/json": {
+              "application/octet-stream": {
                 "schema": {
-                  "type": "integer",
-                  "format": "int32"
+                  "type": "string",
+                  "format": "binary"
                 }
               }
             }
@@ -1798,6 +1798,53 @@
             "x-position": 1
           }
         ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Wallets"
+        ],
+        "operationId": "Wallets_CreateTransaction",
+        "parameters": [
+          {
+            "name": "walletId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/CreateTransactionCommand"
+                  }
+                ]
+              }
+            }
+          },
+          "x-position": 2
+        },
         "responses": {
           "200": {
             "description": "",
@@ -2702,6 +2749,40 @@
             }
           }
         }
+      },
+      "CreateTransactionCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "orderNumber": {
+            "type": "string",
+            "format": "guid",
+            "nullable": true
+          },
+          "walletId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "transactionType": {
+            "$ref": "#/components/schemas/TransactionType"
+          }
+        }
+      },
+      "TransactionType": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "Fund",
+          "Expense"
+        ],
+        "enum": [
+          0,
+          1
+        ]
       }
     },
     "securitySchemes": {

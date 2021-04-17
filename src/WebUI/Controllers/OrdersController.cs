@@ -47,14 +47,14 @@ namespace Hive.WebUI.Controllers
         }
         
         [HttpPut("{orderNumber:guid}/acceptance")]
-        public async Task<ActionResult<int>> AcceptOrder(AcceptOrderCommand command)
+        public async Task<IActionResult> AcceptOrder([FromBody] AcceptOrderCommand command)
         {
             await Mediator.Send(command);
             return NoContent();
         }
         
         [HttpPut("{orderNumber:guid}/declination")]
-        public async Task<ActionResult<int>> DeclineOrder(DeclineOrderCommand command)
+        public async Task<IActionResult> DeclineOrder(DeclineOrderCommand command)
         {
             await Mediator.Send(command);
             return NoContent();
