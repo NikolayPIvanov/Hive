@@ -2,10 +2,12 @@
 using System.Threading.Tasks;
 using Hive.Application.Investing.Plans.Commands;
 using Hive.Application.Investing.Plans.Queries;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hive.WebUI.Controllers
 {
+    [Authorize]
     public class PlansController : ApiControllerBase
     {
         [HttpGet("{id:int}")]

@@ -2,10 +2,12 @@
 using System.Threading.Tasks;
 using Hive.Application.Investing.Plans.Queries;
 using Hive.Application.Ordering.Orders.Queries;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hive.WebUI.Controllers
 {
+    [Authorize]
     public class SellersController : ApiControllerBase
     {
         [HttpGet("{sellerId}/orders")]

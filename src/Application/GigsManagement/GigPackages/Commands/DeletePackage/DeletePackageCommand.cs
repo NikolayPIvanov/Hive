@@ -2,11 +2,13 @@
 using System.Threading.Tasks;
 using Hive.Application.Common.Exceptions;
 using Hive.Application.Common.Interfaces;
+using Hive.Application.Common.Security;
 using Hive.Domain.Entities.Gigs;
 using MediatR;
 
 namespace Hive.Application.GigsManagement.GigPackages.Commands.DeletePackage
 {
+    [Authorize(Roles = "Seller, Administrator")]
     public record DeletePackageCommand(int PackageId) : IRequest;
     
     public class DeletePackageCommandHandler : IRequestHandler<DeletePackageCommand>

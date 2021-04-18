@@ -2,12 +2,14 @@
 using System.Threading.Tasks;
 using Hive.Application.Common.Exceptions;
 using Hive.Application.Common.Interfaces;
+using Hive.Application.Common.Security;
 using Hive.Domain.Entities.Investing;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hive.Application.Investing.Investments.Commands
 {
+    [Authorize(Roles = "Seller, Administrator")]
     public record ProcessInvestmentCommand(int InvestmentId, bool Accept = true) : IRequest;
 
     public class ProcessInvestmentCommandHandler : IRequestHandler<ProcessInvestmentCommand>

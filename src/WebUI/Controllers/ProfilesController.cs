@@ -2,10 +2,12 @@
 using System.Threading.Tasks;
 using Hive.Application.UserProfiles.Commands.UpdateUserProfile;
 using Hive.Application.UserProfiles.Queries;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hive.WebUI.Controllers
 {
+    [Authorize]
     public class ProfilesController : ApiControllerBase
     {
         [HttpGet("{id:int}")]

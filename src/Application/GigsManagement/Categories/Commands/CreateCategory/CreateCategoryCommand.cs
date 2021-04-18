@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
 using Hive.Application.Common.Interfaces;
+using Hive.Application.Common.Security;
 using Hive.Domain.Entities.Gigs;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -21,13 +22,13 @@ namespace Hive.Application.GigsManagement.Categories.Commands.CreateCategory
             _dbContext = dbContext;
             
             RuleFor(c => c.Title)
-                .MustAsync(BeUniqueTitleAsync)
+                .MustAsync(BeUniqueTitleAsync).WithMessage("Category with given title already exists.")
                 .MinimumLength(3).WithMessage("Title should be at minimum 3 characters")
                 .MaximumLength(50).WithMessage("Title should be at maximum 50 characters")
-                .NotEmpty();
+                .NotEmpty().WithMessage("Title cannot be empty");
 
             RuleFor(c => c.ParentId)
-                .MustAsync(ParentCategoryExistsAsync);
+                .MustAsync(ParentCategoryExistsAsync).WithMessage("Parent category should be existing one.");
         }
 
         private async Task<bool> ParentCategoryExistsAsync(int? parentCategoryId, CancellationToken cancellationToken)

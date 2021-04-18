@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Hive.Application.Common.Exceptions;
 using Hive.Application.Common.Interfaces;
+using Hive.Application.Common.Security;
 using Hive.Domain.Entities.Orders;
 using MediatR;
 using Microsoft.AspNetCore.Http;
@@ -11,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Hive.Application.Ordering.Resolutions.Commands
 {
+    [Authorize(Roles = "Seller, Administrator")]
     public record CreateResolutionCommand(Guid OrderNumber, string Version, IFormFile File) : IRequest<int>;
 
     public class CreateResolutionCommandHandler : IRequestHandler<CreateResolutionCommand, int>

@@ -5,6 +5,7 @@ using AutoMapper;
 using FluentValidation;
 using Hive.Application.Common.Exceptions;
 using Hive.Application.Common.Interfaces;
+using Hive.Application.Common.Security;
 using Hive.Domain.Entities.Gigs;
 using Hive.Domain.Enums;
 using MediatR;
@@ -12,6 +13,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Hive.Application.GigsManagement.GigPackages.Commands.UpdatePackage
 {
+    [Authorize(Roles = "Seller, Administrator")]
     public record UpdatePackageCommand(int PackageId, int GigId, PackageTier PackageTier, string Title, string Description, decimal Price, 
         double DeliveryTime, DeliveryFrequency DeliveryFrequency, int? Revisions, RevisionType RevisionType) : IRequest;
     

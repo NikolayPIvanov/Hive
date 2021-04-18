@@ -5,13 +5,17 @@ using AutoMapper;
 using FluentValidation;
 using Hive.Application.Common.Exceptions;
 using Hive.Application.Common.Interfaces;
+using Hive.Application.Common.Security;
 using Hive.Application.GigsManagement.Gigs.Commands.CreateGig;
+using Hive.Application.Investing.Plans.Queries;
 using Hive.Domain.Entities.Gigs;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hive.Application.GigsManagement.Gigs.Commands.UpdateGig
 {
+    // TODO: Same seller Id
+    [Authorize(Roles = "Seller, Administrator")]
     public record UpdateGigCommand : IRequest
     {
         public int Id { get; private set; }
@@ -24,14 +28,16 @@ namespace Hive.Application.GigsManagement.Gigs.Commands.UpdateGig
         
         public int CategoryId { get; private set; }
         
+        public int? PlanId { get; private set; }
+        
         public HashSet<string> Tags { get; private init; }
         
         public HashSet<QuestionModel> Questions { get; private init; }
 
         
-        public UpdateGigCommand(int id, string title, string description, int categoryId, bool isDraft, HashSet<string> tags, HashSet<QuestionModel> questions)
-            => (Id, Title, Description, CategoryId, IsDraft, Tags, Questions) = 
-                (id, title, description, categoryId, isDraft, tags ?? new HashSet<string>(5), questions ?? new HashSet<QuestionModel>());
+        public UpdateGigCommand(int id, string title, string description, int categoryId, int? planId, bool isDraft, HashSet<string> tags, HashSet<QuestionModel> questions)
+            => (Id, Title, Description, CategoryId, PlanId, IsDraft, Tags, Questions) = 
+                (id, title, description, categoryId, planId, isDraft, tags ?? new HashSet<string>(5), questions ?? new HashSet<QuestionModel>());
     }
 
     public class UpdateGigCommandValidator : AbstractValidator<UpdateGigCommand>

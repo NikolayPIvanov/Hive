@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Hive.Application.Common.Interfaces;
 using Hive.Application.Common.Mappings;
+using Hive.Application.Common.Security;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hive.Application.GigsManagement.Gigs.Queries.GetMyGigs
 {
+    [Authorize(Roles = "Seller")]
     public record GetMyGigsQuery : IRequest<IEnumerable<GigDto>>;
 
     public class GetMyGigsQueryHandler : IRequestHandler<GetMyGigsQuery, IEnumerable<GigDto>>
@@ -27,14 +29,11 @@ namespace Hive.Application.GigsManagement.Gigs.Queries.GetMyGigs
         
         public async Task<IEnumerable<GigDto>> Handle(GetMyGigsQuery request, CancellationToken cancellationToken)
         {
-            var sellerUserId = _currentUserService.UserId;
-            // check if seller and is valid
-            var query = _context.Gigs.AsNoTracking();
-            if (sellerUserId != null)
-            {
-                query = query.Where(g => g.SellerId == 1);
-            }
-
+            var seller =
+                await _context.Sellers.FirstOrDefaultAsync(s => s.UserId == _currentUserService.UserId,
+                    cancellationToken);
+            
+            var query = _context.Gigs.AsNoTracking().Where(g => g.SellerId == seller.Id);
             return await query.ProjectToListAsync<GigDto>(_mapper.ConfigurationProvider);
         }
     }

@@ -6,11 +6,13 @@ using Hive.Application.Ordering.Orders.Commands;
 using Hive.Application.Ordering.Orders.Queries;
 using Hive.Application.Ordering.Resolutions.Commands;
 using Hive.Application.Ordering.Resolutions.Queries;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hive.WebUI.Controllers
 {
+    [Authorize]
     public class OrdersController : ApiControllerBase
     {
         [HttpGet("{orderNumber:guid}")]

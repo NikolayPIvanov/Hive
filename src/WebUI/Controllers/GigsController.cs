@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Hive.Application.Common.Models;
+using Hive.Application.Common.Security;
 using Hive.Application.GigsManagement.GigPackages.Commands.CreatePackage;
 using Hive.Application.GigsManagement.GigPackages.Commands.DeletePackage;
 using Hive.Application.GigsManagement.GigPackages.Commands.UpdatePackage;
@@ -19,6 +20,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Hive.WebUI.Controllers
 {
+    [Authorize]
     public class GigsController : ApiControllerBase
     {
         [HttpGet("{id:int}")]
@@ -68,12 +70,12 @@ namespace Hive.WebUI.Controllers
         }
 
         [HttpPost("{id:int}/packages")]
-        public async Task<ActionResult<int>> CreatePackage([FromBody] CreatePackageCommand command)
+        public async Task<ActionResult<int>> CreatePackage([FromRoute] int id, [FromBody] CreatePackageCommand command)
         {
-            // if (command.GigId != id)
-            // {
-            //     return BadRequest();
-            // }
+            if (command.GigId != id)
+            {
+                return BadRequest();
+            }
             
             var pId = await Mediator.Send(command);
             return Ok(pId);
@@ -84,7 +86,7 @@ namespace Hive.WebUI.Controllers
         public async Task<IActionResult> UpdatePackage([FromRoute] int id, int packageId,
             [FromBody] UpdatePackageCommand command)
         {
-            if (packageId != command.PackageId)
+            if (packageId != command.PackageId || id != command.GigId)
             {
                 return BadRequest();
             }
@@ -94,7 +96,7 @@ namespace Hive.WebUI.Controllers
         }
 
         [HttpDelete("{id:int}/packages/{packageId:int}")]
-        public async Task<IActionResult> UpdatePackage([FromRoute] int id, int packageId)
+        public async Task<IActionResult> DeletePackage([FromRoute] int id, int packageId)
         {
             await Mediator.Send(new DeletePackageCommand(packageId));
             return NoContent();

@@ -45,7 +45,7 @@ namespace Hive.WebUI
             services.AddControllersWithViews(options  =>
                 {
                     options.AllowEmptyInputInBodyModelBinding = true;
-                    options.Filters.Add<ApiExceptionFilterAttribute>();
+                    //options.Filters.Add<ApiExceptionFilterAttribute>();
                 })
                 .AddFluentValidation();
 

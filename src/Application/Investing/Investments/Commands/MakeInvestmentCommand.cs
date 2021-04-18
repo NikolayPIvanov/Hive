@@ -5,12 +5,14 @@ using System.Threading.Tasks;
 using FluentValidation;
 using Hive.Application.Common.Exceptions;
 using Hive.Application.Common.Interfaces;
+using Hive.Application.Common.Security;
 using Hive.Domain.Entities.Investing;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hive.Application.Investing.Investments.Commands
 {
+    [Authorize(Roles = "Investor, Administrator")]
     public record MakeInvestmentCommand(DateTime EffectiveDate, DateTime? ExpirationDate,
             decimal Amount, double RoiPercentage, int PlanId) : IRequest<int>;
 

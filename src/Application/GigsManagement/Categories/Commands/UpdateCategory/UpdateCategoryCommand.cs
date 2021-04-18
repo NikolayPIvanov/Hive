@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using FluentValidation;
 using Hive.Application.Common.Exceptions;
 using Hive.Application.Common.Interfaces;
+using Hive.Application.Common.Security;
 using Hive.Domain.Entities.Gigs;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +12,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Hive.Application.GigsManagement.Categories.Commands.UpdateCategory
 {
+    [Authorize(Roles = "Administrator")]
     public record UpdateCategoryCommand(int Id, string Title, int? ParentId = null) : IRequest;
     
     public class UpdateCategoryCommandValidator : AbstractValidator<UpdateCategoryCommand>

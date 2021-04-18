@@ -6,12 +6,14 @@ using AutoMapper;
 using Hive.Application.Common.Exceptions;
 using Hive.Application.Common.Interfaces;
 using Hive.Application.Common.Mappings;
+using Hive.Application.Common.Security;
 using Hive.Domain.Entities.Orders;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hive.Application.Ordering.Orders.Queries
 {
+    [Authorize(Roles = "Buyer")]
     public record GetMyOrdersQuery : IRequest<IEnumerable<OrderDto>>;
 
     public class GetMyOrdersQueryHandler : IRequestHandler<GetMyOrdersQuery, IEnumerable<OrderDto>>

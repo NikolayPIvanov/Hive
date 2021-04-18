@@ -55,20 +55,22 @@ namespace Hive.Application.Ordering.Orders.Commands
                     .ThenInclude(i => i.Investor)
                     .FirstOrDefaultAsync(x => x.Id == planId.PlanId.Value, cancellationToken);
 
+                // INVESTOR IS NULL FIX IT
                 var roiPerInvestor = plan.Investments
                     .Where(i => i.IsAccepted)
-                    .Select(x => new {x.Investor.UserId, x.RoiPercentage}).ToList();
+                    .Select(x => new {x.Investor?.UserId, x.RoiPercentage}).ToList();
 
+                var investorUserIds = roiPerInvestor.Select(x => x.UserId);
                 var investorsAccounts = await _context.AccountHolders
                     .Include(ah => ah.Wallet)
-                    .Where(ah => roiPerInvestor.Any(x => x.UserId == ah.UserId))
+                    .Where(ah => investorUserIds.Contains(ah.UserId))
                     .ToListAsync(cancellationToken);
                 
                 foreach (var accountHolder in investorsAccounts)
                 {
                     var wallet = accountHolder.Wallet;
                     var roi = roiPerInvestor.Single(x => x.UserId == accountHolder.UserId);
-                    var value = (decimal)roi.RoiPercentage * order.UnitPrice;
+                    var value = (decimal)roi.RoiPercentage * order.UnitPrice / 100.0m;
                     totalInInvestors += value;
                     wallet.Transactions.Add(new Transaction(value, order.OrderNumber, TransactionType.Fund, wallet.Id));
                 }

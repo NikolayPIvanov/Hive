@@ -3,13 +3,14 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Hive.Application.Common.Exceptions;
 using Hive.Application.Common.Interfaces;
+using Hive.Application.Common.Security;
 using Hive.Domain.Entities.Gigs;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hive.Application.GigsManagement.Gigs.Queries.GetGig
 {
-
+    [Authorize]
     public record GetGigQuery(int Id) : IRequest<GigDto>;
     
     public class GetGigQueryHandler : IRequestHandler<GetGigQuery, GigDto>

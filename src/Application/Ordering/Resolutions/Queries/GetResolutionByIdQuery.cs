@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Hive.Application.Common.Exceptions;
 using Hive.Application.Common.Interfaces;
+using Hive.Application.Common.Security;
 using Hive.Domain.Entities.Orders;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

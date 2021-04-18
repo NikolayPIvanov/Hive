@@ -5,11 +5,13 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Hive.Application.Common.Interfaces;
 using Hive.Application.Common.Mappings;
+using Hive.Application.Common.Security;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hive.Application.Ordering.Orders.Queries
 {
+    [Authorize(Roles = "Seller, Administrator")]
     public record GetSellerOrdersQuery(string SellerUserId) : IRequest<IEnumerable<OrderDto>>;
 
     public class GetSellerOrdersQueryHandler : IRequestHandler<GetSellerOrdersQuery, IEnumerable<OrderDto>>

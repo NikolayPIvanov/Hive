@@ -5,11 +5,12 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Hive.Application.Common.Interfaces;
 using Hive.Application.Common.Mappings;
+using Hive.Application.Common.Security;
 using MediatR;
 
 namespace Hive.Application.Investing.Plans.Queries
 {
-    
+    [Authorize(Roles = "Seller, Administrator")]
     public record GetPlansBySellerQuery(int SellerId) : IRequest<IEnumerable<PlanDto>>;
 
     public class GetPlansBySellerQueryHandler : IRequestHandler<GetPlansBySellerQuery, IEnumerable<PlanDto>>

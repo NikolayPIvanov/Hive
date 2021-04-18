@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using FluentValidation;
 using Hive.Application.Common.Exceptions;
 using Hive.Application.Common.Interfaces;
+using Hive.Application.Common.Security;
+using Hive.Application.Investing.Plans.Queries;
 using Hive.Domain.Entities.Gigs;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -12,20 +14,22 @@ using Microsoft.EntityFrameworkCore;
 namespace Hive.Application.GigsManagement.Gigs.Commands.CreateGig
 {
     public record QuestionModel(string Title, string Answer);
+    
+    [Authorize(Roles = "Seller")]
     public record CreateGigCommand : IRequest<int>
     {
         public string Title { get; private init; }
         public string Description { get; private init; }
         public int CategoryId { get; private init; }
 
-        public int? PlanId { get; set; }
+        public int? PlanId { get; private init; }
         
         public HashSet<string> Tags { get; private init; }
         public HashSet<QuestionModel> Questions { get; private init; }
 
-        public CreateGigCommand(string title, string description, int categoryId, HashSet<string> tags, HashSet<QuestionModel> questions)
-            => (Title, Description, CategoryId, Tags, Questions) = 
-                (title, description, categoryId, tags ?? new HashSet<string>(5), questions ?? new HashSet<QuestionModel>());
+        public CreateGigCommand(string title, string description, int categoryId, int? planId, HashSet<string> tags, HashSet<QuestionModel> questions)
+            => (Title, Description, CategoryId, PlanId, Tags, Questions) = 
+                (title, description, categoryId, planId, tags ?? new HashSet<string>(5), questions ?? new HashSet<QuestionModel>());
     }
 
     public class QuestionValidator : AbstractValidator<QuestionModel>
@@ -98,7 +102,7 @@ namespace Hive.Application.GigsManagement.Gigs.Commands.CreateGig
             
             var tags = request.Tags.Select(t => new Tag(t)).ToHashSet();
             var questions = request.Questions.Select(q => new Question(q.Title, q.Answer)).ToHashSet();
-            var gig = new Gig(request.Title, request.Description, request.CategoryId, seller.Id, tags, questions);
+            var gig = new Gig(request.Title, request.Description, request.CategoryId, seller.Id, tags, questions, request.PlanId);
 
             _dbContext.Gigs.Add(gig);
             await _dbContext.SaveChangesAsync(cancellationToken);

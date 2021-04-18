@@ -6,6 +6,7 @@ using FluentValidation;
 using FluentValidation.Results;
 using Hive.Application.Common.Exceptions;
 using Hive.Application.Common.Interfaces;
+using Hive.Application.Common.Security;
 using Hive.Domain.Entities.Billing;
 using Hive.Domain.Entities.Orders;
 using Hive.Domain.Enums;
@@ -16,6 +17,7 @@ using ValidationException = FluentValidation.ValidationException;
 
 namespace Hive.Application.Ordering.Orders.Commands
 {
+    [Authorize(Roles = "Buyer, Administrator")]
     public record CancelOrderCommand(Guid OrderNumber) : IRequest;
 
     public class CancelOrderCommandValidator : AbstractValidator<CancelOrderCommand>

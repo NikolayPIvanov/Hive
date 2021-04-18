@@ -2,12 +2,14 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Hive.Application.Common.Interfaces;
+using Hive.Application.Common.Security;
 using Hive.Domain.Entities.Billing;
 using Hive.Domain.Enums;
 using MediatR;
 
 namespace Hive.Application.Billing.Transactions.Commands
 {
+    [Authorize(Roles = "Buyer, Administrator")]
     public record CreateTransactionCommand(decimal Amount, Guid? OrderNumber, int WalletId, TransactionType TransactionType = TransactionType.Fund) : IRequest<int>;
 
     public class CreateTransactionCommandHandler : IRequestHandler<CreateTransactionCommand, int>

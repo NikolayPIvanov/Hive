@@ -6,6 +6,7 @@ using FluentValidation;
 using Hive.Application.Common.Exceptions;
 using Hive.Application.Common.Interfaces;
 using Hive.Application.Common.Mappings;
+using Hive.Application.Common.Security;
 using Hive.Domain.Entities.Gigs;
 using Hive.Domain.Enums;
 using MediatR;
@@ -13,6 +14,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Hive.Application.GigsManagement.GigPackages.Commands.CreatePackage
 {
+    [Authorize(Roles = "Seller, Administrator")]
     public record CreatePackageCommand(string Title, string Description, decimal Price, PackageTier PackageTier,
             double DeliveryTime, DeliveryFrequency DeliveryFrequency, int? Revisions, RevisionType RevisionType, int GigId) 
         : IRequest<int>;

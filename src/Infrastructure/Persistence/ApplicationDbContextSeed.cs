@@ -31,11 +31,11 @@ namespace Hive.Infrastructure.Persistence
                 await roleManager.CreateAsync(administratorRole);
             }
 
-            var administrator = new ApplicationUser(AccountType.Buyer) { UserName = "administrator@localhost", Email = "administrator@localhost" };
+            var administrator = new ApplicationUser(AccountType.Buyer) { UserName = "administrator@gmail.com", Email = "administrator@gmail.com" };
 
             if (userManager.Users.All(u => u.UserName != administrator.UserName))
             {
-                await userManager.CreateAsync(administrator, "Administrator1!");
+                await userManager.CreateAsync(administrator, "YourStr0ngPassword!");
                 await userManager.AddToRolesAsync(administrator, new [] { administratorRole.Name });
             }
 

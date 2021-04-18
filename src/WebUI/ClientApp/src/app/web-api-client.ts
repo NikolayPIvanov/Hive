@@ -19,7 +19,7 @@ export interface ICategoriesClient {
     put(id: number, command: UpdateCategoryCommand | null | undefined): Observable<FileResponse>;
     delete(id: number): Observable<FileResponse>;
     get2(pageNumber: number | undefined, pageSize: number | undefined, onlyParents: boolean | undefined): Observable<PaginatedListOfCategoryDto>;
-    create(command: CreateCategoryCommand | null | undefined): Observable<CategoryDto>;
+    create(command: CreateCategoryCommand | null | undefined): Observable<FileResponse>;
     getGigs(id: number, pageNumber: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfGigDto>;
 }
 
@@ -249,7 +249,7 @@ export class CategoriesClient implements ICategoriesClient {
         return _observableOf<PaginatedListOfCategoryDto>(<any>null);
     }
 
-    create(command: CreateCategoryCommand | null | undefined): Observable<CategoryDto> {
+    create(command: CreateCategoryCommand | null | undefined): Observable<FileResponse> {
         let url_ = this.baseUrl + "/api/Categories";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -261,7 +261,7 @@ export class CategoriesClient implements ICategoriesClient {
             responseType: "blob",
             headers: new HttpHeaders({
                 "Content-Type": "application/json",
-                "Accept": "application/json"
+                "Accept": "application/octet-stream"
             })
         };
 
@@ -272,33 +272,31 @@ export class CategoriesClient implements ICategoriesClient {
                 try {
                     return this.processCreate(<any>response_);
                 } catch (e) {
-                    return <Observable<CategoryDto>><any>_observableThrow(e);
+                    return <Observable<FileResponse>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<CategoryDto>><any>_observableThrow(response_);
+                return <Observable<FileResponse>><any>_observableThrow(response_);
         }));
     }
 
-    protected processCreate(response: HttpResponseBase): Observable<CategoryDto> {
+    protected processCreate(response: HttpResponseBase): Observable<FileResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
             (<any>response).error instanceof Blob ? (<any>response).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = CategoryDto.fromJS(resultData200);
-            return _observableOf(result200);
-            }));
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            return _observableOf({ fileName: fileName, data: <any>responseBlob, status: status, headers: _headers });
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<CategoryDto>(<any>null);
+        return _observableOf<FileResponse>(<any>null);
     }
 
     getGigs(id: number, pageNumber: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfGigDto> {
@@ -369,9 +367,9 @@ export interface IGigsClient {
     post(command: CreateGigCommand | null | undefined): Observable<number>;
     getPackageById(id: number, packageId: number): Observable<PackageDto>;
     updatePackage(id: number, packageId: number, command: UpdatePackageCommand | null | undefined): Observable<FileResponse>;
-    updatePackage2(id: number, packageId: number): Observable<FileResponse>;
+    deletePackage(id: number, packageId: number): Observable<FileResponse>;
     getPackages(id: number): Observable<PackageDto[]>;
-    createPackage(id: string, command: CreatePackageCommand | null | undefined): Observable<number>;
+    createPackage(id: number, command: CreatePackageCommand | null | undefined): Observable<number>;
     getReviewById(gigId: number, reviewId: number): Observable<ReviewDto>;
     updateReview(gigId: number, reviewId: number, command: UpdateReviewCommand | null | undefined): Observable<FileResponse>;
     deleteReview(gigId: number, reviewId: number): Observable<FileResponse>;
@@ -763,7 +761,7 @@ export class GigsClient implements IGigsClient {
         return _observableOf<FileResponse>(<any>null);
     }
 
-    updatePackage2(id: number, packageId: number): Observable<FileResponse> {
+    deletePackage(id: number, packageId: number): Observable<FileResponse> {
         let url_ = this.baseUrl + "/api/Gigs/{id}/packages/{packageId}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -782,11 +780,11 @@ export class GigsClient implements IGigsClient {
         };
 
         return this.http.request("delete", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processUpdatePackage2(response_);
+            return this.processDeletePackage(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processUpdatePackage2(<any>response_);
+                    return this.processDeletePackage(<any>response_);
                 } catch (e) {
                     return <Observable<FileResponse>><any>_observableThrow(e);
                 }
@@ -795,7 +793,7 @@ export class GigsClient implements IGigsClient {
         }));
     }
 
-    protected processUpdatePackage2(response: HttpResponseBase): Observable<FileResponse> {
+    protected processDeletePackage(response: HttpResponseBase): Observable<FileResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -870,7 +868,7 @@ export class GigsClient implements IGigsClient {
         return _observableOf<PackageDto[]>(<any>null);
     }
 
-    createPackage(id: string, command: CreatePackageCommand | null | undefined): Observable<number> {
+    createPackage(id: number, command: CreatePackageCommand | null | undefined): Observable<number> {
         let url_ = this.baseUrl + "/api/Gigs/{id}/packages";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -3343,6 +3341,7 @@ export class UpdateGigCommand implements IUpdateGigCommand {
     description?: string | undefined;
     isDraft?: boolean;
     categoryId?: number;
+    planId?: number | undefined;
     tags?: string[] | undefined;
     questions?: QuestionModel[] | undefined;
 
@@ -3362,6 +3361,7 @@ export class UpdateGigCommand implements IUpdateGigCommand {
             this.description = _data["description"];
             this.isDraft = _data["isDraft"];
             this.categoryId = _data["categoryId"];
+            this.planId = _data["planId"];
             if (Array.isArray(_data["tags"])) {
                 this.tags = [] as any;
                 for (let item of _data["tags"])
@@ -3389,6 +3389,7 @@ export class UpdateGigCommand implements IUpdateGigCommand {
         data["description"] = this.description;
         data["isDraft"] = this.isDraft;
         data["categoryId"] = this.categoryId;
+        data["planId"] = this.planId;
         if (Array.isArray(this.tags)) {
             data["tags"] = [];
             for (let item of this.tags)
@@ -3409,6 +3410,7 @@ export interface IUpdateGigCommand {
     description?: string | undefined;
     isDraft?: boolean;
     categoryId?: number;
+    planId?: number | undefined;
     tags?: string[] | undefined;
     questions?: QuestionModel[] | undefined;
 }

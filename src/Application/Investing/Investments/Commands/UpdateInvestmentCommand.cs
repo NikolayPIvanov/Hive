@@ -4,11 +4,13 @@ using System.Threading.Tasks;
 using FluentValidation;
 using Hive.Application.Common.Exceptions;
 using Hive.Application.Common.Interfaces;
+using Hive.Application.Common.Security;
 using Hive.Domain.Entities.Investing;
 using MediatR;
 
 namespace Hive.Application.Investing.Investments.Commands
 {
+    [Authorize(Roles = "Investor, Administrator")]
     public record UpdateInvestmentCommand(int InvestmentId, DateTime EffectiveDate, DateTime? ExpirationDate,
         decimal Amount, double RoiPercentage) : IRequest;
 

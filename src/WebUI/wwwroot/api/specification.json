@@ -82,7 +82,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       },
       "delete": {
         "tags": [
@@ -113,7 +118,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Categories": {
@@ -188,14 +198,20 @@
           "200": {
             "description": "",
             "content": {
-              "application/json": {
+              "application/octet-stream": {
                 "schema": {
-                  "$ref": "#/components/schemas/CategoryDto"
+                  "type": "string",
+                  "format": "binary"
                 }
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Categories/{id}/gigs": {
@@ -520,7 +536,7 @@
         "tags": [
           "Gigs"
         ],
-        "operationId": "Gigs_UpdatePackage2",
+        "operationId": "Gigs_DeletePackage",
         "parameters": [
           {
             "name": "id",
@@ -603,9 +619,10 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "integer",
+              "format": "int32"
             },
-            "x-position": 2
+            "x-position": 1
           }
         ],
         "requestBody": {
@@ -622,7 +639,7 @@
               }
             }
           },
-          "x-position": 1
+          "x-position": 2
         },
         "responses": {
           "200": {
@@ -908,7 +925,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       },
       "put": {
         "tags": [
@@ -955,7 +977,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Investments": {
@@ -992,7 +1019,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Investments/{id}/review": {
@@ -1041,7 +1073,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Orders/{orderNumber}": {
@@ -1073,7 +1110,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Orders/personal": {
@@ -1096,7 +1138,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Orders": {
@@ -1153,7 +1200,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Orders/{orderNumber}/cancellation": {
@@ -1186,7 +1238,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Orders/{orderNumber}/acceptance": {
@@ -1235,7 +1292,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Orders/{orderNumber}/declination": {
@@ -1284,7 +1346,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Orders/{orderNumber}/progress": {
@@ -1333,7 +1400,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Orders/{orderNumber}/resolutions/{resolutionId}": {
@@ -1376,7 +1448,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       },
       "put": {
         "tags": [
@@ -1437,7 +1514,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Orders/{orderNumber}/resolutions/{resolutionId}/file": {
@@ -1479,7 +1561,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Orders/{orderNumber}/resolutions": {
@@ -1512,7 +1599,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       },
       "post": {
         "tags": [
@@ -1563,7 +1655,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Orders/{orderNumber}/resolutions/{resolutionId}/acceptance": {
@@ -1606,7 +1703,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Plans/{id}": {
@@ -1639,7 +1741,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       },
       "put": {
         "tags": [
@@ -1686,7 +1793,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       },
       "delete": {
         "tags": [
@@ -1717,7 +1829,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Plans": {
@@ -1754,7 +1871,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Profiles/{id}": {
@@ -1787,7 +1909,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       },
       "put": {
         "tags": [
@@ -1834,7 +1961,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Sellers/{sellerId}/orders": {
@@ -1869,7 +2001,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Sellers/{sellerId}/plans": {
@@ -1904,7 +2041,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Wallets/personal": {
@@ -1925,7 +2067,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     },
     "/api/Wallets/{walletId}/transactions": {
@@ -1958,7 +2105,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       },
       "post": {
         "tags": [
@@ -2005,7 +2157,12 @@
               }
             }
           }
-        }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
       }
     }
   },
@@ -2314,6 +2471,11 @@
           "categoryId": {
             "type": "integer",
             "format": "int32"
+          },
+          "planId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
           },
           "tags": {
             "type": "array",

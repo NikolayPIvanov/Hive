@@ -2,11 +2,13 @@
 using System.Threading.Tasks;
 using Hive.Application.Common.Exceptions;
 using Hive.Application.Common.Interfaces;
+using Hive.Application.Common.Security;
 using Hive.Domain.Entities.Gigs;
 using MediatR;
 
 namespace Hive.Application.GigsManagement.Gigs.Commands.DeleteGig
 {
+    [Authorize(Roles = "Seller, Administrator")]
     public record DeleteGigCommand(int Id) : IRequest;
 
     public class DeleteGigCommandHandler : IRequestHandler<DeleteGigCommand>
