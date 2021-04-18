@@ -1345,12 +1345,52 @@
         }
       }
     },
-    "/api/Orders/{orderNumber}/resolutions": {
-      "post": {
+    "/api/Orders/{orderNumber}/resolutions/{resolutionId}": {
+      "get": {
         "tags": [
           "Orders"
         ],
-        "operationId": "Orders_SubmitResolution",
+        "operationId": "Orders_GetResolution",
+        "parameters": [
+          {
+            "name": "resolutionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "orderNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Orders"
+        ],
+        "operationId": "Orders_UpdateResolution",
         "parameters": [
           {
             "name": "orderNumber",
@@ -1361,6 +1401,16 @@
               "format": "guid"
             },
             "x-position": 1
+          },
+          {
+            "name": "resolutionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 2
           }
         ],
         "requestBody": {
@@ -1398,12 +1448,54 @@
         }
       }
     },
-    "/api/Orders/{orderNumber}/resolutions/{resolutionId}": {
-      "put": {
+    "/api/Orders/{orderNumber}/resolutions/{resolutionId}/file": {
+      "get": {
         "tags": [
           "Orders"
         ],
-        "operationId": "Orders_UpdateResolution",
+        "operationId": "Orders_DownloadResolutionFile",
+        "parameters": [
+          {
+            "name": "resolutionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "orderNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Orders/{orderNumber}/resolutions": {
+      "post": {
+        "tags": [
+          "Orders"
+        ],
+        "operationId": "Orders_SubmitResolution",
         "parameters": [
           {
             "name": "orderNumber",
@@ -1414,16 +1506,6 @@
               "format": "guid"
             },
             "x-position": 1
-          },
-          {
-            "name": "resolutionId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "x-position": 2
           }
         ],
         "requestBody": {

@@ -1,4 +1,10 @@
 ﻿namespace Hive.Application.Ordering.Resolutions.Queries
 {
-    public record ResolutionDto(int Id, string Version, string Location, bool IsApproved);
+    public class ResolutionDto
+    {
+        public int Id { get; set; }
+        public string Version { get; set; }
+        public string Location { get; set; }
+        public bool IsApproved { get; set; }
+    }
 }

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Hive.Application.Ordering.Orders.Commands;
 using Hive.Application.Ordering.Orders.Queries;
 using Hive.Application.Ordering.Resolutions.Commands;
+using Hive.Application.Ordering.Resolutions.Queries;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -65,6 +66,17 @@ namespace Hive.WebUI.Controllers
         {
             await Mediator.Send(command);
             return NoContent();
+        }
+
+        [HttpGet("{orderNumber:guid}/resolutions/{resolutionId:int}")]
+        public async Task<IActionResult> GetResolution([FromRoute]  int resolutionId) =>
+            Ok(await Mediator.Send(new GetResolutionByIdQuery(resolutionId)));
+
+        [HttpGet("{orderNumber:guid}/resolutions/{resolutionId:int}/file")]
+        public async Task<IActionResult> DownloadResolutionFile([FromRoute] int resolutionId)
+        {
+            var file = await Mediator.Send(new DownloadResolutionFileQuery(resolutionId));
+            return File(file.Source, file.ContentType, file.FileName);
         }
         
         [HttpPost("{orderNumber:guid}/resolutions")]

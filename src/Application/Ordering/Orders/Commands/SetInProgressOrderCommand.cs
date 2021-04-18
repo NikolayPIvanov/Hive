@@ -6,6 +6,7 @@ using FluentValidation;
 using FluentValidation.Results;
 using Hive.Application.Common.Exceptions;
 using Hive.Application.Common.Interfaces;
+using Hive.Domain.Entities.Gigs;
 using Hive.Domain.Entities.Orders;
 using Hive.Domain.Enums;
 using Hive.Domain.ValueObjects;
@@ -57,11 +58,17 @@ namespace Hive.Application.Ordering.Orders.Commands
         public async Task<Unit> Handle(SetInProgressOrderCommand request, CancellationToken cancellationToken)
         {
             var order = await _context.Orders
+                .Include(o => o.Seller)
                 .FirstOrDefaultAsync(o => o.OrderNumber == request.OrderNumber, cancellationToken: cancellationToken);
 
             if (order is null)
             {
                 throw new NotFoundException(nameof(Order), request.OrderNumber);
+            }
+
+            if (order.Seller.UserId != _currentUserService.UserId)
+            {
+                throw new NotFoundException(nameof(Seller));
             }
             
             if (order.OrderStates.Any(s => s.OrderState == OrderState.InProgress))

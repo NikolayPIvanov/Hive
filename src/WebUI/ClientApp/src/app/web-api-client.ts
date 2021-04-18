@@ -1434,8 +1434,10 @@ export interface IOrdersClient {
     acceptOrder(orderNumber: string, command: AcceptOrderCommand | null | undefined): Observable<FileResponse>;
     declineOrder(orderNumber: string, command: DeclineOrderCommand | null | undefined): Observable<FileResponse>;
     setInProgress(orderNumber: string, command: SetInProgressOrderCommand | null | undefined): Observable<number>;
-    submitResolution(orderNumber: string, version: string | null | undefined, file: FileParameter | null | undefined): Observable<string>;
+    getResolution(resolutionId: number, orderNumber: string): Observable<FileResponse>;
     updateResolution(orderNumber: string, resolutionId: number, version: string | null | undefined, file: FileParameter | null | undefined): Observable<string>;
+    downloadResolutionFile(resolutionId: number, orderNumber: string): Observable<FileResponse>;
+    submitResolution(orderNumber: string, version: string | null | undefined, file: FileParameter | null | undefined): Observable<string>;
 }
 
 @Injectable({
@@ -1832,62 +1834,56 @@ export class OrdersClient implements IOrdersClient {
         return _observableOf<number>(<any>null);
     }
 
-    submitResolution(orderNumber: string, version: string | null | undefined, file: FileParameter | null | undefined): Observable<string> {
-        let url_ = this.baseUrl + "/api/Orders/{orderNumber}/resolutions";
+    getResolution(resolutionId: number, orderNumber: string): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/Orders/{orderNumber}/resolutions/{resolutionId}";
+        if (resolutionId === undefined || resolutionId === null)
+            throw new Error("The parameter 'resolutionId' must be defined.");
+        url_ = url_.replace("{resolutionId}", encodeURIComponent("" + resolutionId));
         if (orderNumber === undefined || orderNumber === null)
             throw new Error("The parameter 'orderNumber' must be defined.");
         url_ = url_.replace("{orderNumber}", encodeURIComponent("" + orderNumber));
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = new FormData();
-        if (version !== null && version !== undefined)
-            content_.append("Version", version.toString());
-        if (file !== null && file !== undefined)
-            content_.append("File", file.data, file.fileName ? file.fileName : "File");
-
         let options_ : any = {
-            body: content_,
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
-                "Accept": "application/json"
+                "Accept": "application/octet-stream"
             })
         };
 
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processSubmitResolution(response_);
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetResolution(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processSubmitResolution(<any>response_);
+                    return this.processGetResolution(<any>response_);
                 } catch (e) {
-                    return <Observable<string>><any>_observableThrow(e);
+                    return <Observable<FileResponse>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<string>><any>_observableThrow(response_);
+                return <Observable<FileResponse>><any>_observableThrow(response_);
         }));
     }
 
-    protected processSubmitResolution(response: HttpResponseBase): Observable<string> {
+    protected processGetResolution(response: HttpResponseBase): Observable<FileResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
             (<any>response).error instanceof Blob ? (<any>response).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = resultData200 !== undefined ? resultData200 : <any>null;
-            return _observableOf(result200);
-            }));
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            return _observableOf({ fileName: fileName, data: <any>responseBlob, status: status, headers: _headers });
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<string>(<any>null);
+        return _observableOf<FileResponse>(<any>null);
     }
 
     updateResolution(orderNumber: string, resolutionId: number, version: string | null | undefined, file: FileParameter | null | undefined): Observable<string> {
@@ -1930,6 +1926,116 @@ export class OrdersClient implements IOrdersClient {
     }
 
     protected processUpdateResolution(response: HttpResponseBase): Observable<string> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 !== undefined ? resultData200 : <any>null;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<string>(<any>null);
+    }
+
+    downloadResolutionFile(resolutionId: number, orderNumber: string): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/Orders/{orderNumber}/resolutions/{resolutionId}/file";
+        if (resolutionId === undefined || resolutionId === null)
+            throw new Error("The parameter 'resolutionId' must be defined.");
+        url_ = url_.replace("{resolutionId}", encodeURIComponent("" + resolutionId));
+        if (orderNumber === undefined || orderNumber === null)
+            throw new Error("The parameter 'orderNumber' must be defined.");
+        url_ = url_.replace("{orderNumber}", encodeURIComponent("" + orderNumber));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/octet-stream"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processDownloadResolutionFile(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processDownloadResolutionFile(<any>response_);
+                } catch (e) {
+                    return <Observable<FileResponse>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<FileResponse>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processDownloadResolutionFile(response: HttpResponseBase): Observable<FileResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            return _observableOf({ fileName: fileName, data: <any>responseBlob, status: status, headers: _headers });
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<FileResponse>(<any>null);
+    }
+
+    submitResolution(orderNumber: string, version: string | null | undefined, file: FileParameter | null | undefined): Observable<string> {
+        let url_ = this.baseUrl + "/api/Orders/{orderNumber}/resolutions";
+        if (orderNumber === undefined || orderNumber === null)
+            throw new Error("The parameter 'orderNumber' must be defined.");
+        url_ = url_.replace("{orderNumber}", encodeURIComponent("" + orderNumber));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = new FormData();
+        if (version !== null && version !== undefined)
+            content_.append("Version", version.toString());
+        if (file !== null && file !== undefined)
+            content_.append("File", file.data, file.fileName ? file.fileName : "File");
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processSubmitResolution(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processSubmitResolution(<any>response_);
+                } catch (e) {
+                    return <Observable<string>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<string>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processSubmitResolution(response: HttpResponseBase): Observable<string> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :

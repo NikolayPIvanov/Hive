@@ -20,7 +20,7 @@ namespace Hive.Domain.Entities.Orders
 
         public string Location { get; set; }
 
-        public int OrderId { get; init; }
+        public int OrderId { get; private init; }
 
         public bool IsApproved { get; set; }
     }

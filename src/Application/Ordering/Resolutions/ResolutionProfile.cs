@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using Hive.Application.Ordering.Orders.Queries;
+using Hive.Application.Ordering.Resolutions.Queries;
 using Hive.Domain.Entities.Orders;
 
 namespace Hive.Application.Ordering.Resolutions
@@ -8,7 +9,8 @@ namespace Hive.Application.Ordering.Resolutions
     {
         public ResolutionProfile()
         {
-            CreateMap<Resolution, ResolutionDto>().DisableCtorValidation();
+            CreateMap<Resolution, ResolutionDto>().ReverseMap();
+
         }
     }
 }
