@@ -39,7 +39,7 @@ namespace Hive.Application.GigsManagement.GigPackages.Commands.CreatePackage
                 .NotEmpty().WithMessage("A {PropertyName} must be provided");
             
             RuleFor(x => x.Description)
-                .MaximumLength(100).WithMessage("{PropertyName} cannot have more than {MaxLength} characters.")
+                .MaximumLength(200).WithMessage("{PropertyName} cannot have more than {MaxLength} characters.")
                 .MinimumLength(10).WithMessage("{PropertyName} cannot have less than {MinLength} characters.")
                 .NotEmpty().WithMessage("A {PropertyName} must be provided");
             
@@ -50,10 +50,12 @@ namespace Hive.Application.GigsManagement.GigPackages.Commands.CreatePackage
             RuleFor(x => x.DeliveryTime)
                 .NotNull().WithMessage("A {PropertyName} must be provided")
                 .GreaterThanOrEqualTo(1.0d).WithMessage("{PropertyName} cannot be below {ComparisonValue}.");
-            
+
             RuleFor(x => x.Revisions)
-                .NotNull().WithMessage("A {PropertyName} must be provided").When(x => x.RevisionType == RevisionType.Numeric)
-                .GreaterThanOrEqualTo(1).WithMessage("{PropertyName} cannot be below {ComparisonValue}.").When(x => x.Revisions.HasValue);
+                .NotNull()
+                .When(x => x.RevisionType == RevisionType.Numeric).WithMessage("A {PropertyName} must be provided")
+                .GreaterThanOrEqualTo(1).When(x => x.Revisions.HasValue)
+                .WithMessage("{PropertyName} cannot be below {ComparisonValue}.");
         }
     }
 

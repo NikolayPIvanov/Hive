@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Hive.Domain.Common;
+using Hive.Domain.Entities.Investing;
 
 namespace Hive.Domain.Entities.Gigs
 {
@@ -15,7 +16,7 @@ namespace Hive.Domain.Entities.Gigs
             Tags ??= new HashSet<Tag>();
         }
         
-        public Gig(string title, string description, int categoryId, int sellerId, ICollection<Tag> tags, ICollection<Question> questions) : this()
+        public Gig(string title, string description, int categoryId, int sellerId, ICollection<Tag> tags, ICollection<Question> questions, int? planId = null) : this()
         {
             Title = title;
             CategoryId = categoryId;
@@ -24,6 +25,7 @@ namespace Hive.Domain.Entities.Gigs
             SellerId = sellerId;
             GigScope = new GigScope(description);
             IsDraft = true;
+            PlanId = planId;
         }
         
         public string Title { get; set; }
@@ -37,6 +39,8 @@ namespace Hive.Domain.Entities.Gigs
         public Category Category { get; set; }
 
         public int SellerId { get; set; }
+
+        public int? PlanId { get; init; }
 
         public ICollection<Tag> Tags { get; private set; }
         

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
@@ -11,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Hive.Application.Investing.Investments.Commands
 {
     public record MakeInvestmentCommand(DateTime EffectiveDate, DateTime? ExpirationDate,
-            decimal Amount, double RoiPercentage, int InvestorId, int PlanId) : IRequest<int>;
+            decimal Amount, double RoiPercentage, int PlanId) : IRequest<int>;
 
     public class MakeInvestmentCommandValidator : AbstractValidator<MakeInvestmentCommand>
     {
@@ -31,7 +32,6 @@ namespace Hive.Application.Investing.Investments.Commands
 
             RuleFor(x => x.PlanId)
                 .MustAsync(async (id, token) => await context.Plans.AnyAsync(x => x.Id == id && !x.IsFunded, token));
-
         }
     }
 
@@ -54,10 +54,12 @@ namespace Hive.Application.Investing.Investments.Commands
                 throw new NotFoundException(nameof(Plan), request.PlanId);
             }
             
-            var investorExists = await _context.Investors.AnyAsync(x => x.Id == request.InvestorId, cancellationToken);
+            var investor = await _context.Investors
+                .Select(x => new { x.Id, x.UserId })
+                .FirstOrDefaultAsync(x => x.UserId == _currentUserService.UserId, cancellationToken);
 
             var investment = new Investment(request.EffectiveDate, request.ExpirationDate, request.Amount,
-                request.RoiPercentage, request.InvestorId, request.PlanId);
+                request.RoiPercentage, investor.Id, request.PlanId);
 
             _context.Investments.Add(investment);
             await _context.SaveChangesAsync(cancellationToken);

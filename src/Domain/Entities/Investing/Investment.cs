@@ -30,10 +30,12 @@ namespace Hive.Domain.Entities.Investing
 
         public int InvestorId { get; set; }
 
+        public Investor Investor { get; set; }
+
         public int PlanId { get; set; }
 
         public Plan Plan { get; set; }
 
-        public bool? IsAccepted { get; set; }
+        public bool IsAccepted { get; set; }
     }
 }

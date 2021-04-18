@@ -17,7 +17,7 @@ namespace Hive.Infrastructure.Persistence.Configurations.Ordering
 
             builder.OwnsOne(o => o.Requirement, r =>
             {
-                r.ToTable("requirements");
+                r.ToTable("Requirements");
                 r.WithOwner().HasForeignKey("OrderId");
                 r.Property<int>("Id");
                 r.HasKey("Id");

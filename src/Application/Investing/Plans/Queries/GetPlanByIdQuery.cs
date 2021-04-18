@@ -25,7 +25,7 @@ namespace Hive.Application.Investing.Plans.Queries
 
         public decimal FundingNeeded { get; set; }
         
-        public int VendorId { get; set; }
+        public int SellerId { get; set; }
 
         public ICollection<string> Tags { get; set; }
     }

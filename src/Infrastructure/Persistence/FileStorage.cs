@@ -23,12 +23,10 @@ namespace Hive.Infrastructure.Persistence
     
     public class FileService : IFileService
     {
-        private readonly IOptions<FileServiceSettings> _settings;
         private readonly BlobContainerClient _blobContainerClient;
         
         public FileService(IOptions<FileServiceSettings> settings)
         {
-            _settings = settings;
             _blobContainerClient =
                 new BlobContainerClient(settings.Value.BlobConnectionString, settings.Value.BlobContainerName);
         }
@@ -73,7 +71,6 @@ namespace Hive.Infrastructure.Persistence
             }
         }
 
-        public string Randomize(string prefix = "sample") =>
-            $"{prefix}-{Guid.NewGuid()}";
+        private string Randomize(string prefix = "sample") => $"{prefix}-{Guid.NewGuid()}";
     }
 }

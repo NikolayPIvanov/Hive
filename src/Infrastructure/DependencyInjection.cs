@@ -1,5 +1,4 @@
 ﻿using Hive.Application.Common.Interfaces;
-using Hive.Infrastructure.Files;
 using Hive.Infrastructure.Identity;
 using Hive.Infrastructure.Persistence;
 using Hive.Infrastructure.Services;
@@ -47,7 +46,6 @@ namespace Hive.Infrastructure
                 
             services.AddTransient<IDateTime, DateTimeService>();
             services.AddTransient<IIdentityService, IdentityService>();
-            services.AddTransient<ICsvFileBuilder, CsvFileBuilder>();
 
             services.AddAuthentication()
                 .AddIdentityServerJwt();

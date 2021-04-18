@@ -23,7 +23,7 @@ namespace Hive.WebUI.Controllers
         
         [HttpGet("personal")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public async Task<ActionResult<OrderDto>> GetMyOrders()
+        public async Task<ActionResult<IEnumerable<OrderDto>>> GetMyOrders()
         {
             var orders = await Mediator.Send(new GetMyOrdersQuery());
             return Ok(orders);
@@ -41,35 +41,35 @@ namespace Hive.WebUI.Controllers
         }
         
         [HttpPut("{orderNumber:guid}/cancellation")]
-        public async Task<ActionResult<int>> CancelOrder(CancelOrderCommand command)
+        public async Task<IActionResult> CancelOrder([FromRoute] Guid orderNumber)
         {
-            await Mediator.Send(command);
+            await Mediator.Send(new CancelOrderCommand(orderNumber));
             return NoContent();
         }
         
         [HttpPut("{orderNumber:guid}/acceptance")]
-        public async Task<IActionResult> AcceptOrder([FromBody] AcceptOrderCommand command)
+        public async Task<IActionResult> AcceptOrder([FromRoute] Guid orderNumber, [FromBody] AcceptOrderCommand command)
         {
             await Mediator.Send(command);
             return NoContent();
         }
         
         [HttpPut("{orderNumber:guid}/declination")]
-        public async Task<IActionResult> DeclineOrder(DeclineOrderCommand command)
+        public async Task<IActionResult> DeclineOrder([FromRoute] Guid orderNumber, [FromBody] DeclineOrderCommand command)
         {
             await Mediator.Send(command);
             return NoContent();
         }
         
         [HttpPut("{orderNumber:guid}/progress")]
-        public async Task<ActionResult<int>> SetInProgress(SetInProgressOrderCommand command)
+        public async Task<ActionResult<int>> SetInProgress([FromRoute] Guid orderNumber, [FromBody] SetInProgressOrderCommand command)
         {
             await Mediator.Send(command);
             return NoContent();
         }
 
         [HttpGet("{orderNumber:guid}/resolutions/{resolutionId:int}")]
-        public async Task<IActionResult> GetResolution([FromRoute]  int resolutionId) =>
+        public async Task<IActionResult> GetResolution([FromRoute] Guid orderNumber, int resolutionId) =>
             Ok(await Mediator.Send(new GetResolutionByIdQuery(resolutionId)));
 
         [HttpGet("{orderNumber:guid}/resolutions/{resolutionId:int}/file")]
@@ -78,20 +78,37 @@ namespace Hive.WebUI.Controllers
             var file = await Mediator.Send(new DownloadResolutionFileQuery(resolutionId));
             return File(file.Source, file.ContentType, file.FileName);
         }
+
+        [HttpGet("{orderNumber:guid}/resolutions")]
+        public async Task<IActionResult> GetResolutions([FromRoute] Guid orderNumber) =>
+            Ok(await Mediator.Send(new GetResolutionsQuery(orderNumber)));
         
         [HttpPost("{orderNumber:guid}/resolutions")]
         public async Task<ActionResult<Guid>> SubmitResolution([FromRoute] Guid orderNumber, [FromForm] FileUploadForm model)
         {
             var command = new CreateResolutionCommand(orderNumber, model.Version, model.File);
             var resolutionId = await Mediator.Send(command);
-            return CreatedAtAction(nameof(GetOrder), new { resolutionId }, resolutionId);
+            return CreatedAtAction(nameof(GetResolution), new { orderNumber, resolutionId }, new { orderNumber = orderNumber.ToString(), resolutionId });
         }
         
         [HttpPut("{orderNumber:guid}/resolutions/{resolutionId:int}")]
         public async Task<ActionResult<Guid>> UpdateResolution([FromRoute] Guid orderNumber, int resolutionId, [FromForm] FileUploadForm model)
         {
             await Mediator.Send(new UpdateResolutionCommand(resolutionId, model.Version, model.File));
-            return CreatedAtAction(nameof(GetOrder), new { resolutionId }, resolutionId);
+            return NoContent();
+        }
+        
+        [HttpPut("{orderNumber:guid}/resolutions/{resolutionId:int}/acceptance")]
+        public async Task<ActionResult<Guid>> AcceptResolution([FromRoute] Guid orderNumber, int resolutionId)
+        {
+            var resolution = await Mediator.Send(new GetResolutionByIdQuery(resolutionId));
+            if (resolution.OrderNumber != orderNumber)
+            {
+                return BadRequest();
+            }
+            await Mediator.Send(new UpdateResolutionCommand(resolutionId, resolution.Version, null, true));
+            await Mediator.Send(new CompleteOrderCommand(orderNumber));
+            return NoContent();
         }
     }
 

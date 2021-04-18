@@ -13,7 +13,7 @@ namespace Hive.Infrastructure.Persistence.Configurations.GigManagement
                 .IsRequired();
 
             builder.Property(x => x.Description)
-                .HasMaxLength(100)
+                .HasMaxLength(200)
                 .IsRequired();
 
             builder.Property(x => x.Price)

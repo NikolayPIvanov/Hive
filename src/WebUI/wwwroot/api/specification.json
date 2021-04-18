@@ -1088,7 +1088,10 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/OrderDto"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OrderDto"
+                  }
                 }
               }
             }
@@ -1165,35 +1168,20 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "format": "guid"
             },
-            "x-position": 2
+            "x-position": 1
           }
         ],
-        "requestBody": {
-          "x-name": "command",
-          "content": {
-            "application/json": {
-              "schema": {
-                "nullable": true,
-                "oneOf": [
-                  {
-                    "$ref": "#/components/schemas/CancelOrderCommand"
-                  }
-                ]
-              }
-            }
-          },
-          "x-position": 1
-        },
         "responses": {
           "200": {
             "description": "",
             "content": {
-              "application/json": {
+              "application/octet-stream": {
                 "schema": {
-                  "type": "integer",
-                  "format": "int32"
+                  "type": "string",
+                  "format": "binary"
                 }
               }
             }
@@ -1213,9 +1201,10 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "format": "guid"
             },
-            "x-position": 2
+            "x-position": 1
           }
         ],
         "requestBody": {
@@ -1232,7 +1221,7 @@
               }
             }
           },
-          "x-position": 1
+          "x-position": 2
         },
         "responses": {
           "200": {
@@ -1261,9 +1250,10 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "format": "guid"
             },
-            "x-position": 2
+            "x-position": 1
           }
         ],
         "requestBody": {
@@ -1280,7 +1270,7 @@
               }
             }
           },
-          "x-position": 1
+          "x-position": 2
         },
         "responses": {
           "200": {
@@ -1309,9 +1299,10 @@
             "in": "path",
             "required": true,
             "schema": {
-              "type": "string"
+              "type": "string",
+              "format": "guid"
             },
-            "x-position": 2
+            "x-position": 1
           }
         ],
         "requestBody": {
@@ -1328,7 +1319,7 @@
               }
             }
           },
-          "x-position": 1
+          "x-position": 2
         },
         "responses": {
           "200": {
@@ -1353,21 +1344,22 @@
         "operationId": "Orders_GetResolution",
         "parameters": [
           {
+            "name": "orderNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          },
+          {
             "name": "resolutionId",
             "in": "path",
             "required": true,
             "schema": {
               "type": "integer",
               "format": "int32"
-            },
-            "x-position": 1
-          },
-          {
-            "name": "orderNumber",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
             },
             "x-position": 2
           }
@@ -1491,6 +1483,37 @@
       }
     },
     "/api/Orders/{orderNumber}/resolutions": {
+      "get": {
+        "tags": [
+          "Orders"
+        ],
+        "operationId": "Orders_GetResolutions",
+        "parameters": [
+          {
+            "name": "orderNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      },
       "post": {
         "tags": [
           "Orders"
@@ -1528,6 +1551,49 @@
             }
           }
         },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "guid"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Orders/{orderNumber}/resolutions/{resolutionId}/acceptance": {
+      "put": {
+        "tags": [
+          "Orders"
+        ],
+        "operationId": "Orders_AcceptResolution",
+        "parameters": [
+          {
+            "name": "orderNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "resolutionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 2
+          }
+        ],
         "responses": {
           "200": {
             "description": "",
@@ -2191,6 +2257,11 @@
             "type": "integer",
             "format": "int32"
           },
+          "planId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
           "tags": {
             "type": "array",
             "nullable": true,
@@ -2458,10 +2529,6 @@
             "type": "number",
             "format": "double"
           },
-          "investorId": {
-            "type": "integer",
-            "format": "int32"
-          },
           "planId": {
             "type": "integer",
             "format": "int32"
@@ -2528,9 +2595,9 @@
             "type": "integer",
             "format": "int32"
           },
-          "orderedBy": {
-            "type": "string",
-            "nullable": true
+          "buyerId": {
+            "type": "integer",
+            "format": "int32"
           },
           "unitPrice": {
             "type": "number",
@@ -2538,10 +2605,6 @@
           },
           "isClosed": {
             "type": "boolean"
-          },
-          "requirements": {
-            "type": "string",
-            "nullable": true
           },
           "gigId": {
             "type": "integer",
@@ -2551,13 +2614,13 @@
             "type": "integer",
             "format": "int32"
           },
-          "requirementId": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "resolutionId": {
-            "type": "integer",
-            "format": "int32"
+          "requirement": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/RequirementDto"
+              }
+            ]
           },
           "orderStates": {
             "type": "array",
@@ -2565,6 +2628,23 @@
             "items": {
               "$ref": "#/components/schemas/StateDto"
             }
+          },
+          "resolutions": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/ResolutionDto"
+            }
+          }
+        }
+      },
+      "RequirementDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "details": {
+            "type": "string",
+            "nullable": true
           }
         }
       },
@@ -2572,10 +2652,6 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
           "orderState": {
             "type": "string",
             "nullable": true
@@ -2583,14 +2659,31 @@
           "reason": {
             "type": "string",
             "nullable": true
+          }
+        }
+      },
+      "ResolutionDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
           },
-          "created": {
-            "type": "string",
-            "format": "date-time"
-          },
-          "createdBy": {
+          "version": {
             "type": "string",
             "nullable": true
+          },
+          "location": {
+            "type": "string",
+            "nullable": true
+          },
+          "isApproved": {
+            "type": "boolean"
+          },
+          "orderNumber": {
+            "type": "string",
+            "format": "guid"
           }
         }
       },
@@ -2646,20 +2739,6 @@
           }
         }
       },
-      "CancelOrderCommand": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "orderNumber": {
-            "type": "string",
-            "format": "guid"
-          },
-          "reason": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
       "AcceptOrderCommand": {
         "type": "object",
         "additionalProperties": false,
@@ -2694,10 +2773,6 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "vendorId": {
-            "type": "integer",
-            "format": "int32"
-          },
           "title": {
             "type": "string",
             "nullable": true
@@ -2819,7 +2894,7 @@
             "type": "number",
             "format": "decimal"
           },
-          "vendorId": {
+          "sellerId": {
             "type": "integer",
             "format": "int32"
           },

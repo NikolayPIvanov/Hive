@@ -17,6 +17,9 @@ namespace Hive.Application.GigsManagement.Gigs.Commands.CreateGig
         public string Title { get; private init; }
         public string Description { get; private init; }
         public int CategoryId { get; private init; }
+
+        public int? PlanId { get; set; }
+        
         public HashSet<string> Tags { get; private init; }
         public HashSet<QuestionModel> Questions { get; private init; }
 
@@ -30,12 +33,12 @@ namespace Hive.Application.GigsManagement.Gigs.Commands.CreateGig
         public QuestionValidator()
         {
             RuleFor(x => x.Title)
-                .MaximumLength(50).WithMessage("Title length must not be above 50 characters.")
+                .MaximumLength(200).WithMessage("Title length must not be above 50 characters.")
                 .MinimumLength(3).WithMessage("Title length must not be below 3 characters.")
                 .NotEmpty().WithMessage("Title should be provided.");
             
             RuleFor(x => x.Answer)
-                .MaximumLength(250).WithMessage("Answer length must not be above 250 characters.")
+                .MaximumLength(1000).WithMessage("Answer length must not be above 250 characters.")
                 .MinimumLength(3).WithMessage("Answer length must not be below 3 characters.")
                 .NotEmpty().WithMessage("Answer should be provided.");
         }
@@ -51,8 +54,8 @@ namespace Hive.Application.GigsManagement.Gigs.Commands.CreateGig
                 .NotEmpty().WithMessage("Title should be provided.");
 
             RuleFor(x => x.CategoryId)
-                .MustAsync(async (id, token) => await dbContext.Categories.AnyAsync(x => x.Id == id, cancellationToken: token))
-                .WithMessage("Must provide an existing category id.");
+                .MustAsync(async (id, token) => await dbContext.Categories.AnyAsync(x => x.Id == id && x.ParentId != null, cancellationToken: token))
+                .WithMessage("Must provide an existing non-parent category id.");
             
             RuleFor(x => x.Description)
                 .MaximumLength(2500).WithMessage("Description length must not be above 2500 characters.")
@@ -67,8 +70,8 @@ namespace Hive.Application.GigsManagement.Gigs.Commands.CreateGig
                 .MaximumLength(20).WithMessage("Tag length must not be above 20 characters.");
 
             RuleForEach(x => x.Questions)
-                .SetValidator(x => new QuestionValidator());
-        }    
+                .SetValidator(x => new QuestionValidator()).WithMessage("Question is not in correct format");
+        }
     }
     
     public class CreateGigCommandHandler : IRequestHandler<CreateGigCommand, int>
@@ -88,14 +91,14 @@ namespace Hive.Application.GigsManagement.Gigs.Commands.CreateGig
                 await _dbContext.Sellers.FirstOrDefaultAsync(s => s.UserId == _currentUserService.UserId,
                     cancellationToken);
 
-            // if (seller == null)
-            // {
-            //     throw new NotFoundException();
-            // }
-            var sellerId = seller?.Id ?? 1;
+            if (seller == null)
+            {
+                throw new NotFoundException();
+            }
+            
             var tags = request.Tags.Select(t => new Tag(t)).ToHashSet();
             var questions = request.Questions.Select(q => new Question(q.Title, q.Answer)).ToHashSet();
-            var gig = new Gig(request.Title, request.Description, request.CategoryId, sellerId, tags, questions);
+            var gig = new Gig(request.Title, request.Description, request.CategoryId, seller.Id, tags, questions);
 
             _dbContext.Gigs.Add(gig);
             await _dbContext.SaveChangesAsync(cancellationToken);

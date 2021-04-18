@@ -3,6 +3,7 @@
     public enum AccountType
     {
         Seller = 0,
-        Buyer = 1
+        Buyer,
+        Investor
     }
 }

@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Hive.Application.Common.Exceptions;
@@ -10,7 +11,19 @@ namespace Hive.Application.Investing.Investments.Queries
 {
     public class InvestmentDto
     {
+        public DateTime EffectiveDate { get; set; }
         
+        public DateTime? ExpirationDate { get; set; }
+
+        public decimal Amount { get; set; }
+        
+        public double RoiPercentage { get; set; }
+
+        public int InvestorId { get; set; }
+
+        public int PlanId { get; set; }
+
+        public bool IsAccepted { get; set; }
     }
     
     public record GetInvestmentByIdQuery(int Id) : IRequest<InvestmentDto>;

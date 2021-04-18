@@ -30,7 +30,9 @@ namespace Hive.Application.Ordering.Resolutions.Queries
         
         public async Task<ResolutionDto> Handle(GetResolutionByIdQuery request, CancellationToken cancellationToken)
         {
-            var resolution = await _context.Resolutions.FirstOrDefaultAsync(x => x.Id == request.ResolutionId, cancellationToken);
+            var resolution = await _context.Resolutions
+                .Include(x => x.Order)
+                .FirstOrDefaultAsync(x => x.Id == request.ResolutionId, cancellationToken);
             if (resolution == null)
             {
                 throw new NotFoundException(nameof(Resolution), request.ResolutionId);

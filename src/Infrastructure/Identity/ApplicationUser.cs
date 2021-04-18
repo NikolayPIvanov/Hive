@@ -2,6 +2,7 @@
 using Hive.Domain.Entities.Accounts;
 using Hive.Domain.Entities.Billing;
 using Hive.Domain.Entities.Gigs;
+using Hive.Domain.Entities.Investing;
 using Hive.Domain.Entities.Orders;
 using Microsoft.AspNetCore.Identity;
 
@@ -37,5 +38,6 @@ namespace Hive.Infrastructure.Identity
         public Seller Seller { get; set; }
 
         public int? InvestorId { get; set; }
+        public Investor Investor { get; set; }
     }
 }

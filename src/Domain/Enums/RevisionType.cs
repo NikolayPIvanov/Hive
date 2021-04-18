@@ -2,7 +2,7 @@
 {
     public enum RevisionType
     {
-        Unlimited,
+        Unlimited = 0,
         Numeric
     }
 }

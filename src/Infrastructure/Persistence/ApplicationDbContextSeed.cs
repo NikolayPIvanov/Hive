@@ -1,10 +1,12 @@
-﻿using Hive.Domain.Entities;
+﻿using System;
+using Hive.Domain.Entities;
 using Hive.Infrastructure.Identity;
 using Microsoft.AspNetCore.Identity;
 using System.Linq;
 using System.Threading.Tasks;
 using Hive.Application.Common.Interfaces;
 using Hive.Domain.Entities.Gigs;
+using Hive.Domain.Entities.Investing;
 using Hive.Domain.Entities.Orders;
 
 namespace Hive.Infrastructure.Persistence
@@ -15,11 +17,9 @@ namespace Hive.Infrastructure.Persistence
         {
             await SeedAdmin(userManager, roleManager, context);
             
-            await SeedOfType(AccountType.Buyer, "buyer1@buyer.com", userManager, roleManager, context);
-            await SeedOfType(AccountType.Buyer, "buyer2@buyer.com", userManager, roleManager, context);
-            
-            await SeedOfType(AccountType.Seller, "seller1@seller.com", userManager, roleManager, context);
-            await SeedOfType(AccountType.Seller, "seller2@seller.com", userManager, roleManager, context);
+            await SeedOfType(AccountType.Buyer, "buyer@gmail.com", userManager, roleManager, context);
+            await SeedOfType(AccountType.Seller, "seller@gmail.com", userManager, roleManager, context);
+            await SeedOfType(AccountType.Investor, "investor@gmail.com", userManager, roleManager, context);
         }
 
         private static async Task SeedAdmin(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IApplicationDbContext context)
@@ -46,6 +46,8 @@ namespace Hive.Infrastructure.Persistence
         private static async Task SeedOfType(AccountType type, string email, UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager, IApplicationDbContext context)
         {
+            const string defaultPassword = "YourStr0ngPassword!";
+            
             var role = new IdentityRole(type.ToString());
             if (roleManager.Roles.All(r => r.Name != role.Name))
             {
@@ -55,15 +57,17 @@ namespace Hive.Infrastructure.Persistence
             var user = new ApplicationUser(type) { UserName = email, Email = email };
             if (userManager.Users.All(u => u.UserName != user.UserName))
             {
-                await userManager.CreateAsync(user, "Administrator1!");
+                await userManager.CreateAsync(user, defaultPassword);
                 await userManager.AddToRolesAsync(user, new [] { role.Name });
             }
 
             switch (type)
             {
-                case AccountType.Buyer: user.Buyer = new Buyer(user.Id); break;
-                case AccountType.Seller: user.Seller = new Seller(user.Id);
-                    break;
+                case AccountType.Buyer: user.Buyer = new Buyer(user.Id);  break;
+                case AccountType.Seller: user.Seller = new Seller(user.Id); break;
+                case AccountType.Investor: user.Investor = new Investor(user.Id); break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(type), type, null);
             }
 
             await context.SaveChangesAsync(default);

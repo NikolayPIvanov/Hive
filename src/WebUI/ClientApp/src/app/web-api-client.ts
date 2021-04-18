@@ -1428,16 +1428,18 @@ export class InvestmentsClient implements IInvestmentsClient {
 
 export interface IOrdersClient {
     getOrder(orderNumber: string): Observable<OrderDto>;
-    getMyOrders(): Observable<OrderDto>;
+    getMyOrders(): Observable<OrderDto[]>;
     placeOrder(command: PlaceOrderCommand | null | undefined): Observable<string>;
-    cancelOrder(orderNumber: string, command: CancelOrderCommand | null | undefined): Observable<number>;
+    cancelOrder(orderNumber: string): Observable<FileResponse>;
     acceptOrder(orderNumber: string, command: AcceptOrderCommand | null | undefined): Observable<FileResponse>;
     declineOrder(orderNumber: string, command: DeclineOrderCommand | null | undefined): Observable<FileResponse>;
     setInProgress(orderNumber: string, command: SetInProgressOrderCommand | null | undefined): Observable<number>;
-    getResolution(resolutionId: number, orderNumber: string): Observable<FileResponse>;
+    getResolution(orderNumber: string, resolutionId: number): Observable<FileResponse>;
     updateResolution(orderNumber: string, resolutionId: number, version: string | null | undefined, file: FileParameter | null | undefined): Observable<string>;
     downloadResolutionFile(resolutionId: number, orderNumber: string): Observable<FileResponse>;
+    getResolutions(orderNumber: string): Observable<FileResponse>;
     submitResolution(orderNumber: string, version: string | null | undefined, file: FileParameter | null | undefined): Observable<string>;
+    acceptResolution(orderNumber: string, resolutionId: number): Observable<string>;
 }
 
 @Injectable({
@@ -1504,7 +1506,7 @@ export class OrdersClient implements IOrdersClient {
         return _observableOf<OrderDto>(<any>null);
     }
 
-    getMyOrders(): Observable<OrderDto> {
+    getMyOrders(): Observable<OrderDto[]> {
         let url_ = this.baseUrl + "/api/Orders/personal";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -1523,14 +1525,14 @@ export class OrdersClient implements IOrdersClient {
                 try {
                     return this.processGetMyOrders(<any>response_);
                 } catch (e) {
-                    return <Observable<OrderDto>><any>_observableThrow(e);
+                    return <Observable<OrderDto[]>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<OrderDto>><any>_observableThrow(response_);
+                return <Observable<OrderDto[]>><any>_observableThrow(response_);
         }));
     }
 
-    protected processGetMyOrders(response: HttpResponseBase): Observable<OrderDto> {
+    protected processGetMyOrders(response: HttpResponseBase): Observable<OrderDto[]> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -1541,7 +1543,11 @@ export class OrdersClient implements IOrdersClient {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = OrderDto.fromJS(resultData200);
+            if (Array.isArray(resultData200)) {
+                result200 = [] as any;
+                for (let item of resultData200)
+                    result200!.push(OrderDto.fromJS(item));
+            }
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -1549,7 +1555,7 @@ export class OrdersClient implements IOrdersClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<OrderDto>(<any>null);
+        return _observableOf<OrderDto[]>(<any>null);
     }
 
     placeOrder(command: PlaceOrderCommand | null | undefined): Observable<string> {
@@ -1618,22 +1624,18 @@ export class OrdersClient implements IOrdersClient {
         return _observableOf<string>(<any>null);
     }
 
-    cancelOrder(orderNumber: string, command: CancelOrderCommand | null | undefined): Observable<number> {
+    cancelOrder(orderNumber: string): Observable<FileResponse> {
         let url_ = this.baseUrl + "/api/Orders/{orderNumber}/cancellation";
         if (orderNumber === undefined || orderNumber === null)
             throw new Error("The parameter 'orderNumber' must be defined.");
         url_ = url_.replace("{orderNumber}", encodeURIComponent("" + orderNumber));
         url_ = url_.replace(/[?&]$/, "");
 
-        const content_ = JSON.stringify(command);
-
         let options_ : any = {
-            body: content_,
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
-                "Content-Type": "application/json",
-                "Accept": "application/json"
+                "Accept": "application/octet-stream"
             })
         };
 
@@ -1644,33 +1646,31 @@ export class OrdersClient implements IOrdersClient {
                 try {
                     return this.processCancelOrder(<any>response_);
                 } catch (e) {
-                    return <Observable<number>><any>_observableThrow(e);
+                    return <Observable<FileResponse>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<number>><any>_observableThrow(response_);
+                return <Observable<FileResponse>><any>_observableThrow(response_);
         }));
     }
 
-    protected processCancelOrder(response: HttpResponseBase): Observable<number> {
+    protected processCancelOrder(response: HttpResponseBase): Observable<FileResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
             (<any>response).error instanceof Blob ? (<any>response).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = resultData200 !== undefined ? resultData200 : <any>null;
-            return _observableOf(result200);
-            }));
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            return _observableOf({ fileName: fileName, data: <any>responseBlob, status: status, headers: _headers });
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<number>(<any>null);
+        return _observableOf<FileResponse>(<any>null);
     }
 
     acceptOrder(orderNumber: string, command: AcceptOrderCommand | null | undefined): Observable<FileResponse> {
@@ -1834,14 +1834,14 @@ export class OrdersClient implements IOrdersClient {
         return _observableOf<number>(<any>null);
     }
 
-    getResolution(resolutionId: number, orderNumber: string): Observable<FileResponse> {
+    getResolution(orderNumber: string, resolutionId: number): Observable<FileResponse> {
         let url_ = this.baseUrl + "/api/Orders/{orderNumber}/resolutions/{resolutionId}";
-        if (resolutionId === undefined || resolutionId === null)
-            throw new Error("The parameter 'resolutionId' must be defined.");
-        url_ = url_.replace("{resolutionId}", encodeURIComponent("" + resolutionId));
         if (orderNumber === undefined || orderNumber === null)
             throw new Error("The parameter 'orderNumber' must be defined.");
         url_ = url_.replace("{orderNumber}", encodeURIComponent("" + orderNumber));
+        if (resolutionId === undefined || resolutionId === null)
+            throw new Error("The parameter 'resolutionId' must be defined.");
+        url_ = url_.replace("{resolutionId}", encodeURIComponent("" + resolutionId));
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -1999,6 +1999,55 @@ export class OrdersClient implements IOrdersClient {
         return _observableOf<FileResponse>(<any>null);
     }
 
+    getResolutions(orderNumber: string): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/Orders/{orderNumber}/resolutions";
+        if (orderNumber === undefined || orderNumber === null)
+            throw new Error("The parameter 'orderNumber' must be defined.");
+        url_ = url_.replace("{orderNumber}", encodeURIComponent("" + orderNumber));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/octet-stream"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetResolutions(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetResolutions(<any>response_);
+                } catch (e) {
+                    return <Observable<FileResponse>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<FileResponse>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetResolutions(response: HttpResponseBase): Observable<FileResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            return _observableOf({ fileName: fileName, data: <any>responseBlob, status: status, headers: _headers });
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<FileResponse>(<any>null);
+    }
+
     submitResolution(orderNumber: string, version: string | null | undefined, file: FileParameter | null | undefined): Observable<string> {
         let url_ = this.baseUrl + "/api/Orders/{orderNumber}/resolutions";
         if (orderNumber === undefined || orderNumber === null)
@@ -2036,6 +2085,60 @@ export class OrdersClient implements IOrdersClient {
     }
 
     protected processSubmitResolution(response: HttpResponseBase): Observable<string> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 !== undefined ? resultData200 : <any>null;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<string>(<any>null);
+    }
+
+    acceptResolution(orderNumber: string, resolutionId: number): Observable<string> {
+        let url_ = this.baseUrl + "/api/Orders/{orderNumber}/resolutions/{resolutionId}/acceptance";
+        if (orderNumber === undefined || orderNumber === null)
+            throw new Error("The parameter 'orderNumber' must be defined.");
+        url_ = url_.replace("{orderNumber}", encodeURIComponent("" + orderNumber));
+        if (resolutionId === undefined || resolutionId === null)
+            throw new Error("The parameter 'resolutionId' must be defined.");
+        url_ = url_.replace("{resolutionId}", encodeURIComponent("" + resolutionId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processAcceptResolution(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processAcceptResolution(<any>response_);
+                } catch (e) {
+                    return <Observable<string>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<string>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processAcceptResolution(response: HttpResponseBase): Observable<string> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -3126,6 +3229,7 @@ export class CreateGigCommand implements ICreateGigCommand {
     title?: string | undefined;
     description?: string | undefined;
     categoryId?: number;
+    planId?: number | undefined;
     tags?: string[] | undefined;
     questions?: QuestionModel[] | undefined;
 
@@ -3143,6 +3247,7 @@ export class CreateGigCommand implements ICreateGigCommand {
             this.title = _data["title"];
             this.description = _data["description"];
             this.categoryId = _data["categoryId"];
+            this.planId = _data["planId"];
             if (Array.isArray(_data["tags"])) {
                 this.tags = [] as any;
                 for (let item of _data["tags"])
@@ -3168,6 +3273,7 @@ export class CreateGigCommand implements ICreateGigCommand {
         data["title"] = this.title;
         data["description"] = this.description;
         data["categoryId"] = this.categoryId;
+        data["planId"] = this.planId;
         if (Array.isArray(this.tags)) {
             data["tags"] = [];
             for (let item of this.tags)
@@ -3186,6 +3292,7 @@ export interface ICreateGigCommand {
     title?: string | undefined;
     description?: string | undefined;
     categoryId?: number;
+    planId?: number | undefined;
     tags?: string[] | undefined;
     questions?: QuestionModel[] | undefined;
 }
@@ -3648,7 +3755,6 @@ export class MakeInvestmentCommand implements IMakeInvestmentCommand {
     expirationDate?: Date | undefined;
     amount?: number;
     roiPercentage?: number;
-    investorId?: number;
     planId?: number;
 
     constructor(data?: IMakeInvestmentCommand) {
@@ -3666,7 +3772,6 @@ export class MakeInvestmentCommand implements IMakeInvestmentCommand {
             this.expirationDate = _data["expirationDate"] ? new Date(_data["expirationDate"].toString()) : <any>undefined;
             this.amount = _data["amount"];
             this.roiPercentage = _data["roiPercentage"];
-            this.investorId = _data["investorId"];
             this.planId = _data["planId"];
         }
     }
@@ -3684,7 +3789,6 @@ export class MakeInvestmentCommand implements IMakeInvestmentCommand {
         data["expirationDate"] = this.expirationDate ? this.expirationDate.toISOString() : <any>undefined;
         data["amount"] = this.amount;
         data["roiPercentage"] = this.roiPercentage;
-        data["investorId"] = this.investorId;
         data["planId"] = this.planId;
         return data; 
     }
@@ -3695,7 +3799,6 @@ export interface IMakeInvestmentCommand {
     expirationDate?: Date | undefined;
     amount?: number;
     roiPercentage?: number;
-    investorId?: number;
     planId?: number;
 }
 
@@ -3796,15 +3899,14 @@ export class OrderDto implements IOrderDto {
     orderNumber?: string;
     orderedAt?: Date;
     sellerId?: number;
-    orderedBy?: string | undefined;
+    buyerId?: number;
     unitPrice?: number;
     isClosed?: boolean;
-    requirements?: string | undefined;
     gigId?: number;
     packageId?: number;
-    requirementId?: number;
-    resolutionId?: number;
+    requirement?: RequirementDto | undefined;
     orderStates?: StateDto[] | undefined;
+    resolutions?: ResolutionDto[] | undefined;
 
     constructor(data?: IOrderDto) {
         if (data) {
@@ -3821,18 +3923,21 @@ export class OrderDto implements IOrderDto {
             this.orderNumber = _data["orderNumber"];
             this.orderedAt = _data["orderedAt"] ? new Date(_data["orderedAt"].toString()) : <any>undefined;
             this.sellerId = _data["sellerId"];
-            this.orderedBy = _data["orderedBy"];
+            this.buyerId = _data["buyerId"];
             this.unitPrice = _data["unitPrice"];
             this.isClosed = _data["isClosed"];
-            this.requirements = _data["requirements"];
             this.gigId = _data["gigId"];
             this.packageId = _data["packageId"];
-            this.requirementId = _data["requirementId"];
-            this.resolutionId = _data["resolutionId"];
+            this.requirement = _data["requirement"] ? RequirementDto.fromJS(_data["requirement"]) : <any>undefined;
             if (Array.isArray(_data["orderStates"])) {
                 this.orderStates = [] as any;
                 for (let item of _data["orderStates"])
                     this.orderStates!.push(StateDto.fromJS(item));
+            }
+            if (Array.isArray(_data["resolutions"])) {
+                this.resolutions = [] as any;
+                for (let item of _data["resolutions"])
+                    this.resolutions!.push(ResolutionDto.fromJS(item));
             }
         }
     }
@@ -3850,18 +3955,21 @@ export class OrderDto implements IOrderDto {
         data["orderNumber"] = this.orderNumber;
         data["orderedAt"] = this.orderedAt ? this.orderedAt.toISOString() : <any>undefined;
         data["sellerId"] = this.sellerId;
-        data["orderedBy"] = this.orderedBy;
+        data["buyerId"] = this.buyerId;
         data["unitPrice"] = this.unitPrice;
         data["isClosed"] = this.isClosed;
-        data["requirements"] = this.requirements;
         data["gigId"] = this.gigId;
         data["packageId"] = this.packageId;
-        data["requirementId"] = this.requirementId;
-        data["resolutionId"] = this.resolutionId;
+        data["requirement"] = this.requirement ? this.requirement.toJSON() : <any>undefined;
         if (Array.isArray(this.orderStates)) {
             data["orderStates"] = [];
             for (let item of this.orderStates)
                 data["orderStates"].push(item.toJSON());
+        }
+        if (Array.isArray(this.resolutions)) {
+            data["resolutions"] = [];
+            for (let item of this.resolutions)
+                data["resolutions"].push(item.toJSON());
         }
         return data; 
     }
@@ -3872,23 +3980,55 @@ export interface IOrderDto {
     orderNumber?: string;
     orderedAt?: Date;
     sellerId?: number;
-    orderedBy?: string | undefined;
+    buyerId?: number;
     unitPrice?: number;
     isClosed?: boolean;
-    requirements?: string | undefined;
     gigId?: number;
     packageId?: number;
-    requirementId?: number;
-    resolutionId?: number;
+    requirement?: RequirementDto | undefined;
     orderStates?: StateDto[] | undefined;
+    resolutions?: ResolutionDto[] | undefined;
+}
+
+export class RequirementDto implements IRequirementDto {
+    details?: string | undefined;
+
+    constructor(data?: IRequirementDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.details = _data["details"];
+        }
+    }
+
+    static fromJS(data: any): RequirementDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new RequirementDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["details"] = this.details;
+        return data; 
+    }
+}
+
+export interface IRequirementDto {
+    details?: string | undefined;
 }
 
 export class StateDto implements IStateDto {
-    id?: number;
     orderState?: string | undefined;
     reason?: string | undefined;
-    created?: Date;
-    createdBy?: string | undefined;
 
     constructor(data?: IStateDto) {
         if (data) {
@@ -3901,11 +4041,8 @@ export class StateDto implements IStateDto {
 
     init(_data?: any) {
         if (_data) {
-            this.id = _data["id"];
             this.orderState = _data["orderState"];
             this.reason = _data["reason"];
-            this.created = _data["created"] ? new Date(_data["created"].toString()) : <any>undefined;
-            this.createdBy = _data["createdBy"];
         }
     }
 
@@ -3918,21 +4055,67 @@ export class StateDto implements IStateDto {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
         data["orderState"] = this.orderState;
         data["reason"] = this.reason;
-        data["created"] = this.created ? this.created.toISOString() : <any>undefined;
-        data["createdBy"] = this.createdBy;
         return data; 
     }
 }
 
 export interface IStateDto {
-    id?: number;
     orderState?: string | undefined;
     reason?: string | undefined;
-    created?: Date;
-    createdBy?: string | undefined;
+}
+
+export class ResolutionDto implements IResolutionDto {
+    id?: number;
+    version?: string | undefined;
+    location?: string | undefined;
+    isApproved?: boolean;
+    orderNumber?: string;
+
+    constructor(data?: IResolutionDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.version = _data["version"];
+            this.location = _data["location"];
+            this.isApproved = _data["isApproved"];
+            this.orderNumber = _data["orderNumber"];
+        }
+    }
+
+    static fromJS(data: any): ResolutionDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ResolutionDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["version"] = this.version;
+        data["location"] = this.location;
+        data["isApproved"] = this.isApproved;
+        data["orderNumber"] = this.orderNumber;
+        return data; 
+    }
+}
+
+export interface IResolutionDto {
+    id?: number;
+    version?: string | undefined;
+    location?: string | undefined;
+    isApproved?: boolean;
+    orderNumber?: string;
 }
 
 export class ProblemDetails implements IProblemDetails {
@@ -4047,46 +4230,6 @@ export interface IPlaceOrderCommand {
     packageId?: number;
 }
 
-export class CancelOrderCommand implements ICancelOrderCommand {
-    orderNumber?: string;
-    reason?: string | undefined;
-
-    constructor(data?: ICancelOrderCommand) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.orderNumber = _data["orderNumber"];
-            this.reason = _data["reason"];
-        }
-    }
-
-    static fromJS(data: any): CancelOrderCommand {
-        data = typeof data === 'object' ? data : {};
-        let result = new CancelOrderCommand();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["orderNumber"] = this.orderNumber;
-        data["reason"] = this.reason;
-        return data; 
-    }
-}
-
-export interface ICancelOrderCommand {
-    orderNumber?: string;
-    reason?: string | undefined;
-}
-
 export class AcceptOrderCommand implements IAcceptOrderCommand {
     orderNumber?: string;
 
@@ -4196,7 +4339,6 @@ export interface ISetInProgressOrderCommand {
 }
 
 export class CreatePlanCommand implements ICreatePlanCommand {
-    vendorId?: number;
     title?: string | undefined;
     description?: string | undefined;
     estimatedReleaseDays?: number;
@@ -4214,7 +4356,6 @@ export class CreatePlanCommand implements ICreatePlanCommand {
 
     init(_data?: any) {
         if (_data) {
-            this.vendorId = _data["vendorId"];
             this.title = _data["title"];
             this.description = _data["description"];
             this.estimatedReleaseDays = _data["estimatedReleaseDays"];
@@ -4232,7 +4373,6 @@ export class CreatePlanCommand implements ICreatePlanCommand {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["vendorId"] = this.vendorId;
         data["title"] = this.title;
         data["description"] = this.description;
         data["estimatedReleaseDays"] = this.estimatedReleaseDays;
@@ -4243,7 +4383,6 @@ export class CreatePlanCommand implements ICreatePlanCommand {
 }
 
 export interface ICreatePlanCommand {
-    vendorId?: number;
     title?: string | undefined;
     description?: string | undefined;
     estimatedReleaseDays?: number;
@@ -4390,7 +4529,7 @@ export class PlanDto implements IPlanDto {
     estimatedReleaseDays?: number;
     estimatedReleaseDate?: Date | undefined;
     fundingNeeded?: number;
-    vendorId?: number;
+    sellerId?: number;
     tags?: string[] | undefined;
 
     constructor(data?: IPlanDto) {
@@ -4410,7 +4549,7 @@ export class PlanDto implements IPlanDto {
             this.estimatedReleaseDays = _data["estimatedReleaseDays"];
             this.estimatedReleaseDate = _data["estimatedReleaseDate"] ? new Date(_data["estimatedReleaseDate"].toString()) : <any>undefined;
             this.fundingNeeded = _data["fundingNeeded"];
-            this.vendorId = _data["vendorId"];
+            this.sellerId = _data["sellerId"];
             if (Array.isArray(_data["tags"])) {
                 this.tags = [] as any;
                 for (let item of _data["tags"])
@@ -4434,7 +4573,7 @@ export class PlanDto implements IPlanDto {
         data["estimatedReleaseDays"] = this.estimatedReleaseDays;
         data["estimatedReleaseDate"] = this.estimatedReleaseDate ? this.estimatedReleaseDate.toISOString() : <any>undefined;
         data["fundingNeeded"] = this.fundingNeeded;
-        data["vendorId"] = this.vendorId;
+        data["sellerId"] = this.sellerId;
         if (Array.isArray(this.tags)) {
             data["tags"] = [];
             for (let item of this.tags)
@@ -4451,7 +4590,7 @@ export interface IPlanDto {
     estimatedReleaseDays?: number;
     estimatedReleaseDate?: Date | undefined;
     fundingNeeded?: number;
-    vendorId?: number;
+    sellerId?: number;
     tags?: string[] | undefined;
 }
 

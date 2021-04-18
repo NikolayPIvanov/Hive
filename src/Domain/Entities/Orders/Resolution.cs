@@ -21,6 +21,7 @@ namespace Hive.Domain.Entities.Orders
         public string Location { get; set; }
 
         public int OrderId { get; private init; }
+        public Order Order { get; set; }
 
         public bool IsApproved { get; set; }
     }

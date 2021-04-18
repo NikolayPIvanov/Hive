@@ -1,4 +1,6 @@
-﻿namespace Hive.Application.Ordering.Resolutions.Queries
+﻿using System;
+
+namespace Hive.Application.Ordering.Resolutions.Queries
 {
     public class ResolutionDto
     {
@@ -6,5 +8,6 @@
         public string Version { get; set; }
         public string Location { get; set; }
         public bool IsApproved { get; set; }
+        public Guid OrderNumber { get; set; }
     }
 }

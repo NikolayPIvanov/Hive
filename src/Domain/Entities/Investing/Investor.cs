@@ -5,12 +5,17 @@ namespace Hive.Domain.Entities.Investing
 {
     public class Investor : AuditableEntity
     {
-        public Investor()
+        private Investor()
         {
             Investments = new();
         }
 
-        public string UserId { get; set; }
+        public Investor(string userId) : this()
+        {
+            UserId = userId;
+        }
+
+        public string UserId { get; private set; }
 
         public List<Investment> Investments { get; private set; }
     }

@@ -16,7 +16,7 @@ using ValidationException = FluentValidation.ValidationException;
 
 namespace Hive.Application.Ordering.Orders.Commands
 {
-    public record CancelOrderCommand(Guid OrderNumber, string Reason) : IRequest;
+    public record CancelOrderCommand(Guid OrderNumber) : IRequest;
 
     public class CancelOrderCommandValidator : AbstractValidator<CancelOrderCommand>
     {
@@ -45,8 +45,6 @@ namespace Hive.Application.Ordering.Orders.Commands
                     
                     return false;
                 });
-            RuleFor(c => c.Reason)
-                .NotEmpty().WithMessage("A {PropertyName} must be provided");
         }
     }
 
@@ -76,7 +74,6 @@ namespace Hive.Application.Ordering.Orders.Commands
                 return Unit.Value;
             }
             
-            // TODO: V2: Check if order is in progress and compensate the seller a given amount.
             if (order.OrderStates.Any(s => s.OrderState == OrderState.Invalid))
             {
                 var failures = new ValidationFailure[]

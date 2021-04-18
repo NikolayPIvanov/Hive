@@ -31,6 +31,9 @@ namespace Hive.Application.Ordering.Orders.Queries
         {
             var buyerId = await GetBuyerAsync(cancellationToken);
             return await _context.Orders
+                .Include(o => o.OrderStates)
+                .Include(o => o.Requirement)
+                .Include(o => o.Resolutions)
                 .Where(o => o.BuyerId == buyerId)
                 .AsNoTracking()
                 .ProjectToListAsync<OrderDto>(_mapper.ConfigurationProvider);

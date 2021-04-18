@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Hive.Application.Common.Exceptions;
 using Hive.Application.Common.Interfaces;
@@ -33,14 +34,14 @@ namespace Hive.Application.Ordering.Resolutions.Commands
 
             if (resolution.IsApproved)
             {
-                // bad request
-                return Unit.Value;
+                throw new Exception("Already accepted");
             }
             
             resolution.Version = request.Version;
             resolution.IsApproved = request.IsApproved;
             if (request.File != null)
             {
+                // TODO: delete old file
                 resolution.Location = await _fileService.UploadAsync(request.File);
             }
             

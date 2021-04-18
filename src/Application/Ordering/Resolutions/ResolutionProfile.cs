@@ -9,8 +9,11 @@ namespace Hive.Application.Ordering.Resolutions
     {
         public ResolutionProfile()
         {
-            CreateMap<Resolution, ResolutionDto>().ReverseMap();
-
+            CreateMap<Resolution, ResolutionDto>()
+                .AfterMap((resolution, dto) =>
+                {
+                    dto.OrderNumber = resolution.Order.OrderNumber;
+                });
         }
     }
 }

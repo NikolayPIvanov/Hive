@@ -11,6 +11,10 @@ namespace Hive.Infrastructure.Persistence.Configurations.Ordering
             builder.Property(x => x.Version).IsRequired();
             builder.Property(x => x.Location).IsRequired();
             builder.Property(x => x.IsApproved).IsRequired();
+
+            builder.HasOne(x => x.Order)
+                .WithMany(o => o.Resolutions)
+                .HasForeignKey(x => x.OrderId);
         }
     }
 }

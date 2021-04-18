@@ -10,7 +10,7 @@ namespace Hive.Infrastructure.Persistence.Configurations.Investing
         {
             builder.Property(x => x.RoiPercentage).IsRequired();
             builder.Property(x => x.Amount).HasColumnType("decimal(18,2)").IsRequired();
-            builder.Property(x => x.ExpirationDate).IsRequired();
+            builder.Property(x => x.ExpirationDate).IsRequired(false);
         }
     }
 }
