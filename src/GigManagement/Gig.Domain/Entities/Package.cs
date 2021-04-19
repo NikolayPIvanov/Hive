@@ -1,4 +1,6 @@
-﻿namespace Hive.Gig.Domain.Entities
+﻿using Hive.Common.Core.SeedWork;
+
+namespace Hive.Gig.Domain.Entities
 {
     using Hive.Common.Domain.SeedWork;
     using Enums;
@@ -36,6 +38,6 @@
         public RevisionType RevisionType { get; set; }
         public int? Revisions { get; set; }
         
-        public int GigId { get; init; }
+        public int GigId { get; private init; }
     }
 }

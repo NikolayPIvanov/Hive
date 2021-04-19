@@ -1,10 +1,9 @@
-﻿namespace Hive.Common.Domain.SeedWork
-{
-    using System;
-    using System.Collections.Generic;
-    
-    using MediatR;
+﻿using System;
+using System.Collections.Generic;
+using MediatR;
 
+namespace Hive.Common.Core.SeedWork
+{
     public abstract class Entity
     {
         private List<INotification> _domainEvents;

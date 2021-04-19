@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Hive.Common.Core.Interfaces;
+using Hive.Common.Core.SeedWork;
 using Hive.Common.Domain;
 using Hive.Common.Domain.SeedWork;
 using Microsoft.EntityFrameworkCore;

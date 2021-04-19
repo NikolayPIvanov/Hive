@@ -1,5 +1,6 @@
 ﻿using System;
 using Hive.Billing.Domain.Enums;
+using Hive.Common.Core.SeedWork;
 using Hive.Common.Domain.SeedWork;
 
 namespace Hive.Billing.Domain.Entities

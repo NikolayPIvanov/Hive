@@ -1,18 +1,15 @@
 ﻿using System;
+using System.Threading;
+using System.Threading.Tasks;
+using FluentValidation;
+using Hive.Gig.Application.Questions.Interfaces;
+using Hive.Gig.Domain.Entities;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace Hive.Gig.Application.Features.Categories.Commands
+namespace Hive.Gig.Application.Categories.Commands
 {
-    using Interfaces;
-    using Domain.Entities;
-
-    using System.Threading;
-    using System.Threading.Tasks;
-    using FluentValidation;
-    
-    using MediatR;
-    using Microsoft.EntityFrameworkCore;
-
     public record CreateCategoryCommand(string Title, int? ParentId = null) : IRequest<int>;
     
     public class CreateCategoryCommandValidator : AbstractValidator<CreateCategoryCommand>

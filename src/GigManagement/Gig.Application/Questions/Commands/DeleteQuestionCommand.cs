@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Hive.Common.Core.Exceptions;
-using Hive.Gig.Application.Interfaces;
+using Hive.Gig.Application.Questions.Interfaces;
 using Hive.Gig.Domain.Entities;
 using MediatR;
 

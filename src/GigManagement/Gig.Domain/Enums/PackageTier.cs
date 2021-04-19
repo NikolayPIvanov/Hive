@@ -2,7 +2,7 @@
 {
     public enum PackageTier
     {
-        Basic,
+        Basic = 0,
         Standard,
         Premium
     }

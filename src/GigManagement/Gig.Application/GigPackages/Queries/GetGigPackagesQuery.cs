@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Hive.Common.Core.Mappings;
-using Hive.Gig.Application.Interfaces;
+using Hive.Gig.Application.Questions.Interfaces;
 using Hive.Gig.Contracts.Objects;
 using MediatR;
 

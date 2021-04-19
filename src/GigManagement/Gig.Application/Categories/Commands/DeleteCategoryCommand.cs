@@ -1,4 +1,6 @@
 ﻿using System;
+using Hive.Gig.Application.Categories.Commands;
+using Hive.Gig.Application.Questions.Interfaces;
 using Microsoft.Extensions.Logging;
 
 namespace Hive.Gig.Application.Features.Categories.Commands
@@ -6,7 +8,6 @@ namespace Hive.Gig.Application.Features.Categories.Commands
     using System.Threading;
     using System.Threading.Tasks;
     using Common.Core.Exceptions;
-    using Interfaces;
     using Domain.Entities;
     using MediatR;
     using Microsoft.EntityFrameworkCore;

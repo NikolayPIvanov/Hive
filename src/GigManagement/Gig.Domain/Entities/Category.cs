@@ -1,4 +1,6 @@
-﻿namespace Hive.Gig.Domain.Entities
+﻿using Hive.Common.Core.SeedWork;
+
+namespace Hive.Gig.Domain.Entities
 {
     using Hive.Common.Domain.SeedWork;
 

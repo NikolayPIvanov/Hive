@@ -15,7 +15,5 @@ namespace Hive.Gig.Infrastructure.Persistence.Configurations
                 .HasForeignKey(c => c.ParentId)
                 .OnDelete(DeleteBehavior.NoAction);
         }
-
-        
     }
 }

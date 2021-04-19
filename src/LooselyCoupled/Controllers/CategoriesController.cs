@@ -1,7 +1,9 @@
 ﻿using System.Threading.Tasks;
 using Hive.Common.Core.Models;
+using Hive.Gig.Application.Categories;
+using Hive.Gig.Application.Categories.Commands;
+using Hive.Gig.Application.Categories.Queries;
 using Hive.Gig.Application.Features.Categories.Commands;
-using Hive.Gig.Application.Features.Categories.Queries;
 using Hive.Gig.Application.Gigs.Queries;
 using Hive.Gig.Contracts.Objects;
 using Microsoft.AspNetCore.Mvc;

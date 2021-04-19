@@ -1,4 +1,6 @@
-﻿namespace Hive.Investing.Domain.Entities
+﻿using Hive.Common.Core.SeedWork;
+
+namespace Hive.Investing.Domain.Entities
 {
     using Hive.Common.Domain.SeedWork;
    

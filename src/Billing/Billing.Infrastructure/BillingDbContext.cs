@@ -5,6 +5,7 @@ using Billing.Application.Interfaces;
 using Hive.Billing.Domain;
 using Hive.Billing.Domain.Entities;
 using Hive.Common.Core.Interfaces;
+using Hive.Common.Core.SeedWork;
 using Hive.Common.Domain;
 using Hive.Common.Domain.SeedWork;
 using Microsoft.EntityFrameworkCore;

@@ -3,7 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
-using Hive.Gig.Application.Interfaces;
+using Hive.Gig.Application.Questions.Interfaces;
 using Hive.Gig.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;

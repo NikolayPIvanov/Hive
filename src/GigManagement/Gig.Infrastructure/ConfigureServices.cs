@@ -1,5 +1,5 @@
 ﻿using Hive.Common.Core.Interfaces;
-using Hive.Gig.Application.Interfaces;
+using Hive.Gig.Application.Questions.Interfaces;
 using Hive.Gig.Infrastructure.Persistence;
 using Hive.Gig.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;

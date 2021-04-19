@@ -3,14 +3,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Hive.Common.Core.Exceptions;
-using Hive.Gig.Application.Interfaces;
-using Hive.Gig.Contracts.Objects;
+using Hive.Gig.Application.Questions.Interfaces;
 using Hive.Gig.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace Hive.Gig.Application.Features.Categories.Queries
+namespace Hive.Gig.Application.Categories.Queries
 {
     public record GetCategoryQuery(int Id) : IRequest<CategoryDto>;
 

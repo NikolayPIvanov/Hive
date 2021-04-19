@@ -6,12 +6,11 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Hive.Common.Core.Mappings;
 using Hive.Common.Core.Models;
-using Hive.Gig.Application.Interfaces;
-using Hive.Gig.Contracts.Objects;
+using Hive.Gig.Application.Questions.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Logging;
 
-namespace Hive.Gig.Application.Features.Categories.Queries
+namespace Hive.Gig.Application.Categories.Queries
 {
     public record GetCategoriesQuery(int PageNumber = 1, int PageSize = 10, bool OnlyParents = false) : IRequest<PaginatedList<CategoryDto>>;
 

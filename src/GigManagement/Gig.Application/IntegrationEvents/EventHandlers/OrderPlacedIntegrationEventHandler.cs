@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using DotNetCore.CAP;
 using Hive.Common.Core.Interfaces;
-using Hive.Gig.Application.Interfaces;
+using Hive.Gig.Application.Questions.Interfaces;
 using Hive.Gig.Contracts.IntegrationEvents;
 using Microsoft.EntityFrameworkCore;
 using Ordering.Contracts.IntegrationEvents;

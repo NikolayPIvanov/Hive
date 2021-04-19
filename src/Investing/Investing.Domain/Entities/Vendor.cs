@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Hive.Common.Core.SeedWork;
 using Hive.Common.Domain;
 using Hive.Common.Domain.SeedWork;
 
