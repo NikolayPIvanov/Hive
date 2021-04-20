@@ -1,12 +1,10 @@
 ﻿using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Hive.Common.Core;
 using Hive.Common.Core.Interfaces;
 using Hive.Common.Core.SeedWork;
-using Hive.Common.Domain;
-using Hive.Common.Domain.SeedWork;
-using Hive.Gig.Application.Questions.Interfaces;
-using Hive.Gig.Domain.Entities;
+using Hive.Gig.Application.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using IDateTimeService = Hive.Common.Core.Interfaces.IDateTimeService;
@@ -35,6 +33,7 @@ namespace Hive.Gig.Infrastructure.Persistence
         public DbSet<Category> Categories { get; set; }
         public DbSet<Gig> Gigs { get; set; }
         public DbSet<Package> Packages { get; set; }
+        public DbSet<Review> Reviews { get; set; }
         public DbSet<Seller> Sellers { get; set; }
         
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new())

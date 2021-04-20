@@ -1,54 +1,39 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation;
 using Hive.Common.Core.Exceptions;
-using Hive.Gig.Application.Questions.Interfaces;
+using Hive.Gig.Application.Interfaces;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Hive.Gig.Application.Gigs.Commands
 {
-    public record UpdateGigCommand : IRequest
-    {
-        public int Id { get; set; }
-        
-        public string Title { get; set; }
-
-        public string Description { get; set; }
-        
-        public bool IsDraft { get; set; } = true;
-        
-        public int CategoryId { get; set; }
-        
-        public HashSet<string> Tags { get; init; }
-        
-        public UpdateGigCommand(int id, string title, string description, int categoryId, bool isDraft, HashSet<string> tags)
-            => (Id, Title, Description, CategoryId, IsDraft, Tags) = 
-                (id, title, description, categoryId, isDraft, tags ?? new HashSet<string>(5));
-    }
+    public record UpdateGigCommand(int Id, string Title, string Description, bool IsDraft, int? PlanId,
+        ICollection<string> Tags, ICollection<QuestionModel> Questions) : IRequest;
 
     public class UpdateGigCommandValidator : AbstractValidator<UpdateGigCommand>
     {
-        public UpdateGigCommandValidator(IGigManagementDbContext dbContext)
+        public UpdateGigCommandValidator()
         {
             RuleFor(x => x.Title)
                 .MaximumLength(50).WithMessage("Title length must not be above 50 characters.")
                 .MinimumLength(3).WithMessage("Title length must not be below 3 characters.")
                 .NotEmpty().WithMessage("Title should be provided.");
-
-            RuleFor(x => x.CategoryId)
-                .MustAsync(async (id, token) => await dbContext.Categories.AnyAsync(x => x.Id == id, cancellationToken: token))
-                .WithMessage("Must provide an existing category id.");
-
+            
+            RuleFor(x => x.Description)
+                .MaximumLength(2500).WithMessage("Description length must not be above 2500 characters.")
+                .MinimumLength(10).WithMessage("Description length must not be below 10 characters.")
+                .NotEmpty().WithMessage("Description should be provided.");
             RuleFor(x => x.Tags)
                 .Must(tags => tags.Count <= 5).WithMessage("Can provide up to 5 tags.");
 
             RuleForEach(x => x.Tags)
                 .MinimumLength(3).WithMessage("Tag length must not be below 3 characters.")
                 .MaximumLength(20).WithMessage("Tag length must not be above 20 characters.");
+            
+            RuleForEach(x => x.Questions)
+                .SetValidator(x => new QuestionValidator());
         }
     }
 
@@ -65,10 +50,7 @@ namespace Hive.Gig.Application.Gigs.Commands
         
         public async Task<Unit> Handle(UpdateGigCommand request, CancellationToken cancellationToken)
         {
-            var entity = await _dbContext.Gigs
-                .Include(g => g.GigScope)
-                .Include(g => g.Tags)
-                .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
+            var entity = await _dbContext.Gigs.FindAsync(request.Id);
             
             if (entity is null)
             {

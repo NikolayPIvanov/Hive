@@ -24,6 +24,7 @@ namespace Hive.Gig.Infrastructure.Persistence.Configurations
             // https://docs.microsoft.com/en-us/ef/core/modeling/owned-entities#collections-of-owned-types
             builder.OwnsMany(g => g.Tags, t =>
             {
+                t.ToTable("GigTags");
                 t.WithOwner().HasForeignKey("GigId");
                 t.Property<int>("Id");
                 t.HasKey("Id");
@@ -31,6 +32,7 @@ namespace Hive.Gig.Infrastructure.Persistence.Configurations
             
             builder.OwnsMany(g => g.Questions, q =>
             {
+                q.ToTable("Questions");
                 q.WithOwner().HasForeignKey("GigId");
                 q.Property<int>("Id");
                 q.HasKey("Id");
@@ -46,6 +48,7 @@ namespace Hive.Gig.Infrastructure.Persistence.Configurations
             
             builder.OwnsOne(g => g.GigScope, q =>
             {
+                q.ToTable("Scopes");
                 q.WithOwner().HasForeignKey("GigId");
                 q.Property<int>("Id");
                 q.HasKey("Id");
@@ -53,7 +56,6 @@ namespace Hive.Gig.Infrastructure.Persistence.Configurations
                 q.Property(x => x.Description)
                     .HasMaxLength(2500)
                     .IsRequired();
-                
             });
         }
     }

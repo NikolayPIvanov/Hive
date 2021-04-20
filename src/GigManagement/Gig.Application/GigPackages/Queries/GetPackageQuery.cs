@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using AutoMapper;
 using Hive.Common.Core.Exceptions;
-using Hive.Gig.Application.Questions.Interfaces;
+using Hive.Gig.Application.Interfaces;
 using Hive.Gig.Contracts.Objects;
 using Hive.Gig.Domain.Entities;
 using MediatR;
@@ -25,6 +25,12 @@ namespace Hive.Gig.Application.GigPackages.Queries
         
         public async Task<PackageDto> Handle(GetPackageQuery request, CancellationToken cancellationToken)
         {
+            var gigExists = await _dbContext.Gigs.AnyAsync(g => g.Id == request.Id, cancellationToken);
+            if (!gigExists)
+            {
+                throw new NotFoundException(nameof(Domain.Entities.Gig), request.Id);
+            }
+            
             var entity = await _dbContext.Packages
                 .FirstOrDefaultAsync(g => g.Id == request.Id, cancellationToken);
 

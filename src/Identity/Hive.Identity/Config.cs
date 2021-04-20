@@ -4,7 +4,6 @@
 
 using Duende.IdentityServer.Models;
 using System.Collections.Generic;
-using Duende.IdentityServer;
 
 namespace Hive.Identity
 {

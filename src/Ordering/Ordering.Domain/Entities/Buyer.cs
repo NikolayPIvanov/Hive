@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using Hive.Common.Core.SeedWork;
-using Hive.Common.Domain.SeedWork;
 
 namespace Ordering.Domain.Entities
 {
@@ -16,7 +15,7 @@ namespace Ordering.Domain.Entities
             UserId = userId;
         }
         
-        public string UserId { get; set; }
+        public string UserId { get; private init; }
 
         public ICollection<Order> Orders { get; private set; }
     }

@@ -2,8 +2,6 @@
 
 namespace Hive.Gig.Domain.Entities
 {
-    using Hive.Common.Domain.SeedWork;
-
     using System.Collections.Generic;
 
     public class Category : Entity

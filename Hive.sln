@@ -14,6 +14,9 @@ ProjectSection(SolutionItems) = preProject
 EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GigManagement", "GigManagement", "{FF3F27FA-F99E-4ED5-84E6-FB5FD3EB9A84}"
+ProjectSection(SolutionItems) = preProject
+	src\GigManagement\README.md = src\GigManagement\README.md
+EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gig.Domain", "src\GigManagement\Gig.Domain\Gig.Domain.csproj", "{B07A0C21-82CA-4C43-8687-F5A19AB0FCD0}"
 EndProject

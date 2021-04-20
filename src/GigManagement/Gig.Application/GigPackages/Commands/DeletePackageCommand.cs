@@ -1,34 +1,36 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
 using Hive.Common.Core.Exceptions;
-using Hive.Gig.Application.Questions.Interfaces;
+using Hive.Common.Core.Security;
+using Hive.Gig.Application.Interfaces;
 using Hive.Gig.Domain.Entities;
 using MediatR;
 
 namespace Hive.Gig.Application.GigPackages.Commands
 {
-    public record DeletePackageCommand(int Id) : IRequest;
-
+    [Authorize(Roles = "Seller, Administrator")]
+    public record DeletePackageCommand(int PackageId) : IRequest;
+    
     public class DeletePackageCommandHandler : IRequestHandler<DeletePackageCommand>
     {
-        private readonly IGigManagementDbContext _dbContext;
+        private readonly IGigManagementDbContext _context;
 
-        public DeletePackageCommandHandler(IGigManagementDbContext dbContext)
+        public DeletePackageCommandHandler(IGigManagementDbContext context)
         {
-            _dbContext = dbContext;
+            _context = context;
         }
         
         public async Task<Unit> Handle(DeletePackageCommand request, CancellationToken cancellationToken)
         {
-            var entity = await _dbContext.Packages.FindAsync(request.Id);
+            var package = await _context.Packages.FindAsync(request.PackageId);
 
-            if (entity is null)
+            if (package == null)
             {
-                throw new NotFoundException(nameof(Package), request.Id);
+                throw new NotFoundException(nameof(Package), request.PackageId);
             }
 
-            _dbContext.Packages.Remove(entity);
-            await _dbContext.SaveChangesAsync(cancellationToken);
+            _context.Packages.Remove(package);
+            await _context.SaveChangesAsync(cancellationToken);
             
             return Unit.Value;
         }

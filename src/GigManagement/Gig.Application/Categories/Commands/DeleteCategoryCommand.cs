@@ -1,17 +1,17 @@
 ﻿using System;
-using Hive.Gig.Application.Categories.Commands;
-using Hive.Gig.Application.Questions.Interfaces;
+using System.Threading;
+using System.Threading.Tasks;
+using Hive.Common.Core.Exceptions;
+using Hive.Common.Core.Security;
+using Hive.Gig.Application.Interfaces;
+using Hive.Gig.Domain.Entities;
+using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace Hive.Gig.Application.Features.Categories.Commands
+namespace Hive.Gig.Application.Categories.Commands
 {
-    using System.Threading;
-    using System.Threading.Tasks;
-    using Common.Core.Exceptions;
-    using Domain.Entities;
-    using MediatR;
-    using Microsoft.EntityFrameworkCore;
-    
+    [Authorize(Roles = "Administrator")]
     public record DeleteCategoryCommand(int Id) : IRequest;
     
     public class DeleteCategoryCommandHandler : IRequestHandler<DeleteCategoryCommand>

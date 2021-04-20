@@ -14,16 +14,27 @@ namespace Ordering.Infrastructure.Persistence.Configurations
                 .HasColumnType("decimal(18,2)")
                 .IsRequired();
 
-            builder.HasOne(o => o.Requirement)
-                .WithOne()
-                .HasForeignKey<Order>(o => o.RequirementId);
-            
+            builder.Property(x => x.PackageId).IsRequired();
+            builder.Property(x => x.BuyerId).IsRequired();
+            builder.Property(x => x.SellerId).IsRequired();
+
             builder.HasMany(o => o.Resolutions)
                 .WithOne()
                 .HasForeignKey(r => r.OrderId);
 
             builder.OwnsMany(o => o.OrderStates, os =>
             {
+                os.WithOwner().HasForeignKey("OrderId");
+                os.Property<int>("Id");
+                os.HasKey("Id");
+            });
+            
+            builder.OwnsOne(o => o.Requirement, os =>
+            {
+                os.Property(r => r.Details)
+                    .HasMaxLength(2500)
+                    .IsRequired();
+
                 os.WithOwner().HasForeignKey("OrderId");
                 os.Property<int>("Id");
                 os.HasKey("Id");

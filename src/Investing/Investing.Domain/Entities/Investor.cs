@@ -2,8 +2,6 @@
 
 namespace Hive.Investing.Domain.Entities
 {
-    using Hive.Common.Domain.SeedWork;
-   
     using System.Collections.Generic;
 
     public class Investor : Entity

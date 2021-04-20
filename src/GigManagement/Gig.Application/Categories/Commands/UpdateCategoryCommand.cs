@@ -3,14 +3,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
 using Hive.Common.Core.Exceptions;
-using Hive.Gig.Application.Questions.Interfaces;
+using Hive.Common.Core.Security;
+using Hive.Gig.Application.Interfaces;
 using Hive.Gig.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace Hive.Gig.Application.Features.Categories.Commands
+namespace Hive.Gig.Application.Categories.Commands
 {
+    [Authorize(Roles = "Administrator")]
     public record UpdateCategoryCommand(int Id, string Title, int? ParentId = null) : IRequest;
     
     public class UpdateCategoryCommandValidator : AbstractValidator<UpdateCategoryCommand>
@@ -30,21 +32,22 @@ namespace Hive.Gig.Application.Features.Categories.Commands
                 .MustAsync(BeValidAsync).WithMessage("Either parent category does not exist, title already is taken or trying to set invalid parent id");
         }
         
-        // TODO: Bug - Might update a category so that it has it's parent category as one of it's subcategories
         private async Task<bool> ParentCategoryExistsAsync(int parentCategoryId, CancellationToken cancellationToken)
         {
-            return await _dbContext.Categories.AnyAsync(c => c.Id == parentCategoryId, cancellationToken);
+            return await _dbContext.Categories.AnyAsync(c => c.Id == parentCategoryId && c.ParentId == null, cancellationToken);
         }
         
         private async Task<bool> BeValidAsync(UpdateCategoryCommand command, CancellationToken cancellationToken)
         {
             var (id, title, parentId) = command;
+            
             var titleExists = await _dbContext.Categories
                 .AnyAsync(r => r.Title == title && r.Id != id, cancellationToken);
-            
-            var titleIsValid = !titleExists;
-            var parentCategoryIsValid = !parentId.HasValue || await ParentCategoryExistsAsync(parentId.Value, cancellationToken);
-            
+
+            var parentCategoryIsValid =
+                !parentId.HasValue || (parentId.Value != id && await ParentCategoryExistsAsync(parentId.Value, cancellationToken));
+            var titleIsValid = !(titleExists);
+
             return titleIsValid && parentCategoryIsValid;
         }
     }

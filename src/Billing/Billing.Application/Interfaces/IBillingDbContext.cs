@@ -1,6 +1,5 @@
 ﻿using System.Threading;
 using System.Threading.Tasks;
-using Hive.Billing.Domain;
 using Hive.Billing.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 

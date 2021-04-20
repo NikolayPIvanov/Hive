@@ -2,7 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
-using Hive.Gig.Application.Questions.Interfaces;
+using Hive.Common.Core.Security;
+using Hive.Gig.Application.Interfaces;
 using Hive.Gig.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Hive.Gig.Application.Categories.Commands
 {
+    [Authorize(Roles = "Administrator")]
     public record CreateCategoryCommand(string Title, int? ParentId = null) : IRequest<int>;
     
     public class CreateCategoryCommandValidator : AbstractValidator<CreateCategoryCommand>
@@ -21,25 +23,25 @@ namespace Hive.Gig.Application.Categories.Commands
             _dbContext = dbContext;
             
             RuleFor(c => c.Title)
-                .MustAsync(UniqueTitleAsync)
-                .MaximumLength(50)
-                .NotEmpty();
+                .MustAsync(BeUniqueTitleAsync).WithMessage("Category with given title already exists.")
+                .MinimumLength(3).WithMessage("Title should be at minimum 3 characters")
+                .MaximumLength(50).WithMessage("Title should be at maximum 50 characters")
+                .NotEmpty().WithMessage("Title cannot be empty");
 
             RuleFor(c => c.ParentId)
-                .MustAsync(ParentCategoryExistsAsync);
+                .MustAsync(ParentCategoryExistsAsync).WithMessage("Parent category should be existing one.");
         }
 
         private async Task<bool> ParentCategoryExistsAsync(int? parentCategoryId, CancellationToken cancellationToken)
         {
             if (parentCategoryId is null) return true;
 
-            return (await _dbContext.Categories.AnyAsync(c => c.Id == parentCategoryId, cancellationToken));
+            return await _dbContext.Categories.AnyAsync(c => c.Id == parentCategoryId, cancellationToken);
         }
         
-        private async Task<bool> UniqueTitleAsync(string title, CancellationToken cancellationToken)
+        private async Task<bool> BeUniqueTitleAsync(string title, CancellationToken cancellationToken)
         {
-            var hasWithTitle = await _dbContext.Categories.AnyAsync(r => r.Title == title, cancellationToken);
-            return !hasWithTitle;
+            return await _dbContext.Categories.AllAsync(r => r.Title != title, cancellationToken);
         }
     }
 
@@ -59,8 +61,7 @@ namespace Hive.Gig.Application.Categories.Commands
             var (title, parentId) = request;
             var category = new Category(title, parentId);
             
-            // TODO: Use sequence
-            await _dbContext.Categories.AddAsync(category, cancellationToken);
+            _dbContext.Categories.Add(category);
             await _dbContext.SaveChangesAsync(cancellationToken);
 
             _logger.LogInformation("Category with {@Title} and {@ParentId} was created.", title, parentId);

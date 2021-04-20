@@ -5,15 +5,14 @@ using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Hive.Common.Core.Mappings;
 using Hive.Common.Core.Models;
-using Hive.Gig.Application.Questions.Interfaces;
-using Hive.Gig.Contracts.Objects;
+using Hive.Gig.Application.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hive.Gig.Application.Gigs.Queries
 {
-    public record GetCategoryGigsQuery(int CategoryId) : PaginatedQuery, IRequest<PaginatedList<GigDto>>;
-
+    public record GetCategoryGigsQuery(int CategoryId, int PageNumber = 1, int PageSize = 10) : IRequest<PaginatedList<GigDto>>;
+    
     public class GetCategoryGigsQueryHandler : IRequestHandler<GetCategoryGigsQuery, PaginatedList<GigDto>>
     {
         private readonly IGigManagementDbContext _dbContext;

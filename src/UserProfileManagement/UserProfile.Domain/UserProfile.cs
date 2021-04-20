@@ -1,5 +1,4 @@
 ﻿using Hive.Common.Core.SeedWork;
-using Hive.Common.Domain.SeedWork;
 
 namespace Hive.UserProfile.Domain
 {

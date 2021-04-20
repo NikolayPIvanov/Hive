@@ -6,7 +6,6 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Ordering.Application.Interfaces;
 using Ordering.Application.Orders.EventHandlers;
-using Ordering.Domain.Entities;
 using Ordering.Domain.Enums;
 using Ordering.Domain.ValueObjects;
 

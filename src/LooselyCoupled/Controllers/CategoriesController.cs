@@ -3,63 +3,50 @@ using Hive.Common.Core.Models;
 using Hive.Gig.Application.Categories;
 using Hive.Gig.Application.Categories.Commands;
 using Hive.Gig.Application.Categories.Queries;
-using Hive.Gig.Application.Features.Categories.Commands;
 using Hive.Gig.Application.Gigs.Queries;
-using Hive.Gig.Contracts.Objects;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hive.LooselyCoupled.Controllers
 {
+    [Common.Core.Security.Authorize]
     public class CategoriesController : ApiControllerBase
     {
-        [HttpGet("{id}")]
-        public async Task<ActionResult<CategoryDto>> Get([FromRoute] int id)
-        {
-            var category = await Mediator.Send(new GetCategoryQuery(id));
-            return Ok(category);
-        }
-        
-        [HttpGet("{id}/gigs")]
-        public async Task<ActionResult<int>> Get([FromRoute] int id, [FromQuery] PaginatedQuery query)
-        {
-            var request = new GetCategoryGigsQuery(id)
-            {
-                PageNumber = query.PageNumber,
-                PageSize = query.PageSize
-            };
-            
-            var list = await Mediator.Send(request);
-            return Ok(list);
-        }
+        [HttpGet("{id:int}")]
+        [AllowAnonymous]
+        public async Task<ActionResult<CategoryDto>> GetCategoryById(int id) => await Mediator.Send(new GetCategoryQuery(id));
         
         [HttpGet]
-        public async Task<ActionResult<CategoryDto>> Get([FromQuery] GetCategoriesQuery query)
-        {
-            var list = await Mediator.Send(query);
-            return Ok(list);
-        }
+        [AllowAnonymous]
+        public async Task<ActionResult<PaginatedList<CategoryDto>>> GetCategories([FromQuery] GetCategoriesQuery query) => Ok(await Mediator.Send(query));
+        
+        
+        [HttpGet("{id:int}/gigs")]
+        [AllowAnonymous]
+        public async Task<ActionResult<PaginatedList<GigDto>>> GetCategoryGigs([FromRoute] int id,
+            [FromQuery] int pageNumber = 1, int pageSize = 10)
+            => Ok(await Mediator.Send(new GetCategoryGigsQuery(id, pageNumber, pageSize)));
         
         [HttpPost]
-        public async Task<ActionResult<int>> Create([FromBody] CreateCategoryCommand command)
+        public async Task<IActionResult> CreateCategory([FromBody] CreateCategoryCommand command)
         {
             var id = await Mediator.Send(command);
-            return CreatedAtAction(nameof(Get), new { id }, id);
+            return CreatedAtAction(nameof(GetCategoryById), new { id }, id);
         }
         
-        [HttpPut("{id}")]
-        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateCategoryCommand command)
+        [HttpPut("{id:int}")]
+        public async Task<ActionResult> UpdateCategory([FromRoute] int id, [FromBody] UpdateCategoryCommand command)
         {
             if (id != command.Id)
             {
-                return BadRequest("Body and route ids mismatch.");
+                return BadRequest();
             }
-            
             await Mediator.Send(command);
             return NoContent();
         }
-        
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+
+        [HttpDelete("{id:int}")]
+        public async Task<ActionResult> DeleteCategory(int id)
         {
             await Mediator.Send(new DeleteCategoryCommand(id));
             return NoContent();

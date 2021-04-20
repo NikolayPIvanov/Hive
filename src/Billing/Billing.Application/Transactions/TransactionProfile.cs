@@ -1,6 +1,5 @@
 ﻿using AutoMapper;
 using Billing.Application.Objects;
-using Hive.Billing.Domain;
 using Hive.Billing.Domain.Entities;
 
 namespace Billing.Application.Transactions

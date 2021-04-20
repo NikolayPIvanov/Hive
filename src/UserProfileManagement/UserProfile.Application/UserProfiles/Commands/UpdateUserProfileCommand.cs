@@ -1,12 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Hive.Common.Core.Exceptions;
 using Hive.UserProfile.Application.Interfaces;
 using Hive.UserProfile.Domain;
 using MediatR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Hive.UserProfile.Application.UserProfiles.Commands
 {

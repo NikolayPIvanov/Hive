@@ -37,7 +37,6 @@ namespace Hive.Gig.Domain.Entities
         public Category Category { get; set; }
 
         public int SellerId { get; set; }
-
         public Seller Seller { get; set; }
 
         public int? PlanId { get; set; }

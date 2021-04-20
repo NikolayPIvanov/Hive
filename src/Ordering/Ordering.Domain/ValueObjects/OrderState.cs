@@ -8,6 +8,8 @@ namespace Ordering.Domain.ValueObjects
     {
         private State()
         {
+            OrderState = OrderState.Validation;
+            Reason = "In validation";
         }
 
         public State(OrderState state, string reason) : this()
@@ -23,6 +25,7 @@ namespace Ordering.Domain.ValueObjects
         protected override IEnumerable<object> GetEqualityComponents()
         {
             yield return OrderState;
+            yield return Reason;
         }
     }
 }

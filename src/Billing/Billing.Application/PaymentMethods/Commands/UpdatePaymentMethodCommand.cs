@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using Billing.Application.Interfaces;
 using Hive.Billing.Domain.Entities;

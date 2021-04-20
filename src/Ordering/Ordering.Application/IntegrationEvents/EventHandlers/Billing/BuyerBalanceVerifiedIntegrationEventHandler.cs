@@ -4,7 +4,6 @@ using DotNetCore.CAP;
 using Hive.Billing.Contracts.IntegrationEvents;
 using Microsoft.EntityFrameworkCore;
 using Ordering.Application.Interfaces;
-using Ordering.Domain.Entities;
 using Ordering.Domain.Enums;
 using Ordering.Domain.ValueObjects;
 

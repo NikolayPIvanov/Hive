@@ -3,7 +3,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Billing.Application.Interfaces;
-using Hive.Billing.Domain;
 using Hive.Billing.Domain.Entities;
 using Hive.Billing.Domain.Enums;
 using Hive.Common.Core.Exceptions;

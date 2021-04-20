@@ -1,5 +1,4 @@
 ﻿using System.Reflection;
-using Billing.Application.IntegrationEvents;
 using DotNetCore.CAP;
 using FluentValidation;
 using Hive.Common.Core;

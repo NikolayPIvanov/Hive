@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Hive.Common.Core.Mappings;
-using Hive.Gig.Application.Questions.Interfaces;
+using Hive.Gig.Application.Interfaces;
 using Hive.Gig.Contracts.Objects;
 using MediatR;
 
@@ -14,18 +14,18 @@ namespace Hive.Gig.Application.GigPackages.Queries
 
     public class GetGigPackagesQueryHandler : IRequestHandler<GetGigPackagesQuery, IEnumerable<PackageDto>>
     {
-        private readonly IGigManagementDbContext _dbContext;
+        private readonly IGigManagementDbContext _context;
         private readonly IMapper _mapper;
 
-        public GetGigPackagesQueryHandler(IGigManagementDbContext dbContext, IMapper mapper)
+        public GetGigPackagesQueryHandler(IGigManagementDbContext context, IMapper mapper)
         {
-            _dbContext = dbContext;
+            _context = context;
             _mapper = mapper;
         }
         
         public async Task<IEnumerable<PackageDto>> Handle(GetGigPackagesQuery request, CancellationToken cancellationToken)
         {
-            return await _dbContext.Packages
+            return await _context.Packages
                 .Where(p => p.GigId == request.GigId)
                 .ProjectToListAsync<PackageDto>(_mapper.ConfigurationProvider);
         }

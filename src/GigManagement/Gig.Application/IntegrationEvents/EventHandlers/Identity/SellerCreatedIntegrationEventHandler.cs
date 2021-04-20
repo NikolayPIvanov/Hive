@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using DotNetCore.CAP;
-using Hive.Gig.Application.Questions.Interfaces;
+using Hive.Gig.Application.Interfaces;
 using Hive.Gig.Domain.Entities;
 using Hive.Identity.Contracts.IntegrationEvents;
 using Microsoft.EntityFrameworkCore;
