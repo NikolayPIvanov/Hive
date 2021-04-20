@@ -9,8 +9,8 @@ namespace Ordering.Application.Orders
     {
         public OrderProfile()
         {
-            CreateMap<Order, OrderDto>();
-            CreateMap<State, StateDto>(MemberList.Destination);
+            CreateMap<Order, OrderDto>().DisableCtorValidation();
+            CreateMap<State, StateDto>(MemberList.Destination).DisableCtorValidation();
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
+using Hive.Common.Core.Exceptions;
 using Hive.Common.Core.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +14,7 @@ using Ordering.Domain.Entities;
 namespace Ordering.Application.Orders.Commands
 {
     public record PlaceOrderCommand(decimal UnitPrice, string Requirements,
-            int SellerId, int GigId, int PackageId) : IRequest<Guid>;
+            string SellerUserId, int PackageId) : IRequest<Guid>;
 
     public class PlaceOrderCommandValidator : AbstractValidator<PlaceOrderCommand>
     {
@@ -26,14 +27,9 @@ namespace Ordering.Application.Orders.Commands
                 .GreaterThan(0.0m).WithMessage("{PropertyName} cannot be below {ComparisonValue}.")
                 .NotNull().WithMessage("A {PropertyName} must be provided");
             
-            RuleFor(x => x.SellerId)
-                .GreaterThan(0).WithMessage("{PropertyName} cannot be below {ComparisonValue}.")
+            RuleFor(x => x.SellerUserId)
                 .NotNull().WithMessage("A {PropertyName} must be provided");
-            
-            RuleFor(x => x.GigId)
-                .GreaterThan(0).WithMessage("{PropertyName} cannot be below {ComparisonValue}.")
-                .NotNull().WithMessage("A {PropertyName} must be provided");
-            
+
             RuleFor(x => x.PackageId)
                 .GreaterThan(0).WithMessage("{PropertyName} cannot be below {ComparisonValue}.")
                 .NotNull().WithMessage("A {PropertyName} must be provided");
@@ -43,25 +39,30 @@ namespace Ordering.Application.Orders.Commands
     public class PlaceOrderCommandHandler : IRequestHandler<PlaceOrderCommand, Guid>
     {
         private readonly IOrderingContext _context;
+        private readonly ICurrentUserService _currentUserService;
         private readonly IIntegrationEventPublisher _publisher;
 
-        public PlaceOrderCommandHandler(IOrderingContext context, IIntegrationEventPublisher publisher)
+        public PlaceOrderCommandHandler(IOrderingContext context, ICurrentUserService currentUserService, IIntegrationEventPublisher publisher)
         {
             _context = context;
+            _currentUserService = currentUserService;
             _publisher = publisher;
         }
         
         public async Task<Guid> Handle(PlaceOrderCommand request, CancellationToken cancellationToken)
         {
-            var currentUserId = "100";
             var buyerId = await _context.Buyers.Select(b => new {b.Id, b.UserId})
-                .FirstOrDefaultAsync(b => b.UserId == currentUserId, cancellationToken: cancellationToken);
-            var order = new Order(request.UnitPrice, request.Requirements, request.GigId, request.PackageId,
-                buyerId.Id, request.SellerId);
+                .FirstOrDefaultAsync(b => b.UserId == _currentUserService.UserId, cancellationToken: cancellationToken);
+
+            if (buyerId == null)
+            {
+                throw new NotFoundException(nameof(Buyer), _currentUserService.UserId);
+            }
+
+            var order = new Order(request.UnitPrice, request.Requirements, request.PackageId, _currentUserService.UserId, request.SellerUserId);
             
             var orderCreated = new OrderPlacedIntegrationEvent(order.OrderNumber, order.UnitPrice, buyerId.UserId,
-                order.SellerId, order.GigId, order.PackageId);
-            
+                order.SellerId, order.PackageId);
             await _publisher.Publish(orderCreated);
             
             _context.Orders.Add(order);

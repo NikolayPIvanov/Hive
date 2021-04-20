@@ -9,6 +9,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Hive.Gig.Application.Reviews.Queries
 {
+    public record ReviewDto(string Comment, double Rating);
+    
     public record GetReviewByIdQuery(int GigId, int ReviewId) : IRequest<ReviewDto>;
     
     public class GetReviewByIdQueryHandler : IRequestHandler<GetReviewByIdQuery, ReviewDto>

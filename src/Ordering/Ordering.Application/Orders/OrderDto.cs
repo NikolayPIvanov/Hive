@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Ordering.Contracts
+namespace Ordering.Application.Orders
 {
     public record StateDto
     {

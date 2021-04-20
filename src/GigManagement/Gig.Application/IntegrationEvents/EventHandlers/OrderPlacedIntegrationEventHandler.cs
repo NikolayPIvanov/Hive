@@ -23,25 +23,16 @@ namespace Hive.Gig.Application.IntegrationEvents.EventHandlers
         [CapSubscribe(nameof(OrderPlacedIntegrationEvent))] 
         public async Task Handle(OrderPlacedIntegrationEvent @event)
         {
-            var gig = await _dbContext.Gigs
-                .Include(g => g.Packages)
-                .FirstOrDefaultAsync(g => g.Id == @event.GigId);
+            var package = await _dbContext.Packages
+                .FirstOrDefaultAsync(g => g.Id == @event.PackageId);
             
-            var reason = $"Gig with id {@event.GigId} was not found";
+            var reason = $"Package with id {@event.PackageId} was not found";
             var integrationEvent = new OrderValidatedIntegrationEvent(@event.OrderNumber, reason, IsValid: false);
             
-            if (gig is null)
+            if (package is null)
             {
                 var invalidationEvent = new OrderValidatedIntegrationEvent(@event.OrderNumber, reason);
                 await _publisher.Publish(invalidationEvent);
-                return;
-            }
-            
-            var package = gig.Packages.FirstOrDefault(p => p.Id == @event.PackageId);
-            if (package is null)
-            {
-                reason = $"Package with id {@event.PackageId} was not found for gig with id {@event.GigId}";
-                await _publisher.Publish(integrationEvent  with { Reason = reason});
                 return;
             }
 
@@ -53,10 +44,15 @@ namespace Hive.Gig.Application.IntegrationEvents.EventHandlers
                 return;
             }
 
-            var sellerIdIsValid = gig.SellerId == @event.SellerId;
+
+            var gig = await _dbContext.Gigs
+                .Include(x => x.Seller)
+                .FirstOrDefaultAsync(x => x.Id ==package.GigId, default);
+            
+            var sellerIdIsValid = gig.Seller.UserId == @event.SellerUserId;
             if (!sellerIdIsValid) 
             {
-                reason = $"Order {@event.OrderNumber} had invalid seller id {@event.SellerId}";
+                reason = $"Order {@event.OrderNumber} had invalid seller id {@event.SellerUserId}";
                 await _publisher.Publish(integrationEvent  with { Reason = reason});
                 return;
             }
