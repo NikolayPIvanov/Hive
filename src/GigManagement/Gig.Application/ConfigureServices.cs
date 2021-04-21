@@ -21,7 +21,6 @@ namespace Hive.Gig.Application
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PerformanceBehaviour<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(AuthorizationBehaviour<,>));
 
-
             services.AddOfType<ICapSubscribe>(new[] {Assembly.GetExecutingAssembly()});
 
             return services;

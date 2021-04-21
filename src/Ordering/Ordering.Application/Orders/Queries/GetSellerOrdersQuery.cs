@@ -29,7 +29,7 @@ namespace Ordering.Application.Orders.Queries
         public async Task<IEnumerable<OrderDto>> Handle(GetSellerOrdersQuery request, CancellationToken cancellationToken)
         {
             return await _context.Orders
-                .Where(o => o.SellerId == request.SellerId)
+                .Where(o => o.SellerUserId == request.SellerId)
                 .AsNoTracking()
                 .ProjectToListAsync<OrderDto>(_mapper.ConfigurationProvider);
         }

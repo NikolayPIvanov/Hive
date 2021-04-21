@@ -51,7 +51,7 @@ namespace Hive.Gig.Infrastructure
             services.AddScoped<IGigManagementDbContext>(provider => provider.GetService<GigManagementDbContext>());
             services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
             services.AddScoped<IDateTimeService, DateTimeService>();
-
+            
             return services;
         }
     }

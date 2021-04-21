@@ -22,7 +22,6 @@ namespace Ordering.Infrastructure.Services
                 new BlobContainerClient(settings.Value.BlobConnectionString, settings.Value.BlobContainerName);
         }
 
-        
         public async Task<string> UploadAsync(IFormFile formFile)
         {
             await _blobContainerClient.CreateIfNotExistsAsync();

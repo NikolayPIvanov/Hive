@@ -51,6 +51,7 @@ namespace Ordering.Infrastructure
             services.AddScoped<IOrderingContext>(provider => provider.GetService<OrderingDbContext>());
             services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
             services.AddScoped<IDateTimeService, DateTimeService>();
+            services.AddScoped<IFileService, FileService>();
 
             return services;
         }

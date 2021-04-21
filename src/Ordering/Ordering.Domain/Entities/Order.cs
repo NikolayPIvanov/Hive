@@ -15,14 +15,14 @@ namespace Ordering.Domain.Entities
             IsClosed =  IsInClosedState();
         }
         
-        public Order(decimal price, string requirements, int packageId, string buyerId, string sellerId) : this()
+        public Order(decimal price, string requirements, int packageId, int buyerId, string sellerUserId) : this()
         {
             OrderNumber = Guid.NewGuid();
             OrderedAt = DateTime.UtcNow;
             UnitPrice = price;
             PackageId = packageId;
             BuyerId = buyerId;
-            SellerId = sellerId;
+            SellerUserId = sellerUserId;
             Requirement = new Requirement(requirements);
             OrderStates = new HashSet<State>
             {
@@ -32,8 +32,8 @@ namespace Ordering.Domain.Entities
                 
         public Guid OrderNumber { get; private init; }
         public DateTime OrderedAt { get; private init; }
-        public string SellerId { get; private init; }
-        public string BuyerId { get; private init; }
+        public string SellerUserId { get; private init; }
+        public int? BuyerId { get; private init; }
         public bool IsClosed { get; private init; }
         public Requirement Requirement { get; private init; }
         public int PackageId { get; private init; }

@@ -10,24 +10,26 @@ namespace Hive.Billing.Domain.Entities
         {
         }
         
-        public Transaction(TransactionType type, decimal amount, int paymentMethodId, Guid? orderNumber) : this()
+        public Transaction(decimal amount, Guid? orderNumber, TransactionType type, int walletId) : this()
         {
             Amount = amount;
             OrderNumber = orderNumber;
-            PaymentMethodId = paymentMethodId;
             TransactionType = type;
-            TransactionId = GenerateTransactionId();
+            WalletId = walletId;
+            PublicId = GenerateTransactionId();
         }
+        
+        public int PublicId { get; init; }
+        public decimal Amount { get; private init; }
         
         public TransactionType TransactionType { get; private init; }
 
-        public int TransactionId { get; init; }
-
-        public decimal Amount { get; private init; }
-
         public Guid? OrderNumber { get; init; }
         
-        public int PaymentMethodId { get; private init; }
+        public int WalletId { get; private init; }
+        
+        public Wallet Wallet { get; private init; }
+
 
         private int GenerateTransactionId()
         {

@@ -50,8 +50,7 @@ namespace Billing.Infrastructure
             services.AddScoped<IBillingDbContext>(provider => provider.GetService<BillingDbContext>());
             services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
             services.AddScoped<IDateTimeService, DateTimeService>();
-
-
+            
             return services;
         }
     }

@@ -31,6 +31,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gig.Infrastructure", "src\GigManagement\Gig.Infrastructure\Gig.Infrastructure.csproj", "{53C68299-82C5-4E4E-850A-E2BECBF6C4E5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ordering", "Ordering", "{D2BF2D43-AF5B-4528-AF7B-D5F212B3A05E}"
+ProjectSection(SolutionItems) = preProject
+	src\GigManagement\README.md = src\GigManagement\README.md
+EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ordering.Domain", "src\Ordering\Ordering.Domain\Ordering.Domain.csproj", "{392D52A5-059F-41C7-9FC5-7FF819C69483}"
 EndProject
@@ -43,6 +46,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LooselyCoupled", "src\LooselyCoupled\LooselyCoupled.csproj", "{96EB2C94-6A7B-4B5A-BE73-B743A65DCA18}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Billing", "Billing", "{0C0C3FD3-1C83-490B-BCAB-193B4D434F72}"
+ProjectSection(SolutionItems) = preProject
+	src\GigManagement\README.md = src\GigManagement\README.md
+EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Billing.Domain", "src\Billing\Billing.Domain\Billing.Domain.csproj", "{FBDFFF93-67BF-4F47-9A24-0700B13D83C2}"
 EndProject

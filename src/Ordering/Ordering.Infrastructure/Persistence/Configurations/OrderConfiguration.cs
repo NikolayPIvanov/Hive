@@ -15,8 +15,8 @@ namespace Ordering.Infrastructure.Persistence.Configurations
                 .IsRequired();
 
             builder.Property(x => x.PackageId).IsRequired();
-            builder.Property(x => x.BuyerId).IsRequired();
-            builder.Property(x => x.SellerId).IsRequired();
+            builder.Property(x => x.BuyerId).IsRequired(false);
+            builder.Property(x => x.SellerUserId).IsRequired();
 
             builder.HasMany(o => o.Resolutions)
                 .WithOne()
@@ -31,6 +31,7 @@ namespace Ordering.Infrastructure.Persistence.Configurations
             
             builder.OwnsOne(o => o.Requirement, os =>
             {
+                os.ToTable("requirements");
                 os.Property(r => r.Details)
                     .HasMaxLength(2500)
                     .IsRequired();

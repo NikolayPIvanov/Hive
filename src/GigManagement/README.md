@@ -1,7 +1,7 @@
 ﻿Migrations
 
-`dotnet ef migrations add "AddingEntities" --project src\GigManagement\Gig.Infrastructure --startup-project src\LooselyCoupled --output-dir Persistence\Migrations --context GigManagementDbContext`
+`dotnet ef migrations add "AddingEntities" --project src\Billing\Billing.Infrastructure --startup-project src\LooselyCoupled --output-dir Persistence\Migrations --context BillingDbContext`
 
 Update database
 
-`dotnet ef database update --project src\GigManagement\Gig.Infrastructure --startup-project src\LooselyCoupled --context GigManagementDbContext`
+`dotnet ef database update --project src\Billing\Billing.Infrastructure --startup-project src\LooselyCoupled --context BillingDbContext`

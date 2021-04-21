@@ -59,10 +59,10 @@ namespace Ordering.Application.Orders.Commands
                 throw new NotFoundException(nameof(Buyer), _currentUserService.UserId);
             }
 
-            var order = new Order(request.UnitPrice, request.Requirements, request.PackageId, _currentUserService.UserId, request.SellerUserId);
+            var order = new Order(request.UnitPrice, request.Requirements, request.PackageId, buyerId.Id, request.SellerUserId);
             
             var orderCreated = new OrderPlacedIntegrationEvent(order.OrderNumber, order.UnitPrice, buyerId.UserId,
-                order.SellerId, order.PackageId);
+                order.SellerUserId, order.PackageId);
             await _publisher.Publish(orderCreated);
             
             _context.Orders.Add(order);

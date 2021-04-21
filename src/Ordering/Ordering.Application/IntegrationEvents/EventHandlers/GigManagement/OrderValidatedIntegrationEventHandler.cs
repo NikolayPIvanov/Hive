@@ -32,9 +32,11 @@ namespace Ordering.Application.IntegrationEvents.EventHandlers.GigManagement
             var orderState = @event.IsValid ? OrderState.OrderDataValid : OrderState.Invalid;
             var state = new State(orderState, @event.Reason);
 
+            var buyer = await _context.Buyers.FindAsync(order.BuyerId);
+
             if (orderState == OrderState.OrderDataValid)
             {
-                await _mediator.Publish(new OrderValidatedEvent(@event.OrderNumber, order.UnitPrice, order.BuyerId));
+                await _mediator.Publish(new OrderValidatedEvent(@event.OrderNumber, order.UnitPrice, buyer.UserId));
             }
 
             order.OrderStates.Add(state);

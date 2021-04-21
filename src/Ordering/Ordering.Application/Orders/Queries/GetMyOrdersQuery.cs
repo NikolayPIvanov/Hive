@@ -11,6 +11,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Ordering.Application.Interfaces;
 using Ordering.Contracts;
+using Ordering.Domain.Entities;
 
 namespace Ordering.Application.Orders.Queries
 {
@@ -32,11 +33,17 @@ namespace Ordering.Application.Orders.Queries
         
         public async Task<IEnumerable<OrderDto>> Handle(GetMyOrdersQuery request, CancellationToken cancellationToken)
         {
+            var buyerId = await _context.Buyers.Select(x => new {x.Id, x.UserId})
+                .FirstOrDefaultAsync(x => x.UserId == _currentUserService.UserId, cancellationToken);
+            if (buyerId == null)
+            {
+                throw new NotFoundException(nameof(Buyer));
+            }
             
             return await _context.Orders
                 .Include(o => o.Requirement)
                 .Include(o => o.OrderStates)
-                .Where(o => o.BuyerId ==  _currentUserService.UserId)
+                .Where(o => o.BuyerId ==  buyerId.Id)
                 .AsNoTracking()
                 .ProjectToListAsync<OrderDto>(_mapper.ConfigurationProvider);
         }

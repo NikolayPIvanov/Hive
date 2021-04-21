@@ -44,7 +44,6 @@ namespace Hive.Gig.Application.IntegrationEvents.EventHandlers
                 return;
             }
 
-
             var gig = await _dbContext.Gigs
                 .Include(x => x.Seller)
                 .FirstOrDefaultAsync(x => x.Id ==package.GigId, default);
