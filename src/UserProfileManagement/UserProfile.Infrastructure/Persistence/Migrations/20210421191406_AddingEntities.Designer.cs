@@ -9,9 +9,9 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Hive.UserProfile.Infrastructure.Persistence.Migrations
 {
-    [DbContext(typeof(UserProfileContext))]
-    [Migration("20210401033326_MappingUserProfilesToCustomTable")]
-    partial class MappingUserProfilesToCustomTable
+    [DbContext(typeof(UserProfileDbContext))]
+    [Migration("20210421191406_AddingEntities")]
+    partial class AddingEntities
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {

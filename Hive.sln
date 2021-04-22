@@ -59,14 +59,23 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Billing.Contracts", "src\Billing\Billing.Contracts\Billing.Contracts.csproj", "{82A4459B-968A-48AE-80D2-940DB629AD83}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Identity", "Identity", "{A631BEB6-EA6F-4DD4-B4FD-C7686C6CEDC1}"
+ProjectSection(SolutionItems) = preProject
+	src\GigManagement\README.md = src\GigManagement\README.md
+EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hive.Identity", "src\Identity\Hive.Identity\Hive.Identity.csproj", "{D470BC56-5BFF-4918-9C52-7325200C665B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Investing", "Investing", "{DA51A033-CBCE-4621-8B23-25904897343C}"
+ProjectSection(SolutionItems) = preProject
+	src\GigManagement\README.md = src\GigManagement\README.md
+EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hive.Identity.Contracts", "src\Identity\Hive.Identity.Contracts\Hive.Identity.Contracts.csproj", "{B456D47F-0F7F-4773-A3EF-8AD599F9BDF9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UserProfileManagement", "UserProfileManagement", "{76FBDAA3-BF4F-4A4A-B097-14D469FC06CD}"
+ProjectSection(SolutionItems) = preProject
+	src\GigManagement\README.md = src\GigManagement\README.md
+EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserProfile.Domain", "src\UserProfileManagement\UserProfile.Domain\UserProfile.Domain.csproj", "{1E27DE64-7839-4B38-8996-E83432D209F3}"
 EndProject

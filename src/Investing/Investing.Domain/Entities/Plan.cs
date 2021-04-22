@@ -4,13 +4,14 @@ using Hive.Common.Core.SeedWork;
 
 namespace Hive.Investing.Domain.Entities
 {
-    public record Tag(string Value);
+    public record SearchTag(string Value);
     
     public class Plan : Entity
     {
         private Plan()
         {
-            Tags = new HashSet<Tag>(10);
+            SearchTags = new HashSet<SearchTag>(10);
+            Investments = new HashSet<Investment>();
         }
 
         public Plan(int vendorId, string title, string description, 
@@ -22,6 +23,7 @@ namespace Hive.Investing.Domain.Entities
             EstimatedReleaseDays = estimatedReleaseDays;
             EstimatedReleaseDate = estimatedReleaseDate;
             FundingNeeded = fundingNeeded;
+            IsFunded = false;
         }
         
         public string Title { get; set; }
@@ -33,9 +35,14 @@ namespace Hive.Investing.Domain.Entities
         public DateTime? EstimatedReleaseDate { get; set; }
 
         public decimal FundingNeeded { get; set; }
+
+        public bool IsFunded { get; set; }
         
         public int VendorId { get; set; }
+        public Vendor Vendor { get; set; }
 
-        public ICollection<Tag> Tags { get; private set; }
+        public ICollection<SearchTag> SearchTags { get; private set; }
+
+        public ICollection<Investment> Investments { get; set; }
     }
 }

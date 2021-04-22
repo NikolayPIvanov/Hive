@@ -14,9 +14,9 @@ namespace Hive.Investing.Domain.Entities
         {
             UserId = userId;
         }
-        
-        public string UserId { get; set; }
 
-        public ICollection<Plan> Plans { get; private set; }
+        public string UserId { get; private init; }
+
+        public ICollection<Plan> Plans { get; set; }
     }
 }

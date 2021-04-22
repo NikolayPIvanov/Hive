@@ -4,11 +4,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Hive.Common.Core.Mappings;
+using Hive.Common.Core.Security;
 using Hive.Investing.Application.Interfaces;
 using MediatR;
 
 namespace Hive.Investing.Application.Plans.Queries
 {
+    [Authorize(Roles = "Seller, Administrator")]
     public record GetPlansForVendorQuery(int VendorId) : IRequest<IEnumerable<PlanDto>>;
 
     public class GetPlansForVendorQueryHandler : IRequestHandler<GetPlansForVendorQuery, IEnumerable<PlanDto>>
@@ -24,8 +26,6 @@ namespace Hive.Investing.Application.Plans.Queries
         
         public async Task<IEnumerable<PlanDto>> Handle(GetPlansForVendorQuery request, CancellationToken cancellationToken)
         {
-            // validate for authorization
-            var currentUserId = "str";
             return await _context.Plans
                 .Where(p => p.VendorId == request.VendorId)
                 .ProjectToListAsync<PlanDto>(_mapper.ConfigurationProvider);

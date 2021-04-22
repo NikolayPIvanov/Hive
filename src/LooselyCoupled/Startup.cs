@@ -3,7 +3,10 @@ using Billing.Infrastructure;
 using Hive.Common.Core.Interfaces;
 using Hive.Gig.Application;
 using Hive.Gig.Infrastructure;
+using Hive.Investing.Application;
+using Hive.Investing.Infrastructure;
 using Hive.LooselyCoupled.Services;
+using Hive.UserProfile.Application;
 using Hive.UserProfile.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -39,6 +42,10 @@ namespace Hive.LooselyCoupled
             services.AddBillingApp(Configuration);
 
             services.AddUserProfileInfrastructure(Configuration);
+            services.AddUserProfileApplication(Configuration);
+
+            services.AddInvestingInfrastructure(Configuration);
+            services.AddInvestingApplication(Configuration);
             
             services.AddHttpContextAccessor();
 

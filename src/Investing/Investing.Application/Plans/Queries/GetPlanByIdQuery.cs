@@ -24,7 +24,9 @@ namespace Hive.Investing.Application.Plans.Queries
         
         public async Task<PlanDto> Handle(GetPlanByIdQuery request, CancellationToken cancellationToken)
         {
-            var plan = await _context.Plans.FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
+            var plan = await _context.Plans
+                .Include(x => x.Investments)
+                .FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
             
             if (plan is null)
             {

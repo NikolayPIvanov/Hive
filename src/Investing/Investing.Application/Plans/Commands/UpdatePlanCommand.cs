@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Hive.Common.Core.Exceptions;
+using Hive.Common.Core.Security;
 using Hive.Investing.Application.Interfaces;
 using Hive.Investing.Domain.Entities;
 using MediatR;
@@ -9,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Hive.Investing.Application.Plans.Commands
 {
+    [Authorize(Roles = "Seller, Administrator")]
     public record UpdatePlanCommand(int Id, string Title, string Description,
         int EstimatedReleaseDays, DateTime? EstimatedReleaseDate, decimal FundingNeeded) : IRequest;
     

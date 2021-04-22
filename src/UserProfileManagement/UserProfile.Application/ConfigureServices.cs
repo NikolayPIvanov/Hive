@@ -11,7 +11,7 @@ namespace Hive.UserProfile.Application
 {
     public static class ConfigureServices
     {
-        public static IServiceCollection AddBillingApp(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddUserProfileApplication(this IServiceCollection services, IConfiguration configuration)
         {
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());

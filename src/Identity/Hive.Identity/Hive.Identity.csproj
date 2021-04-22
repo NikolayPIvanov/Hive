@@ -38,7 +38,6 @@
 
     <ItemGroup>
       <ProjectReference Include="..\..\Common\Common.Core\Common.Core.csproj" />
-      <ProjectReference Include="..\..\Common\Common.Infrastructure\Common.Infrastructure.csproj" />
       <ProjectReference Include="..\Hive.Identity.Contracts\Hive.Identity.Contracts.csproj" />
     </ItemGroup>
 </Project>

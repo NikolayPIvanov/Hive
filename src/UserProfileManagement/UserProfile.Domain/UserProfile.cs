@@ -3,7 +3,11 @@
 namespace Hive.UserProfile.Domain
 {
     using System.Collections.Generic;
-
+    
+    public record Language(string Value);
+    
+    public record Skill(string Value);
+    
     public class UserProfile : Entity
     {
         private UserProfile()
@@ -27,7 +31,6 @@ namespace Hive.UserProfile.Domain
         
         public string? Education { get; set; }
 
-        // TODO: Set to readonly
         public ICollection<Skill> Skills { get; private set; }
         
         public ICollection<Language> Languages { get; private set; }

@@ -4,16 +4,14 @@ using Hive.UserProfile.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Hive.UserProfile.Infrastructure.Persistence.Migrations
 {
-    [DbContext(typeof(UserProfileContext))]
-    [Migration("20210401033101_AddingUserProfile")]
-    partial class AddingUserProfile
+    [DbContext(typeof(UserProfileDbContext))]
+    partial class UserProfileDbContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -65,7 +63,62 @@ namespace Hive.UserProfile.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("UserProfiles");
+                    b.ToTable("profiles", "up");
+                });
+
+            modelBuilder.Entity("Hive.UserProfile.Domain.UserProfile", b =>
+                {
+                    b.OwnsMany("Hive.UserProfile.Domain.Language", "Languages", b1 =>
+                        {
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int")
+                                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                            b1.Property<int>("ProfileId")
+                                .HasColumnType("int");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("Id");
+
+                            b1.HasIndex("ProfileId");
+
+                            b1.ToTable("Language");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ProfileId");
+                        });
+
+                    b.OwnsMany("Hive.UserProfile.Domain.Skill", "Skills", b1 =>
+                        {
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int")
+                                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                            b1.Property<int>("ProfileId")
+                                .HasColumnType("int");
+
+                            b1.Property<string>("Value")
+                                .IsRequired()
+                                .HasColumnType("nvarchar(max)");
+
+                            b1.HasKey("Id");
+
+                            b1.HasIndex("ProfileId");
+
+                            b1.ToTable("Skill");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ProfileId");
+                        });
+
+                    b.Navigation("Languages");
+
+                    b.Navigation("Skills");
                 });
 #pragma warning restore 612, 618
         }
