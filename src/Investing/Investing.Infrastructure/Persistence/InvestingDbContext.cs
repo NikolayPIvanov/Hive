@@ -13,10 +13,11 @@ namespace Hive.Investing.Infrastructure.Persistence
 {
     public class InvestingDbContext : DbContext, IInvestingDbContext
     {
+        private const string DefaultSchema = "investing";
+        
         private readonly IMediator _mediator;
         private readonly ICurrentUserService _currentUserService;
         private readonly IDateTimeService _dateTimeService;
-        private const string DefaultSchema = "investing";
         
         public InvestingDbContext(
             DbContextOptions<InvestingDbContext> options,
@@ -37,7 +38,7 @@ namespace Hive.Investing.Infrastructure.Persistence
         
         public DbSet<Vendor> Vendors { get; set; }
 
-        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new CancellationToken())
+        public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new())
         {
             foreach (Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<Entity> entry in ChangeTracker
                 .Entries<Entity>())

@@ -9,6 +9,8 @@ namespace Hive.Investing.Infrastructure.Persistence.Configurations
         public void Configure(EntityTypeBuilder<Investor> builder)
         {
             builder.HasAlternateKey(x => x.UserId).IsClustered(false);
+            builder.Ignore(x => x.DomainEvents);
+
             builder.HasMany(x => x.Investments)
                 .WithOne()
                 .HasForeignKey(x => x.InvestorId);
