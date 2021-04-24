@@ -1,10 +1,11 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
-using Hive.Common.Core.Exceptions;
 using Hive.Common.Core.Interfaces;
+using Hive.Common.Core.Security;
 using Hive.Gig.Application.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +15,7 @@ namespace Hive.Gig.Application.Gigs.Commands
     using Domain.Entities;
         
     public record QuestionModel(string Title, string Answer);
-
+    
     public record CreateGigCommand(string Title, string Description, int CategoryId, int? PlanId,
         ICollection<string> Tags, ICollection<QuestionModel> Questions) : IRequest<int>;
     
@@ -36,7 +37,7 @@ namespace Hive.Gig.Application.Gigs.Commands
     
     public class CreateGigCommandValidator : AbstractValidator<CreateGigCommand>
     {
-        public CreateGigCommandValidator(IGigManagementDbContext dbContext)
+        public CreateGigCommandValidator(IGigManagementDbContext dbContext, ICurrentUserService currentUserService)
         {
             RuleFor(x => x.Title)
                 .MaximumLength(100).WithMessage("Title length must not be above 50 characters.")
@@ -61,35 +62,31 @@ namespace Hive.Gig.Application.Gigs.Commands
             
             RuleForEach(x => x.Questions)
                 .SetValidator(x => new QuestionValidator()).WithMessage("Question is not in correct format");
+
+            RuleFor(x => x)
+                .MustAsync(async (_, token) =>
+                    await dbContext.Sellers.AnyAsync(s => s.UserId == currentUserService.UserId, token))
+                .WithMessage("Could not find seller account for logged in user.");
         }    
     }
     
     public class CreateGigCommandHandler : IRequestHandler<CreateGigCommand, int>
     {
         private readonly IGigManagementDbContext _dbContext;
-        private readonly ICurrentUserService _currentUserService;
+        private readonly IIdentityService _identityService;
 
-        public CreateGigCommandHandler(IGigManagementDbContext dbContext, ICurrentUserService currentUserService)
+        public CreateGigCommandHandler(IGigManagementDbContext dbContext, IIdentityService identityService)
         {
-            _dbContext = dbContext;
-            _currentUserService = currentUserService;
+            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _identityService = identityService ?? throw new ArgumentNullException(nameof(identityService));
         }
         
         public async Task<int> Handle(CreateGigCommand request, CancellationToken cancellationToken)
         {
-            var seller =
-                await _dbContext.Sellers.FirstOrDefaultAsync(s => s.UserId == _currentUserService.UserId,
-                    cancellationToken);
-
-            if (seller == null)
-            {
-                throw new NotFoundException();
-            }
-            
-
+            var sellerId = await _identityService.GetClaimValue("sellerid");
             var tags = (request.Tags ?? new List<string>()).Select(t => new Tag(t)).ToHashSet();
             var questions = (request.Questions ?? new List<QuestionModel>()).Select(q => new Question(q.Title, q.Answer)).ToHashSet();
-            var gig = new Gig(request.Title, request.Description, request.CategoryId, seller.Id, tags, questions, request.PlanId);
+            var gig = new Gig(request.Title, request.Description, int.Parse(sellerId), request.CategoryId, tags, questions, request.PlanId);
 
             _dbContext.Gigs.Add(gig);
             await _dbContext.SaveChangesAsync(cancellationToken);

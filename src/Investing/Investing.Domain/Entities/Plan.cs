@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Hive.Common.Core.SeedWork;
 
 namespace Hive.Investing.Domain.Entities
@@ -12,37 +13,34 @@ namespace Hive.Investing.Domain.Entities
         {
             SearchTags = new HashSet<SearchTag>(10);
             Investments = new HashSet<Investment>();
+            IsFunded = (Investments ?? new List<Investment>()).Any(i => i.IsAccepted);
         }
 
-        public Plan(int vendorId, string title, string description, 
-            int estimatedReleaseDays, DateTime? estimatedReleaseDate, decimal fundingNeeded) : this()
+        public Plan(int vendorId, string title, string description, DateTime estimatedReleaseDate, decimal startingFunds) : this()
         {
             VendorId = vendorId;
             Title = title;
             Description = description;
-            EstimatedReleaseDays = estimatedReleaseDays;
             EstimatedReleaseDate = estimatedReleaseDate;
-            FundingNeeded = fundingNeeded;
+            StartingFunds = startingFunds;
             IsFunded = false;
         }
         
         public string Title { get; set; }
 
         public string Description { get; set; }
-
-        public int EstimatedReleaseDays { get; set; }
         
-        public DateTime? EstimatedReleaseDate { get; set; }
+        public DateTime EstimatedReleaseDate { get; set; }
 
-        public decimal FundingNeeded { get; set; }
+        public decimal StartingFunds { get; set; }
 
-        public bool IsFunded { get; set; }
+        public bool IsFunded { get; private set; }
         
-        public int VendorId { get; set; }
-        public Vendor Vendor { get; set; }
+        public int VendorId { get; private set; }
+        public Vendor Vendor { get; private set; }
 
         public ICollection<SearchTag> SearchTags { get; private set; }
 
-        public ICollection<Investment> Investments { get; set; }
+        public ICollection<Investment> Investments { get; private set; }
     }
 }

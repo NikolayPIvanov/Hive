@@ -6,13 +6,14 @@ using Hive.Common.Core.Exceptions;
 using Hive.Common.Core.Security;
 using Hive.Gig.Application.Interfaces;
 using Hive.Gig.Domain.Entities;
+using Hive.Identity.Contracts;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Hive.Gig.Application.Categories.Commands
 {
-    [Authorize(Roles = "Administrator")]
+    [Authorize(Roles = IdentityTypeStrings.Admin)]
     public record UpdateCategoryCommand(int Id, string Title, int? ParentId = null) : IRequest;
     
     public class UpdateCategoryCommandValidator : AbstractValidator<UpdateCategoryCommand>
@@ -24,31 +25,22 @@ namespace Hive.Gig.Application.Categories.Commands
             _dbContext = dbContext;
             
             RuleFor(c => c.Title)
-                .MinimumLength(3).WithMessage("Title should be at minimum 3 characters")
-                .MaximumLength(50).WithMessage("Title should be at maximum 50 characters")
-                .NotEmpty().WithMessage("Title cannot be empty");
+                .MinimumLength(3).WithMessage("{Property} should be at minimum 3 characters")
+                .MaximumLength(50).WithMessage("{Property} should be at maximum 50 characters")
+                .MustAsync(async (command, title, token) => !(await _dbContext.Categories
+                    .AnyAsync(r => r.Title == title && r.Id != command.Id, token)))
+                .WithMessage("{Property} is already taken by another category.")
+                .NotEmpty().WithMessage("{Property} cannot be empty");
             
-            RuleFor(c => c)
-                .MustAsync(BeValidAsync).WithMessage("Either parent category does not exist, title already is taken or trying to set invalid parent id");
+            RuleFor(c => c.ParentId)
+                .MustAsync(async (command, parentId, token) 
+                    => !parentId.HasValue || (parentId.Value != command.Id && await ParentCategoryExistsAsync(parentId.Value, token)))
+                .WithMessage("Either parent category does not exist or trying to set invalid parent id");
         }
         
         private async Task<bool> ParentCategoryExistsAsync(int parentCategoryId, CancellationToken cancellationToken)
         {
             return await _dbContext.Categories.AnyAsync(c => c.Id == parentCategoryId && c.ParentId == null, cancellationToken);
-        }
-        
-        private async Task<bool> BeValidAsync(UpdateCategoryCommand command, CancellationToken cancellationToken)
-        {
-            var (id, title, parentId) = command;
-            
-            var titleExists = await _dbContext.Categories
-                .AnyAsync(r => r.Title == title && r.Id != id, cancellationToken);
-
-            var parentCategoryIsValid =
-                !parentId.HasValue || (parentId.Value != id && await ParentCategoryExistsAsync(parentId.Value, cancellationToken));
-            var titleIsValid = !(titleExists);
-
-            return titleIsValid && parentCategoryIsValid;
         }
     }
     
@@ -69,7 +61,7 @@ namespace Hive.Gig.Application.Categories.Commands
             var category = await _dbContext.Categories
                 .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
-            if (category == null)
+            if (category == null)   
             {
                 _logger.LogError("Category with {@Id} was not found.", request.Id);
                 throw new NotFoundException(nameof(Category), id);

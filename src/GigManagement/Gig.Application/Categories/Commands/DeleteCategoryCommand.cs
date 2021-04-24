@@ -5,13 +5,15 @@ using Hive.Common.Core.Exceptions;
 using Hive.Common.Core.Security;
 using Hive.Gig.Application.Interfaces;
 using Hive.Gig.Domain.Entities;
+using Hive.Identity.Contracts;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Hive.Gig.Application.Categories.Commands
 {
-    [Authorize(Roles = "Administrator")]
+    [Authorize(Roles = IdentityTypeStrings.Admin)]
+
     public record DeleteCategoryCommand(int Id) : IRequest;
     
     public class DeleteCategoryCommandHandler : IRequestHandler<DeleteCategoryCommand>

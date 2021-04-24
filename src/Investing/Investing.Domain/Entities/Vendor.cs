@@ -17,6 +17,6 @@ namespace Hive.Investing.Domain.Entities
 
         public string UserId { get; private init; }
 
-        public ICollection<Plan> Plans { get; set; }
+        public ICollection<Plan> Plans { get; private set; }
     }
 }

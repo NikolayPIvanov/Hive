@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Hive.Common.Core.Models;
-using Hive.Common.Core.Security;
 using Hive.Gig.Application.GigPackages;
 using Hive.Gig.Application.GigPackages.Commands;
 using Hive.Gig.Application.GigPackages.Queries;
@@ -9,17 +8,18 @@ using Hive.Gig.Application.Gigs.Commands;
 using Hive.Gig.Application.Gigs.Queries;
 using Hive.Gig.Application.Reviews.Commands;
 using Hive.Gig.Application.Reviews.Queries;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Hive.LooselyCoupled.Controllers
 {
-    [Authorize]
     public class GigsController : ApiControllerBase
     {
         [HttpGet("{id:int}")]
         public async Task<ActionResult<GigDto>> GetGigById([FromRoute] int id) => Ok(await Mediator.Send(new GetGigQuery(id)));
         
         [HttpPost]
+        [Authorize(Roles = "Seller, Admin")]
         public async Task<ActionResult<int>> Post([FromBody] CreateGigCommand command)
         {
             var id = await Mediator.Send(command);
@@ -27,6 +27,7 @@ namespace Hive.LooselyCoupled.Controllers
         }
        
         [HttpPut("{id}")]
+        [Authorize(Roles = "Seller, Admin")]
         public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateGigCommand command)
         { 
             if (id != command.Id)
@@ -38,6 +39,7 @@ namespace Hive.LooselyCoupled.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Seller, Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             await Mediator.Send(new DeleteGigCommand(id));
@@ -53,6 +55,7 @@ namespace Hive.LooselyCoupled.Controllers
             Ok(await Mediator.Send(new GetGigPackagesQuery(id)));
         
         [HttpPost("{id:int}/packages")]
+        [Authorize(Roles = "Seller, Admin")]
         public async Task<ActionResult<int>> CreatePackage([FromRoute] int id, [FromBody] CreatePackageCommand command)
         {
             if (command.GigId != id)
@@ -65,6 +68,7 @@ namespace Hive.LooselyCoupled.Controllers
         }
         
         [HttpPut("{id:int}/packages/{packageId:int}")]
+        [Authorize(Roles = "Seller, Admin")]
         public async Task<IActionResult> UpdatePackage([FromRoute] int id, int packageId,
             [FromBody] UpdatePackageCommand command)
         {
@@ -78,6 +82,7 @@ namespace Hive.LooselyCoupled.Controllers
         }
 
         [HttpDelete("{id:int}/packages/{packageId:int}")]
+        [Authorize(Roles = "Seller, Admin")]
         public async Task<IActionResult> DeletePackage([FromRoute] int id, int packageId)
         {
             await Mediator.Send(new DeletePackageCommand(packageId));
@@ -93,6 +98,7 @@ namespace Hive.LooselyCoupled.Controllers
             Ok(await Mediator.Send(new GetGigReviewsQuery(gigId, pageNumber, pageSize)));
 
         [HttpPost("{gigId:int}/reviews")]
+        [Authorize]
         public async Task<IActionResult> CreateReview([FromRoute] int gigId, [FromBody] CreateReviewCommand command)
         {
             if (command.GigId != gigId)
@@ -105,6 +111,7 @@ namespace Hive.LooselyCoupled.Controllers
         }
 
         [HttpPut("{gigId:int}/reviews/{reviewId:int}")]
+        [Authorize]
         public async Task<IActionResult> UpdateReview([FromRoute] int gigId, int reviewId,
             [FromBody] UpdateReviewCommand command)
         {
@@ -118,6 +125,7 @@ namespace Hive.LooselyCoupled.Controllers
         }
 
         [HttpDelete("{gigId:int}/reviews/{reviewId:int}")]
+        [Authorize]
         public async Task<IActionResult> DeleteReview([FromRoute] int gigId, int reviewId)
         {
             await Mediator.Send(new DeleteReviewCommand(reviewId));

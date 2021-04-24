@@ -18,15 +18,21 @@ namespace Hive.Gig.Infrastructure.Services
         
         public Task<bool> IsInRoleAsync(string userId, string role)
         {
-            var roleClaim = _httpContext.User.Claims.FirstOrDefault(x => x.Type == ClaimsIdentity.DefaultRoleClaimType);
-            if (roleClaim == null)
+            var roleClaims = _httpContext?.User.Claims.Where(x => x.Type == ClaimsIdentity.DefaultRoleClaimType);
+            if (!roleClaims.Any())
             {
-                return Task.FromResult<bool>(false);
+                return Task.FromResult(false);
             }
 
-            var isInRole = roleClaim.Value.Contains(role);
+            var isInRole = roleClaims.Any(c => c.Value == role);
 
             return Task.FromResult(isInRole);
+        }
+
+        public ValueTask<string> GetClaimValue(string key)
+        {
+            var claim = _httpContext?.User.Claims.FirstOrDefault(x => x.Type == key);
+            return ValueTask.FromResult(claim?.Value);
         }
 
         public Task<bool> AuthorizeAsync(string userId, string policyName)

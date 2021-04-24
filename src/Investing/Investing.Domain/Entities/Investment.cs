@@ -27,7 +27,7 @@ namespace Hive.Investing.Domain.Entities
         
         public double RoiPercentage { get; set; }
 
-        public int InvestorId { get; set; }
+        public int InvestorId { get; private set; }
 
         public Investor Investor { get; set; }
 

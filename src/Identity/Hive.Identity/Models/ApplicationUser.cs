@@ -3,6 +3,7 @@
 
 
 using System.Collections.Generic;
+using Hive.Identity.Contracts;
 using Microsoft.AspNetCore.Identity;
 
 namespace Hive.Identity.Models
@@ -15,7 +16,7 @@ namespace Hive.Identity.Models
             AccountTypes = new HashSet<UserAccountType>();
         }
 
-        public ApplicationUser(IEnumerable<AccountType> accountTypes) : this()
+        public ApplicationUser(IEnumerable<IdentityType> accountTypes) : this()
         {
             foreach (var accountType in accountTypes)
             {

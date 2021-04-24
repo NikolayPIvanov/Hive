@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using Hive.Identity.Contracts;
 using Hive.Identity.Models;
 using Hive.Identity.Services;
 using Microsoft.AspNetCore.Authentication;
@@ -68,7 +69,7 @@ namespace Hive.Identity.Areas.Identity.Pages.Account
             public string ConfirmPassword { get; set; }
 
             [Required]
-            public AccountType AccountType { get; set; }
+            public IdentityType AccountType { get; set; }
         }
 
         
@@ -90,7 +91,8 @@ namespace Hive.Identity.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("User created a new account with password.");
 
-                    await _dispatcher.PublishUserCreatedEventAsync(user.Id, Input.AccountType);
+                    await _dispatcher.PublishUserCreatedEventAsync(user.Id);
+                    await _dispatcher.PublishUserTypeEventAsync(user.Id, Input.AccountType);
                     _logger.LogInformation("User created a new account with password.");
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);

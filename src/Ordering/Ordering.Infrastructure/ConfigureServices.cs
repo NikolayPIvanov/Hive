@@ -1,4 +1,5 @@
 ﻿using Hive.Common.Core.Interfaces;
+using Hive.Common.Core.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;

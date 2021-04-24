@@ -20,6 +20,7 @@
 
     <ItemGroup>
       <Folder Include="Persistence" />
+      <Folder Include="Services" />
     </ItemGroup>
 
 </Project>

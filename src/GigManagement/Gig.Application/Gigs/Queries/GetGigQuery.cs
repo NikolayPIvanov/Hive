@@ -24,8 +24,6 @@ namespace Hive.Gig.Application.Gigs.Queries
         public async Task<GigDto> Handle(GetGigQuery request, CancellationToken cancellationToken)
         {
             var entity = await _dbContext.Gigs
-                .Include(g => g.GigScope)
-                .Include(g => g.Tags)
                 .Include(g => g.Category)
                 .Include(g => g.Packages)
                 .FirstOrDefaultAsync(g => g.Id == request.Id, cancellationToken);
