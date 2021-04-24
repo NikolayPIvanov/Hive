@@ -38,8 +38,7 @@ namespace Hive.Gig.Application.Categories.Queries
                 throw new NotFoundException(nameof(Category), request.Id);
             }
 
-            var dto = _mapper.Map<CategoryDto>(category);
-            return dto;
+            return _mapper.Map<CategoryDto>(category);
         }
     }
 }

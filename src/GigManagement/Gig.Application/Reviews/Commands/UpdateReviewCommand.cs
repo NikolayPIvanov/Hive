@@ -1,10 +1,12 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
 using Hive.Common.Core.Exceptions;
 using Hive.Gig.Application.Interfaces;
 using Hive.Gig.Domain.Entities;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Hive.Gig.Application.Reviews.Commands
 {
@@ -27,10 +29,12 @@ namespace Hive.Gig.Application.Reviews.Commands
     public class UpdateReviewCommandHandler : IRequestHandler<UpdateReviewCommand>
     {
         private readonly IGigManagementDbContext _context;
+        private readonly ILogger<UpdateReviewCommandHandler> _logger;
 
-        public UpdateReviewCommandHandler(IGigManagementDbContext context)
+        public UpdateReviewCommandHandler(IGigManagementDbContext context, ILogger<UpdateReviewCommandHandler> logger)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
         public async Task<Unit> Handle(UpdateReviewCommand request, CancellationToken cancellationToken)
@@ -38,7 +42,8 @@ namespace Hive.Gig.Application.Reviews.Commands
             var review = await _context.Reviews.FindAsync(request.Id);
 
             if (review == null)
-            {
+            {                
+                _logger.LogWarning("Review with id: {@Id} was not found", request.Id);
                 throw new NotFoundException(nameof(Review), request.Id);
             }
 
@@ -46,6 +51,8 @@ namespace Hive.Gig.Application.Reviews.Commands
             review.Rating = request.Rating;
 
             await _context.SaveChangesAsync(cancellationToken);
+            
+            _logger.LogWarning("Review with id: {@Id} was updated", request.Id);
 
             return Unit.Value;
         }

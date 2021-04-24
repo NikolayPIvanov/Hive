@@ -14,7 +14,6 @@ using Microsoft.Extensions.Logging;
 
 namespace Hive.Gig.Application.GigPackages.Commands
 {
-    [Authorize(Roles = "Seller, Administrator")]
     public record CreatePackageCommand(string Title, string Description, decimal Price, PackageTier PackageTier,
         double DeliveryTime, DeliveryFrequency DeliveryFrequency, int? Revisions, RevisionType RevisionType, int GigId) 
         : IRequest<int>;
@@ -35,6 +34,7 @@ namespace Hive.Gig.Application.GigPackages.Commands
                     return uniqueNameInGig && uniqueTier;
                 }).WithMessage("Package with selected tier already is present on the gig or the gig does not exist.");
             
+            
             RuleFor(x => x.Title)
                 .MaximumLength(50).WithMessage("{PropertyName} cannot have more than {MaxLength} characters.")
                 .MinimumLength(3).WithMessage("{PropertyName} cannot have less than {MinLength} characters.")
@@ -46,7 +46,7 @@ namespace Hive.Gig.Application.GigPackages.Commands
                 .NotEmpty().WithMessage("A {PropertyName} must be provided");
 
             RuleFor(x => x.Price)
-                .NotNull().WithMessage("A {PropertyName} must be provided")
+                .NotEmpty().WithMessage("A {PropertyName} must be provided")
                 .GreaterThan(0.0m).WithMessage("{PropertyName} cannot be below {ComparisonValue}.");
             
             RuleFor(x => x.DeliveryTime)
@@ -81,6 +81,7 @@ namespace Hive.Gig.Application.GigPackages.Commands
             var gigIsValid = await _context.Gigs.AnyAsync(x => x.Id == request.GigId, cancellationToken);
             if (!gigIsValid)
             {
+                _logger.LogWarning("Gig with id: {Id} was not found", request.GigId);
                 throw new NotFoundException(nameof(Gig), request.GigId);
             }
             

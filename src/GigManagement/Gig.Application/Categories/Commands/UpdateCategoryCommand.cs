@@ -13,7 +13,6 @@ using Microsoft.Extensions.Logging;
 
 namespace Hive.Gig.Application.Categories.Commands
 {
-    [Authorize(Roles = IdentityTypeStrings.Admin)]
     public record UpdateCategoryCommand(int Id, string Title, int? ParentId = null) : IRequest;
     
     public class UpdateCategoryCommandValidator : AbstractValidator<UpdateCategoryCommand>

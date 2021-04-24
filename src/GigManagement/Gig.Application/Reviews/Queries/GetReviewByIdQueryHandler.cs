@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Hive.Common.Core.Exceptions;
@@ -6,6 +7,7 @@ using Hive.Gig.Application.Interfaces;
 using Hive.Gig.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Hive.Gig.Application.Reviews.Queries
 {
@@ -17,11 +19,14 @@ namespace Hive.Gig.Application.Reviews.Queries
     {
         private readonly IGigManagementDbContext _context;
         private readonly IMapper _mapper;
+        private readonly ILogger<GetReviewByIdQueryHandler> _logger;
 
-        public GetReviewByIdQueryHandler(IGigManagementDbContext context, IMapper mapper)
+
+        public GetReviewByIdQueryHandler(IGigManagementDbContext context, IMapper mapper, ILogger<GetReviewByIdQueryHandler> logger)
         {
-            _context = context;
-            _mapper = mapper;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
         public async Task<ReviewDto> Handle(GetReviewByIdQuery request, CancellationToken cancellationToken)
@@ -32,6 +37,7 @@ namespace Hive.Gig.Application.Reviews.Queries
 
             if (review == null)
             {
+                _logger.LogWarning("Gig with id: {Id} was not found", request.GigId);
                 throw new NotFoundException(nameof(Review), request.ReviewId);
             }
 

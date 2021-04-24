@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
 using Hive.Common.Core.Interfaces;
-using Hive.Common.Core.Security;
 using Hive.Gig.Application.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -24,12 +23,12 @@ namespace Hive.Gig.Application.Gigs.Commands
         public QuestionValidator()
         {
             RuleFor(x => x.Title)
-                .MaximumLength(200).WithMessage("Title length must not be above 50 characters.")
+                .MaximumLength(100).WithMessage("Title length must not be above 100 characters.")
                 .MinimumLength(3).WithMessage("Title length must not be below 3 characters.")
                 .NotEmpty().WithMessage("Title should be provided.");
             
             RuleFor(x => x.Answer)
-                .MaximumLength(1000).WithMessage("Answer length must not be above 250 characters.")
+                .MaximumLength(1000).WithMessage("Answer length must not be above 1000 characters.")
                 .MinimumLength(3).WithMessage("Answer length must not be below 3 characters.")
                 .NotEmpty().WithMessage("Answer should be provided.");
         }
@@ -40,7 +39,7 @@ namespace Hive.Gig.Application.Gigs.Commands
         public CreateGigCommandValidator(IGigManagementDbContext dbContext, ICurrentUserService currentUserService)
         {
             RuleFor(x => x.Title)
-                .MaximumLength(100).WithMessage("Title length must not be above 50 characters.")
+                .MaximumLength(100).WithMessage("Title length must not be above 100 characters.")
                 .MinimumLength(3).WithMessage("Title length must not be below 3 characters.")
                 .NotEmpty().WithMessage("Title should be provided.");
 

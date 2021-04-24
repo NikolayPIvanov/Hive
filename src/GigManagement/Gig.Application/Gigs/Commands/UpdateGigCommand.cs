@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -6,6 +7,7 @@ using FluentValidation;
 using Hive.Common.Core.Exceptions;
 using Hive.Gig.Application.Interfaces;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Hive.Gig.Application.Gigs.Commands
 {
@@ -41,11 +43,13 @@ namespace Hive.Gig.Application.Gigs.Commands
     {
         private readonly IGigManagementDbContext _dbContext;
         private readonly IMapper _mapper;
+        private readonly ILogger<UpdateGigCommand> _logger;
 
-        public UpdateGigCommandHandler(IGigManagementDbContext dbContext, IMapper mapper)
+        public UpdateGigCommandHandler(IGigManagementDbContext dbContext, IMapper mapper, ILogger<UpdateGigCommand> logger)
         {
-            _dbContext = dbContext;
-            _mapper = mapper;
+            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _logger = logger ?? throw new ArgumentNullException(nameof(dbContext));
         }
         
         public async Task<Unit> Handle(UpdateGigCommand request, CancellationToken cancellationToken)
@@ -54,12 +58,15 @@ namespace Hive.Gig.Application.Gigs.Commands
             
             if (entity is null)
             {
+                _logger.LogWarning("Gig with id: {Id} was not found", request.Id);
                 throw new NotFoundException(nameof(Gig), request.Id);
             }
 
             _mapper.Map(request, entity);
             await _dbContext.SaveChangesAsync(cancellationToken);
             
+            _logger.LogInformation("Gig with id: {Id} was updated", request.Id);
+
             return Unit.Value;
         }
     }

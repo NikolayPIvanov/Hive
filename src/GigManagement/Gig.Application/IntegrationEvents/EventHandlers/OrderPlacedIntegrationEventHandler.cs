@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
 using DotNetCore.CAP;
 using Hive.Common.Core.Interfaces;
@@ -9,6 +10,7 @@ using Ordering.Contracts.IntegrationEvents;
 
 namespace Hive.Gig.Application.IntegrationEvents.EventHandlers
 {
+    // TODO:
     public class OrderPlacedIntegrationEventHandler : ICapSubscribe
     {
         private readonly IGigManagementDbContext _dbContext;
@@ -16,8 +18,8 @@ namespace Hive.Gig.Application.IntegrationEvents.EventHandlers
 
         public OrderPlacedIntegrationEventHandler(IGigManagementDbContext dbContext, IIntegrationEventPublisher publisher)
         {
-            _dbContext = dbContext;
-            _publisher = publisher;
+            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _publisher = publisher ?? throw new ArgumentNullException(nameof(publisher));
         }
         
         [CapSubscribe(nameof(OrderPlacedIntegrationEvent))] 

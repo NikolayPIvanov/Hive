@@ -1,9 +1,12 @@
 ﻿using System.Collections.Generic;
 using Hive.Gig.Application.GigPackages;
-using Hive.Gig.Contracts.Objects;
 
 namespace Hive.Gig.Application.Gigs.Queries
 {
+    public record QuestionDto(int Id, string Title, string Answer, int GigId);
+
+    public record GigScopeDto(int Id, string Description);
+
     public class GigDto
     {
         public int Id { get; set; }
@@ -21,5 +24,7 @@ namespace Hive.Gig.Application.Gigs.Queries
         public ICollection<string> Tags { get; set; }
         
         public ICollection<PackageDto> Packages { get; set; }
+
+        public ICollection<QuestionDto> Questions { get; set; }
     }
 }

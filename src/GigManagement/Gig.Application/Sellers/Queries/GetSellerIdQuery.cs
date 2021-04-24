@@ -9,21 +9,23 @@ using Hive.Gig.Application.Interfaces;
 using Hive.Gig.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Hive.Gig.Application.Sellers.Queries
 {
-    [Authorize(Roles = "Seller")]
     public record GetSellerIdQuery : IRequest<int>;
 
     public class GetSellerIdQueryHandler : IRequestHandler<GetSellerIdQuery, int>
     {
         private readonly IGigManagementDbContext _context;
         private readonly ICurrentUserService _currentUserService;
+        private readonly ILogger<GetSellerIdQueryHandler> _logger;
 
-        public GetSellerIdQueryHandler(IGigManagementDbContext context, ICurrentUserService currentUserService)
+        public GetSellerIdQueryHandler(IGigManagementDbContext context, ICurrentUserService currentUserService, ILogger<GetSellerIdQueryHandler> logger)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
         public async Task<int> Handle(GetSellerIdQuery request, CancellationToken cancellationToken)
@@ -33,6 +35,7 @@ namespace Hive.Gig.Application.Sellers.Queries
 
             if (sellerId == null)
             {
+                _logger.LogWarning("Seller with user id: {@Id} was not found", _currentUserService.UserId);
                 throw new NotFoundException(nameof(Seller));
             }
             

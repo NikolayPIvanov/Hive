@@ -2,7 +2,6 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Hive.Common.Core.Exceptions;
-using Hive.Common.Core.Security;
 using Hive.Investing.Application.Interfaces;
 using Hive.Investing.Domain.Entities;
 using MediatR;

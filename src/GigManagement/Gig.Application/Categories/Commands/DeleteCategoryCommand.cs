@@ -12,8 +12,6 @@ using Microsoft.Extensions.Logging;
 
 namespace Hive.Gig.Application.Categories.Commands
 {
-    [Authorize(Roles = IdentityTypeStrings.Admin)]
-
     public record DeleteCategoryCommand(int Id) : IRequest;
     
     public class DeleteCategoryCommandHandler : IRequestHandler<DeleteCategoryCommand>

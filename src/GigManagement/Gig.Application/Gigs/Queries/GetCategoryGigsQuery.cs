@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -8,6 +9,7 @@ using Hive.Common.Core.Models;
 using Hive.Gig.Application.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Hive.Gig.Application.Gigs.Queries
 {
@@ -17,20 +19,23 @@ namespace Hive.Gig.Application.Gigs.Queries
     {
         private readonly IGigManagementDbContext _dbContext;
         private readonly IMapper _mapper;
+        private readonly ILogger<GetCategoryGigsQueryHandler> _logger;
 
-        public GetCategoryGigsQueryHandler(IGigManagementDbContext dbContext, IMapper mapper)
+        public GetCategoryGigsQueryHandler(IGigManagementDbContext dbContext, IMapper mapper, ILogger<GetCategoryGigsQueryHandler> logger)
         {
-            _dbContext = dbContext;
-            _mapper = mapper;
+            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
         public async Task<PaginatedList<GigDto>> Handle(GetCategoryGigsQuery request, CancellationToken cancellationToken)
         {
+            _logger.LogInformation("Fetching gigs for category id: {Id}", request.CategoryId);
+            
             return await _dbContext.Gigs
-                .Include(g => g.GigScope)
-                .Include(g => g.Tags)
                 .Include(g => g.Category)
                 .Where(g => g.CategoryId == request.CategoryId && !g.IsDraft)
+                .AsNoTracking()
                 .ProjectTo<GigDto>(_mapper.ConfigurationProvider) 
                 .PaginatedListAsync(request.PageNumber, request.PageSize);
         }

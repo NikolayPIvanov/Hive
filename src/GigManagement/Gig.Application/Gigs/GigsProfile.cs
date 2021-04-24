@@ -2,7 +2,6 @@
 using AutoMapper;
 using Hive.Gig.Application.Gigs.Commands;
 using Hive.Gig.Application.Gigs.Queries;
-using Hive.Gig.Contracts.Objects;
 
 namespace Hive.Gig.Application.Gigs
 {

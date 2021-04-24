@@ -1,19 +1,19 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation;
 using Hive.Common.Core.Exceptions;
-using Hive.Common.Core.Security;
 using Hive.Gig.Application.Interfaces;
 using Hive.Gig.Domain.Entities;
 using Hive.Gig.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Hive.Gig.Application.GigPackages.Commands
 {
-    [Authorize(Roles = "Seller, Administrator")]
     public record UpdatePackageCommand(int PackageId, int GigId, PackageTier PackageTier, string Title, string Description, decimal Price, 
         double DeliveryTime, DeliveryFrequency DeliveryFrequency, int? Revisions, RevisionType RevisionType) : IRequest;
     
@@ -56,11 +56,13 @@ namespace Hive.Gig.Application.GigPackages.Commands
     {
         private readonly IGigManagementDbContext _context;
         private readonly IMapper _mapper;
+        private readonly ILogger<UpdatePackageCommandHandler> _logger;
 
-        public UpdatePackageCommandHandler(IGigManagementDbContext context, IMapper mapper)
+        public UpdatePackageCommandHandler(IGigManagementDbContext context, IMapper mapper, ILogger<UpdatePackageCommandHandler> logger)
         {
-            _context = context;
-            _mapper = mapper;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
         public async Task<Unit> Handle(UpdatePackageCommand request, CancellationToken cancellationToken)
@@ -69,11 +71,14 @@ namespace Hive.Gig.Application.GigPackages.Commands
 
             if (package == null)
             {
+                _logger.LogWarning("Package with id: {@Id} was not found", request.PackageId);
                 throw new NotFoundException(nameof(Package), request.PackageId);
             }
 
             _mapper.Map(request, package);
             await _context.SaveChangesAsync(cancellationToken);
+            
+            _logger.LogWarning("Package with id: {@Id} was updated", request.PackageId);
 
             return Unit.Value;
         }
