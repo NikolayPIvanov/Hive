@@ -14,7 +14,7 @@ using Microsoft.Extensions.Logging;
 namespace Hive.Investing.Application.Plans.Commands
 {
     public record CreatePlanCommand(string Title, string Description,
-        DateTime EstimatedReleaseDate, decimal FundingNeeded) : IRequest<int>;
+        DateTime StartDate, DateTime EndDate, decimal FundingNeeded) : IRequest<int>;
 
     public class CreatePlanCommandValidator : AbstractValidator<CreatePlanCommand>
     {
@@ -30,8 +30,12 @@ namespace Hive.Investing.Application.Plans.Commands
                 .MaximumLength(3000).WithMessage("{Property} must be below {MaximumLength}")
                 .NotEmpty().WithMessage("{Property} cannot be empty or missing");
             
-            RuleFor(x => x.EstimatedReleaseDate)
+            RuleFor(x => x.StartDate)
                 .Must(x => DateTime.UtcNow.AddYears(1) > x).WithMessage("{Property} must not be more than an year away.")
+                .NotEmpty().WithMessage("{Property} cannot be empty or missing");
+            
+            RuleFor(x => x.EndDate)
+                .Must(x => DateTime.UtcNow.AddYears(5) > x).WithMessage("{Property} must not be more than 5 years away.")
                 .NotEmpty().WithMessage("{Property} cannot be empty or missing");
             
             RuleFor(x => x.FundingNeeded)
@@ -65,7 +69,7 @@ namespace Hive.Investing.Application.Plans.Commands
             }
             
             var plan = new Plan(vendor.Id, request.Title, request.Description,
-                request.EstimatedReleaseDate, request.FundingNeeded);
+                request.StartDate, request.EndDate, request.FundingNeeded);
             _context.Plans.Add(plan);
             await _context.SaveChangesAsync(cancellationToken);
             

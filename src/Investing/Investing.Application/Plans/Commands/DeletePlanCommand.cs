@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentValidation;
 using Hive.Common.Core.Exceptions;
-using Hive.Common.Core.Security;
 using Hive.Investing.Application.Interfaces;
 using Hive.Investing.Domain.Entities;
 using MediatR;
@@ -12,6 +12,17 @@ using Microsoft.Extensions.Logging;
 namespace Hive.Investing.Application.Plans.Commands
 {
     public record DeletePlanCommand(int Id) : IRequest;
+
+    public class DeletePlanCommandValidator : AbstractValidator<DeletePlanCommand>
+    {
+        public DeletePlanCommandValidator(IInvestingDbContext context)
+        {
+            RuleFor(x => x.Id)
+                .MustAsync(async (id, token) => 
+                    !(await context.Plans.AnyAsync(x => x.Id == id && x.EndDate > DateTime.UtcNow, token)))
+                .WithMessage("Cannot delete a plan that is still ongoing");
+        }
+    }
 
     public class DeletePlanCommandHandler : IRequestHandler<DeletePlanCommand>
     {
@@ -36,6 +47,9 @@ namespace Hive.Investing.Application.Plans.Commands
 
             _context.Plans.Remove(plan);
             await _context.SaveChangesAsync(cancellationToken);
+            
+            _logger.LogInformation("Plan with id {Id} was deleted", request.Id);
+
             
             return Unit.Value;
         }

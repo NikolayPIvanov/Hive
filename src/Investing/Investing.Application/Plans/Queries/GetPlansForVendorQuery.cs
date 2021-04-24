@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -10,7 +11,6 @@ using MediatR;
 
 namespace Hive.Investing.Application.Plans.Queries
 {
-    [Authorize(Roles = "Seller, Administrator")]
     public record GetPlansForVendorQuery(int VendorId) : IRequest<IEnumerable<PlanDto>>;
 
     public class GetPlansForVendorQueryHandler : IRequestHandler<GetPlansForVendorQuery, IEnumerable<PlanDto>>
@@ -20,8 +20,8 @@ namespace Hive.Investing.Application.Plans.Queries
 
         public GetPlansForVendorQueryHandler(IInvestingDbContext context, IMapper mapper)
         {
-            _context = context;
-            _mapper = mapper;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
         
         public async Task<IEnumerable<PlanDto>> Handle(GetPlansForVendorQuery request, CancellationToken cancellationToken)

@@ -3,7 +3,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
 using Hive.Common.Core.Exceptions;
-using Hive.Common.Core.Security;
 using Hive.Investing.Application.Interfaces;
 using Hive.Investing.Domain.Entities;
 using MediatR;
@@ -12,7 +11,8 @@ using Microsoft.Extensions.Logging;
 
 namespace Hive.Investing.Application.Plans.Commands
 {
-    public record UpdatePlanCommand(int Id, string Title, string Description, DateTime EstimatedReleaseDate, decimal FundingNeeded) : IRequest;
+    public record UpdatePlanCommand(int Id, string Title, string Description, 
+        DateTime StartDate, DateTime EndDate, decimal FundingNeeded, bool IsPublic) : IRequest;
 
     public class UpdatePlanCommandValidator : AbstractValidator<UpdatePlanCommand>
     {
@@ -28,8 +28,12 @@ namespace Hive.Investing.Application.Plans.Commands
                 .MaximumLength(3000).WithMessage("{Property} must be below {MaximumLength}")
                 .NotEmpty().WithMessage("{Property} cannot be empty or missing");
 
-            RuleFor(x => x.EstimatedReleaseDate.Date)
+            RuleFor(x => x.StartDate)
                 .Must(x => DateTime.UtcNow.AddYears(1) > x).WithMessage("{Property} must not be more than an year away.")
+                .NotEmpty().WithMessage("{Property} cannot be empty or missing");
+            
+            RuleFor(x => x.EndDate)
+                .Must(x => DateTime.UtcNow.AddYears(5) > x).WithMessage("{Property} must not be more than 5 years away.")
                 .NotEmpty().WithMessage("{Property} cannot be empty or missing");
 
             RuleFor(x => x.FundingNeeded)
@@ -37,8 +41,9 @@ namespace Hive.Investing.Application.Plans.Commands
                 .NotEmpty().WithMessage("{Property} cannot be empty or missing");
 
             RuleFor(x => x.Id)
-                .MustAsync(async (command, id, cancellationToken) => 
-                    !(await context.Plans.AnyAsync(x => x.Id == id && x.IsFunded, cancellationToken)));
+                .MustAsync(async (id, cancellationToken) =>
+                    (await context.Plans.AnyAsync(x => x.Id == id && !x.IsFunded, cancellationToken)))
+                .WithMessage("Plan that is already funded cannot be updated.");
         }
     }
     
@@ -65,8 +70,10 @@ namespace Hive.Investing.Application.Plans.Commands
             
             plan.Title = request.Title;
             plan.Description = request.Description;
-            plan.EstimatedReleaseDate = request.EstimatedReleaseDate;
+            plan.StartDate = request.StartDate;
+            plan.EndDate = request.EndDate;
             plan.StartingFunds = request.FundingNeeded;
+            plan.IsPublic = request.IsPublic;
             
             await _context.SaveChangesAsync(cancellationToken);
             

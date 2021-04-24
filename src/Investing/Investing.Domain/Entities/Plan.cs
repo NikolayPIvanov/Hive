@@ -14,14 +14,16 @@ namespace Hive.Investing.Domain.Entities
             SearchTags = new HashSet<SearchTag>(10);
             Investments = new HashSet<Investment>();
             IsFunded = (Investments ?? new List<Investment>()).Any(i => i.IsAccepted);
+            IsPublic = false;
         }
 
-        public Plan(int vendorId, string title, string description, DateTime estimatedReleaseDate, decimal startingFunds) : this()
+        public Plan(int vendorId, string title, string description, DateTime startDate, DateTime endDate, decimal startingFunds) : this()
         {
             VendorId = vendorId;
             Title = title;
             Description = description;
-            EstimatedReleaseDate = estimatedReleaseDate;
+            StartDate = startDate;
+            EndDate = endDate;
             StartingFunds = startingFunds;
             IsFunded = false;
         }
@@ -30,8 +32,10 @@ namespace Hive.Investing.Domain.Entities
 
         public string Description { get; set; }
         
-        public DateTime EstimatedReleaseDate { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime EndDate { get; set; }
 
+        public bool IsPublic { get; set; }
         public decimal StartingFunds { get; set; }
 
         public bool IsFunded { get; private set; }

@@ -11,11 +11,15 @@ namespace Hive.Investing.Application.Plans.Queries
 
         public string Description { get; set; }
 
-        public int EstimatedReleaseDays { get; set; }
-        
-        public DateTime? EstimatedReleaseDate { get; set; }
+        public bool IsFunded { get; set; }
 
-        public decimal FundingNeeded { get; set; }
+        public bool IsPublic { get; set; }
+        
+        public DateTime StartDate { get; set; }
+        
+        public DateTime EndDate { get; set; }
+
+        public decimal StartingFunds { get; set; }
         
         public int VendorId { get; set; }
 
