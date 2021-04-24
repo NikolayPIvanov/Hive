@@ -25,12 +25,6 @@ namespace Hive.Gig.Application.GigPackages.Queries
         
         public async Task<PackageDto> Handle(GetPackageQuery request, CancellationToken cancellationToken)
         {
-            var gigExists = await _dbContext.Gigs.AnyAsync(g => g.Id == request.Id, cancellationToken);
-            if (!gigExists)
-            {
-                throw new NotFoundException(nameof(Domain.Entities.Gig), request.Id);
-            }
-            
             var entity = await _dbContext.Packages
                 .FirstOrDefaultAsync(g => g.Id == request.Id, cancellationToken);
 

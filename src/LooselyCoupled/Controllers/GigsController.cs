@@ -19,9 +19,6 @@ namespace Hive.LooselyCoupled.Controllers
         [HttpGet("{id:int}")]
         public async Task<ActionResult<GigDto>> GetGigById([FromRoute] int id) => Ok(await Mediator.Send(new GetGigQuery(id)));
         
-        [HttpGet("personal")]
-        public async Task<ActionResult<IEnumerable<GigDto>>> GetMyGigs() => Ok(await Mediator.Send(new GetMyGigsQuery()));
-        
         [HttpPost]
         public async Task<ActionResult<int>> Post([FromBody] CreateGigCommand command)
         {
@@ -63,8 +60,8 @@ namespace Hive.LooselyCoupled.Controllers
                 return BadRequest();
             }
             
-            var pId = await Mediator.Send(command);
-            return CreatedAtAction(nameof(GetPackageById), new {id, packageId = pId}, new {id, pId});
+            var packageId = await Mediator.Send(command);
+            return CreatedAtAction(nameof(GetPackageById), new {id, packageId = packageId}, new {id, packageId});
         }
         
         [HttpPut("{id:int}/packages/{packageId:int}")]
@@ -126,6 +123,5 @@ namespace Hive.LooselyCoupled.Controllers
             await Mediator.Send(new DeleteReviewCommand(reviewId));
             return NoContent();
         }
-
     }
 }

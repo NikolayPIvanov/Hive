@@ -39,7 +39,7 @@ namespace Hive.Gig.Application.Gigs.Commands
         public CreateGigCommandValidator(IGigManagementDbContext dbContext)
         {
             RuleFor(x => x.Title)
-                .MaximumLength(50).WithMessage("Title length must not be above 50 characters.")
+                .MaximumLength(100).WithMessage("Title length must not be above 50 characters.")
                 .MinimumLength(3).WithMessage("Title length must not be below 3 characters.")
                 .NotEmpty().WithMessage("Title should be provided.");
 

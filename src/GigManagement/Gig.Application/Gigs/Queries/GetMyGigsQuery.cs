@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
+using Hive.Common.Core.Exceptions;
 using Hive.Common.Core.Interfaces;
 using Hive.Common.Core.Mappings;
 using Hive.Common.Core.Security;
@@ -31,13 +32,13 @@ namespace Hive.Gig.Application.Gigs.Queries
         
         public async Task<IEnumerable<GigDto>> Handle(GetMyGigsQuery request, CancellationToken cancellationToken)
         {
-            var seller =
-                await _context.Sellers.FirstOrDefaultAsync(s => s.UserId == _currentUserService.UserId,
-                    cancellationToken);
+            var seller = await _context.Sellers
+                .Select(x => new { x.Id, x.UserId })
+                .FirstOrDefaultAsync(s => s.UserId == _currentUserService.UserId, cancellationToken);
 
             if (seller == null)
             {
-                throw new Exception($"Seller Account does not exist for {_currentUserService.UserId}");
+                throw new NotFoundException($"Seller Account does not exist for {_currentUserService.UserId}");
             }
             
             var query = _context.Gigs.AsNoTracking().Where(g => g.SellerId == seller.Id);

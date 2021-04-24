@@ -15,7 +15,7 @@ using Duende.IdentityServer.Extensions;
 using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Services;
 using Duende.IdentityServer.Stores;
-using IdentityServerHost.Models;
+using Hive.Identity.Models;
 
 namespace IdentityServerHost.Quickstart.UI
 {

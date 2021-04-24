@@ -11,8 +11,8 @@ using Duende.IdentityServer;
 using Duende.IdentityServer.Events;
 using Duende.IdentityServer.Services;
 using Duende.IdentityServer.Stores;
+using Hive.Identity.Models;
 using IdentityModel;
-using IdentityServerHost.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -221,7 +221,7 @@ namespace IdentityServerHost.Quickstart.UI
                 filtered.Add(new Claim(JwtClaimTypes.Email, email));
             }
 
-            var user = new ApplicationUser
+            var user = new ApplicationUser(new []{ AccountType.Buyer })
             {
                 UserName = Guid.NewGuid().ToString(),
             };

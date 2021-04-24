@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentValidation;
 using Hive.Common.Core.Exceptions;
 using Hive.Common.Core.Security;
 using Hive.Investing.Application.Interfaces;
@@ -11,8 +12,38 @@ using Microsoft.EntityFrameworkCore;
 namespace Hive.Investing.Application.Plans.Commands
 {
     [Authorize(Roles = "Seller, Administrator")]
-    public record UpdatePlanCommand(int Id, string Title, string Description,
-        int EstimatedReleaseDays, DateTime? EstimatedReleaseDate, decimal FundingNeeded) : IRequest;
+    public record UpdatePlanCommand(int Id, string Title, string Description, DateTime EstimatedReleaseDate, decimal FundingNeeded) : IRequest;
+
+    public class UpdatePlanCommandValidator : AbstractValidator<UpdatePlanCommand>
+    {
+        public UpdatePlanCommandValidator(IInvestingDbContext context)
+        {
+            RuleFor(x => x.Title)
+                .NotNull().WithMessage("A {PropertyName} must be provided")
+                .MinimumLength(3).WithMessage("{PropertyName} must be above {MinimumLength}")
+                .MaximumLength(50).WithMessage("{PropertyName} must be below {MaximumLength}");
+            
+            RuleFor(x => x.Description)
+                .NotNull().WithMessage("A {PropertyName} must be provided")
+                .MinimumLength(10).WithMessage("{PropertyName} must be above {MinimumLength}")
+                .MaximumLength(2500).WithMessage("{PropertyName} must be below {MaximumLength}");
+
+            RuleFor(x => x.EstimatedReleaseDate.Date)
+                .NotNull().WithMessage("A {PropertyName} must be provided")
+                .GreaterThan(DateTime.UtcNow.Date).WithMessage("Cannot set release date to be today's date");
+
+            RuleFor(x => x.FundingNeeded)
+                .NotNull().WithMessage("A {PropertyName} must be provided")
+                .GreaterThan(10.0m).WithMessage("{PropertyName} must be greater than {ValueToCompare}");
+
+            RuleFor(x => x.Id)
+                .MustAsync(async (command, id, cancellationToken) =>
+                {
+                    var alreadyFunded = await context.Plans.AnyAsync(x => x.Id == id && x.IsFunded, cancellationToken);
+                    return !alreadyFunded;
+                });
+        }
+    }
     
     public class UpdatePlanCommandHandler : IRequestHandler<UpdatePlanCommand>
     {
@@ -36,7 +67,6 @@ namespace Hive.Investing.Application.Plans.Commands
             plan.Title = request.Title;
             plan.Description = request.Description;
             plan.EstimatedReleaseDate = request.EstimatedReleaseDate;
-            plan.EstimatedReleaseDays = request.EstimatedReleaseDays;
             plan.FundingNeeded = plan.FundingNeeded;
             
             await _context.SaveChangesAsync(cancellationToken);

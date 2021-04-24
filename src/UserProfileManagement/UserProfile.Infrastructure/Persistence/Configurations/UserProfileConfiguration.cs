@@ -10,8 +10,8 @@ namespace Hive.UserProfile.Infrastructure.Persistence.Configurations
             builder.ToTable("profiles", UserProfileDbContext.Schema);
             builder.HasKey(p => p.Id);
 
-            builder.Property(p => p.FirstName).HasMaxLength(50).IsRequired();
-            builder.Property(p => p.LastName).HasMaxLength(50).IsRequired();
+            builder.Property(p => p.FirstName).HasMaxLength(50).IsRequired(false);
+            builder.Property(p => p.LastName).HasMaxLength(50).IsRequired(false);
             builder.Property(p => p.Education).HasMaxLength(100).IsRequired(false);
             builder.Property(p => p.Description).HasMaxLength(50).IsRequired(false);
 

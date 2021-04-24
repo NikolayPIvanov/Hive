@@ -1,4 +1,6 @@
-﻿namespace Hive.Gig.Contracts.IntegrationEvents
+﻿using Hive.Common.Core.SeedWork;
+
+namespace Hive.Gig.Contracts.IntegrationEvents
 {
     using System;
     using Common.Domain.SeedWork;

@@ -1,14 +1,16 @@
 ﻿// Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
-using System.Linq;
+using System;
+using System.Reflection;
+using DotNetCore.CAP;
 using Duende.IdentityServer;
-using Duende.IdentityServer.EntityFramework.DbContexts;
-using Duende.IdentityServer.EntityFramework.Mappers;
+using Hive.Common.Core;
 using Hive.Common.Core.Interfaces;
+using Hive.Common.Core.Services;
 using Hive.Identity.Data;
+using Hive.Identity.Models;
 using Hive.Identity.Services;
-using IdentityServerHost.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
@@ -41,12 +43,10 @@ namespace Hive.Identity
                 options.UseSqlServer(connectionString,
                     o => o.MigrationsAssembly(assembly)));
             
-            var sqlServerConnectionString = Configuration.GetConnectionString("DefaultConnection");
-            
             services.AddCap(x =>
             {
                 x.UseEntityFramework<ApplicationDbContext>();
-                x.UseSqlServer(sqlServerConnectionString);
+                x.UseSqlServer(connectionString);
 
                 x.UseRabbitMQ(ro =>
                 {
@@ -59,17 +59,18 @@ namespace Hive.Identity
 
                 x.UseDashboard(opt => { opt.PathMatch = "/cap"; });
             });
-
-            services.AddScoped<IDispatcher, EventDispatcher>();
-            services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
             
+            services.AddOfType<ICapSubscribe>(new []{ Assembly.GetExecutingAssembly() });
+
+            services.AddScoped<IIdentityDispatcher, IdentityDispatcher>();
+            services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders()
                 .AddDefaultUI();
 
-            var builder = services.AddIdentityServer(options =>
+            services.AddIdentityServer(options =>
                 {
                     options.Events.RaiseErrorEvents = true;
                     options.Events.RaiseInformationEvents = true;
@@ -89,7 +90,8 @@ namespace Hive.Identity
                     options.ConfigureDbContext = b => b.UseSqlServer(connectionString,
                         sql => sql.MigrationsAssembly(assembly));
                 })
-                .AddAspNetIdentity<ApplicationUser>();
+                .AddAspNetIdentity<ApplicationUser>()
+                .AddProfileService<IdentityProfileService>();
 
             services.AddAuthentication()
                 .AddGoogle(options =>
@@ -106,12 +108,11 @@ namespace Hive.Identity
 
         public void Configure(IApplicationBuilder app)
         {
-            InitializeDatabase(app);
-            
+            SeedDefaultData(app);
+
             if (Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
             }
 
             app.UseStaticFiles();
@@ -125,47 +126,18 @@ namespace Hive.Identity
                 endpoints.MapRazorPages();
             });
         }
-    
-        private void InitializeDatabase(IApplicationBuilder app)
+
+        private static void SeedDefaultData(IApplicationBuilder app)
         {
             using var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>()?.CreateScope();
-            if (serviceScope == null) return;
-            InitializePersistedGrantDbContext(serviceScope);
-            InitializeConfigurationDbContext(serviceScope);
-            InitializeApplicationDbContext(serviceScope);
-        }
+            if (serviceScope == null)
+                throw new Exception("Cannot create IServiceScopeFactory");
+            var userManager = serviceScope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
+            var roleManager = serviceScope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+            var dispatcher = serviceScope.ServiceProvider.GetRequiredService<IIdentityDispatcher>();
+            var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-        private void InitializePersistedGrantDbContext(IServiceScope serviceScope)
-        {
-            serviceScope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();
-        }
-        
-        private void InitializeConfigurationDbContext(IServiceScope serviceScope)
-        {
-            var context = serviceScope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
-            context.Database.Migrate();
-
-            var allClients = context.Clients.AsQueryable();
-            context.Clients.RemoveRange(allClients);
-            context.Clients.AddRange(Config.Clients.Select(x => x.ToEntity()));
-
-            context.SaveChanges();
-            
-            var allResources = context.IdentityResources.AsQueryable();
-            context.IdentityResources.RemoveRange(allResources);
-            context.IdentityResources.AddRange(Config.IdentityResources.Select(x => x.ToEntity()));
-            context.SaveChanges();
-            
-            var allScopes = context.ApiScopes.AsQueryable();
-            context.ApiScopes.RemoveRange(allScopes);
-            context.ApiScopes.AddRange(Config.ApiScopes.Select(x => x.ToEntity()));
-            context.SaveChanges();
-        }
-
-        private void InitializeApplicationDbContext(IServiceScope serviceScope)
-        {
-            var appContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            appContext.Database.Migrate();
+            ApplicationDbContextSeed.SeedDefaultUserAsync(userManager, roleManager, context, dispatcher).Wait();
         }
     }
 }

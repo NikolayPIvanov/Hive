@@ -1,4 +1,5 @@
 ﻿using System;
+using Hive.Common.Core.SeedWork;
 using Hive.Common.Domain.SeedWork;
 
 namespace Hive.Billing.Contracts.IntegrationEvents

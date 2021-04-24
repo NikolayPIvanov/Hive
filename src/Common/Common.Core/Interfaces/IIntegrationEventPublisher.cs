@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using Hive.Common.Core.SeedWork;
 using Hive.Common.Domain.SeedWork;
 
 namespace Hive.Common.Core.Interfaces

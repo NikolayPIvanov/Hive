@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Hive.Identity.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using IdentityServerHost.Models;
 
 namespace Hive.Identity.Data
 {
@@ -11,12 +11,23 @@ namespace Hive.Identity.Data
         {
         }
 
+        public DbSet<UserAccountType> UserAccountTypes { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-            // Customize the ASP.NET Identity model and override the defaults if needed.
-            // For example, you can rename the ASP.NET Identity table names and more.
-            // Add your customizations after calling base.OnModelCreating(builder);
+
+            builder.Entity<ApplicationUser>(e =>
+            {
+                e.HasMany(x => x.AccountTypes)
+                    .WithOne()
+                    .HasForeignKey(ac => ac.UserId);
+            });
+
+            builder.Entity<UserAccountType>(b =>
+            {
+                b.HasIndex(x => new {x.Type, x.UserId}).IsUnique();
+            });
         }
     }
 }

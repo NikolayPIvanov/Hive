@@ -38,5 +38,7 @@ namespace Hive.Gig.Domain.Entities
         public int? Revisions { get; set; }
         
         public int GigId { get; private init; }
+
+        public Gig Gig { get; set; }
     }
 }

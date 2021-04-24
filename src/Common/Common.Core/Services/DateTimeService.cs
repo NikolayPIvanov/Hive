@@ -1,7 +1,7 @@
 ﻿using System;
 using Hive.Common.Core.Interfaces;
 
-namespace Hive.Identity.Services
+namespace Hive.Common.Core.Services
 {
     public class DateTimeService : IDateTimeService
     {

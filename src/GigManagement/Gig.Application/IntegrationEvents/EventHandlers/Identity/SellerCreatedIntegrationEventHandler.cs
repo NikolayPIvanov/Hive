@@ -16,19 +16,20 @@ namespace Hive.Gig.Application.IntegrationEvents.EventHandlers.Identity
             _dbContext = dbContext;
         }
         
-        // TODO: Refactor
         [CapSubscribe(nameof(SellerCreatedIntegrationEvent))]
-        public async Task Handle(SellerCreatedIntegrationEvent @event)
+        public async Task<ConformationEvents.SellerStoredIntegrationEvent> Handle(SellerCreatedIntegrationEvent @event)
         {
             var sellerIsRegistered = await _dbContext.Sellers.AnyAsync(s => s.UserId == @event.UserId);
-            if (!sellerIsRegistered)
+            if (sellerIsRegistered)
             {
-                return;
+                return new ConformationEvents.SellerStoredIntegrationEvent(@event.UserId, -1, false);
             }
 
             var seller = new Seller(@event.UserId);
             _dbContext.Sellers.Add(seller);
             await _dbContext.SaveChangesAsync(default);
+
+            return new ConformationEvents.SellerStoredIntegrationEvent(@event.UserId, seller.Id, true);
         }
     }
 }

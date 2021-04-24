@@ -19,8 +19,7 @@ namespace Hive.LooselyCoupled.Controllers
         [HttpGet]
         [AllowAnonymous]
         public async Task<ActionResult<PaginatedList<CategoryDto>>> GetCategories([FromQuery] GetCategoriesQuery query) => Ok(await Mediator.Send(query));
-        
-        
+
         [HttpGet("{id:int}/gigs")]
         [AllowAnonymous]
         public async Task<ActionResult<PaginatedList<GigDto>>> GetCategoryGigs([FromRoute] int id,

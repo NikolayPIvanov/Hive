@@ -3,6 +3,7 @@ using Billing.Infrastructure;
 using Hive.Common.Core.Interfaces;
 using Hive.Gig.Application;
 using Hive.Gig.Infrastructure;
+using Hive.Gig.Infrastructure.Services;
 using Hive.Investing.Application;
 using Hive.Investing.Infrastructure;
 using Hive.LooselyCoupled.Services;
@@ -53,6 +54,8 @@ namespace Hive.LooselyCoupled
 
             services.AddControllers();
             
+            services.AddScoped<IIdentityService, IdentityService>();
+            
             services.AddAuthentication("Bearer")
                 .AddJwtBearer("Bearer", options =>
                 {
@@ -64,15 +67,6 @@ namespace Hive.LooselyCoupled
                     };
                 });
 
-            services.AddAuthorization(options =>
-            {
-                options.AddPolicy("GigManagement", policy =>
-                {
-                    policy.RequireAuthenticatedUser();
-                    policy.RequireClaim("scope", "loosely-coupled");
-                });
-            });
-            
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo {Title = "LooselyCoupled", Version = "v1"});
@@ -120,8 +114,7 @@ namespace Hive.LooselyCoupled
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers()
-                    .RequireAuthorization("GigManagement");
+                endpoints.MapControllers();
             });
         }
     }
