@@ -9,6 +9,7 @@ using Hive.Investing.Application.Interfaces;
 using Hive.Investing.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Hive.Investing.Application.Investors.Queries
 {
@@ -19,11 +20,13 @@ namespace Hive.Investing.Application.Investors.Queries
     {
         private readonly IInvestingDbContext _context;
         private readonly ICurrentUserService _currentUserService;
+        private readonly ILogger<GetInvestorIdQueryHandler> _logger;
 
-        public GetInvestorIdQueryHandler(IInvestingDbContext context, ICurrentUserService currentUserService)
+        public GetInvestorIdQueryHandler(IInvestingDbContext context, ICurrentUserService currentUserService, ILogger<GetInvestorIdQueryHandler> logger)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(context));
+            _logger = logger  ?? throw new ArgumentNullException(nameof(logger));
         }
         
         public async Task<int> Handle(GetInvestorIdQuery request, CancellationToken cancellationToken)
@@ -33,6 +36,7 @@ namespace Hive.Investing.Application.Investors.Queries
             
             if (investor == null)
             {
+                _logger.LogWarning("Investor with user id: {UserId} was not found", _currentUserService.UserId);
                 throw new NotFoundException(nameof(Investor));
             }
 

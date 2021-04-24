@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using Hive.Common.Core.Exceptions;
 using Hive.Common.Core.Security;
@@ -6,19 +7,21 @@ using Hive.Investing.Application.Interfaces;
 using Hive.Investing.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Hive.Investing.Application.Plans.Commands
 {
-    [Authorize(Roles = "Seller, Administrator")]
     public record DeletePlanCommand(int Id) : IRequest;
 
     public class DeletePlanCommandHandler : IRequestHandler<DeletePlanCommand>
     {
         private readonly IInvestingDbContext _context;
+        private readonly ILogger<DeletePlanCommandHandler> _logger;
 
-        public DeletePlanCommandHandler(IInvestingDbContext context)
+        public DeletePlanCommandHandler(IInvestingDbContext context, ILogger<DeletePlanCommandHandler> logger)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
         public async Task<Unit> Handle(DeletePlanCommand request, CancellationToken cancellationToken)
@@ -27,6 +30,7 @@ namespace Hive.Investing.Application.Plans.Commands
             
             if (plan is null)
             {
+                _logger.LogWarning("Plan with id {Id} was not found", request.Id);
                 throw new NotFoundException(nameof(Plan), request.Id);
             }
 

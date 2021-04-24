@@ -8,10 +8,10 @@ using Hive.Investing.Application.Interfaces;
 using Hive.Investing.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Hive.Investing.Application.Plans.Commands
 {
-    [Authorize(Roles = "Seller, Administrator")]
     public record UpdatePlanCommand(int Id, string Title, string Description, DateTime EstimatedReleaseDate, decimal FundingNeeded) : IRequest;
 
     public class UpdatePlanCommandValidator : AbstractValidator<UpdatePlanCommand>
@@ -19,39 +19,38 @@ namespace Hive.Investing.Application.Plans.Commands
         public UpdatePlanCommandValidator(IInvestingDbContext context)
         {
             RuleFor(x => x.Title)
-                .NotNull().WithMessage("A {PropertyName} must be provided")
-                .MinimumLength(3).WithMessage("{PropertyName} must be above {MinimumLength}")
-                .MaximumLength(50).WithMessage("{PropertyName} must be below {MaximumLength}");
+                .MinimumLength(5).WithMessage("{Property} must be above {MinimumLength}")
+                .MaximumLength(50).WithMessage("{Property} must be below {MaximumLength}")
+                .NotEmpty().WithMessage("{Property} cannot be empty or missing");
             
             RuleFor(x => x.Description)
-                .NotNull().WithMessage("A {PropertyName} must be provided")
-                .MinimumLength(10).WithMessage("{PropertyName} must be above {MinimumLength}")
-                .MaximumLength(2500).WithMessage("{PropertyName} must be below {MaximumLength}");
+                .MinimumLength(20).WithMessage("{Property} must be above {MinimumLength}")
+                .MaximumLength(3000).WithMessage("{Property} must be below {MaximumLength}")
+                .NotEmpty().WithMessage("{Property} cannot be empty or missing");
 
             RuleFor(x => x.EstimatedReleaseDate.Date)
-                .NotNull().WithMessage("A {PropertyName} must be provided")
-                .GreaterThan(DateTime.UtcNow.Date).WithMessage("Cannot set release date to be today's date");
+                .Must(x => DateTime.UtcNow.AddYears(1) > x).WithMessage("{Property} must not be more than an year away.")
+                .NotEmpty().WithMessage("{Property} cannot be empty or missing");
 
             RuleFor(x => x.FundingNeeded)
-                .NotNull().WithMessage("A {PropertyName} must be provided")
-                .GreaterThan(10.0m).WithMessage("{PropertyName} must be greater than {ValueToCompare}");
+                .InclusiveBetween(100.0m, 100000.0m).WithMessage("{Property} must between 100.0 and 100000.0")
+                .NotEmpty().WithMessage("{Property} cannot be empty or missing");
 
             RuleFor(x => x.Id)
-                .MustAsync(async (command, id, cancellationToken) =>
-                {
-                    var alreadyFunded = await context.Plans.AnyAsync(x => x.Id == id && x.IsFunded, cancellationToken);
-                    return !alreadyFunded;
-                });
+                .MustAsync(async (command, id, cancellationToken) => 
+                    !(await context.Plans.AnyAsync(x => x.Id == id && x.IsFunded, cancellationToken)));
         }
     }
     
     public class UpdatePlanCommandHandler : IRequestHandler<UpdatePlanCommand>
     {
         private readonly IInvestingDbContext _context;
+        private readonly ILogger<UpdatePlanCommand> _logger;
 
-        public UpdatePlanCommandHandler(IInvestingDbContext context)
+        public UpdatePlanCommandHandler(IInvestingDbContext context, ILogger<UpdatePlanCommand> logger)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
         public async Task<Unit> Handle(UpdatePlanCommand request, CancellationToken cancellationToken)
@@ -60,16 +59,18 @@ namespace Hive.Investing.Application.Plans.Commands
             
             if (plan is null)
             {
+                _logger.LogWarning("Plan with id: {Id} was not found", request.Id);
                 throw new NotFoundException(nameof(Plan), request.Id);
             }
             
-            // TODO: Add validation
             plan.Title = request.Title;
             plan.Description = request.Description;
             plan.EstimatedReleaseDate = request.EstimatedReleaseDate;
-            plan.FundingNeeded = plan.FundingNeeded;
+            plan.StartingFunds = request.FundingNeeded;
             
             await _context.SaveChangesAsync(cancellationToken);
+            
+            _logger.LogInformation("Plan with id: {Id} was updated.", request.Id);
 
             return Unit.Value;
         }
