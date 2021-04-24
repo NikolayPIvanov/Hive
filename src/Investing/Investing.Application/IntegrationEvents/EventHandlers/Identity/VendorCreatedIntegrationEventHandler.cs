@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using DotNetCore.CAP;
+using Hive.Common.Core.Interfaces;
 using Hive.Identity.Contracts.IntegrationEvents;
 using Hive.Investing.Application.Interfaces;
 using Hive.Investing.Domain.Entities;
@@ -7,16 +9,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Hive.Investing.Application.IntegrationEvents.EventHandlers.Identity
 {
-    public class SellerCreatedIntegrationEventHandler : ICapSubscribe
+    public class VendorCreatedIntegrationEventHandler : ICapSubscribe
     {
         private readonly IInvestingDbContext _context;
 
-        public SellerCreatedIntegrationEventHandler(IInvestingDbContext context)
+        public VendorCreatedIntegrationEventHandler(IInvestingDbContext context)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
         }
+        
 
-        [CapSubscribe(nameof(SellerCreatedIntegrationEvent), Group = "hive.investing")]
+        [CapSubscribe(nameof(SellerCreatedIntegrationEvent), Group = "hive.investing.vendor.creation")]
         public async Task Handle(SellerCreatedIntegrationEvent @event)
         {
             var alreadyRegistered = await _context.Vendors.AnyAsync(v => v.UserId == @event.UserId);

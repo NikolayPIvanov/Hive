@@ -23,7 +23,7 @@ namespace Hive.Investing.Application.Investors.Queries
         public GetInvestorIdQueryHandler(IInvestingDbContext context, ICurrentUserService currentUserService)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
-            _currentUserService = currentUserService;
+            _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(context));
         }
         
         public async Task<int> Handle(GetInvestorIdQuery request, CancellationToken cancellationToken)

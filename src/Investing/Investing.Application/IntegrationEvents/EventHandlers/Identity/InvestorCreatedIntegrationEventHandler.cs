@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
 using DotNetCore.CAP;
+using Hive.Common.Core.Interfaces;
 using Hive.Identity.Contracts.IntegrationEvents;
 using Hive.Investing.Application.Interfaces;
 using Hive.Investing.Domain.Entities;
@@ -10,13 +12,15 @@ namespace Hive.Investing.Application.IntegrationEvents.EventHandlers.Identity
     public class InvestorCreatedIntegrationEventHandler : ICapSubscribe
     {
         private readonly IInvestingDbContext _context;
+        private readonly IIntegrationEventPublisher _integrationEventPublisher;
 
-        public InvestorCreatedIntegrationEventHandler(IInvestingDbContext context)
+        public InvestorCreatedIntegrationEventHandler(IInvestingDbContext context, IIntegrationEventPublisher integrationEventPublisher)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _integrationEventPublisher = integrationEventPublisher ?? throw new ArgumentNullException(nameof(integrationEventPublisher));
         }
         
-        [CapSubscribe(nameof(InvestorCreatedIntegrationEvent), Group = "hive.investing")]
+        [CapSubscribe(nameof(InvestorCreatedIntegrationEvent), Group = "hive.investing.investor.creation")]
         public async Task Handle(InvestorCreatedIntegrationEvent @event)
         {
             var alreadyRegistered = await _context.Investors.AnyAsync(v => v.UserId == @event.UserId);
@@ -27,6 +31,8 @@ namespace Hive.Investing.Application.IntegrationEvents.EventHandlers.Identity
 
             _context.Investors.Add(investor);
             await _context.SaveChangesAsync();
+
+            await _integrationEventPublisher.Publish(new ConformationEvents.InvestorStoredIntegrationEvent(@event.UserId, investor.Id, true));
         }
     }
 }

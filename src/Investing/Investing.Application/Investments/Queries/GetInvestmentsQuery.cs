@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,8 +20,8 @@ namespace Hive.Investing.Application.Investments.Queries
 
         public GetInvestmentsQueryHandler(IInvestingDbContext context, IMapper mapper)
         {
-            _context = context;
-            _mapper = mapper;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
         
         public async Task<IEnumerable<InvestmentDto>> Handle(GetInvestmentsQuery request, CancellationToken cancellationToken)
