@@ -1,11 +1,15 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
+using Hive.Common.Core;
 using Hive.Common.Core.Exceptions;
+using Hive.Common.Core.Interfaces;
 using Hive.Investing.Application.Interfaces;
 using Hive.Investing.Domain.Entities;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -24,12 +28,13 @@ namespace Hive.Investing.Application.Investments.Commands
         }
     }
     
-    public class DeleteInvestmentCommandHandler : IRequestHandler<DeleteInvestmentCommand>
+    public class DeleteInvestmentCommandHandler : AuthorizationRequestHandler<Investment>, IRequestHandler<DeleteInvestmentCommand>
     {
         private readonly IInvestingDbContext _context;
         private readonly ILogger<DeleteInvestmentCommandHandler> _logger;
 
-        public DeleteInvestmentCommandHandler(IInvestingDbContext context, ILogger<DeleteInvestmentCommandHandler> logger)
+        public DeleteInvestmentCommandHandler(IInvestingDbContext context, IAuthorizationService authorizationService, 
+            ICurrentUserService currentUserService, ILogger<DeleteInvestmentCommandHandler> logger) : base(currentUserService, authorizationService)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -42,6 +47,13 @@ namespace Hive.Investing.Application.Investments.Commands
             {
                 _logger.LogWarning("Investment with Id {InvestmentId} was not found.", request.Id);
                 throw new NotFoundException(nameof(Investment), request.Id);
+            }
+            
+            var result = await base.AuthorizeAsync(investment,  new [] {"OnlyOwnerPolicy"});
+            
+            if (!result.All(s => s.Succeeded))
+            {
+                throw new ForbiddenAccessException();
             }
 
             _context.Investments.Remove(investment);

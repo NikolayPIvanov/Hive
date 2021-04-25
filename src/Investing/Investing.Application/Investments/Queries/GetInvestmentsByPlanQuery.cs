@@ -11,24 +11,24 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Hive.Investing.Application.Investments.Queries
 {
-    public record GetInvestmentsQuery(int InvestorId) : IRequest<IEnumerable<InvestmentDto>>;
+    public record GetInvestmentsByPlanQuery(int PlanId) : IRequest<IEnumerable<InvestmentDto>>;
 
-    public class GetInvestmentsQueryHandler : IRequestHandler<GetInvestmentsQuery, IEnumerable<InvestmentDto>>
+    public class GetInvestmentsByPlanQueryHandler : IRequestHandler<GetInvestmentsByPlanQuery, IEnumerable<InvestmentDto>>
     {
         private readonly IInvestingDbContext _context;
         private readonly IMapper _mapper;
 
-        public GetInvestmentsQueryHandler(IInvestingDbContext context, IMapper mapper)
+        public GetInvestmentsByPlanQueryHandler(IInvestingDbContext context, IMapper mapper)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
         
-        public async Task<IEnumerable<InvestmentDto>> Handle(GetInvestmentsQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<InvestmentDto>> Handle(GetInvestmentsByPlanQuery request, CancellationToken cancellationToken)
         {
             return await _context.Investments
                 .AsNoTracking()
-                .Where(i => i.InvestorId == request.InvestorId)
+                .Where(i => i.PlanId == request.PlanId)
                 .ProjectToListAsync<InvestmentDto>(_mapper.ConfigurationProvider);
         }
     }

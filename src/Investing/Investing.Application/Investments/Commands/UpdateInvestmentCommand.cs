@@ -1,12 +1,15 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
+using Hive.Common.Core;
 using Hive.Common.Core.Exceptions;
-using Hive.Common.Core.Security;
+using Hive.Common.Core.Interfaces;
 using Hive.Investing.Application.Interfaces;
 using Hive.Investing.Domain.Entities;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 
 namespace Hive.Investing.Application.Investments.Commands
@@ -40,12 +43,13 @@ namespace Hive.Investing.Application.Investments.Commands
         }
     }
     
-    public class UpdateInvestmentCommandHandler : IRequestHandler<UpdateInvestmentCommand>
+    public class UpdateInvestmentCommandHandler : AuthorizationRequestHandler<Investment>, IRequestHandler<UpdateInvestmentCommand>
     {
         private readonly IInvestingDbContext _context;
         private readonly ILogger<UpdateInvestmentCommandHandler> _logger;
 
-        public UpdateInvestmentCommandHandler(IInvestingDbContext context, ILogger<UpdateInvestmentCommandHandler> logger)
+        public UpdateInvestmentCommandHandler(IInvestingDbContext context, IAuthorizationService authorizationService, 
+            ICurrentUserService currentUserService, ILogger<UpdateInvestmentCommandHandler> logger) : base(currentUserService, authorizationService)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -58,6 +62,13 @@ namespace Hive.Investing.Application.Investments.Commands
             {
                 _logger.LogWarning("Investment with Id {InvestmentId} was not found.", request.InvestmentId);
                 throw new NotFoundException(nameof(Investment), request.InvestmentId);
+            }
+            
+            var result = await base.AuthorizeAsync(investment,  new [] {"OnlyOwnerPolicy"});
+            
+            if (!result.All(s => s.Succeeded))
+            {
+                throw new ForbiddenAccessException();
             }
 
             investment.Amount = request.Amount;

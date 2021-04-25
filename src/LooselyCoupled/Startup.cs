@@ -6,9 +6,11 @@ using Hive.Gig.Infrastructure;
 using Hive.Gig.Infrastructure.Services;
 using Hive.Investing.Application;
 using Hive.Investing.Infrastructure;
+using Hive.LooselyCoupled.Authorization.Requirements;
 using Hive.LooselyCoupled.Services;
 using Hive.UserProfile.Application;
 using Hive.UserProfile.Infrastructure;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -66,6 +68,18 @@ namespace Hive.LooselyCoupled
                         ValidateAudience = false
                     };
                 });
+            
+            services.AddAuthorization(options =>
+            {
+                options.AddPolicy("OnlyOwnerPolicy", policy =>
+                {
+                    policy.RequireRole("Seller", "Admin");
+                    policy.AddRequirements(new OnlyOwnerAuthorizationRequirement());
+                });
+            });
+            
+            services.AddSingleton<IAuthorizationHandler, EntityOwnerAuthorizationHandler>();
+
 
             services.AddSwaggerGen(c =>
             {

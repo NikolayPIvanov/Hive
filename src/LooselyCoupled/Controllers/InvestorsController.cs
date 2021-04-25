@@ -10,7 +10,8 @@ namespace Hive.LooselyCoupled.Controllers
     public class InvestorsController : ApiControllerBase
     {
         [HttpGet("{id:int}/investments")]
+        [Authorize(Roles = "Investor, Admin")]
         public async Task<ActionResult<IEnumerable<InvestmentDto>>> GetInvestments(int id) 
-            => Ok(await Mediator.Send(new GetInvestmentsQuery(id)));
+            => Ok(await Mediator.Send(new GetInvestmentsByInvestorQuery(id)));
     }
 }

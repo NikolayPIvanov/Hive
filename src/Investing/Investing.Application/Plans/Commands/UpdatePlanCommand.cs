@@ -1,11 +1,15 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
+using Hive.Common.Core;
 using Hive.Common.Core.Exceptions;
+using Hive.Common.Core.Interfaces;
 using Hive.Investing.Application.Interfaces;
 using Hive.Investing.Domain.Entities;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -46,13 +50,14 @@ namespace Hive.Investing.Application.Plans.Commands
                 .WithMessage("Plan that is already funded cannot be updated.");
         }
     }
-    
-    public class UpdatePlanCommandHandler : IRequestHandler<UpdatePlanCommand>
+
+    public class UpdatePlanCommandHandler : AuthorizationRequestHandler<Plan>, IRequestHandler<UpdatePlanCommand>
     {
         private readonly IInvestingDbContext _context;
         private readonly ILogger<UpdatePlanCommand> _logger;
 
-        public UpdatePlanCommandHandler(IInvestingDbContext context, ILogger<UpdatePlanCommand> logger)
+        public UpdatePlanCommandHandler(IInvestingDbContext context, IAuthorizationService authorizationService, 
+            ICurrentUserService currentUserService, ILogger<UpdatePlanCommand> logger) : base(currentUserService, authorizationService)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -66,6 +71,13 @@ namespace Hive.Investing.Application.Plans.Commands
             {
                 _logger.LogWarning("Plan with id: {Id} was not found", request.Id);
                 throw new NotFoundException(nameof(Plan), request.Id);
+            }
+
+            var result = await base.AuthorizeAsync(plan,  new [] {"OnlyOwnerPolicy"});
+            
+            if (!result.All(s => s.Succeeded))
+            {
+                throw new ForbiddenAccessException();
             }
             
             plan.Title = request.Title;
