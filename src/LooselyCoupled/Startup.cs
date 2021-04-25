@@ -72,10 +72,7 @@ namespace Hive.LooselyCoupled
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("OnlyOwnerPolicy", policy =>
-                {
-                    policy.RequireRole("Seller", "Admin");
-                    policy.AddRequirements(new OnlyOwnerAuthorizationRequirement());
-                });
+                    policy.AddRequirements(new OnlyOwnerAuthorizationRequirement()));
             });
             
             services.AddSingleton<IAuthorizationHandler, EntityOwnerAuthorizationHandler>();

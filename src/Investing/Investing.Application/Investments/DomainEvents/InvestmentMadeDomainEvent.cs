@@ -1,7 +1,7 @@
-﻿namespace Hive.Investing.Application.Investments.DomainEvents
+﻿using MediatR;
+
+namespace Hive.Investing.Application.Investments.DomainEvents
 {
-    public class InvestmentMadeDomainEvent
-    {
-        // TODO: Notify the vendor that an investment offer was created
-    }
+    // TODO: Notify the vendor that an investment offer was created
+    public record InvestmentMadeDomainEvent : INotification;
 }

@@ -13,7 +13,7 @@ namespace Hive.LooselyCoupled.Authorization.Requirements
             OnlyOwnerAuthorizationRequirement requirement,
             Entity resource)
         {
-            var roles = context.User?.FindAll(c => c.Type == "role").ToList();
+            var roles = context.User?.FindAll(c => c.Type == ClaimsIdentity.DefaultRoleClaimType).ToList();
             if (requirement.AllowAdmin)
             {
                 var isAdmin = roles.Any(r => r.Value == "Admin");
@@ -22,7 +22,8 @@ namespace Hive.LooselyCoupled.Authorization.Requirements
                     context.Succeed(requirement);
                 }
             }
-            else if (context.User?.FindFirstValue(ClaimTypes.NameIdentifier) == resource.CreatedBy)
+            
+            if (context.User?.FindFirstValue(ClaimTypes.NameIdentifier) == resource.CreatedBy)
             {
                 context.Succeed(requirement);
             }

@@ -7,13 +7,12 @@ using Hive.Common.Core.Interfaces;
 using Hive.Investing.Application.Interfaces;
 using Hive.Investing.Domain.Entities;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Hive.Investing.Application.Investments.Commands
 {
-    public record ProcessInvestmentCommand(int InvestmentId, bool Accept = true) : IRequest;
+    public record ProcessInvestmentCommand(int PlanId, int InvestmentId, bool Accept = true) : IRequest;
 
     public class ProcessInvestmentCommandHandler : IRequestHandler<ProcessInvestmentCommand>
     {
@@ -35,10 +34,16 @@ namespace Hive.Investing.Application.Investments.Commands
                 .Include(i => i.Plan)
                 .ThenInclude(p => p.Vendor)
                 .FirstOrDefaultAsync(x => x.Id == request.InvestmentId, cancellationToken: cancellationToken);
+
+            if (investment?.Plan == null)
+            {
+                _logger.LogWarning("Plan with Id {@PlanId} was not found.", request.PlanId);
+                throw new NotFoundException(nameof(Plan), request.PlanId);
+            }
             
             if (investment == null)
             {
-                _logger.LogWarning("Investment with Id {InvestmentId} was not found.", request.InvestmentId);
+                _logger.LogWarning("Investment with Id {@InvestmentId} was not found.", request.InvestmentId);
                 throw new NotFoundException(nameof(Investment), request.InvestmentId);
             }
 

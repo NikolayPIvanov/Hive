@@ -23,7 +23,7 @@ namespace Hive.Investing.Application.Plans.Commands
         {
             RuleFor(x => x.Id)
                 .MustAsync(async (id, token) => 
-                    !(await context.Plans.AnyAsync(x => x.Id == id && x.EndDate > DateTime.UtcNow, token)))
+                    !(await context.Plans.AnyAsync(x => x.Id == id && x.EndDate > DateTime.UtcNow && x.IsFunded, token)))
                 .WithMessage("Cannot delete a plan that is still ongoing");
         }
     }

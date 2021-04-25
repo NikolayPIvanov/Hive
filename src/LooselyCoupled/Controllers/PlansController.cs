@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Hive.LooselyCoupled.Controllers
 {
-    [Authorize(Roles = "Seller,Investor,Admin")]
+    [Authorize(Roles = "Seller,Investor")]
     public class PlansController : ApiControllerBase
     {
         [HttpGet("{id:int}")]
@@ -40,6 +40,7 @@ namespace Hive.LooselyCoupled.Controllers
         }
         
         [HttpDelete("{id:int}")]
+        [Authorize(Roles = "Seller")]
         public async Task<IActionResult> DeletePlan([FromRoute] int id, CancellationToken cancellationToken)
         {
             await Mediator.Send(new DeletePlanCommand(id), cancellationToken);
@@ -54,16 +55,17 @@ namespace Hive.LooselyCoupled.Controllers
         public async Task<IActionResult> GetInvestment([FromRoute] int planId, int investmentId, CancellationToken cancellationToken)
             => Ok(await Mediator.Send(new GetInvestmentByIdQuery(planId, investmentId), cancellationToken));
         
-        [HttpPost]
+        [HttpPost("{planId:int}/investments")]
         [Authorize(Roles = "Investor")]
-        public async Task<IActionResult> MakeInvestment([FromBody] MakeInvestmentCommand command,
+        public async Task<IActionResult> MakeInvestment([FromRoute] int planId, [FromBody] MakeInvestmentCommand command,
             CancellationToken cancellationToken)
         {
             var id = await Mediator.Send(command, cancellationToken);
-            return CreatedAtAction(nameof(GetInvestment), new {id}, id);
+            return CreatedAtAction(nameof(GetInvestment), new { planId, investmentId = id}, new { planId, id });
         }
         
         [HttpPut("{planId:int}/investments/{investmentId:int}")]
+        [Authorize(Roles = "Investor")]
         public async Task<IActionResult> UpdateInvestment([FromRoute] int planId, int investmentId, [FromBody] UpdateInvestmentCommand command,
             CancellationToken cancellationToken)
         {
@@ -79,24 +81,20 @@ namespace Hive.LooselyCoupled.Controllers
         
         
         [HttpDelete("{planId:int}/investments/{investmentId:int}")]
-        public async Task<IActionResult> DeleteInvestment([FromRoute] int planId, int investmentId, [FromBody] DeleteInvestmentCommand command,
-            CancellationToken cancellationToken)
+        [Authorize(Roles = "Investor")]
+        public async Task<IActionResult> DeleteInvestment([FromRoute] int planId, int investmentId, CancellationToken cancellationToken)
         {
-            // TODO: Should return 404 if planId is not found
-            if (investmentId != command.Id)
-            {
-                return BadRequest();
-            }
-
-            await Mediator.Send(command, cancellationToken);
+            await Mediator.Send(new DeleteInvestmentCommand(planId, investmentId), cancellationToken);
             return NoContent();
         }
     
-        [HttpPut("{id:int}/processing")]
-        public async Task<IActionResult> ProcessInvestment([FromRoute] int id, [FromBody] ProcessInvestmentCommand command,
+        [HttpPut("{planId:int}/investments/{investmentId:int}/processing")]
+        [Authorize(Roles = "Seller")]
+        public async Task<IActionResult> ProcessInvestment([FromRoute] int planId, int investmentId, [FromBody] ProcessInvestmentCommand command,
             CancellationToken cancellationToken)
         {
-            if (id != command.InvestmentId)
+            
+            if (investmentId != command.InvestmentId || planId != command.PlanId)
             {
                 return BadRequest();
             }

@@ -7,6 +7,7 @@ using Hive.Common.Core;
 using Hive.Common.Core.Exceptions;
 using Hive.Common.Core.Interfaces;
 using Hive.Investing.Application.Interfaces;
+using Hive.Investing.Application.Investments.DomainEvents;
 using Hive.Investing.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -15,16 +16,24 @@ using Microsoft.Extensions.Logging;
 
 namespace Hive.Investing.Application.Investments.Commands
 {
-    public record DeleteInvestmentCommand(int Id) : IRequest;
+    public record DeleteInvestmentCommand(int PlanId, int InvestmentId) : IRequest;
 
     public class DeleteInvestmentCommandValidator : AbstractValidator<DeleteInvestmentCommand>
     {
         public DeleteInvestmentCommandValidator(IInvestingDbContext context)
         {
-            RuleFor(x => x.Id)
-                .MustAsync(async (id, token) => 
-                    await context.Investments.AnyAsync(x => x.Id == id && !x.IsAccepted, token))
-                .WithMessage("Cannot delete an investment that is already accepted by the vendor.");
+            RuleFor(x => x.InvestmentId)
+                .MustAsync(async (id, token) =>
+                {
+                    var investment = await context.Investments.FirstOrDefaultAsync(x => x.Id == id, token);
+                    if (investment != null && investment.ExpirationDate < DateTime.UtcNow)
+                    {
+                        return true;
+                    }
+
+                    return investment != null && !investment.IsAccepted;
+                })
+                .WithMessage("Cannot delete an ongoing investment.");
         }
     }
     
@@ -42,24 +51,36 @@ namespace Hive.Investing.Application.Investments.Commands
         
         public async Task<Unit> Handle(DeleteInvestmentCommand request, CancellationToken cancellationToken)
         {
-            var investment = await _context.Investments.FindAsync(request.Id);
-            if (investment == null)
+            var planWithInvestment = await _context.Plans
+                .Include(x => x.Investments.Where(i => i.Id == request.InvestmentId))
+                .FirstOrDefaultAsync(x => x.Id == request.PlanId, cancellationToken);
+                
+            if (planWithInvestment == null)
             {
-                _logger.LogWarning("Investment with Id {InvestmentId} was not found.", request.Id);
-                throw new NotFoundException(nameof(Investment), request.Id);
+                _logger.LogWarning("Plan with Id {@PlanId} was not found.", request.PlanId);
+                throw new NotFoundException(nameof(Plan), request.PlanId);
             }
             
+            if (!planWithInvestment.Investments.Any())
+            {
+                _logger.LogWarning("Investment with Id {InvestmentId} was not found.", request.InvestmentId);
+                throw new NotFoundException(nameof(Investment), request.InvestmentId);
+            }
+
+            var investment = planWithInvestment.Investments.First();
             var result = await base.AuthorizeAsync(investment,  new [] {"OnlyOwnerPolicy"});
             
             if (!result.All(s => s.Succeeded))
             {
                 throw new ForbiddenAccessException();
             }
+            
+            investment.AddDomainEvent(new InvestmentWithdrawnEvent());
 
             _context.Investments.Remove(investment);
             await _context.SaveChangesAsync(cancellationToken);
             
-            _logger.LogInformation("Investment with Id {InvestmentId} was deleted", request.Id);
+            _logger.LogInformation("Investment with Id {InvestmentId} was deleted", request.InvestmentId);
             
             return Unit.Value;
         }
