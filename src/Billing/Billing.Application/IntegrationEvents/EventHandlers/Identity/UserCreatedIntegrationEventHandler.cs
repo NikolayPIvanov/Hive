@@ -24,7 +24,7 @@ namespace Billing.Application.IntegrationEvents.EventHandlers.Identity
         public async Task Handle(UserCreatedIntegrationEvent @event)
         {
             var accountHolderAlreadyRegistered = await _context.AccountHolders.AnyAsync(s => s.UserId == @event.UserId);
-            if (!accountHolderAlreadyRegistered)
+            if (accountHolderAlreadyRegistered)
             {
                 _logger.LogWarning("Account holder with {@UserId} already has an account.", @event.UserId);
                 return;

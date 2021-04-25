@@ -1,16 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation;
+using Hive.Common.Core;
 using Hive.Common.Core.Exceptions;
+using Hive.Common.Core.Interfaces;
 using Hive.Gig.Application.Interfaces;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 
 namespace Hive.Gig.Application.Gigs.Commands
 {
+    using Domain.Entities;
+    
     public record UpdateGigCommand(int Id, string Title, string Description, bool IsDraft, int? PlanId,
         ICollection<string> Tags, ICollection<QuestionModel> Questions) : IRequest;
 
@@ -39,13 +45,16 @@ namespace Hive.Gig.Application.Gigs.Commands
         }
     }
 
-    public class UpdateGigCommandHandler : IRequestHandler<UpdateGigCommand>
+    public class UpdateGigCommandHandler : AuthorizationRequestHandler<Gig>, IRequestHandler<UpdateGigCommand>
     {
         private readonly IGigManagementDbContext _dbContext;
         private readonly IMapper _mapper;
         private readonly ILogger<UpdateGigCommand> _logger;
 
-        public UpdateGigCommandHandler(IGigManagementDbContext dbContext, IMapper mapper, ILogger<UpdateGigCommand> logger)
+        public UpdateGigCommandHandler(IGigManagementDbContext dbContext, IMapper mapper, 
+            ICurrentUserService currentUserService, IAuthorizationService authorizationService,
+            ILogger<UpdateGigCommand> logger) 
+            : base(currentUserService, authorizationService)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -60,6 +69,13 @@ namespace Hive.Gig.Application.Gigs.Commands
             {
                 _logger.LogWarning("Gig with id: {Id} was not found", request.Id);
                 throw new NotFoundException(nameof(Gig), request.Id);
+            }
+            
+            var result = await base.AuthorizeAsync(entity,  new [] {"OnlyOwnerPolicy"});
+            
+            if (!result.All(s => s.Succeeded))
+            {
+                throw new ForbiddenAccessException();
             }
 
             _mapper.Map(request, entity);

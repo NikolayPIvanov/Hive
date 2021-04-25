@@ -1,22 +1,29 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Hive.Common.Core;
 using Hive.Common.Core.Exceptions;
-using Hive.Common.Core.Security;
+using Hive.Common.Core.Interfaces;
 using Hive.Gig.Application.Interfaces;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 
 namespace Hive.Gig.Application.Gigs.Commands
 {
+    using Domain.Entities;
+    
     public record DeleteGigCommand(int Id) : IRequest;
 
-    public class DeleteGigCommandHandler : IRequestHandler<DeleteGigCommand>
+    public class DeleteGigCommandHandler : AuthorizationRequestHandler<Gig>, IRequestHandler<DeleteGigCommand>
     {
         private readonly IGigManagementDbContext _dbContext;
         private readonly ILogger<DeleteGigCommandHandler> _logger;
 
-        public DeleteGigCommandHandler(IGigManagementDbContext dbContext, ILogger<DeleteGigCommandHandler> logger)
+        public DeleteGigCommandHandler(IGigManagementDbContext dbContext,
+            ICurrentUserService currentUserService, IAuthorizationService authorizationService, ILogger<DeleteGigCommandHandler> logger) 
+            : base(currentUserService, authorizationService)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _logger = logger ?? throw new ArgumentNullException(nameof(dbContext));
@@ -30,6 +37,13 @@ namespace Hive.Gig.Application.Gigs.Commands
             {
                 _logger.LogWarning("Gig with id: {Id} was not found", request.Id);
                 throw new NotFoundException(nameof(Gig), request.Id);
+            }
+            
+            var result = await base.AuthorizeAsync(entity,  new [] {"OnlyOwnerPolicy"});
+            
+            if (!result.All(s => s.Succeeded))
+            {
+                throw new ForbiddenAccessException();
             }
 
             _dbContext.Gigs.Remove(entity);

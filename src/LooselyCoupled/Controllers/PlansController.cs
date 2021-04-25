@@ -93,7 +93,6 @@ namespace Hive.LooselyCoupled.Controllers
         public async Task<IActionResult> ProcessInvestment([FromRoute] int planId, int investmentId, [FromBody] ProcessInvestmentCommand command,
             CancellationToken cancellationToken)
         {
-            
             if (investmentId != command.InvestmentId || planId != command.PlanId)
             {
                 return BadRequest();

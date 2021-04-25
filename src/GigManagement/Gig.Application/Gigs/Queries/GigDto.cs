@@ -3,7 +3,7 @@ using Hive.Gig.Application.GigPackages;
 
 namespace Hive.Gig.Application.Gigs.Queries
 {
-    public record QuestionDto(int Id, string Title, string Answer, int GigId);
+    public record QuestionDto(string Title, string Answer);
 
     public record GigScopeDto(int Id, string Description);
 
@@ -20,6 +20,10 @@ namespace Hive.Gig.Application.Gigs.Queries
         public string Category { get; set; }
         
         public string SellerId { get; set; }
+
+        public int PlanId { get; set; }
+
+        public bool IsDraft { get; set; }
 
         public ICollection<string> Tags { get; set; }
         

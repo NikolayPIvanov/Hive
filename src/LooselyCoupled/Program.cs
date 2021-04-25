@@ -1,5 +1,10 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Billing.Infrastructure.Persistence;
+using Hive.Gig.Infrastructure.Persistence;
+using Hive.Investing.Infrastructure.Persistence;
+using Hive.UserProfile.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,11 +27,22 @@ namespace Hive.LooselyCoupled
 
                 try
                 {
-                    var context = services.GetRequiredService<OrderingDbContext>();
+                    var orderingDbContext = services.GetRequiredService<OrderingDbContext>();
+                    var gigManagementDbContext = services.GetRequiredService<GigManagementDbContext>();
+                    var investingDbContext = services.GetRequiredService<InvestingDbContext>();
+                    var userProfileDbContext = services.GetRequiredService<UserProfileDbContext>();
+                    var billingDbContext = services.GetRequiredService<BillingDbContext>();
+                    DbContext[] contexts = {
+                        orderingDbContext, gigManagementDbContext, investingDbContext, userProfileDbContext,
+                        billingDbContext
+                    };
 
-                    if (context.Database.IsSqlServer())
+                    foreach (var dbContext in contexts)
                     {
-                        await context.Database.MigrateAsync();
+                        if (dbContext.Database.IsSqlServer())
+                        {
+                            dbContext.Database.Migrate();
+                        }
                     }
                 }
                 catch (Exception ex)

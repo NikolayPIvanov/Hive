@@ -16,6 +16,8 @@ namespace Hive.Gig.Application.Gigs
                 .ForMember(d => d.Tags, x => x.MapFrom(s => s.Tags.Select(t => t.Value)))
                 .ForMember(d => d.Description, x => x.MapFrom(s => s.GigScope.Description));
 
+            CreateMap<Question, QuestionDto>(MemberList.Destination);
+            
             CreateMap<UpdateGigCommand, Gig>()
                 .ForMember(d => d.Tags,
                     x => x.MapFrom(s =>

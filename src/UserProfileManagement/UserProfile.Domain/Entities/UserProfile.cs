@@ -14,6 +14,7 @@ namespace Hive.UserProfile.Domain.Entities
         public UserProfile(string userId) : this()
         {
             UserId = userId;
+            NotificationSetting = new NotificationSetting();
         }
 
         public string UserId { get; private init; }
