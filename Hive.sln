@@ -48,6 +48,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Billing", "Billing", "{0C0C3FD3-1C83-490B-BCAB-193B4D434F72}"
 ProjectSection(SolutionItems) = preProject
 	src\GigManagement\README.md = src\GigManagement\README.md
+	src\Billing\Setup.md = src\Billing\Setup.md
 EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Billing.Domain", "src\Billing\Billing.Domain\Billing.Domain.csproj", "{FBDFFF93-67BF-4F47-9A24-0700B13D83C2}"
