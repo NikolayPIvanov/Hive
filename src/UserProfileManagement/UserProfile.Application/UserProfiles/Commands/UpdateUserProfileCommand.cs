@@ -1,47 +1,58 @@
-﻿using System.Collections.Generic;
+﻿#nullable enable
+using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Hive.Common.Core.Exceptions;
 using Hive.UserProfile.Application.Interfaces;
+using Hive.UserProfile.Application.UserProfiles.Queries;
 using Hive.UserProfile.Domain;
+using Hive.UserProfile.Domain.Entities;
 using MediatR;
+using Microsoft.Extensions.Logging;
 
 namespace Hive.UserProfile.Application.UserProfiles.Commands
 {
-    public record UpdateUserProfileCommand(int UserProfileId, string FirstName, string LastName, string? Description, string Education,
-        ICollection<string> Skills, ICollection<string> Languages) : IRequest;
+    public record UpdateUserProfileCommand(int UserProfileId, string? FirstName, string? LastName, string? Description, string? Education,
+        NotificationSettingDto NotificationSetting, ICollection<string> Skills, ICollection<string> Languages) : IRequest;
     
     public class UpdateUserProfileCommandHandler : IRequestHandler<UpdateUserProfileCommand>
     {
-        private readonly IUserProfileContext _context;
+        private readonly IUserProfileDbContext _dbContext;
+        private readonly ILogger<UpdateUserProfileCommandHandler> _logger;
 
-        public UpdateUserProfileCommandHandler(IUserProfileContext context)
+        public UpdateUserProfileCommandHandler(IUserProfileDbContext dbContext, ILogger<UpdateUserProfileCommandHandler> logger)
         {
-            _context = context;
+            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
         public async Task<Unit> Handle(UpdateUserProfileCommand request, CancellationToken cancellationToken)
         {
-            var userProfile = await _context.UserProfiles.FindAsync(new[] {request.UserProfileId}, cancellationToken);
+            var userProfile = await _dbContext.UserProfiles.FindAsync(new[] {request.UserProfileId}, cancellationToken);
 
             if (userProfile is null)
             {
-                throw new NotFoundException(nameof(Domain.UserProfile), request.UserProfileId);
+                _logger.LogWarning("User Profile with id: {@Id} was not found.", request.UserProfileId);
+                throw new NotFoundException(nameof(Domain.Entities.UserProfile), request.UserProfileId);
             }
 
             userProfile.FirstName = request.FirstName;
             userProfile.LastName = request.LastName;
             userProfile.Description = request.Description;
             userProfile.Education = request.Education;
+            userProfile.NotificationSetting = new NotificationSetting(request.NotificationSetting.EmailNotifications);
             SetSkills(request, userProfile);
             SetLanguages(request, userProfile);
 
-            await _context.SaveChangesAsync(cancellationToken);
+            await _dbContext.SaveChangesAsync(cancellationToken);
+            
+            _logger.LogInformation("User Profile was updated: {@Id} successfully.");
 
             return Unit.Value;
         }
 
-        private static void SetLanguages(UpdateUserProfileCommand request, Domain.UserProfile userProfile)
+        private static void SetLanguages(UpdateUserProfileCommand request, Domain.Entities.UserProfile userProfile)
         {
             userProfile.Languages.Clear();
             foreach (var language in request.Languages)
@@ -50,7 +61,7 @@ namespace Hive.UserProfile.Application.UserProfiles.Commands
             }
         }
 
-        private static void SetSkills(UpdateUserProfileCommand request, Domain.UserProfile userProfile)
+        private static void SetSkills(UpdateUserProfileCommand request, Domain.Entities.UserProfile userProfile)
         {
             userProfile.Skills.Clear();
             foreach (var skill in request.Skills)

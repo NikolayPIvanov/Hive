@@ -2,6 +2,8 @@
 
 namespace Hive.UserProfile.Application.UserProfiles.Queries
 {
+    public record NotificationSettingDto(bool EmailNotifications = true);
+        
     public record UserProfileDto
     {
         public int Id { get; init; }
@@ -15,6 +17,8 @@ namespace Hive.UserProfile.Application.UserProfiles.Queries
         public string? Description { get; init; }
         
         public string? Education { get; init; }
+        
+        public NotificationSettingDto NotificationSettings { get; init; }
 
         public bool IsTransient { get; init; }
 

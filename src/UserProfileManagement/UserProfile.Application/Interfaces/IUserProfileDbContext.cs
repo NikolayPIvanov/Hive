@@ -1,12 +1,12 @@
 ﻿namespace Hive.UserProfile.Application.Interfaces
 {
-    using Domain;
+    using Domain.Entities;
     
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.EntityFrameworkCore;
 
-    public interface IUserProfileContext
+    public interface IUserProfileDbContext
     {
         public DbSet<UserProfile> UserProfiles { get; set; }
 

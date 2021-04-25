@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Hive.UserProfile.Infrastructure.Persistence.Migrations
 {
-    [DbContext(typeof(UserProfileDbContext))]
+    [DbContext(typeof(UserProfileDbDbContext))]
     [Migration("20210421191406_AddingEntities")]
     partial class AddingEntities
     {

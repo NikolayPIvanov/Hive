@@ -1,13 +1,8 @@
-﻿using Hive.Common.Core.SeedWork;
+﻿using System.Collections.Generic;
+using Hive.Common.Core.SeedWork;
 
-namespace Hive.UserProfile.Domain
+namespace Hive.UserProfile.Domain.Entities
 {
-    using System.Collections.Generic;
-    
-    public record Language(string Value);
-    
-    public record Skill(string Value);
-    
     public class UserProfile : Entity
     {
         private UserProfile()
@@ -30,6 +25,8 @@ namespace Hive.UserProfile.Domain
         public string? Description { get; set; }
         
         public string? Education { get; set; }
+        
+        public NotificationSetting NotificationSetting { get; set; }
 
         public ICollection<Skill> Skills { get; private set; }
         

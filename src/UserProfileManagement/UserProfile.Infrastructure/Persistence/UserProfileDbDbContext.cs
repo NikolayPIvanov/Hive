@@ -3,7 +3,7 @@ using Hive.Common.Core.SeedWork;
 
 namespace Hive.UserProfile.Infrastructure.Persistence
 {
-    using Domain;
+    using Domain.Entities;
     using Application.Interfaces;
     using System.Reflection;
     using System.Threading;
@@ -11,13 +11,13 @@ namespace Hive.UserProfile.Infrastructure.Persistence
 
     using Microsoft.EntityFrameworkCore;
 
-    public class UserProfileDbContext : DbContext, IUserProfileContext
+    public class UserProfileDbDbContext : DbContext, IUserProfileDbContext
     {
         private readonly IDateTimeService _dateTimeService;
         private const string DefaultSchema = "up";
         
-        public UserProfileDbContext(
-            DbContextOptions<UserProfileDbContext> options,
+        public UserProfileDbDbContext(
+            DbContextOptions<UserProfileDbDbContext> options,
             IDateTimeService dateTimeService) : base(options)
         {
             _dateTimeService = dateTimeService;

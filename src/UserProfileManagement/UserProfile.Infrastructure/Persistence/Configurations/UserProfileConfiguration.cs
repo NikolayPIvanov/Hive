@@ -3,11 +3,11 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Hive.UserProfile.Infrastructure.Persistence.Configurations
 {
-    public class UserProfileConfiguration : IEntityTypeConfiguration<Domain.UserProfile>
+    public class UserProfileConfiguration : IEntityTypeConfiguration<Domain.Entities.UserProfile>
     {
-        public void Configure(EntityTypeBuilder<Domain.UserProfile> builder)
+        public void Configure(EntityTypeBuilder<Domain.Entities.UserProfile> builder)
         {
-            builder.ToTable("profiles", UserProfileDbContext.Schema);
+            builder.ToTable("profiles", UserProfileDbDbContext.Schema);
             builder.HasKey(p => p.Id);
 
             builder.Property(p => p.FirstName).HasMaxLength(50).IsRequired(false);
@@ -28,6 +28,13 @@ namespace Hive.UserProfile.Infrastructure.Persistence.Configurations
                 l.WithOwner().HasForeignKey("ProfileId");
                 l.Property<int>("Id");
                 l.HasKey("Id");
+            });
+
+            builder.OwnsOne(p => p.NotificationSetting, ns =>
+            {
+                ns.WithOwner().HasForeignKey("ProfileId");
+                ns.Property<int>("Id");
+                ns.HasKey("Id");
             });
         }
     }
