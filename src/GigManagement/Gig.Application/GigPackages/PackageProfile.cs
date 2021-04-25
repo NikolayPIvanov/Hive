@@ -13,9 +13,10 @@ namespace Hive.Gig.Application.GigPackages
                 .ForMember(d => d.DeliveryFrequency, x => x.MapFrom(s => s.DeliveryFrequency.ToString()))
                 .AfterMap((package, dto) =>
                 {
-                    dto.Revisions = package.RevisionType == RevisionType.Numeric
-                        ? package.Revisions.Value.ToString()
-                        : RevisionType.Unlimited.ToString();
+                    if (package.Revisions != null)
+                        dto.Revisions = package.RevisionType == RevisionType.Numeric
+                            ? package.Revisions.Value.ToString()
+                            : RevisionType.Unlimited.ToString();
                 });
         }
     }

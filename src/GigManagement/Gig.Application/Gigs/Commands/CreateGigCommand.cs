@@ -60,7 +60,7 @@ namespace Hive.Gig.Application.Gigs.Commands
                 .MaximumLength(20).WithMessage("Tag length must not be above 20 characters.");
             
             RuleForEach(x => x.Questions)
-                .SetValidator(x => new QuestionValidator()).WithMessage("Question is not in correct format");
+                .SetValidator(_ => new QuestionValidator()).WithMessage("Question is not in correct format");
 
             RuleFor(x => x)
                 .MustAsync(async (_, token) =>
@@ -86,7 +86,10 @@ namespace Hive.Gig.Application.Gigs.Commands
             var tags = (request.Tags ?? new List<string>()).Select(t => new Tag(t)).ToHashSet();
             var questions = (request.Questions ?? new List<QuestionModel>()).Select(q => new Question(q.Title, q.Answer)).ToHashSet();
             var gig = new Gig(request.Title, request.Description, int.Parse(sellerId), request.CategoryId, tags, questions, request.PlanId);
-
+    
+            
+            // TODO: Add domain event to raise notification/email if the gig is related to a plan, it will raise an event to every investor that they
+            // will start getting a share of the amount of the payment for the service.
             _dbContext.Gigs.Add(gig);
             await _dbContext.SaveChangesAsync(cancellationToken);
 

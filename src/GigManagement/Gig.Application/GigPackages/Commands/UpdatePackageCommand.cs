@@ -4,11 +4,14 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation;
+using Hive.Common.Core;
 using Hive.Common.Core.Exceptions;
+using Hive.Common.Core.Interfaces;
 using Hive.Gig.Application.Interfaces;
 using Hive.Gig.Domain.Entities;
 using Hive.Gig.Domain.Enums;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
@@ -52,13 +55,15 @@ namespace Hive.Gig.Application.GigPackages.Commands
         }
     }
     
-    public class UpdatePackageCommandHandler : IRequestHandler<UpdatePackageCommand>
+    public class UpdatePackageCommandHandler : AuthorizationRequestHandler<Package>, IRequestHandler<UpdatePackageCommand>
     {
         private readonly IGigManagementDbContext _context;
         private readonly IMapper _mapper;
         private readonly ILogger<UpdatePackageCommandHandler> _logger;
 
-        public UpdatePackageCommandHandler(IGigManagementDbContext context, IMapper mapper, ILogger<UpdatePackageCommandHandler> logger)
+        public UpdatePackageCommandHandler(IGigManagementDbContext context, IMapper mapper,
+            ICurrentUserService currentUserService, IAuthorizationService authorizationService,
+            ILogger<UpdatePackageCommandHandler> logger) : base(currentUserService, authorizationService)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
@@ -73,6 +78,13 @@ namespace Hive.Gig.Application.GigPackages.Commands
             {
                 _logger.LogWarning("Package with id: {@Id} was not found", request.PackageId);
                 throw new NotFoundException(nameof(Package), request.PackageId);
+            }
+            
+            var result = await base.AuthorizeAsync(package,  new [] {"OnlyOwnerPolicy"});
+            
+            if (!result.All(s => s.Succeeded))
+            {
+                throw new ForbiddenAccessException();
             }
 
             _mapper.Map(request, package);

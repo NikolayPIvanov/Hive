@@ -3,7 +3,9 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
+using Hive.Common.Core;
 using Hive.Common.Core.Exceptions;
+using Hive.Common.Core.Interfaces;
 using Hive.Common.Core.Security;
 using Hive.Gig.Application.Interfaces;
 using Hive.Gig.Domain.Entities;
@@ -68,21 +70,32 @@ namespace Hive.Gig.Application.GigPackages.Commands
     public class CreatePackageCommandHandler : IRequestHandler<CreatePackageCommand, int>
     {
         private readonly IGigManagementDbContext _context;
+        private readonly ICurrentUserService _currentUserService;
         private readonly ILogger<CreatePackageCommand> _logger;
 
-        public CreatePackageCommandHandler(IGigManagementDbContext dbContext, ILogger<CreatePackageCommand> logger)
+        public CreatePackageCommandHandler(IGigManagementDbContext dbContext, ICurrentUserService currentUserService,
+            ILogger<CreatePackageCommand> logger)
         {
             _context = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
         public async Task<int> Handle(CreatePackageCommand request, CancellationToken cancellationToken)
         {
-            var gigIsValid = await _context.Gigs.AnyAsync(x => x.Id == request.GigId, cancellationToken);
-            if (!gigIsValid)
+            var gig = await _context.Gigs
+                .Include(g => g.Seller)
+                .FirstOrDefaultAsync(x => x.Id == request.GigId, cancellationToken);
+            if (gig == null)
             {
-                _logger.LogWarning("Gig with id: {Id} was not found", request.GigId);
+                _logger.LogWarning("Gig with id: {@Id} was not found", request.GigId);
                 throw new NotFoundException(nameof(Gig), request.GigId);
+            }
+
+            var isOwner = _currentUserService.UserId == gig.Seller.UserId;
+            if (!isOwner)
+            {
+                throw new ForbiddenAccessException();
             }
             
             var package = new Package(request.Title, request.Description, request.Price, request.DeliveryTime,
