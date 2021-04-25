@@ -30,9 +30,9 @@ namespace Hive.Gig.Application.Reviews.Queries
         
         public async Task<PaginatedList<ReviewDto>> Handle(GetGigReviewsQuery request, CancellationToken cancellationToken)
         {
-            var gig = await _context.Gigs.AnyAsync(x => x.Id == request.GigId, cancellationToken);
+            var gigExists = await _context.Gigs.AnyAsync(x => x.Id == request.GigId, cancellationToken);
 
-            if (!gig)
+            if (!gigExists)
             {
                 _logger.LogWarning("Gig with id: {Id} was not found", request.GigId);
                 throw new NotFoundException(nameof(Gig), request.GigId);

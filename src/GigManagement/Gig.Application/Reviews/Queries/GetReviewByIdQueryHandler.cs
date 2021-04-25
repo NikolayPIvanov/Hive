@@ -37,7 +37,7 @@ namespace Hive.Gig.Application.Reviews.Queries
 
             if (review == null)
             {
-                _logger.LogWarning("Gig with id: {Id} was not found", request.GigId);
+                _logger.LogWarning("Gig with id: {@Id} was not found", request.GigId);
                 throw new NotFoundException(nameof(Review), request.ReviewId);
             }
 

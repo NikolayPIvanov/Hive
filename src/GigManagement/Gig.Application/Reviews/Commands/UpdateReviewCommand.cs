@@ -1,11 +1,15 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
+using Hive.Common.Core;
 using Hive.Common.Core.Exceptions;
+using Hive.Common.Core.Interfaces;
 using Hive.Gig.Application.Interfaces;
 using Hive.Gig.Domain.Entities;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 
 namespace Hive.Gig.Application.Reviews.Commands
@@ -26,12 +30,14 @@ namespace Hive.Gig.Application.Reviews.Commands
         }
     }
     
-    public class UpdateReviewCommandHandler : IRequestHandler<UpdateReviewCommand>
+    public class UpdateReviewCommandHandler : AuthorizationRequestHandler<Review>, IRequestHandler<UpdateReviewCommand>
     {
         private readonly IGigManagementDbContext _context;
         private readonly ILogger<UpdateReviewCommandHandler> _logger;
 
-        public UpdateReviewCommandHandler(IGigManagementDbContext context, ILogger<UpdateReviewCommandHandler> logger)
+        public UpdateReviewCommandHandler(IGigManagementDbContext context, 
+            ICurrentUserService currentUserService, IAuthorizationService authorizationService,
+            ILogger<UpdateReviewCommandHandler> logger) : base(currentUserService, authorizationService)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -45,6 +51,13 @@ namespace Hive.Gig.Application.Reviews.Commands
             {                
                 _logger.LogWarning("Review with id: {@Id} was not found", request.Id);
                 throw new NotFoundException(nameof(Review), request.Id);
+            }
+            
+            var result = await base.AuthorizeAsync(review,  new [] {"OnlyOwnerPolicy"});
+            
+            if (!result.All(s => s.Succeeded))
+            {
+                throw new ForbiddenAccessException();
             }
 
             review.Comment = request.Comment;
