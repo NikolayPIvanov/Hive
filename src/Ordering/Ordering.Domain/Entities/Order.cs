@@ -12,7 +12,7 @@ namespace Ordering.Domain.Entities
         private Order()
         {
             Resolutions = new HashSet<Resolution>();
-            IsClosed =  IsInClosedState();
+            IsClosed = IsInClosedState();
         }
         
         public Order(decimal price, string requirements, int packageId, int buyerId, string sellerUserId) : this()

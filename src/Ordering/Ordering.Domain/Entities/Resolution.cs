@@ -21,7 +21,7 @@ namespace Ordering.Domain.Entities
         public string Location { get; set; }
 
         public int OrderId { get; private init; }
-        public Order Order { get; set; }
+        public Order Order { get; private set; }
 
         public bool IsApproved { get; set; }
     }

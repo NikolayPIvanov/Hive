@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Hive.UserProfile.Infrastructure.Persistence.Migrations
 {
-    [DbContext(typeof(UserProfileDbDbContext))]
+    [DbContext(typeof(UserProfileDbContext))]
     partial class UserProfileDbContextModelSnapshot : ModelSnapshot
     {
         protected override void BuildModel(ModelBuilder modelBuilder)
@@ -20,7 +20,7 @@ namespace Hive.UserProfile.Infrastructure.Persistence.Migrations
                 .HasAnnotation("ProductVersion", "5.0.4")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("Hive.UserProfile.Domain.UserProfile", b =>
+            modelBuilder.Entity("Hive.UserProfile.Domain.Entities.UserProfile", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -64,9 +64,9 @@ namespace Hive.UserProfile.Infrastructure.Persistence.Migrations
                     b.ToTable("profiles", "up");
                 });
 
-            modelBuilder.Entity("Hive.UserProfile.Domain.UserProfile", b =>
+            modelBuilder.Entity("Hive.UserProfile.Domain.Entities.UserProfile", b =>
                 {
-                    b.OwnsMany("Hive.UserProfile.Domain.Language", "Languages", b1 =>
+                    b.OwnsMany("Hive.UserProfile.Domain.Entities.Language", "Languages", b1 =>
                         {
                             b1.Property<int>("Id")
                                 .ValueGeneratedOnAdd()
@@ -90,7 +90,31 @@ namespace Hive.UserProfile.Infrastructure.Persistence.Migrations
                                 .HasForeignKey("ProfileId");
                         });
 
-                    b.OwnsMany("Hive.UserProfile.Domain.Skill", "Skills", b1 =>
+                    b.OwnsOne("Hive.UserProfile.Domain.Entities.NotificationSetting", "NotificationSetting", b1 =>
+                        {
+                            b1.Property<int>("Id")
+                                .ValueGeneratedOnAdd()
+                                .HasColumnType("int")
+                                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+
+                            b1.Property<bool>("EmailNotifications")
+                                .HasColumnType("bit");
+
+                            b1.Property<int>("ProfileId")
+                                .HasColumnType("int");
+
+                            b1.HasKey("Id");
+
+                            b1.HasIndex("ProfileId")
+                                .IsUnique();
+
+                            b1.ToTable("NotificationSettings");
+
+                            b1.WithOwner()
+                                .HasForeignKey("ProfileId");
+                        });
+
+                    b.OwnsMany("Hive.UserProfile.Domain.Entities.Skill", "Skills", b1 =>
                         {
                             b1.Property<int>("Id")
                                 .ValueGeneratedOnAdd()
@@ -115,6 +139,9 @@ namespace Hive.UserProfile.Infrastructure.Persistence.Migrations
                         });
 
                     b.Navigation("Languages");
+
+                    b.Navigation("NotificationSetting")
+                        .IsRequired();
 
                     b.Navigation("Skills");
                 });

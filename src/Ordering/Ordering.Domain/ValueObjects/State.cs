@@ -15,12 +15,13 @@ namespace Ordering.Domain.ValueObjects
         public State(OrderState state, string reason) : this()
         {
             OrderState = state;
-            Reason = reason ?? "Validating Order";
+            Reason = reason ?? Reason;
         }
 
-        public static State Initial() => new();
         public OrderState OrderState { get; private init; }
-        public string Reason { get; init; }
+        public string Reason { get; private init; }
+        
+        public static State Initial() => new();
         
         protected override IEnumerable<object> GetEqualityComponents()
         {

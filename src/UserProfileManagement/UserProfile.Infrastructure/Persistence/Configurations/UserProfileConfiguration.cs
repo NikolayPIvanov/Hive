@@ -7,7 +7,7 @@ namespace Hive.UserProfile.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<Domain.Entities.UserProfile> builder)
         {
-            builder.ToTable("profiles", UserProfileDbDbContext.Schema);
+            builder.ToTable("profiles", UserProfileDbContext.Schema);
             builder.HasKey(p => p.Id);
 
             builder.Property(p => p.FirstName).HasMaxLength(50).IsRequired(false);
@@ -32,6 +32,7 @@ namespace Hive.UserProfile.Infrastructure.Persistence.Configurations
 
             builder.OwnsOne(p => p.NotificationSetting, ns =>
             {
+                ns.ToTable("NotificationSettings");
                 ns.WithOwner().HasForeignKey("ProfileId");
                 ns.Property<int>("Id");
                 ns.HasKey("Id");

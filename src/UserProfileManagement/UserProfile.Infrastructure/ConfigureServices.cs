@@ -16,21 +16,21 @@ namespace Hive.UserProfile.Infrastructure
             var sqlServerConnectionString = configuration.GetConnectionString("DefaultConnection");
             if (useInMemory)
             {
-                services.AddDbContext<UserProfileDbDbContext>(options =>
+                services.AddDbContext<UserProfileDbContext>(options =>
                     options.UseInMemoryDatabase("LooselyHive"));
             }
             else
             {
-                services.AddDbContext<UserProfileDbDbContext>(options =>
+                services.AddDbContext<UserProfileDbContext>(options =>
                     options.UseSqlServer(
                         sqlServerConnectionString,
-                        b => b.MigrationsAssembly(typeof(UserProfileDbDbContext).Assembly.FullName)));
+                        b => b.MigrationsAssembly(typeof(UserProfileDbContext).Assembly.FullName)));
             }
             
             
             services.AddCap(x =>
             {
-                x.UseEntityFramework<UserProfileDbDbContext>();
+                x.UseEntityFramework<UserProfileDbContext>();
 
                 if (!useInMemory)
                 {
@@ -49,7 +49,7 @@ namespace Hive.UserProfile.Infrastructure
                 x.UseDashboard(opt => { opt.PathMatch = "/cap"; });
             });
 
-            services.AddScoped<IUserProfileDbContext>(provider => provider.GetService<UserProfileDbDbContext>());
+            services.AddScoped<IUserProfileDbContext>(provider => provider.GetService<UserProfileDbContext>());
             services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
             services.AddScoped<IDateTimeService, DateTimeService>();
 
