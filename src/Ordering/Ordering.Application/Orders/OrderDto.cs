@@ -3,38 +3,9 @@ using System.Collections.Generic;
 
 namespace Ordering.Application.Orders
 {
-    public record StateDto
-    {
-        public int Id { get; set; }
+    public record StateDto(string OrderState, string? Reason, DateTime Created, string CreatedBy);
 
-        public string OrderState { get; set; }
-
-        public string? Reason { get; set; }
-
-        public DateTime Created { get; set; }
-        
-        public string CreatedBy { get; set; }
-    }
-    
-    public record OrderDto
-    {
-        public int Id { get; set; }
-        
-        public Guid OrderNumber { get; private init; }
-        public DateTime OrderedAt { get; private init; }
-        public int SellerId { get; private init; }
-        public string OrderedBy { get; private init; }
-        
-        public decimal UnitPrice { get; set; }
-        public bool IsClosed { get; set; }
-
-        public string Requirements { get; set; }
-        
-        public int GigId { get; private init; }
-        public int PackageId { get; private init; }
-        public int RequirementId { get; private init; }
-        public int ResolutionId { get; set; }
-
-        public ICollection<StateDto> OrderStates { get; set; }
-    }
+    public record OrderDto(int Id, Guid OrderNumber, DateTime OrderedAt, string SellerUserId, string BuyerUserId,
+        decimal UnitPrice,
+        bool IsClosed, string Requirements, int GigId, int PackageId, ICollection<StateDto> OrderStates);
 }

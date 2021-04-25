@@ -10,7 +10,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Ordering.Application.Interfaces;
 using Ordering.Application.Orders.EventHandlers;
-using Ordering.Contracts.IntegrationEvents;
 using Ordering.Domain.Entities;
 
 namespace Ordering.Application.Orders.Commands
@@ -45,7 +44,6 @@ namespace Ordering.Application.Orders.Commands
     {
         private readonly IOrderingContext _context;
         private readonly ICurrentUserService _currentUserService;
-        private readonly IIntegrationEventPublisher _publisher;
         private readonly ILogger<PlaceOrderCommandHandler> _logger;
 
         public PlaceOrderCommandHandler(IOrderingContext context, ICurrentUserService currentUserService,
