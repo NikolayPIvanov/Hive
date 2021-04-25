@@ -57,6 +57,5 @@ namespace Ordering.Infrastructure.Services
         }
         
         private string Randomize(string prefix = "sample") => $"{prefix}-{Guid.NewGuid()}";
-
     }
 }

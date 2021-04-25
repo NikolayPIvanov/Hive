@@ -13,10 +13,11 @@ namespace Ordering.Infrastructure.Persistence
 {
     public class OrderingDbContext : DbContext, IOrderingContext
     {
+        private const string DefaultSchema = "ordering";
+
         private readonly IMediator _mediator;
         private readonly IDateTimeService _dateTimeService;
         private readonly ICurrentUserService _currentUserService;
-        private const string DefaultSchema = "ordering";
         
         public OrderingDbContext(
             DbContextOptions<OrderingDbContext> options,

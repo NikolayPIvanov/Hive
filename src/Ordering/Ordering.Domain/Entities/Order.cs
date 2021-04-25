@@ -33,7 +33,7 @@ namespace Ordering.Domain.Entities
         public Guid OrderNumber { get; private init; }
         public DateTime OrderedAt { get; private init; }
         public string SellerUserId { get; private init; }
-        public int? BuyerId { get; private init; }
+        public int BuyerId { get; private init; }
         public bool IsClosed { get; private init; }
         public Requirement Requirement { get; private init; }
         public int PackageId { get; private init; }

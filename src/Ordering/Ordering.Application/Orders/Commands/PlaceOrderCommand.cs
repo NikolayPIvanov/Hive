@@ -7,7 +7,9 @@ using Hive.Common.Core.Exceptions;
 using Hive.Common.Core.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Ordering.Application.Interfaces;
+using Ordering.Application.Orders.EventHandlers;
 using Ordering.Contracts.IntegrationEvents;
 using Ordering.Domain.Entities;
 
@@ -21,18 +23,21 @@ namespace Ordering.Application.Orders.Commands
         public PlaceOrderCommandValidator()
         {
             RuleFor(x => x.Requirements)
+                .MinimumLength(10).WithMessage("{PropertyName} should be more than {MinimumLength} characters long.")
+                .MaximumLength(3000).WithMessage("{PropertyName} should be more than {MaximumLength} characters long.")
                 .NotEmpty().WithMessage("A {PropertyName} must be provided");
 
             RuleFor(x => x.UnitPrice)
                 .GreaterThan(0.0m).WithMessage("{PropertyName} cannot be below {ComparisonValue}.")
-                .NotNull().WithMessage("A {PropertyName} must be provided");
+                .NotEmpty().WithMessage("A {PropertyName} must be provided");
             
             RuleFor(x => x.SellerUserId)
-                .NotNull().WithMessage("A {PropertyName} must be provided");
+                .Must(id => id != Guid.Empty.ToString()).WithMessage("{Property} cannot accept default Guid value.")
+                .NotEmpty().WithMessage("A {PropertyName} must be provided");
 
             RuleFor(x => x.PackageId)
                 .GreaterThan(0).WithMessage("{PropertyName} cannot be below {ComparisonValue}.")
-                .NotNull().WithMessage("A {PropertyName} must be provided");
+                .NotEmpty().WithMessage("A {PropertyName} must be provided");
         }
     }
     
@@ -41,12 +46,14 @@ namespace Ordering.Application.Orders.Commands
         private readonly IOrderingContext _context;
         private readonly ICurrentUserService _currentUserService;
         private readonly IIntegrationEventPublisher _publisher;
+        private readonly ILogger<PlaceOrderCommandHandler> _logger;
 
-        public PlaceOrderCommandHandler(IOrderingContext context, ICurrentUserService currentUserService, IIntegrationEventPublisher publisher)
+        public PlaceOrderCommandHandler(IOrderingContext context, ICurrentUserService currentUserService,
+            ILogger<PlaceOrderCommandHandler> logger)
         {
-            _context = context;
-            _currentUserService = currentUserService;
-            _publisher = publisher;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
         public async Task<Guid> Handle(PlaceOrderCommand request, CancellationToken cancellationToken)
@@ -56,15 +63,13 @@ namespace Ordering.Application.Orders.Commands
 
             if (buyerId == null)
             {
+                _logger.LogWarning("Buyer for user with id: {@Id} was not found", _currentUserService.UserId);
                 throw new NotFoundException(nameof(Buyer), _currentUserService.UserId);
             }
 
             var order = new Order(request.UnitPrice, request.Requirements, request.PackageId, buyerId.Id, request.SellerUserId);
-            
-            var orderCreated = new OrderPlacedIntegrationEvent(order.OrderNumber, order.UnitPrice, buyerId.UserId,
-                order.SellerUserId, order.PackageId);
-            await _publisher.Publish(orderCreated);
-            
+            order.AddDomainEvent(new OrderPlacedEvent(order, buyerId.UserId));
+
             _context.Orders.Add(order);
             await _context.SaveChangesAsync(cancellationToken);
 

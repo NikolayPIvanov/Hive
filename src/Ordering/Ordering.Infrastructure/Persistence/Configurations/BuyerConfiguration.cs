@@ -8,7 +8,7 @@ namespace Ordering.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<Buyer> builder)
         {
-            builder.Property(b => b.UserId).IsRequired();
+            builder.HasAlternateKey(b => b.UserId).IsClustered(false);
             
             builder.HasMany(b => b.Orders)
                 .WithOne()

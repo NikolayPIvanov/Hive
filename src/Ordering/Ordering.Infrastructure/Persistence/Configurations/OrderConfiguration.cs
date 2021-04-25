@@ -8,22 +8,23 @@ namespace Ordering.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<Order> builder)
         {
-            builder.HasIndex(o => o.OrderNumber).IsUnique();
+            builder.HasAlternateKey(o => o.OrderNumber).IsClustered(false);
             builder.Property(o => o.OrderedAt).IsRequired();
             builder.Property(o => o.UnitPrice)
                 .HasColumnType("decimal(18,2)")
                 .IsRequired();
 
             builder.Property(x => x.PackageId).IsRequired();
-            builder.Property(x => x.BuyerId).IsRequired(false);
+            builder.Property(x => x.BuyerId).IsRequired();
             builder.Property(x => x.SellerUserId).IsRequired();
 
             builder.HasMany(o => o.Resolutions)
-                .WithOne()
+                .WithOne(r => r.Order)
                 .HasForeignKey(r => r.OrderId);
 
             builder.OwnsMany(o => o.OrderStates, os =>
             {
+                os.ToTable("OrderStates");
                 os.WithOwner().HasForeignKey("OrderId");
                 os.Property<int>("Id");
                 os.HasKey("Id");
@@ -31,7 +32,7 @@ namespace Ordering.Infrastructure.Persistence.Configurations
             
             builder.OwnsOne(o => o.Requirement, os =>
             {
-                os.ToTable("requirements");
+                os.ToTable("Requirements");
                 os.Property(r => r.Details)
                     .HasMaxLength(2500)
                     .IsRequired();
