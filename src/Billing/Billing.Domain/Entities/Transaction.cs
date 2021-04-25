@@ -6,20 +6,22 @@ namespace Hive.Billing.Domain.Entities
 {
     public class Transaction : Entity
     {
+        private const int JitterMaxValue = 100000000;
+
         private Transaction()
         {
         }
         
-        public Transaction(decimal amount, Guid? orderNumber, TransactionType type, int walletId) : this()
+        public Transaction(decimal amount, Guid? orderNumber, TransactionType type) : this()
         {
+            TransactionNumber = GenerateTransactionId();
             Amount = amount;
             OrderNumber = orderNumber;
             TransactionType = type;
-            WalletId = walletId;
-            PublicId = GenerateTransactionId();
         }
         
-        public int PublicId { get; init; }
+        public int TransactionNumber { get; private init; }
+        
         public decimal Amount { get; private init; }
         
         public TransactionType TransactionType { get; private init; }
@@ -34,7 +36,7 @@ namespace Hive.Billing.Domain.Entities
         private int GenerateTransactionId()
         {
             Random jitter = new ((int)DateTime.Now.Ticks);
-            var id = jitter.Next(1, 100000000);
+            var id = jitter.Next(1, maxValue: JitterMaxValue);
             return id;
         }
     }

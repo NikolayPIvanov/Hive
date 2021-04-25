@@ -9,14 +9,15 @@ using Hive.Common.Core.SeedWork;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Billing.Infrastructure
+namespace Billing.Infrastructure.Persistence
 {
     public class BillingDbContext : DbContext, IBillingDbContext
     {
+        private const string DefaultSchema = "billing";
+        
         private readonly ICurrentUserService _currentUserService;
         private readonly IMediator _mediator;
         private readonly IDateTimeService _dateTimeService;
-        private const string DefaultSchema = "billing";
         
         public BillingDbContext(
             DbContextOptions<BillingDbContext> options,

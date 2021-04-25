@@ -1,13 +1,14 @@
 ﻿using AutoMapper;
-using Billing.Application.Transactions.Queries;
+using Billing.Application.Wallets.Queries;
 using Hive.Billing.Domain.Entities;
 
-namespace Billing.Application.Transactions
+namespace Billing.Application.Wallets
 {
-    public class TransactionProfile : Profile
+    public class BillingProfile : Profile
     {
-        public TransactionProfile()
+        public BillingProfile()
         {
+            CreateMap<Wallet, WalletDto>();
             CreateMap<Transaction, TransactionDto>()
                 .ForMember(d => d.TransactionType,
                     s => s.MapFrom(x => x.TransactionType.ToString()));

@@ -4,14 +4,11 @@ namespace Hive.Billing.Domain.Entities
 {
     public class AccountHolder : Entity
     {
-        public AccountHolder()
-        {
-            Wallet = new Wallet();
-        }
-        
+        private AccountHolder() { }
         public AccountHolder(string userId) : this()
         {
             UserId = userId;
+            Wallet = Wallet.CreateEmpty();
         }
         
         public string UserId { get; private set; }

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Billing.Application.Interfaces;
 using DotNetCore.CAP;
@@ -22,7 +21,7 @@ namespace Billing.Application.IntegrationEvents.EventHandlers.Ordering
         public OrderBuyerVerificationIntegrationEventHandler(
             IBillingDbContext context, IIntegrationEventPublisher publisher, ILogger<OrderBuyerVerificationIntegrationEventHandler> logger)
         {
-            _publisher = publisher ?? throw new ArgumentNullException(nameof(publisher));;
+            _publisher = publisher ?? throw new ArgumentNullException(nameof(publisher));
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
@@ -34,7 +33,6 @@ namespace Billing.Application.IntegrationEvents.EventHandlers.Ordering
             
             var account = await _context.AccountHolders
                 .Include(w => w.Wallet)
-                .ThenInclude(w => w.Transactions)
                 .FirstOrDefaultAsync(a => a.UserId == accountHolderId);
             
             var integrationEvent = new BuyerBalanceVerifiedIntegrationEvent(@event.OrderNumber, "Account Holder does not exist", IsValid: false);
@@ -53,31 +51,18 @@ namespace Billing.Application.IntegrationEvents.EventHandlers.Ordering
                 await _publisher.Publish(integrationEvent);
                 return;
             }
-
-            var balance = 0.0m;
-            foreach (var transaction in account.Wallet.Transactions)
-            {
-                switch (transaction.TransactionType)
-                {
-                    case TransactionType.Fund: balance += transaction.Amount;
-                        break;
-                    case TransactionType.Payment: balance -= transaction.Amount;
-                        break;
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
             
-            if (balance < @event.UnitPrice || balance < 0.0m)
+            if (account.Wallet.Balance < @event.UnitPrice || account.Wallet.Balance < 0.0m)
             {
-                _logger.LogWarning("Account balance for {@AccountHolder} does not have enough funds {@Funds}", @event.BuyerUserId, balance);
+                _logger.LogWarning("Account balance for {@AccountHolder} does not have enough funds {@Funds}", @event.BuyerUserId, account.Wallet.Balance);
                 integrationEvent = integrationEvent with {Reason = "User account does not have enough resources."};
                 await _publisher.Publish(integrationEvent);
                 return;
             }
             
-            var paymentTransaction = new Transaction(@event.UnitPrice, @event.OrderNumber, TransactionType.Payment, account.WalletId);
-            _context.Transactions.Add(paymentTransaction);
+            var paymentTransaction = new Transaction(@event.UnitPrice, @event.OrderNumber, TransactionType.Payment);
+            account.Wallet.AddTransaction(paymentTransaction);
+
             await _context.SaveChangesAsync(default);
             
             await _publisher.Publish(integrationEvent with {Reason = "User has enough balance", IsValid = true});
