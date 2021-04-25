@@ -1,6 +1,6 @@
 ﻿using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 
 namespace Ordering.Application.Interfaces
 {
@@ -8,8 +8,8 @@ namespace Ordering.Application.Interfaces
 
     public interface IFileService
     {
-        Task<string> UploadAsync(IFormFile formFile);
-        Task<bool> DeleteAsync(string blobName);
-        Task<FileResponse> DownloadAsync(string location);
+        Task<string> UploadAsync(Stream fileStream, string extension, CancellationToken cancellationToken = default);
+        Task<bool> DeleteAsync(string blobName, CancellationToken cancellationToken = default);
+        Task<FileResponse> DownloadAsync(string location, CancellationToken cancellationToken = default);
     }
 }

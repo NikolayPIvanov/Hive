@@ -20,16 +20,13 @@ namespace Ordering.Application.Resolutions.Queries
     {
         private readonly IOrderingContext _context;
         private readonly IMapper _mapper;
-        private readonly ICurrentUserService _currentUserService;
         private readonly ILogger<GetResolutionByIdQueryHandler> _logger;
 
-        public GetResolutionByIdQueryHandler(IOrderingContext context, IMapper mapper, ICurrentUserService currentUserService,
-            ILogger<GetResolutionByIdQueryHandler> logger)
+        public GetResolutionByIdQueryHandler(IOrderingContext context, IMapper mapper, ILogger<GetResolutionByIdQueryHandler> logger)
         {
-            _context = context;
-            _mapper = mapper;
-            _currentUserService = currentUserService;
-            _logger = logger;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
         public async Task<ResolutionDto> Handle(GetResolutionByIdQuery request, CancellationToken cancellationToken)
@@ -40,6 +37,7 @@ namespace Ordering.Application.Resolutions.Queries
             
             if (resolution == null)
             {
+                _logger.LogWarning("Resolution with id: {@Id} was not found", request.ResolutionId);
                 throw new NotFoundException(nameof(Resolution), request.ResolutionId);
             }
 
