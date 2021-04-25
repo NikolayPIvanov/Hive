@@ -6,11 +6,11 @@ using FluentValidation;
 using FluentValidation.Results;
 using Hive.Common.Core.Exceptions;
 using Hive.Common.Core.Interfaces;
-using Hive.Common.Core.Security;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Ordering.Application.Interfaces;
-using Ordering.Contracts.IntegrationEvents;
+using Ordering.Application.Orders.EventHandlers;
 using Ordering.Domain.Entities;
 using Ordering.Domain.Enums;
 using Ordering.Domain.ValueObjects;
@@ -18,7 +18,7 @@ using ValidationException = FluentValidation.ValidationException;
 
 namespace Ordering.Application.Orders.Commands
 {
-    [Authorize(Roles = "Buyer, Administrator")]
+
     public record CancelOrderCommand(Guid OrderNumber) : IRequest;
     
     public class CancelOrderCommandValidator : AbstractValidator<CancelOrderCommand>
@@ -26,26 +26,25 @@ namespace Ordering.Application.Orders.Commands
         public CancelOrderCommandValidator(IOrderingContext context)
         {
             RuleFor(c => c.OrderNumber)
-                .MustAsync(async (n, token) =>
+                .MustAsync(async (orderNumber, token) =>
                 {
-                    var order = await context.Orders.Include(x => x.OrderStates)
-                        .FirstOrDefaultAsync(x => x.OrderNumber == n);
-                    if (order != null)
+                    var order = await context.Orders
+                        .Include(x => x.OrderStates)
+                        .FirstOrDefaultAsync(x => x.OrderNumber == orderNumber, token);
+
+                    if (order == null) return false;
                     {
-                        var states = order.OrderStates.Select(os => os.OrderState);
-                        var orderStates = states.ToList();
+                        var orderStates = order.OrderStates.Select(os => os.OrderState).ToList();
                         var dataIsValid = orderStates.Contains(OrderState.OrderDataValid);
                         var balanceIsValid = orderStates.Contains(OrderState.UserBalanceValid);
 
-                        // must not be accepted, declined, canceled,
+                        // must not be accepted, declined, canceled
                         var alreadyProcessed = orderStates.Where(x =>
                                 x != OrderState.UserBalanceValid && x != OrderState.OrderDataValid)
                             .All(x => x <= OrderState.Canceled);
 
                         return dataIsValid && balanceIsValid && alreadyProcessed;
                     }
-                    
-                    return false;
                 });
         }
     }
@@ -54,13 +53,13 @@ namespace Ordering.Application.Orders.Commands
     {
         private readonly IOrderingContext _context;
         private readonly ICurrentUserService _currentUserService;
-        private readonly IIntegrationEventPublisher _publisher;
+        private readonly ILogger<CancelOrderCommandHandler> _logger;
 
-        public CancelOrderCommandHandler(IOrderingContext context, ICurrentUserService currentUserService, IIntegrationEventPublisher publisher)
+        public CancelOrderCommandHandler(IOrderingContext context, ICurrentUserService currentUserService, ILogger<CancelOrderCommandHandler> logger)
         {
-            _context = context;
-            _currentUserService = currentUserService;
-            _publisher = publisher;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
         public async Task<Unit> Handle(CancelOrderCommand request, CancellationToken cancellationToken)
@@ -70,33 +69,37 @@ namespace Ordering.Application.Orders.Commands
 
             if (order is null)
             {
+                _logger.LogWarning("Order with number: {@Id} was not found", request.OrderNumber);
                 throw new NotFoundException(nameof(Order), request.OrderNumber);
             }
             
             if (order.OrderStates.Any(s => s.OrderState == OrderState.Canceled))
             {
+                _logger.LogInformation("Order with number: {@Id} is already in canceled state.", request.OrderNumber);
                 return Unit.Value;
             }
             
-            if (order.OrderStates.Any(s => s.OrderState == OrderState.Invalid))
-            {
-                var failures = new ValidationFailure[]
-                {
-                    new("State", "Order was invalid.")
-                };
-                    
-                throw new ValidationException(failures);
-            }
+            AssertOrderIsValid(request, order);
 
             var state = new State(OrderState.Canceled, "Order canceled by user");
             order.OrderStates.Add(state);
-
-            var orderCanceledEvent = new OrderCanceledIntegrationEvent(order.OrderNumber, _currentUserService.UserId);
-            await _publisher.Publish(orderCanceledEvent);
+            order.AddDomainEvent(new OrderCanceledEvent(order.OrderNumber, _currentUserService.UserId));
 
             await _context.SaveChangesAsync(cancellationToken);
             
             return Unit.Value;
+        }
+
+        private void AssertOrderIsValid(CancelOrderCommand request, Order order)
+        {
+            if (order.OrderStates.All(s => s.OrderState != OrderState.Invalid)) return;
+            var failures = new ValidationFailure[]
+            {
+                new("State", "Order is invalid.")
+            };
+
+            _logger.LogWarning("Order with number: {@Id} was is not valid.", request.OrderNumber);
+            throw new ValidationException(failures);
         }
     }
 }

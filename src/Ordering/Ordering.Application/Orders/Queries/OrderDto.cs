@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace Ordering.Application.Orders
+namespace Ordering.Application.Orders.Queries
 {
     public record StateDto(string OrderState, string? Reason, DateTime Created, string CreatedBy);
 

@@ -5,10 +5,9 @@ using System.Threading.Tasks;
 using FluentValidation;
 using FluentValidation.Results;
 using Hive.Common.Core.Exceptions;
-using Hive.Common.Core.Interfaces;
-using Hive.Common.Core.Security;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using Ordering.Application.Interfaces;
 using Ordering.Domain.Entities;
 using Ordering.Domain.Enums;
@@ -17,7 +16,6 @@ using ValidationException = Hive.Common.Core.Exceptions.ValidationException;
 
 namespace Ordering.Application.Orders.Commands
 {
-    [Authorize(Roles = "Seller, Administrator")]
     public record SetInProgressOrderCommand(Guid OrderNumber) : IRequest;
     
     public class SetInProgressOrderCommandValidator : AbstractValidator<SetInProgressOrderCommand>
@@ -29,8 +27,8 @@ namespace Ordering.Application.Orders.Commands
                 .MustAsync(async (orderNumber, cancellationToken) =>
                 {
                     var order = await context.Orders.Include(x => x.OrderStates)
-                        .FirstOrDefaultAsync(x => x.OrderNumber == orderNumber);
-                    if (order != null)
+                        .FirstOrDefaultAsync(x => x.OrderNumber == orderNumber, cancellationToken);
+                    if (order == null) return false;
                     {
                         var states = order.OrderStates.Select(os => os.OrderState);
                         var orderStates = states.ToList();
@@ -39,8 +37,7 @@ namespace Ordering.Application.Orders.Commands
 
                         return orderIsAccepted && !orderIsInProgressOrCompleted;
                     }
-                    
-                    return false;
+
                 });
         }
     }
@@ -48,12 +45,12 @@ namespace Ordering.Application.Orders.Commands
     public class SetInProgressOrderCommandHandler : IRequestHandler<SetInProgressOrderCommand>
     {
         private readonly IOrderingContext _context;
-        private readonly ICurrentUserService _currentUserService;
+        private readonly ILogger<SetInProgressOrderCommandHandler> _logger;
 
-        public SetInProgressOrderCommandHandler(IOrderingContext context, ICurrentUserService currentUserService)
+        public SetInProgressOrderCommandHandler(IOrderingContext context, ILogger<SetInProgressOrderCommandHandler> logger)
         {
-            _context = context;
-            _currentUserService = currentUserService;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
         public async Task<Unit> Handle(SetInProgressOrderCommand request, CancellationToken cancellationToken)
@@ -63,11 +60,13 @@ namespace Ordering.Application.Orders.Commands
 
             if (order is null)
             {
+                _logger.LogWarning("Order with number: {@Id} was not found", request.OrderNumber);
                 throw new NotFoundException(nameof(Order), request.OrderNumber);
             }
             
             if (order.OrderStates.Any(s => s.OrderState == OrderState.InProgress))
             {
+                _logger.LogInformation("Order with number: {@Id} is already in {@State} state.", request.OrderNumber, OrderState.InProgress);
                 return Unit.Value;
             }
 
@@ -75,7 +74,10 @@ namespace Ordering.Application.Orders.Commands
             
             if (!orderIsAccepted)
             {
-                var failures = new ValidationFailure[] { };
+                var failures = new[]
+                {
+                    new ValidationFailure("OrderState", "Order is not accepted.")
+                };
                 throw new ValidationException(failures);
             }
 
