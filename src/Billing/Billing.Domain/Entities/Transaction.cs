@@ -26,7 +26,7 @@ namespace Hive.Billing.Domain.Entities
         
         public TransactionType TransactionType { get; private init; }
 
-        public Guid? OrderNumber { get; init; }
+        public Guid? OrderNumber { get; private init; }
         
         public int WalletId { get; private init; }
         

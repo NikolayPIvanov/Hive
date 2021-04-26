@@ -29,6 +29,5 @@ namespace Hive.Billing.Domain.Entities
             
             Transactions.Add(transaction);
         }
-        
     }
 }

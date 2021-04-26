@@ -19,7 +19,7 @@ namespace Hive.LooselyCoupled.Controllers
         public async Task<ActionResult<GigDto>> GetGigById([FromRoute] int id) => Ok(await Mediator.Send(new GetGigQuery(id)));
         
         [HttpPost]
-        [Authorize(Roles = "Seller, Admin")]
+        [Authorize(Roles = "Seller")]
         public async Task<ActionResult<int>> Post([FromBody] CreateGigCommand command)
         {
             var id = await Mediator.Send(command);
@@ -64,7 +64,7 @@ namespace Hive.LooselyCoupled.Controllers
             }
             
             var packageId = await Mediator.Send(command);
-            return CreatedAtAction(nameof(GetPackageById), new {id, packageId = packageId}, new {id, packageId});
+            return CreatedAtAction(nameof(GetPackageById), new {id, packageId}, new {id, packageId});
         }
         
         [HttpPut("{id:int}/packages/{packageId:int}")]
