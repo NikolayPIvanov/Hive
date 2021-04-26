@@ -1,27 +1,35 @@
 ﻿#nullable enable
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Hive.Common.Core;
 using Hive.Common.Core.Exceptions;
+using Hive.Common.Core.Interfaces;
 using Hive.UserProfile.Application.Interfaces;
 using Hive.UserProfile.Application.UserProfiles.Queries;
 using Hive.UserProfile.Domain;
 using Hive.UserProfile.Domain.Entities;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 
 namespace Hive.UserProfile.Application.UserProfiles.Commands
 {
+    using Domain.Entities;
+    
     public record UpdateUserProfileCommand(int UserProfileId, string? FirstName, string? LastName, string? Description, string? Education,
         NotificationSettingDto NotificationSetting, ICollection<string> Skills, ICollection<string> Languages) : IRequest;
     
-    public class UpdateUserProfileCommandHandler : IRequestHandler<UpdateUserProfileCommand>
+    public class UpdateUserProfileCommandHandler : AuthorizationRequestHandler<UserProfile>, IRequestHandler<UpdateUserProfileCommand>
     {
         private readonly IUserProfileDbContext _dbContext;
         private readonly ILogger<UpdateUserProfileCommandHandler> _logger;
 
-        public UpdateUserProfileCommandHandler(IUserProfileDbContext dbContext, ILogger<UpdateUserProfileCommandHandler> logger)
+        public UpdateUserProfileCommandHandler(IUserProfileDbContext dbContext,
+            ICurrentUserService currentUserService, IAuthorizationService authorizationService,
+            ILogger<UpdateUserProfileCommandHandler> logger) : base(currentUserService, authorizationService)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
@@ -35,6 +43,13 @@ namespace Hive.UserProfile.Application.UserProfiles.Commands
             {
                 _logger.LogWarning("User Profile with id: {@Id} was not found.", request.UserProfileId);
                 throw new NotFoundException(nameof(Domain.Entities.UserProfile), request.UserProfileId);
+            }
+            
+            var result = await base.AuthorizeAsync(userProfile,  new [] {"OnlyOwnerPolicy"});
+            
+            if (!result.All(s => s.Succeeded))
+            {
+                throw new ForbiddenAccessException();
             }
 
             userProfile.FirstName = request.FirstName;

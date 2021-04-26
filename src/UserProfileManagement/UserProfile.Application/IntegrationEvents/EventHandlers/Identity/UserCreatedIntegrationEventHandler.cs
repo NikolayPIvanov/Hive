@@ -30,8 +30,11 @@ namespace Hive.UserProfile.Application.IntegrationEvents.EventHandlers.Identity
                 _logger.LogWarning("User profile for user with id: {@Id} has already been registered", @event.UserId);
                 return;
             }
-            
-            var profile = new UserProfile(@event.UserId);
+
+            var profile = new UserProfile(@event.UserId)
+            {
+                CreatedBy = @event.UserId
+            };
 
             _dbContext.UserProfiles.Add(profile);
             await _dbContext.SaveChangesAsync();

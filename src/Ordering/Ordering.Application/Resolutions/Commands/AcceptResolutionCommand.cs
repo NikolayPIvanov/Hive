@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentValidation.Results;
 using Hive.Common.Core.Exceptions;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -29,22 +30,31 @@ namespace Ordering.Application.Resolutions.Commands
         public async Task<Unit> Handle(AcceptResolutionCommand request, CancellationToken cancellationToken)
         {
             var resolution = await _context.Resolutions
+                .Include(r => r.Order)
+                .ThenInclude(o => o.OrderStates)
                 .FirstOrDefaultAsync(x => x.Id == request.ResolutionId, cancellationToken: cancellationToken);
-
+            
+            if (resolution?.Order == null)
+            {
+                _logger.LogWarning("Order for resolution with id: {@Id} was not found", request.ResolutionId);
+                throw new NotFoundException(nameof(Resolution));
+            }
+            
             if (resolution == null)
             {
                 _logger.LogWarning("Resolution with id: {@Id} was not found", request.ResolutionId);
                 throw new NotFoundException(nameof(Resolution), request.ResolutionId);
             }
-
-            var order = await _context.Orders.FindAsync(resolution.OrderId);
             
-            if (order.OrderStates.All(x => x.OrderState != OrderState.InProgress))
+            if (resolution.Order.OrderStates.All(x => x.OrderState != OrderState.InProgress))
             {
-                throw new Exception();
+                throw new ValidationException(new []
+                {
+                    new ValidationFailure("OrderStates", "Order is not marked in progress")
+                });
             }
 
-            order.OrderStates.Add(new State(OrderState.Completed, $"Buyer accepted resolution - {request.ResolutionId}"));
+            resolution.Order.OrderStates.Add(new State(OrderState.Completed, $"Buyer accepted resolution - {request.ResolutionId}"));
             await _context.SaveChangesAsync(cancellationToken);
             
             return Unit.Value;

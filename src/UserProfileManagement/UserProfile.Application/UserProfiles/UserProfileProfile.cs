@@ -5,9 +5,9 @@ namespace Hive.UserProfile.Application.UserProfiles
 {
     using Domain.Entities;
     
-    public class UserProfileProfile : Profile
+    public class UserProfileMapping : Profile
     {
-        public UserProfileProfile()
+        public UserProfileMapping()
         {
             CreateMap<UserProfile, UserProfileDto>()
                 .ForMember(d => d.IsTransient,
