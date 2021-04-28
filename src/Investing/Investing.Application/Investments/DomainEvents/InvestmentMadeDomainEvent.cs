@@ -3,5 +3,6 @@
 namespace Hive.Investing.Application.Investments.DomainEvents
 {
     // TODO: Notify the vendor that an investment offer was created
-    public record InvestmentMadeDomainEvent : INotification;
+    public record InvestmentMadeDomainEvent(int PlanId, string VendorUserId) : INotification;
+    
 }

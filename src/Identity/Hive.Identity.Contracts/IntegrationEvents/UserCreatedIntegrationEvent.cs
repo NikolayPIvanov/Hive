@@ -1,4 +1,5 @@
-﻿using Hive.Common.Core.SeedWork;
+﻿using BuildingBlocks.Core.MessageBus;
+using Hive.Common.Core.SeedWork;
 
 namespace Hive.Identity.Contracts.IntegrationEvents
 {

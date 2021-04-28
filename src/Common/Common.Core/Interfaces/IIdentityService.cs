@@ -9,7 +9,5 @@ namespace Hive.Common.Core.Interfaces
         Task<bool> IsInRoleAsync(string userId, string role);
 
         ValueTask<string> GetClaimValue(string key);
-
-        Task<bool> AuthorizeAsync(string userId, string policyName);
     }
 }

@@ -34,10 +34,5 @@ namespace Hive.Gig.Infrastructure.Services
             var claim = _httpContext?.User.Claims.FirstOrDefault(x => x.Type == key);
             return ValueTask.FromResult(claim?.Value);
         }
-
-        public Task<bool> AuthorizeAsync(string userId, string policyName)
-        {
-            throw new System.NotImplementedException();
-        }
     }
 }

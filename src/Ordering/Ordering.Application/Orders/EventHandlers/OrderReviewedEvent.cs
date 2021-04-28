@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using BuildingBlocks.Core.MessageBus;
 using DotNetCore.CAP;
 using Hive.Common.Core.SeedWork;
 using MediatR;

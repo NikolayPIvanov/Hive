@@ -34,26 +34,18 @@ namespace Billing.Application.Wallets.Queries
         
         public async Task<WalletDto> Handle(GetMyWalletCommand request, CancellationToken cancellationToken)
         {
-            var wallet = await _context.AccountHolders
-                .Select(x => new
-                {
-                    x.UserId,
-                    x.Wallet.Transactions,
-                    x.Wallet
-                })
-                .FirstOrDefaultAsync(x => x.UserId == _currentUserService.UserId, cancellationToken: cancellationToken);
+            var wallet = await _context.Wallets
+                .Include(w => w.AccountHolder)
+                .Include(w => w.Transactions)
+                .FirstOrDefaultAsync(x => x.AccountHolder.UserId == _currentUserService.UserId, cancellationToken);
 
             if (wallet == null)
             {
                 _logger.LogWarning("Wallet for user with id: {@Id} was not found.", _currentUserService.UserId);
                 throw new NotFoundException(nameof(Wallet));
             }
-
-            return new WalletDto
-            {
-                Transactions = _mapper.Map<ICollection<TransactionDto>>(wallet.Transactions),
-                WalletId = wallet.Wallet.Id
-            };
+            
+            return _mapper.Map<WalletDto>(wallet);
         }
     }
 }

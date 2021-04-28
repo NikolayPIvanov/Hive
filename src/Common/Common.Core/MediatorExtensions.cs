@@ -15,8 +15,7 @@ namespace Hive.Common.Core
                 .Where(x => x.Entity.DomainEvents != null && x.Entity.DomainEvents.Any());
 
             var domainEvents = domainEntities
-                .SelectMany(x => x.Entity.DomainEvents)
-                .ToList();
+                .SelectMany(x => x.Entity.DomainEvents);
 
             domainEntities.ToList()
                 .ForEach(entity => entity.Entity.ClearDomainEvents());

@@ -20,7 +20,6 @@ namespace Hive.Gig.Application.Categories.Commands
         
         public CreateCategoryCommandValidator(IGigManagementDbContext dbContext)
         {
-            
             _dbContext = dbContext;
             
             RuleFor(c => c.Title)

@@ -1,4 +1,5 @@
 ﻿using System;
+using BuildingBlocks.Core.MessageBus;
 using Hive.Common.Core.SeedWork;
 
 namespace Ordering.Contracts.IntegrationEvents

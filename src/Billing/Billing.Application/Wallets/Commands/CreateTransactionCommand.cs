@@ -20,7 +20,7 @@ namespace Billing.Application.Wallets.Commands
         {
             RuleFor(x => x.Amount)
                 .GreaterThan(0.0m).WithMessage("{Property} be above {ComparisonValue}");
-
+    
             RuleFor(x => x.OrderNumber)
                 .Must(x => x != Guid.Empty).When(x => x.OrderNumber.HasValue)
                 .WithMessage("{Property} cannot be a default one");
@@ -45,7 +45,7 @@ namespace Billing.Application.Wallets.Commands
             {
                 _logger.LogWarning("Wallet with id: {@Id} does not exist", request.WalletId);
                 throw new NotFoundException(nameof(Wallet), request.WalletId);
-            }
+            } 
             
             var transaction = new Transaction(request.Amount, request.OrderNumber, request.TransactionType);
             wallet.AddTransaction(transaction);

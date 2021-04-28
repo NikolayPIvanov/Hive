@@ -1,5 +1,7 @@
 ﻿using Billing.Application.Interfaces;
 using Billing.Infrastructure.Persistence;
+using BuildingBlocks.Core.Email;
+using BuildingBlocks.Core.MessageBus;
 using Hive.Common.Core.Interfaces;
 using Hive.Common.Core.Services;
 using Microsoft.EntityFrameworkCore;
@@ -26,31 +28,9 @@ namespace Billing.Infrastructure
                         sqlServerConnectionString,
                         b => b.MigrationsAssembly(typeof(BillingDbContext).Assembly.FullName)));
             }
-            
-            services.AddCap(x =>
-            {
-                x.UseEntityFramework<BillingDbContext>();
-
-                if (!useInMemory)
-                {
-                    x.UseSqlServer(sqlServerConnectionString);
-                }
-
-                x.UseRabbitMQ(ro =>
-                {
-                    ro.Password = "admin";
-                    ro.UserName = "admin";
-                    ro.HostName = "localhost";
-                    ro.Port = 5672;
-                    ro.VirtualHost = "/";
-                });
-
-                x.UseDashboard(opt => { opt.PathMatch = "/cap"; });
-            });
-
+            services.AddEmailService(configuration);
+            services.AddRabbitMqBroker<BillingDbContext>(useInMemory, sqlServerConnectionString, configuration);
             services.AddScoped<IBillingDbContext>(provider => provider.GetService<BillingDbContext>());
-            services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
-            services.AddScoped<IDateTimeService, DateTimeService>();
             
             return services;
         }

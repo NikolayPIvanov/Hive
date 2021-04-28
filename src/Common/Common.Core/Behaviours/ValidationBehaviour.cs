@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
 using MediatR;
+using ValidationException = Hive.Common.Core.Exceptions.ValidationException;
 
 namespace Hive.Common.Core.Behaviours
 {
@@ -27,7 +28,7 @@ namespace Hive.Common.Core.Behaviours
                 var failures = validationResults.SelectMany(r => r.Errors).Where(f => f != null).ToList();
 
                 if (failures.Count != 0)
-                    throw new FluentValidation.ValidationException(failures);
+                    throw new ValidationException(failures);
             }
             return await next();
         }

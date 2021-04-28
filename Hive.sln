@@ -10,7 +10,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{6BB6A724-D5C8-4E94-ACB4-042BEB8D0F05}"
 ProjectSection(SolutionItems) = preProject
 	build\docker-compose.yml = build\docker-compose.yml
-	build\docker-compose-api.yml = build\docker-compose-api.yml
 EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GigManagement", "GigManagement", "{FF3F27FA-F99E-4ED5-84E6-FB5FD3EB9A84}"
@@ -89,6 +88,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Investing.Application", "src\Investing\Investing.Application\Investing.Application.csproj", "{8A5D0F16-F17C-4E08-BA2B-8F77A9E3162A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Investing.Infrastructure", "src\Investing\Investing.Infrastructure\Investing.Infrastructure.csproj", "{06909655-C2E3-4C4E-B4ED-468532F7360A}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildingBlocks", "BuildingBlocks", "{CC6B9AF6-F66A-48F6-9DFE-8C086D11FC77}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildingBlocks.Core", "src\BuildingBlocks\BuildingBlocks.Core\BuildingBlocks.Core.csproj", "{B71D99C6-DCEA-4EFD-85C8-1D10EB88FF40}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -184,6 +187,10 @@ Global
 		{06909655-C2E3-4C4E-B4ED-468532F7360A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{06909655-C2E3-4C4E-B4ED-468532F7360A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{06909655-C2E3-4C4E-B4ED-468532F7360A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B71D99C6-DCEA-4EFD-85C8-1D10EB88FF40}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B71D99C6-DCEA-4EFD-85C8-1D10EB88FF40}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B71D99C6-DCEA-4EFD-85C8-1D10EB88FF40}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B71D99C6-DCEA-4EFD-85C8-1D10EB88FF40}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -218,6 +225,8 @@ Global
 		{E674E9E5-BDDB-498F-84BD-2AA4BCBDEDAF} = {DA51A033-CBCE-4621-8B23-25904897343C}
 		{8A5D0F16-F17C-4E08-BA2B-8F77A9E3162A} = {DA51A033-CBCE-4621-8B23-25904897343C}
 		{06909655-C2E3-4C4E-B4ED-468532F7360A} = {DA51A033-CBCE-4621-8B23-25904897343C}
+		{CC6B9AF6-F66A-48F6-9DFE-8C086D11FC77} = {6ED356A7-8B47-4613-AD01-C85CF28491BD}
+		{B71D99C6-DCEA-4EFD-85C8-1D10EB88FF40} = {CC6B9AF6-F66A-48F6-9DFE-8C086D11FC77}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3CB609D9-5D54-4C11-A371-DAAC8B74E430}

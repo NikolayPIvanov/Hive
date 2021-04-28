@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using BuildingBlocks.Core.Interfaces;
 using FluentValidation;
 using Hive.Common.Core.Exceptions;
 using Hive.Common.Core.Interfaces;
@@ -64,7 +65,7 @@ namespace Ordering.Application.Resolutions.Commands
                 throw new NotFoundException(nameof(Order), request.OrderNumber);
             }
             
-            var location = await _fileService.UploadAsync(request.FileStream, request.Extension, cancellationToken);
+            var location = await _fileService.UploadAsync("resolutions", request.FileStream, request.Extension, cancellationToken);
             var resolution = new Resolution(request.Version, location, order.Id);
 
             _context.Resolutions.Add(resolution);

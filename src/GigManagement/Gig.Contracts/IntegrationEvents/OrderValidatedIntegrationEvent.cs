@@ -1,4 +1,4 @@
-﻿using Hive.Common.Core.SeedWork;
+﻿using BuildingBlocks.Core.MessageBus;
 
 namespace Hive.Gig.Contracts.IntegrationEvents
 {

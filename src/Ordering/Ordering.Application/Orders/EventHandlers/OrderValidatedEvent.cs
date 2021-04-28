@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using BuildingBlocks.Core.Interfaces;
 using Hive.Common.Core.Interfaces;
 using MediatR;
 using Ordering.Contracts.IntegrationEvents;
@@ -22,7 +23,7 @@ namespace Ordering.Application.Orders.EventHandlers
         {
             var @event = new OrderBuyerVerificationIntegrationEvent(notification.OrderNumber, notification.UnitPrice,
                 notification.UserId);
-            await _publisher.Publish(@event);
+            await _publisher.PublishAsync(@event);
         }
     }
 }

@@ -1,7 +1,10 @@
-﻿using Hive.Common.Core.Interfaces;
+﻿using BuildingBlocks.Core.Email;
+using BuildingBlocks.Core.MessageBus;
+using Hive.Common.Core.Interfaces;
 using Hive.Common.Core.Services;
 using Hive.Gig.Application.Interfaces;
 using Hive.Gig.Infrastructure.Persistence;
+using Hive.Gig.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -27,30 +30,9 @@ namespace Hive.Gig.Infrastructure
                         b => b.MigrationsAssembly(typeof(GigManagementDbContext).Assembly.FullName)));
             }
 
-            services.AddCap(x =>
-            {
-                x.UseEntityFramework<GigManagementDbContext>();
-
-                if (!useInMemory)
-                {
-                    x.UseSqlServer(sqlServerConnectionString);
-                }
-
-                x.UseRabbitMQ(ro =>
-                {
-                    ro.Password = "admin";
-                    ro.UserName = "admin";
-                    ro.HostName = "localhost";
-                    ro.Port = 5672;
-                    ro.VirtualHost = "/";
-                });
-
-                x.UseDashboard(opt => { opt.PathMatch = "/cap"; });
-            });
-
+            services.AddEmailService(configuration);
+            services.AddRabbitMqBroker<GigManagementDbContext>(useInMemory, sqlServerConnectionString, configuration);
             services.AddScoped<IGigManagementDbContext>(provider => provider.GetService<GigManagementDbContext>());
-            services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
-            services.AddScoped<IDateTimeService, DateTimeService>();
             
             return services;
         }

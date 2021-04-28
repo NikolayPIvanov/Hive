@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Billing.Application.Interfaces;
+using BuildingBlocks.Core.Interfaces;
 using DotNetCore.CAP;
 using Hive.Billing.Contracts.IntegrationEvents;
 using Hive.Billing.Domain.Entities;
@@ -40,7 +41,7 @@ namespace Billing.Application.IntegrationEvents.EventHandlers.Ordering
             if (account == null)
             {
                 _logger.LogWarning("Account holder with {@UserId} has not been found.", @event.BuyerUserId);
-                await _publisher.Publish(integrationEvent);
+                await _publisher.PublishAsync(integrationEvent);
                 return;
             }
             
@@ -48,7 +49,7 @@ namespace Billing.Application.IntegrationEvents.EventHandlers.Ordering
             {
                 _logger.LogWarning("Account holder with {@UserId} has not set up a default payment method.", @event.BuyerUserId);
                 integrationEvent = integrationEvent with {Reason = "A default payment method has not been found."};
-                await _publisher.Publish(integrationEvent);
+                await _publisher.PublishAsync(integrationEvent);
                 return;
             }
             
@@ -56,7 +57,7 @@ namespace Billing.Application.IntegrationEvents.EventHandlers.Ordering
             {
                 _logger.LogWarning("Account balance for {@AccountHolder} does not have enough funds {@Funds}", @event.BuyerUserId, account.Wallet.Balance);
                 integrationEvent = integrationEvent with {Reason = "User account does not have enough resources."};
-                await _publisher.Publish(integrationEvent);
+                await _publisher.PublishAsync(integrationEvent);
                 return;
             }
             
@@ -65,7 +66,7 @@ namespace Billing.Application.IntegrationEvents.EventHandlers.Ordering
 
             await _context.SaveChangesAsync(default);
             
-            await _publisher.Publish(integrationEvent with {Reason = "User has enough balance", IsValid = true});
+            await _publisher.PublishAsync(integrationEvent with {Reason = "User has enough balance", IsValid = true});
         }
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Hive.Common.Core.SeedWork
+namespace BuildingBlocks.Core.MessageBus
 {
     public record IntegrationEvent
     {

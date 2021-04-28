@@ -1,15 +1,20 @@
 using Billing.Application;
 using Billing.Infrastructure;
+using FluentValidation.AspNetCore;
+using Hive.Common.Core.Behaviours;
 using Hive.Common.Core.Interfaces;
+using Hive.Common.Core.Services;
 using Hive.Gig.Application;
 using Hive.Gig.Infrastructure;
 using Hive.Gig.Infrastructure.Services;
 using Hive.Investing.Application;
 using Hive.Investing.Infrastructure;
 using Hive.LooselyCoupled.Authorization.Requirements;
+using Hive.LooselyCoupled.Filters;
 using Hive.LooselyCoupled.Services;
 using Hive.UserProfile.Application;
 using Hive.UserProfile.Infrastructure;
+using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -50,14 +55,24 @@ namespace Hive.LooselyCoupled
             services.AddInvestingInfrastructure(Configuration);
             services.AddInvestingApplication(Configuration);
             
+
             services.AddHttpContextAccessor();
 
-            services.AddScoped<ICurrentUserService, CurrentUserService>();
+            services.AddControllers(options =>
+            {
+                options.AllowEmptyInputInBodyModelBinding = true;
+                options.Filters.Add<ApiExceptionFilterAttribute>();
+            }).AddFluentValidation();
 
-            services.AddControllers();
-            
+            services.AddScoped<ICurrentUserService, CurrentUserService>();
             services.AddScoped<IIdentityService, IdentityService>();
+            services.AddScoped<IDateTimeService, DateTimeService>();
             
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(AuthorizationBehaviour<,>));
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(UnhandledExceptionBehaviour<,>));
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PerformanceBehaviour<,>));
+
             services.AddAuthentication("Bearer")
                 .AddJwtBearer("Bearer", options =>
                 {
@@ -76,7 +91,6 @@ namespace Hive.LooselyCoupled
             });
             
             services.AddSingleton<IAuthorizationHandler, EntityOwnerAuthorizationHandler>();
-
 
             services.AddSwaggerGen(c =>
             {

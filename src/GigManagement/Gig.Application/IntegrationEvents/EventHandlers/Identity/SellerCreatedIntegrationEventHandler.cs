@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using BuildingBlocks.Core.Interfaces;
 using DotNetCore.CAP;
 using Hive.Common.Core.Interfaces;
 using Hive.Gig.Application.Interfaces;
@@ -9,7 +10,6 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Hive.Gig.Application.IntegrationEvents.EventHandlers.Identity
 {
-    // TODO:
     public class SellerCreatedIntegrationEventHandler : ICapSubscribe
     {
         private readonly IGigManagementDbContext _dbContext;
@@ -34,7 +34,7 @@ namespace Hive.Gig.Application.IntegrationEvents.EventHandlers.Identity
             await _dbContext.SaveChangesAsync(default);
             
             var message = new ConformationEvents.SellerStoredIntegrationEvent(@event.UserId, seller.Id, true);
-            await _publisher.Publish(message);
+            await _publisher.PublishAsync(message);
         }
     }
 }

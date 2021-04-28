@@ -3,9 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using DotNetCore.CAP;
 using FluentValidation;
 using Hive.Common.Core.Interfaces;
 using Hive.Gig.Application.Interfaces;
+using Hive.Gig.Contracts.IntegrationEvents;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -73,25 +75,30 @@ namespace Hive.Gig.Application.Gigs.Commands
     {
         private readonly IGigManagementDbContext _dbContext;
         private readonly IIdentityService _identityService;
+        private readonly ICapPublisher _capPublisher;
 
-        public CreateGigCommandHandler(IGigManagementDbContext dbContext, IIdentityService identityService)
+        public CreateGigCommandHandler(IGigManagementDbContext dbContext, IIdentityService identityService, ICapPublisher capPublisher)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
             _identityService = identityService ?? throw new ArgumentNullException(nameof(identityService));
+            _capPublisher = capPublisher ?? throw new ArgumentNullException(nameof(capPublisher));
         }
         
         public async Task<int> Handle(CreateGigCommand request, CancellationToken cancellationToken)
         {
             var sellerId = await _identityService.GetClaimValue("sellerid");
-            var tags = (request.Tags ?? new List<string>()).Select(t => new Tag(t)).ToHashSet();
-            var questions = (request.Questions ?? new List<QuestionModel>()).Select(q => new Question(q.Title, q.Answer)).ToHashSet();
+            var tags = (request.Tags).Select(t => new Tag(t)).ToHashSet();
+            var questions = (request.Questions).Select(q => new Question(q.Title, q.Answer)).ToHashSet();
             var gig = new Gig(request.Title, request.Description, int.Parse(sellerId), request.CategoryId, tags, questions, request.PlanId);
-    
-            
-            // TODO: Add domain event to raise notification/email if the gig is related to a plan, it will raise an event to every investor that they
-            // will start getting a share of the amount of the payment for the service.
+
             _dbContext.Gigs.Add(gig);
             await _dbContext.SaveChangesAsync(cancellationToken);
+
+            if (gig.PlanId.HasValue)
+            {
+                var @event = new NotifyInvestorsIntegrationEvent(gig.Id, gig.PlanId.Value);
+                await _capPublisher.PublishAsync(@event.Name, @event, cancellationToken: cancellationToken);
+            }
 
             return gig.Id;
         }

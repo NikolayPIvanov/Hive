@@ -11,10 +11,21 @@ services:
       - 5672:5672
       - 15672:15672
 
-  db:
-    image: "mcr.microsoft.com/mssql/server"
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+    
+  azurite:
+    image: "mcr.microsoft.com/azure-storage/azurite"
+    ports:
+      - "10000:10000"
+      - "10001:10001"
+
+  sqlserver:
+    image: "mcr.microsoft.com/mssql/server:2019-CU8-ubuntu-16.04"
     environment:
-        SA_PASSWORD: "Your_password123"
+        SA_PASSWORD: "yourStrong(!)Password"
         ACCEPT_EULA: "Y"
     ports:
       - "1433:1433"

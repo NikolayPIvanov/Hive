@@ -3,6 +3,7 @@
 
 using System;
 using System.Reflection;
+using BuildingBlocks.Core.MessageBus;
 using DotNetCore.CAP;
 using Duende.IdentityServer;
 using Hive.Common.Core;
@@ -43,27 +44,11 @@ namespace Hive.Identity
                 options.UseSqlServer(connectionString,
                     o => o.MigrationsAssembly(assembly)));
             
-            services.AddCap(x =>
-            {
-                x.UseEntityFramework<ApplicationDbContext>();
-                x.UseSqlServer(connectionString);
-
-                x.UseRabbitMQ(ro =>
-                {
-                    ro.Password = "admin";
-                    ro.UserName = "admin";
-                    ro.HostName = "localhost";
-                    ro.Port = 5672;
-                    ro.VirtualHost = "/";
-                });
-
-                x.UseDashboard(opt => { opt.PathMatch = "/cap"; });
-            });
-            
             services.AddOfType<ICapSubscribe>(new []{ Assembly.GetExecutingAssembly() });
 
+            services.AddRabbitMqBroker<ApplicationDbContext>(false, connectionString, Configuration);
+
             services.AddScoped<IIdentityDispatcher, IdentityDispatcher>();
-            services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()

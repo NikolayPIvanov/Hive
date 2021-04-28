@@ -1,11 +1,12 @@
-﻿using Hive.Common.Core.Interfaces;
+﻿using BuildingBlocks.Core.FileStorage;
+using BuildingBlocks.Core.Interfaces;
+using Hive.Common.Core.Interfaces;
 using Hive.Common.Core.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Ordering.Application.Interfaces;
 using Ordering.Infrastructure.Persistence;
-using Ordering.Infrastructure.Services;
 
 namespace Ordering.Infrastructure
 {
@@ -50,9 +51,6 @@ namespace Ordering.Infrastructure
             });
 
             services.AddScoped<IOrderingContext>(provider => provider.GetService<OrderingDbContext>());
-            services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
-            services.AddScoped<IDateTimeService, DateTimeService>();
-            services.AddScoped<IFileService, FileService>();
 
             return services;
         }

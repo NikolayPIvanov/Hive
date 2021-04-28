@@ -8,7 +8,7 @@ namespace Billing.Application.Wallets
     {
         public BillingProfile()
         {
-            CreateMap<Wallet, WalletDto>();
+            CreateMap<Wallet, WalletDto>().DisableCtorValidation();
             CreateMap<Transaction, TransactionDto>()
                 .ForMember(d => d.TransactionType,
                     s => s.MapFrom(x => x.TransactionType.ToString()));

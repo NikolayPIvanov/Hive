@@ -12,15 +12,8 @@ using Microsoft.Extensions.Logging;
 
 namespace Billing.Application.Wallets.Queries
 {
-    public class WalletDto
-    {
-        public int WalletId { get; set; }
-
-        public decimal Balance { get; set; }
-        
-        public ICollection<TransactionDto> Transactions { get; set; }
-    }
-
+    public record WalletDto(int Id, decimal Balance, ICollection<TransactionDto> Transactions);
+    
     public record GetWalletByIdQuery(int WalletId) : IRequest<WalletDto>;
 
     public class GetWalletByIdQueryHandler : IRequestHandler<GetWalletByIdQuery, WalletDto>

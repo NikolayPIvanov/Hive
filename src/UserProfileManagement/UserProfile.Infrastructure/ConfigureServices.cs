@@ -27,7 +27,6 @@ namespace Hive.UserProfile.Infrastructure
                         b => b.MigrationsAssembly(typeof(UserProfileDbContext).Assembly.FullName)));
             }
             
-            
             services.AddCap(x =>
             {
                 x.UseEntityFramework<UserProfileDbContext>();
@@ -50,9 +49,6 @@ namespace Hive.UserProfile.Infrastructure
             });
 
             services.AddScoped<IUserProfileDbContext>(provider => provider.GetService<UserProfileDbContext>());
-            services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
-            services.AddScoped<IDateTimeService, DateTimeService>();
-
 
             return services;
         }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using BuildingBlocks.Core.Interfaces;
 using Hive.Common.Core.Exceptions;
 using MediatR;
 using Microsoft.Extensions.Logging;
@@ -34,7 +35,7 @@ namespace Ordering.Application.Resolutions.Queries
                 throw new NotFoundException(nameof(Resolution), request.ResolutionId);
             }
             
-            var response = await _fileService.DownloadAsync(resolution.Location, cancellationToken);
+            var response = await _fileService.DownloadAsync("resolutions", resolution.Location, cancellationToken);
 
             _logger.LogInformation("File for resolution with id: {@Id} was not downloaded", request.ResolutionId);
 

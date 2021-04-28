@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
+using BuildingBlocks.Core.Interfaces;
+using BuildingBlocks.Core.MessageBus;
 using Hive.Common.Core.Interfaces;
 using Hive.Common.Core.SeedWork;
 using Hive.Identity.Contracts;
@@ -25,7 +27,7 @@ namespace Hive.Identity.Services
         }
 
         public async Task PublishUserCreatedEventAsync(string userId) =>
-            await _publisher.Publish(new UserCreatedIntegrationEvent(userId));
+            await _publisher.PublishAsync(new UserCreatedIntegrationEvent(userId));
         
         public async Task PublishUserTypeEventAsync(string userId, IdentityType accountType)
         {
@@ -38,7 +40,7 @@ namespace Hive.Identity.Services
                     _ => throw new ArgumentOutOfRangeException(nameof(accountType), accountType, null)
                 };
 
-            await _publisher.Publish(userTypeEvent);
+            await _publisher.PublishAsync(userTypeEvent);
         }
     }
 }

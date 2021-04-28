@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
+using BuildingBlocks.Core.Interfaces;
 using DotNetCore.CAP;
-using Hive.Common.Core.Interfaces;
 using Hive.Gig.Application.Interfaces;
 using Hive.Gig.Contracts.IntegrationEvents;
 using Microsoft.EntityFrameworkCore;
@@ -10,7 +9,6 @@ using Ordering.Contracts.IntegrationEvents;
 
 namespace Hive.Gig.Application.IntegrationEvents.EventHandlers
 {
-    // TODO:
     public class OrderPlacedIntegrationEventHandler : ICapSubscribe
     {
         private readonly IGigManagementDbContext _dbContext;
@@ -34,7 +32,7 @@ namespace Hive.Gig.Application.IntegrationEvents.EventHandlers
             if (package is null)
             {
                 var invalidationEvent = new OrderValidatedIntegrationEvent(@event.OrderNumber, reason);
-                await _publisher.Publish(invalidationEvent);
+                await _publisher.PublishAsync(invalidationEvent);
                 return;
             }
 
@@ -42,7 +40,7 @@ namespace Hive.Gig.Application.IntegrationEvents.EventHandlers
             if (!priceIsSame)
             {
                 reason = $"Order for package with id {@event.PackageId} was passed with price {@event.UnitPrice} but it was {package.Price}";
-                await _publisher.Publish(integrationEvent  with { Reason = reason});
+                await _publisher.PublishAsync(integrationEvent  with { Reason = reason});
                 return;
             }
 
@@ -54,12 +52,12 @@ namespace Hive.Gig.Application.IntegrationEvents.EventHandlers
             if (!sellerIdIsValid) 
             {
                 reason = $"Order {@event.OrderNumber} had invalid seller id {@event.SellerUserId}";
-                await _publisher.Publish(integrationEvent  with { Reason = reason});
+                await _publisher.PublishAsync(integrationEvent  with { Reason = reason});
                 return;
             }
 
             reason = "Order details are valid.";
-            await _publisher.Publish(integrationEvent  with { Reason = reason, IsValid = true});
+            await _publisher.PublishAsync(integrationEvent  with { Reason = reason, IsValid = true});
         }
     }
 }

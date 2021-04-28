@@ -27,32 +27,7 @@ namespace Hive.Investing.Infrastructure
                         b => b.MigrationsAssembly(typeof(InvestingDbContext).Assembly.FullName)));
             }
             
-            
-            services.AddCap(x =>
-            {
-                x.UseEntityFramework<InvestingDbContext>();
-
-                if (!useInMemory)
-                {
-                    x.UseSqlServer(sqlServerConnectionString);
-                }
-
-                x.UseRabbitMQ(ro =>
-                {
-                    ro.Password = "admin";
-                    ro.UserName = "admin";
-                    ro.HostName = "localhost";
-                    ro.Port = 5672;
-                    ro.VirtualHost = "/";
-                });
-
-                x.UseDashboard(opt => { opt.PathMatch = "/cap"; });
-            });
-
             services.AddScoped<IInvestingDbContext>(provider => provider.GetService<InvestingDbContext>());
-            services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
-            services.AddScoped<IDateTimeService, DateTimeService>();
-
 
             return services;
         }

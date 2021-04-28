@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using BuildingBlocks.Core.Interfaces;
 using DotNetCore.CAP;
 using Hive.Common.Core.Interfaces;
 using Hive.Identity.Contracts.IntegrationEvents;
@@ -32,7 +33,7 @@ namespace Hive.Investing.Application.IntegrationEvents.EventHandlers.Identity
             _context.Investors.Add(investor);
             await _context.SaveChangesAsync();
 
-            await _integrationEventPublisher.Publish(new ConformationEvents.InvestorStoredIntegrationEvent(@event.UserId, investor.Id, true));
+            await _integrationEventPublisher.PublishAsync(new ConformationEvents.InvestorStoredIntegrationEvent(@event.UserId, investor.Id, true));
         }
     }
 }
