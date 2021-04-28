@@ -14,12 +14,6 @@ namespace Hive.Investing.Infrastructure.Persistence.Configurations
             builder.Property(p => p.EndDate).IsRequired();
 
             // https://docs.microsoft.com/en-us/ef/core/modeling/owned-entities#collections-of-owned-types
-            builder.OwnsMany(g => g.SearchTags, a =>
-            {
-                a.WithOwner().HasForeignKey("PlanId");
-                a.Property<int>("Id");
-                a.HasKey("Id");
-            });
 
             builder.HasMany(x => x.Investments)
                 .WithOne(i => i.Plan)

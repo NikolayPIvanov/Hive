@@ -1,4 +1,11 @@
 ﻿namespace BuildingBlocks.Core.Email
 {
-    public record EmailSettings(string Host, int Port, string FromEmail, string Username, string Password);
+    public record EmailSettings
+    {
+        public string Host { get; init; }
+        public int Port { get; init; }
+        public string FromEmail { get; init; }
+        public string Username { get; init; }
+        public string Password { get; init; }
+    }
 }

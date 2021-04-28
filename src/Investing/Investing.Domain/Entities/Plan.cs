@@ -5,19 +5,16 @@ using Hive.Common.Core.SeedWork;
 
 namespace Hive.Investing.Domain.Entities
 {
-    public record SearchTag(string Value);
-    
     public class Plan : Entity
     {
         private Plan()
         {
-            SearchTags = new HashSet<SearchTag>(10);
             Investments = new HashSet<Investment>();
             IsFunded = (Investments ?? new List<Investment>()).Any(i => i.IsAccepted);
             IsPublic = false;
         }
 
-        public Plan(int vendorId, string title, string description, DateTime startDate, DateTime endDate, decimal startingFunds) : this()
+        public Plan(int vendorId, string title, string description, DateTime startDate, DateTime? endDate, decimal startingFunds) : this()
         {
             VendorId = vendorId;
             Title = title;
@@ -33,18 +30,16 @@ namespace Hive.Investing.Domain.Entities
         public string Description { get; set; }
         
         public DateTime StartDate { get; set; }
-        public DateTime EndDate { get; set; }
+        public DateTime? EndDate { get; set; }
 
         public bool IsPublic { get; set; }
-        public decimal StartingFunds { get; set; }
-
         public bool IsFunded { get; private set; }
+
+        public decimal StartingFunds { get; set; }
         
         public int VendorId { get; private set; }
         public Vendor Vendor { get; private set; }
-
-        public ICollection<SearchTag> SearchTags { get; private set; }
-
+        
         public ICollection<Investment> Investments { get; private set; }
     }
 }

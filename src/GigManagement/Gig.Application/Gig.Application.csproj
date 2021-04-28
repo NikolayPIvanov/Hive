@@ -20,13 +20,10 @@
     <ItemGroup>
       <ProjectReference Include="..\..\Common\Common.Core\Common.Core.csproj" />
       <ProjectReference Include="..\..\Identity\Hive.Identity.Contracts\Hive.Identity.Contracts.csproj" />
+      <ProjectReference Include="..\..\Investing\Investing.Contracts\Investing.Contracts.csproj" />
       <ProjectReference Include="..\..\Ordering\Ordering.Contracts\Ordering.Contracts.csproj" />
       <ProjectReference Include="..\Gig.Contracts\Gig.Contracts.csproj" />
       <ProjectReference Include="..\Gig.Domain\Gig.Domain.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="DomainEvents" />
     </ItemGroup>
 
 </Project>

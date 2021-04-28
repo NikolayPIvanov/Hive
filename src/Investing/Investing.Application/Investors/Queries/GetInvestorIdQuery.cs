@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Hive.Common.Core.Exceptions;
 using Hive.Common.Core.Interfaces;
-using Hive.Common.Core.Security;
 using Hive.Investing.Application.Interfaces;
 using Hive.Investing.Domain.Entities;
 using MediatR;
@@ -13,7 +12,6 @@ using Microsoft.Extensions.Logging;
 
 namespace Hive.Investing.Application.Investors.Queries
 {
-    [Authorize(Roles = "Investor")]
     public record GetInvestorIdQuery : IRequest<int>;
 
     public class GetInvestorIdQueryHandler : IRequestHandler<GetInvestorIdQuery, int>

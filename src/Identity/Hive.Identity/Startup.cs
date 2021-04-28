@@ -3,6 +3,7 @@
 
 using System;
 using System.Reflection;
+using BuildingBlocks.Core.Email;
 using BuildingBlocks.Core.MessageBus;
 using DotNetCore.CAP;
 using Duende.IdentityServer;
@@ -46,6 +47,7 @@ namespace Hive.Identity
             
             services.AddOfType<ICapSubscribe>(new []{ Assembly.GetExecutingAssembly() });
 
+            services.AddEmailService(Configuration);
             services.AddRabbitMqBroker<ApplicationDbContext>(false, connectionString, Configuration);
 
             services.AddScoped<IIdentityDispatcher, IdentityDispatcher>();

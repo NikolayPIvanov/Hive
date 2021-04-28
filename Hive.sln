@@ -93,6 +93,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildingBlocks", "BuildingB
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BuildingBlocks.Core", "src\BuildingBlocks\BuildingBlocks.Core\BuildingBlocks.Core.csproj", "{B71D99C6-DCEA-4EFD-85C8-1D10EB88FF40}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Investing.Contracts", "src\Investing\Investing.Contracts\Investing.Contracts.csproj", "{C2AC2C48-FC3A-41EC-ADB6-55125A076098}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -191,6 +193,10 @@ Global
 		{B71D99C6-DCEA-4EFD-85C8-1D10EB88FF40}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B71D99C6-DCEA-4EFD-85C8-1D10EB88FF40}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B71D99C6-DCEA-4EFD-85C8-1D10EB88FF40}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2AC2C48-FC3A-41EC-ADB6-55125A076098}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2AC2C48-FC3A-41EC-ADB6-55125A076098}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2AC2C48-FC3A-41EC-ADB6-55125A076098}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2AC2C48-FC3A-41EC-ADB6-55125A076098}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -227,6 +233,7 @@ Global
 		{06909655-C2E3-4C4E-B4ED-468532F7360A} = {DA51A033-CBCE-4621-8B23-25904897343C}
 		{CC6B9AF6-F66A-48F6-9DFE-8C086D11FC77} = {6ED356A7-8B47-4613-AD01-C85CF28491BD}
 		{B71D99C6-DCEA-4EFD-85C8-1D10EB88FF40} = {CC6B9AF6-F66A-48F6-9DFE-8C086D11FC77}
+		{C2AC2C48-FC3A-41EC-ADB6-55125A076098} = {DA51A033-CBCE-4621-8B23-25904897343C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3CB609D9-5D54-4C11-A371-DAAC8B74E430}

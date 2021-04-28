@@ -54,7 +54,6 @@ namespace Hive.LooselyCoupled
 
             services.AddInvestingInfrastructure(Configuration);
             services.AddInvestingApplication(Configuration);
-            
 
             services.AddHttpContextAccessor();
 

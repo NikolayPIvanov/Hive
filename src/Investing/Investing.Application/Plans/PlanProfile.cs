@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using AutoMapper;
+﻿using AutoMapper;
 using Hive.Investing.Application.Plans.Queries;
 using Hive.Investing.Domain.Entities;
 
@@ -9,8 +8,7 @@ namespace Hive.Investing.Application.Plans
     {
         public PlanProfile()
         {
-            CreateMap<Plan, PlanDto>()
-                .ForMember(d => d.Tags, x => x.MapFrom(s => s.SearchTags.Select(t => t.Value)));
+            CreateMap<Plan, PlanDto>();
         }
     }
 }

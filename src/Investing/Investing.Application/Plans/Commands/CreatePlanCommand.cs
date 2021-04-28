@@ -4,7 +4,6 @@ using System.Threading.Tasks;
 using FluentValidation;
 using Hive.Common.Core.Exceptions;
 using Hive.Common.Core.Interfaces;
-using Hive.Common.Core.Security;
 using Hive.Investing.Application.Interfaces;
 using Hive.Investing.Domain.Entities;
 using MediatR;
@@ -14,7 +13,7 @@ using Microsoft.Extensions.Logging;
 namespace Hive.Investing.Application.Plans.Commands
 {
     public record CreatePlanCommand(string Title, string Description,
-        DateTime StartDate, DateTime EndDate, decimal FundingNeeded) : IRequest<int>;
+        DateTime StartDate, DateTime? EndDate, decimal FundingNeeded) : IRequest<int>;
 
     public class CreatePlanCommandValidator : AbstractValidator<CreatePlanCommand>
     {
