@@ -1,4 +1,6 @@
-﻿using Hive.Common.Core.Interfaces;
+﻿using BuildingBlocks.Core.Email;
+using BuildingBlocks.Core.MessageBus;
+using Hive.Common.Core.Interfaces;
 using Hive.Common.Core.Services;
 using Hive.UserProfile.Application.Interfaces;
 using Hive.UserProfile.Infrastructure.Persistence;
@@ -27,27 +29,8 @@ namespace Hive.UserProfile.Infrastructure
                         b => b.MigrationsAssembly(typeof(UserProfileDbContext).Assembly.FullName)));
             }
             
-            services.AddCap(x =>
-            {
-                x.UseEntityFramework<UserProfileDbContext>();
-
-                if (!useInMemory)
-                {
-                    x.UseSqlServer(sqlServerConnectionString);
-                }
-
-                x.UseRabbitMQ(ro =>
-                {
-                    ro.Password = "admin";
-                    ro.UserName = "admin";
-                    ro.HostName = "localhost";
-                    ro.Port = 5672;
-                    ro.VirtualHost = "/";
-                });
-
-                x.UseDashboard(opt => { opt.PathMatch = "/cap"; });
-            });
-
+            services.AddEmailService(configuration);
+            services.AddRabbitMqBroker<UserProfileDbContext>(useInMemory, sqlServerConnectionString, configuration);
             services.AddScoped<IUserProfileDbContext>(provider => provider.GetService<UserProfileDbContext>());
 
             return services;

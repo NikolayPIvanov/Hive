@@ -28,6 +28,7 @@ namespace Billing.Infrastructure
                         sqlServerConnectionString,
                         b => b.MigrationsAssembly(typeof(BillingDbContext).Assembly.FullName)));
             }
+            
             services.AddEmailService(configuration);
             services.AddRabbitMqBroker<BillingDbContext>(useInMemory, sqlServerConnectionString, configuration);
             services.AddScoped<IBillingDbContext>(provider => provider.GetService<BillingDbContext>());

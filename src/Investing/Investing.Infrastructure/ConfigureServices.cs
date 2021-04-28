@@ -1,4 +1,6 @@
-﻿using Hive.Common.Core.Interfaces;
+﻿using BuildingBlocks.Core.Email;
+using BuildingBlocks.Core.MessageBus;
+using Hive.Common.Core.Interfaces;
 using Hive.Common.Core.Services;
 using Hive.Investing.Application.Interfaces;
 using Hive.Investing.Infrastructure.Persistence;
@@ -27,6 +29,8 @@ namespace Hive.Investing.Infrastructure
                         b => b.MigrationsAssembly(typeof(InvestingDbContext).Assembly.FullName)));
             }
             
+            services.AddEmailService(configuration);
+            services.AddRabbitMqBroker<InvestingDbContext>(useInMemory, sqlServerConnectionString, configuration);
             services.AddScoped<IInvestingDbContext>(provider => provider.GetService<InvestingDbContext>());
 
             return services;

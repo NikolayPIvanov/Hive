@@ -18,10 +18,8 @@ namespace BuildingBlocks.Core.MessageBus
                 {
                     x.UseSqlServer(sqlServerConnectionString);
                 }
-
-                var rabbitMqSettings = configuration
-                    .GetSection(nameof(RabbitMqSettings))
-                    .Get<RabbitMqSettings>();
+                
+                var rabbitMqSettings = configuration.GetSection(nameof(RabbitMqSettings)).Get<RabbitMqSettings>();
                 
                 x.UseRabbitMQ(ro =>
                 {

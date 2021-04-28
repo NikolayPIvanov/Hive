@@ -1,5 +1,7 @@
-﻿using BuildingBlocks.Core.FileStorage;
+﻿using BuildingBlocks.Core.Email;
+using BuildingBlocks.Core.FileStorage;
 using BuildingBlocks.Core.Interfaces;
+using BuildingBlocks.Core.MessageBus;
 using Hive.Common.Core.Interfaces;
 using Hive.Common.Core.Services;
 using Microsoft.EntityFrameworkCore;
@@ -29,27 +31,9 @@ namespace Ordering.Infrastructure
                         b => b.MigrationsAssembly(typeof(OrderingDbContext).Assembly.FullName)));
             }
 
-            services.AddCap(x =>
-            {
-                x.UseEntityFramework<OrderingDbContext>();
-
-                if (!useInMemory)
-                {
-                    x.UseSqlServer(sqlServerConnectionString);
-                }
-
-                x.UseRabbitMQ(ro =>
-                {
-                    ro.Password = "admin";
-                    ro.UserName = "admin";
-                    ro.HostName = "localhost";
-                    ro.Port = 5672;
-                    ro.VirtualHost = "/";
-                });
-
-                x.UseDashboard(opt => { opt.PathMatch = "/cap"; });
-            });
-
+            services.AddFileStorage(configuration);
+            services.AddEmailService(configuration);
+            services.AddRabbitMqBroker<OrderingDbContext>(useInMemory, sqlServerConnectionString, configuration);
             services.AddScoped<IOrderingContext>(provider => provider.GetService<OrderingDbContext>());
 
             return services;
