@@ -2,7 +2,7 @@
 using Hive.Common.Core.Interfaces;
 using Microsoft.AspNetCore.Http;
 
-namespace Hive.LooselyCoupled.Services
+namespace Hive.Common.Core
 {
     public class CurrentUserService : ICurrentUserService
     {

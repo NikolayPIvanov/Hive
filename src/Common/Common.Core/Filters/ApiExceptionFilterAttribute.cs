@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace Hive.LooselyCoupled.Filters
+namespace Hive.Common.Core.Filters
 {
     public class ApiExceptionFilterAttribute : ExceptionFilterAttribute
     {
