@@ -13,9 +13,6 @@ ProjectSection(SolutionItems) = preProject
 EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GigManagement", "GigManagement", "{FF3F27FA-F99E-4ED5-84E6-FB5FD3EB9A84}"
-ProjectSection(SolutionItems) = preProject
-	src\GigManagement\README.md = src\GigManagement\README.md
-EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gig.Domain", "src\GigManagement\Gig.Domain\Gig.Domain.csproj", "{B07A0C21-82CA-4C43-8687-F5A19AB0FCD0}"
 EndProject
@@ -30,9 +27,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gig.Infrastructure", "src\GigManagement\Gig.Infrastructure\Gig.Infrastructure.csproj", "{53C68299-82C5-4E4E-850A-E2BECBF6C4E5}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Ordering", "Ordering", "{D2BF2D43-AF5B-4528-AF7B-D5F212B3A05E}"
-ProjectSection(SolutionItems) = preProject
-	src\GigManagement\README.md = src\GigManagement\README.md
-EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ordering.Domain", "src\Ordering\Ordering.Domain\Ordering.Domain.csproj", "{392D52A5-059F-41C7-9FC5-7FF819C69483}"
 EndProject
@@ -45,10 +39,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LooselyCoupled", "src\LooselyCoupled\LooselyCoupled.csproj", "{96EB2C94-6A7B-4B5A-BE73-B743A65DCA18}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Billing", "Billing", "{0C0C3FD3-1C83-490B-BCAB-193B4D434F72}"
-ProjectSection(SolutionItems) = preProject
-	src\GigManagement\README.md = src\GigManagement\README.md
-	src\Billing\Setup.md = src\Billing\Setup.md
-EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Billing.Domain", "src\Billing\Billing.Domain\Billing.Domain.csproj", "{FBDFFF93-67BF-4F47-9A24-0700B13D83C2}"
 EndProject
@@ -59,23 +49,14 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Billing.Contracts", "src\Billing\Billing.Contracts\Billing.Contracts.csproj", "{82A4459B-968A-48AE-80D2-940DB629AD83}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Identity", "Identity", "{A631BEB6-EA6F-4DD4-B4FD-C7686C6CEDC1}"
-ProjectSection(SolutionItems) = preProject
-	src\GigManagement\README.md = src\GigManagement\README.md
-EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hive.Identity", "src\Identity\Hive.Identity\Hive.Identity.csproj", "{D470BC56-5BFF-4918-9C52-7325200C665B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Investing", "Investing", "{DA51A033-CBCE-4621-8B23-25904897343C}"
-ProjectSection(SolutionItems) = preProject
-	src\GigManagement\README.md = src\GigManagement\README.md
-EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hive.Identity.Contracts", "src\Identity\Hive.Identity.Contracts\Hive.Identity.Contracts.csproj", "{B456D47F-0F7F-4773-A3EF-8AD599F9BDF9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "UserProfileManagement", "UserProfileManagement", "{76FBDAA3-BF4F-4A4A-B097-14D469FC06CD}"
-ProjectSection(SolutionItems) = preProject
-	src\GigManagement\README.md = src\GigManagement\README.md
-EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserProfile.Domain", "src\UserProfileManagement\UserProfile.Domain\UserProfile.Domain.csproj", "{1E27DE64-7839-4B38-8996-E83432D209F3}"
 EndProject
@@ -98,6 +79,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gig.Management", "src\GigManagement\Gig.Management\Gig.Management.csproj", "{AE89C886-1519-45DE-955E-301123F1C033}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Investing.Management", "src\Investing\Investing.Management\Investing.Management.csproj", "{E8D38242-351D-4CF5-99B3-72C0CF63E573}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Ordering.Management", "src\Ordering\Ordering.Management\Ordering.Management.csproj", "{C5016945-BE5F-4E8F-B8C1-55DF7EEF9934}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Billing.Management", "src\Billing\Billing.Management\Billing.Management.csproj", "{A25A3019-1ACE-4BE6-8105-907FF4966A43}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserProfile.Management", "src\UserProfileManagement\UserProfile.Management\UserProfile.Management.csproj", "{38929CB6-74A5-4BB1-A252-1BA8F91B0356}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -209,6 +196,18 @@ Global
 		{E8D38242-351D-4CF5-99B3-72C0CF63E573}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E8D38242-351D-4CF5-99B3-72C0CF63E573}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E8D38242-351D-4CF5-99B3-72C0CF63E573}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5016945-BE5F-4E8F-B8C1-55DF7EEF9934}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5016945-BE5F-4E8F-B8C1-55DF7EEF9934}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5016945-BE5F-4E8F-B8C1-55DF7EEF9934}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5016945-BE5F-4E8F-B8C1-55DF7EEF9934}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A25A3019-1ACE-4BE6-8105-907FF4966A43}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A25A3019-1ACE-4BE6-8105-907FF4966A43}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A25A3019-1ACE-4BE6-8105-907FF4966A43}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A25A3019-1ACE-4BE6-8105-907FF4966A43}.Release|Any CPU.Build.0 = Release|Any CPU
+		{38929CB6-74A5-4BB1-A252-1BA8F91B0356}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{38929CB6-74A5-4BB1-A252-1BA8F91B0356}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{38929CB6-74A5-4BB1-A252-1BA8F91B0356}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{38929CB6-74A5-4BB1-A252-1BA8F91B0356}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -248,6 +247,9 @@ Global
 		{C2AC2C48-FC3A-41EC-ADB6-55125A076098} = {DA51A033-CBCE-4621-8B23-25904897343C}
 		{AE89C886-1519-45DE-955E-301123F1C033} = {FF3F27FA-F99E-4ED5-84E6-FB5FD3EB9A84}
 		{E8D38242-351D-4CF5-99B3-72C0CF63E573} = {DA51A033-CBCE-4621-8B23-25904897343C}
+		{C5016945-BE5F-4E8F-B8C1-55DF7EEF9934} = {D2BF2D43-AF5B-4528-AF7B-D5F212B3A05E}
+		{A25A3019-1ACE-4BE6-8105-907FF4966A43} = {0C0C3FD3-1C83-490B-BCAB-193B4D434F72}
+		{38929CB6-74A5-4BB1-A252-1BA8F91B0356} = {76FBDAA3-BF4F-4A4A-B097-14D469FC06CD}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3CB609D9-5D54-4C11-A371-DAAC8B74E430}

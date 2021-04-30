@@ -1,8 +1,5 @@
-using Billing.Application;
-using Billing.Infrastructure;
 using FluentValidation.AspNetCore;
 using Hive.Common.Core;
-using Hive.Common.Core.Behaviours;
 using Hive.Common.Core.Filters;
 using Hive.Common.Core.Identity;
 using Hive.Common.Core.Interfaces;
@@ -11,7 +8,6 @@ using Hive.Common.Core.Services;
 using Hive.LooselyCoupled.Authorization.Requirements;
 using Hive.UserProfile.Application;
 using Hive.UserProfile.Infrastructure;
-using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -20,13 +16,13 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
-using Ordering.Application;
-using Ordering.Infrastructure;
 
-namespace Hive.LooselyCoupled
+namespace UserProfile.Management
 {
     public class Startup
     {
+        private const string DefaultAuthenticationSchema = "Bearer";
+        
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
@@ -37,28 +33,23 @@ namespace Hive.LooselyCoupled
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            var authority = Configuration.GetValue<string>("Authority");
+            
+            services.AddUserProfileCore();
+            services.AddUserProfileInfrastructure(Configuration);
+            
             services.AddHttpContextAccessor();
-
+            
             services.AddControllers(options =>
             {
                 options.AllowEmptyInputInBodyModelBinding = true;
                 options.Filters.Add<ApiExceptionFilterAttribute>();
             }).AddFluentValidation();
-
-            services.AddScoped<ICurrentUserService, CurrentUserService>();
-            services.AddScoped<IIdentityService, IdentityService>();
-            services.AddScoped<IDateTimeService, DateTimeService>();
             
-            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(AuthorizationBehaviour<,>));
-            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(UnhandledExceptionBehaviour<,>));
-            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
-            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PerformanceBehaviour<,>));
-
-            services.AddAuthentication("Bearer")
-                .AddJwtBearer("Bearer", options =>
+            services.AddAuthentication(DefaultAuthenticationSchema)
+                .AddJwtBearer(DefaultAuthenticationSchema, options =>
                 {
-                    options.Authority = "https://localhost:7001";
-
+                    options.Authority = authority;
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateAudience = false
@@ -71,33 +62,14 @@ namespace Hive.LooselyCoupled
                     policy.AddRequirements(new OnlyOwnerAuthorizationRequirement()));
             });
             
+            services.AddScoped<ICurrentUserService, CurrentUserService>();
+            services.AddScoped<IIdentityService, IdentityService>();
+            services.AddScoped<IDateTimeService, DateTimeService>();
             services.AddSingleton<IAuthorizationHandler, EntityOwnerAuthorizationHandler>();
-
+            
             services.AddSwaggerGen(c =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo {Title = "LooselyCoupled", Version = "v1"});
-                
-                c.AddSecurityDefinition("JWT", new OpenApiSecurityScheme()
-                {
-                    Type = SecuritySchemeType.ApiKey,
-                    Name = "Authorization",
-                    In = ParameterLocation.Header,
-                    Description = "Type into the textbox: Bearer {your JWT token}."
-                });
-                
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement {
-                { 
-                    new OpenApiSecurityScheme 
-                    { 
-                        Reference = new OpenApiReference 
-                        { 
-                            Type = ReferenceType.SecurityScheme,
-                            Id = "Bearer" 
-                        } 
-                    },
-                    System.Array.Empty<string>()
-                } 
-                });
+                c.SwaggerDoc("v1", new OpenApiInfo {Title = "UserProfile.Management", Version = "v1"});
             });
         }
 
@@ -108,20 +80,16 @@ namespace Hive.LooselyCoupled
             {
                 app.UseDeveloperExceptionPage();
                 app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "LooselyCoupled v1"));
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "UserProfile.Management v1"));
             }
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
-            app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints =>
-            {
-                endpoints.MapControllers();
-            });
+            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }
 }

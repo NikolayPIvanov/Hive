@@ -10,9 +10,9 @@ using Ordering.Application.Orders.Queries;
 using Ordering.Application.Resolutions.Commands;
 using Ordering.Application.Resolutions.Queries;
 
-namespace Hive.LooselyCoupled.Controllers
+namespace Ordering.Management.Controllers
 {
-    [Authorize(Roles = "Seller, Buyer, Admin")]
+    [Authorize(Roles = "Seller, Buyer")]
     public class OrdersController : ApiControllerBase
     {
         [HttpGet("{orderNumber:guid}")]

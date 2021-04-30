@@ -4,7 +4,7 @@ using Billing.Application.Wallets.Queries;
 using Hive.Common.Core.Security;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Hive.LooselyCoupled.Controllers
+namespace Billing.Management.Controllers
 {
     [Authorize]
     public class AccountHoldersController : ApiControllerBase

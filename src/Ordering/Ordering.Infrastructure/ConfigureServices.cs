@@ -14,7 +14,7 @@ namespace Ordering.Infrastructure
 {
     public static class ConfigureServices
     {
-        public static IServiceCollection AddOrdering(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddOrderingInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
             var useInMemory = configuration.GetValue<bool>("UseInMemoryDatabase");
             var sqlServerConnectionString = configuration.GetConnectionString("DefaultConnection");
