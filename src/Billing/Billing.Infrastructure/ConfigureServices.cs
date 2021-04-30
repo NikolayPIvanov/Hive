@@ -2,8 +2,6 @@
 using Billing.Infrastructure.Persistence;
 using BuildingBlocks.Core.Email;
 using BuildingBlocks.Core.MessageBus;
-using Hive.Common.Core.Interfaces;
-using Hive.Common.Core.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -29,7 +27,7 @@ namespace Billing.Infrastructure
                         b => b.MigrationsAssembly(typeof(BillingDbContext).Assembly.FullName)));
             }
             
-            services.AddEmailService(configuration);
+            services.AddSendGrid(configuration);
             services.AddRabbitMqBroker<BillingDbContext>(useInMemory, sqlServerConnectionString, configuration);
             services.AddScoped<IBillingDbContext>(provider => provider.GetService<BillingDbContext>());
             

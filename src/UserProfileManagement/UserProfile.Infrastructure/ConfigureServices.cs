@@ -29,7 +29,7 @@ namespace Hive.UserProfile.Infrastructure
                         b => b.MigrationsAssembly(typeof(UserProfileDbContext).Assembly.FullName)));
             }
             
-            services.AddEmailService(configuration);
+            services.AddSendGrid(configuration);
             services.AddRabbitMqBroker<UserProfileDbContext>(useInMemory, sqlServerConnectionString, configuration);
             services.AddScoped<IUserProfileDbContext>(provider => provider.GetService<UserProfileDbContext>());
 

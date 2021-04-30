@@ -6,10 +6,10 @@ namespace BuildingBlocks.Core.Email
 {
     public static class EmailServiceExtension
     {
-        public static IServiceCollection AddEmailService(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddSmtpEmailService(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<EmailSettings>(configuration.GetSection(nameof(EmailSettings)));
-            services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IEmailService, SmtpEmailService>();
             
             return services;
         }
@@ -17,7 +17,7 @@ namespace BuildingBlocks.Core.Email
         public static IServiceCollection AddSendGrid(this IServiceCollection services, IConfiguration configuration)
         {
             services.Configure<AuthMessageSenderOptions>(configuration.GetSection(nameof(AuthMessageSenderOptions)));
-            services.AddScoped<IEmailService, EmailService>();
+            services.AddScoped<IEmailService, SendGridService>();
             
             return services;
         }

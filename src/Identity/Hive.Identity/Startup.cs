@@ -48,9 +48,8 @@ namespace Hive.Identity
                     o => o.MigrationsAssembly(assembly)));
             
             services.AddOfType<ICapSubscribe>(new []{ Assembly.GetExecutingAssembly() });
-
-            services.AddTransient<IEmailSender, EmailSender>();
-            services.Configure<AuthMessageSenderOptions>(Configuration.GetSection(nameof(AuthMessageSenderOptions)));
+            
+            services.AddSendGrid(Configuration);
             
             services.AddRabbitMqBroker<ApplicationDbContext>(false, connectionString, Configuration);
 

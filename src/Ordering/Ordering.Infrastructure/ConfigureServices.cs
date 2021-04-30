@@ -32,7 +32,7 @@ namespace Ordering.Infrastructure
             }
 
             services.AddFileStorage(configuration);
-            services.AddEmailService(configuration);
+            services.AddSendGrid(configuration);
             services.AddRabbitMqBroker<OrderingDbContext>(useInMemory, sqlServerConnectionString, configuration);
             services.AddScoped<IOrderingContext>(provider => provider.GetService<OrderingDbContext>());
 

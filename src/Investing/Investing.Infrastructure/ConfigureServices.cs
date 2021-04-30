@@ -31,7 +31,7 @@ namespace Hive.Investing.Infrastructure
             }
 
             services.AddRedis(configuration);
-            services.AddEmailService(configuration);
+            services.AddSendGrid(configuration);
             services.AddRabbitMqBroker<InvestingDbContext>(useInMemory, sqlServerConnectionString, configuration);
             services.AddScoped<IInvestingDbContext>(provider => provider.GetService<InvestingDbContext>());
 

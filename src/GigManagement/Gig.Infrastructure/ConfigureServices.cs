@@ -29,7 +29,7 @@ namespace Hive.Gig.Infrastructure
                         b => b.MigrationsAssembly(typeof(GigManagementDbContext).Assembly.FullName)));
             }
 
-            services.AddEmailService(configuration);
+            services.AddSendGrid(configuration);
             services.AddRabbitMqBroker<GigManagementDbContext>(useInMemory, sqlServerConnectionString, configuration);
             services.AddScoped<IGigManagementDbContext>(provider => provider.GetService<GigManagementDbContext>());
             
