@@ -7,7 +7,7 @@ using Hive.Investing.Application.Plans.Queries;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Hive.LooselyCoupled.Controllers
+namespace Investing.Management.Controllers
 {
     [Authorize(Roles = "Seller,Investor")]
     public class PlansController : ApiControllerBase

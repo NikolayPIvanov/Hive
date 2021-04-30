@@ -4,13 +4,10 @@ using FluentValidation.AspNetCore;
 using Hive.Common.Core;
 using Hive.Common.Core.Behaviours;
 using Hive.Common.Core.Filters;
+using Hive.Common.Core.Identity;
 using Hive.Common.Core.Interfaces;
+using Hive.Common.Core.Security.Requirements;
 using Hive.Common.Core.Services;
-using Hive.Gig.Application;
-using Hive.Gig.Infrastructure;
-using Hive.Gig.Infrastructure.Services;
-using Hive.Investing.Application;
-using Hive.Investing.Infrastructure;
 using Hive.LooselyCoupled.Authorization.Requirements;
 using Hive.UserProfile.Application;
 using Hive.UserProfile.Infrastructure;
@@ -49,8 +46,6 @@ namespace Hive.LooselyCoupled
             services.AddUserProfileInfrastructure(Configuration);
             services.AddUserProfileApplication(Configuration);
 
-            services.AddInvestingInfrastructure(Configuration);
-            services.AddInvestingApplication(Configuration);
 
             services.AddHttpContextAccessor();
 

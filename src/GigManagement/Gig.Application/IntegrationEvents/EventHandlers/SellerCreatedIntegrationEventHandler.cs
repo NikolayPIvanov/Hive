@@ -2,13 +2,12 @@
 using System.Threading.Tasks;
 using BuildingBlocks.Core.Interfaces;
 using DotNetCore.CAP;
-using Hive.Common.Core.Interfaces;
 using Hive.Gig.Application.Interfaces;
 using Hive.Gig.Domain.Entities;
 using Hive.Identity.Contracts.IntegrationEvents;
 using Microsoft.EntityFrameworkCore;
 
-namespace Hive.Gig.Application.IntegrationEvents.EventHandlers.Identity
+namespace Hive.Gig.Application.IntegrationEvents.EventHandlers
 {
     public class SellerCreatedIntegrationEventHandler : ICapSubscribe
     {

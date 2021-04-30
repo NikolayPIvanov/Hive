@@ -4,7 +4,7 @@ using Hive.Investing.Application.Investments.Queries;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Hive.LooselyCoupled.Controllers
+namespace Investing.Management.Controllers
 {
     [Authorize]
     public class InvestorsController : ApiControllerBase

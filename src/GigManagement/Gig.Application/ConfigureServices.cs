@@ -11,7 +11,7 @@ namespace Hive.Gig.Application
 {
     public static class ConfigureServices
     {
-        public static IServiceCollection AddGigsCore(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddGigsCore(this IServiceCollection services)
         {
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());

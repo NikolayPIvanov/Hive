@@ -5,9 +5,9 @@ using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using FluentValidation;
-using Hive.Common.Core;
 using Hive.Common.Core.Exceptions;
 using Hive.Common.Core.Interfaces;
+using Hive.Common.Core.Security.Handlers;
 using Hive.Gig.Application.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -41,7 +41,7 @@ namespace Hive.Gig.Application.Gigs.Commands
                 .MaximumLength(20).WithMessage("Tag length must not be above 20 characters.");
             
             RuleForEach(x => x.Questions)
-                .SetValidator(x => new QuestionValidator());
+                .SetValidator(_ => new QuestionValidator());
         }
     }
 

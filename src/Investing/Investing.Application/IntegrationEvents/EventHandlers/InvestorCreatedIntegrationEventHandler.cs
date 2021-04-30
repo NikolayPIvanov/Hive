@@ -2,13 +2,12 @@
 using System.Threading.Tasks;
 using BuildingBlocks.Core.Interfaces;
 using DotNetCore.CAP;
-using Hive.Common.Core.Interfaces;
 using Hive.Identity.Contracts.IntegrationEvents;
 using Hive.Investing.Application.Interfaces;
 using Hive.Investing.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Hive.Investing.Application.IntegrationEvents.EventHandlers.Identity
+namespace Hive.Investing.Application.IntegrationEvents.EventHandlers
 {
     public class InvestorCreatedIntegrationEventHandler : ICapSubscribe
     {

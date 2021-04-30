@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using DotNetCore.CAP;
 using FluentValidation;
+using Hive.Common.Core.Exceptions;
 using Hive.Common.Core.Interfaces;
 using Hive.Gig.Application.Interfaces;
 using Hive.Gig.Contracts.IntegrationEvents;
@@ -74,29 +75,36 @@ namespace Hive.Gig.Application.Gigs.Commands
     public class CreateGigCommandHandler : IRequestHandler<CreateGigCommand, int>
     {
         private readonly IGigManagementDbContext _dbContext;
-        private readonly IIdentityService _identityService;
+        private readonly ICurrentUserService _currentUserService;
         private readonly ICapPublisher _capPublisher;
 
-        public CreateGigCommandHandler(IGigManagementDbContext dbContext, IIdentityService identityService, ICapPublisher capPublisher)
+        public CreateGigCommandHandler(IGigManagementDbContext dbContext, ICurrentUserService currentUserService, ICapPublisher capPublisher)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-            _identityService = identityService ?? throw new ArgumentNullException(nameof(identityService));
+            _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
             _capPublisher = capPublisher ?? throw new ArgumentNullException(nameof(capPublisher));
         }
         
         public async Task<int> Handle(CreateGigCommand request, CancellationToken cancellationToken)
         {
-            var sellerId = await _identityService.GetClaimValue("sellerid");
+            var sellerId = await _dbContext.Sellers.Select(x => new {x.UserId, x.Id})
+                .FirstOrDefaultAsync(x => x.UserId == _currentUserService.UserId, cancellationToken: cancellationToken);
+
+            if (sellerId == null)
+            {
+                throw new NotFoundException(nameof(Seller), _currentUserService.UserId);
+            }
+            
             var tags = (request.Tags).Select(t => new Tag(t)).ToHashSet();
-            var questions = (request.Questions).Select(q => new Question(q.Title, q.Answer)).ToHashSet();
-            var gig = new Gig(request.Title, request.Description, int.Parse(sellerId), request.CategoryId, tags, questions, request.PlanId);
+            var questions = request.Questions.Select(q => new Question(q.Title, q.Answer)).ToHashSet();
+            var gig = new Gig(request.Title, request.Description, sellerId.Id, request.CategoryId, tags, questions, request.PlanId);
 
             _dbContext.Gigs.Add(gig);
             await _dbContext.SaveChangesAsync(cancellationToken);
 
             if (gig.PlanId.HasValue)
             {
-                var @event = new NotifyInvestorsIntegrationEvent(gig.Id, gig.PlanId.Value);
+                var @event = new PlanGigCreatedIntegrationEvent(gig.Id, gig.PlanId.Value);
                 await _capPublisher.PublishAsync(@event.Name, @event, cancellationToken: cancellationToken);
             }
 

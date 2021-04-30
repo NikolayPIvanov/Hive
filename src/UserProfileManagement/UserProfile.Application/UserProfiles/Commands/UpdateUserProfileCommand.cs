@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Hive.Common.Core;
 using Hive.Common.Core.Exceptions;
 using Hive.Common.Core.Interfaces;
+using Hive.Common.Core.Security.Handlers;
 using Hive.UserProfile.Application.Interfaces;
 using Hive.UserProfile.Application.UserProfiles.Queries;
 using Hive.UserProfile.Domain;

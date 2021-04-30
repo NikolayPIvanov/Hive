@@ -5,7 +5,7 @@ using Hive.Common.Core.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 
-namespace Hive.Gig.Infrastructure.Services
+namespace Hive.Common.Core.Identity
 {
     public class IdentityService : IIdentityService
     {

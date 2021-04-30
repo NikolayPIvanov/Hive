@@ -1,6 +1,7 @@
 ﻿using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Hive.Common.Core.Security.Requirements;
 using Hive.Common.Core.SeedWork;
 using Microsoft.AspNetCore.Authorization;
 
@@ -31,6 +32,4 @@ namespace Hive.LooselyCoupled.Authorization.Requirements
             return Task.CompletedTask;
         }
     }
-
-    public record OnlyOwnerAuthorizationRequirement(bool AllowAdmin = true) : IAuthorizationRequirement { }
 }

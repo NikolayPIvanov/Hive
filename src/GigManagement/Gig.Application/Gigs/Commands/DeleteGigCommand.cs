@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Hive.Common.Core;
 using Hive.Common.Core.Exceptions;
 using Hive.Common.Core.Interfaces;
+using Hive.Common.Core.Security.Handlers;
 using Hive.Gig.Application.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;

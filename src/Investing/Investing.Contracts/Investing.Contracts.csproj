@@ -8,8 +8,4 @@
       <ProjectReference Include="..\..\BuildingBlocks\BuildingBlocks.Core\BuildingBlocks.Core.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="IntegrationEvents" />
-    </ItemGroup>
-
 </Project>

@@ -6,7 +6,7 @@ using Hive.Common.Core.Interfaces;
 using Hive.Common.Core.SeedWork;
 using Microsoft.AspNetCore.Authorization;
 
-namespace Hive.Common.Core
+namespace Hive.Common.Core.Security.Handlers
 {
     public abstract class AuthorizationRequestHandler<TEntity> where TEntity : Entity
     {

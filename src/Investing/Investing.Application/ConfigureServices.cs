@@ -11,7 +11,7 @@ namespace Hive.Investing.Application
 {
     public static class ConfigureServices
     {
-        public static IServiceCollection AddInvestingApplication(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddInvestingApplication(this IServiceCollection services)
         {
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());

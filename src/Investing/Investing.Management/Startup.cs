@@ -5,18 +5,17 @@ using Hive.Common.Core.Identity;
 using Hive.Common.Core.Interfaces;
 using Hive.Common.Core.Security.Requirements;
 using Hive.Common.Core.Services;
-using Hive.Gig.Application;
-using Hive.Gig.Infrastructure;
-using Hive.LooselyCoupled.Authorization.Requirements;
-using Microsoft.AspNetCore.Authorization;
+using Hive.Investing.Application;
+using Hive.Investing.Infrastructure;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 
-namespace Gig.Management
+namespace Investing.Management
 {
     public class Startup
     {
@@ -28,15 +27,14 @@ namespace Gig.Management
         }
 
         public IConfiguration Configuration { get; }
-        
+
         // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
             var authority = Configuration.GetValue<string>("Authority");
             
-            services.AddGigsCore();
-            services.AddGigsInfrastructure(Configuration);
+            services.AddInvestingInfrastructure(Configuration);
+            services.AddInvestingApplication();
             
             services.AddHttpContextAccessor();
             
@@ -66,7 +64,10 @@ namespace Gig.Management
             services.AddScoped<IIdentityService, IdentityService>();
             services.AddScoped<IDateTimeService, DateTimeService>();
             
-            services.AddSingleton<IAuthorizationHandler, EntityOwnerAuthorizationHandler>();
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc("v1", new OpenApiInfo {Title = "Investing.Management", Version = "v1"});
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -75,8 +76,10 @@ namespace Gig.Management
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                app.UseSwagger();
+                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Investing.Management v1"));
             }
-            
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
@@ -84,7 +87,7 @@ namespace Gig.Management
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints => endpoints.MapControllers());
+            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
         }
     }
 }

@@ -6,6 +6,7 @@ using FluentValidation;
 using Hive.Common.Core;
 using Hive.Common.Core.Exceptions;
 using Hive.Common.Core.Interfaces;
+using Hive.Common.Core.Security.Handlers;
 using Hive.Investing.Application.Interfaces;
 using Hive.Investing.Application.Investments.DomainEvents;
 using Hive.Investing.Domain.Entities;
