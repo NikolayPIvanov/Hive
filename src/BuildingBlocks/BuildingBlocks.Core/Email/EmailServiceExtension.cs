@@ -13,5 +13,13 @@ namespace BuildingBlocks.Core.Email
             
             return services;
         }
+        
+        public static IServiceCollection AddSendGrid(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.Configure<AuthMessageSenderOptions>(configuration.GetSection(nameof(AuthMessageSenderOptions)));
+            services.AddScoped<IEmailService, EmailService>();
+            
+            return services;
+        }
     }
 }

@@ -16,6 +16,7 @@ using Hive.Identity.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -38,6 +39,7 @@ namespace Hive.Identity
         {
             var connectionString = Configuration.GetConnectionString("DefaultConnection");
             var assembly = typeof(Startup).Assembly.FullName;
+            
             services.AddControllersWithViews();
             services.AddRazorPages();
             
@@ -47,12 +49,17 @@ namespace Hive.Identity
             
             services.AddOfType<ICapSubscribe>(new []{ Assembly.GetExecutingAssembly() });
 
-            services.AddEmailService(Configuration);
+            services.AddTransient<IEmailSender, EmailSender>();
+            services.Configure<AuthMessageSenderOptions>(Configuration.GetSection(nameof(AuthMessageSenderOptions)));
+            
             services.AddRabbitMqBroker<ApplicationDbContext>(false, connectionString, Configuration);
 
             services.AddScoped<IIdentityDispatcher, IdentityDispatcher>();
 
-            services.AddIdentity<ApplicationUser, IdentityRole>()
+            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+                {
+                    options.SignIn.RequireConfirmedAccount = true;
+                })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders()
                 .AddDefaultUI();

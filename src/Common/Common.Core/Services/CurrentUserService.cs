@@ -2,7 +2,7 @@
 using Hive.Common.Core.Interfaces;
 using Microsoft.AspNetCore.Http;
 
-namespace Hive.Common.Core
+namespace Hive.Common.Core.Services
 {
     public class CurrentUserService : ICurrentUserService
     {
@@ -13,7 +13,7 @@ namespace Hive.Common.Core
             _httpContextAccessor = httpContextAccessor;
         }
 
-        public string UserId => _httpContextAccessor.HttpContext?.User?.FindFirstValue(ClaimTypes.NameIdentifier);
+        public string UserId => _httpContextAccessor.HttpContext?.User.FindFirstValue(ClaimTypes.NameIdentifier);
 
         public ClaimsPrincipal User => _httpContextAccessor.HttpContext?.User;
 
