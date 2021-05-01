@@ -12,6 +12,7 @@ namespace Hive.Gig.Application.Gigs
         public GigsProfile()
         {
             CreateMap<Gig, GigDto>()
+                .ForMember(d => d.SellerId, x => x.MapFrom(s => s.Seller.UserId))
                 .ForMember(d => d.Category, x => x.MapFrom(s => s.Category.Title))
                 .ForMember(d => d.Tags, x => x.MapFrom(s => s.Tags.Select(t => t.Value)))
                 .ForMember(d => d.Description, x => x.MapFrom(s => s.GigScope.Description));

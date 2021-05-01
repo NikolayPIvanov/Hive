@@ -1452,7 +1452,7 @@ export class GigDto implements IGigDto {
     categoryId?: number;
     category?: string;
     sellerId?: string;
-    planId?: number;
+    planId?: number | undefined;
     isDraft?: boolean;
     tags?: string[];
     packages?: PackageDto[];
@@ -1538,7 +1538,7 @@ export interface IGigDto {
     categoryId?: number;
     category?: string;
     sellerId?: string;
-    planId?: number;
+    planId?: number | undefined;
     isDraft?: boolean;
     tags?: string[];
     packages?: PackageDto[];

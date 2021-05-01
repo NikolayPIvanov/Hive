@@ -21,7 +21,7 @@ namespace Hive.Gig.Application.Gigs.Queries
         
         public string SellerId { get; set; }
 
-        public int PlanId { get; set; }
+        public int? PlanId { get; set; }
 
         public bool IsDraft { get; set; }
 

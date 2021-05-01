@@ -30,6 +30,7 @@ namespace Hive.Gig.Application.Gigs.Queries
             var entity = await _dbContext.Gigs
                 .Include(g => g.Category)
                 .Include(g => g.Packages)
+                .Include(g => g.Seller)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(g => g.Id == request.Id, cancellationToken);
 

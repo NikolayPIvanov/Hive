@@ -14,6 +14,7 @@ namespace Hive.Gig.Domain.Entities
             Packages = new HashSet<Package>(3);
             Questions = new HashSet<Question>();
             Reviews = new HashSet<Review>();
+            IsDraft = true;
         }
         
         public Gig(string title, string description, int sellerId, int categoryId, 
