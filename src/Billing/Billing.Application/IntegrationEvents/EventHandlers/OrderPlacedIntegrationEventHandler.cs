@@ -6,21 +6,20 @@ using DotNetCore.CAP;
 using Hive.Billing.Contracts.IntegrationEvents;
 using Hive.Billing.Domain.Entities;
 using Hive.Billing.Domain.Enums;
-using Hive.Common.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Ordering.Contracts.IntegrationEvents;
 
-namespace Billing.Application.IntegrationEvents.EventHandlers.Ordering
+namespace Billing.Application.IntegrationEvents.EventHandlers
 {
-    public class OrderBuyerVerificationIntegrationEventHandler : ICapSubscribe
+    public class OrderPlacedIntegrationEventHandler : ICapSubscribe
     {
         private readonly IBillingDbContext _context;
         private readonly IIntegrationEventPublisher _publisher;
-        private readonly ILogger<OrderBuyerVerificationIntegrationEventHandler> _logger;
+        private readonly ILogger<OrderPlacedIntegrationEventHandler> _logger;
 
-        public OrderBuyerVerificationIntegrationEventHandler(
-            IBillingDbContext context, IIntegrationEventPublisher publisher, ILogger<OrderBuyerVerificationIntegrationEventHandler> logger)
+        public OrderPlacedIntegrationEventHandler(
+            IBillingDbContext context, IIntegrationEventPublisher publisher, ILogger<OrderPlacedIntegrationEventHandler> logger)
         {
             _publisher = publisher ?? throw new ArgumentNullException(nameof(publisher));
             _context = context ?? throw new ArgumentNullException(nameof(context));

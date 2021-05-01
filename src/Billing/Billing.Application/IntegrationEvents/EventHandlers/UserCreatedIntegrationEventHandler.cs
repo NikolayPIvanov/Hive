@@ -7,7 +7,7 @@ using Hive.Identity.Contracts.IntegrationEvents;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace Billing.Application.IntegrationEvents.EventHandlers.Identity
+namespace Billing.Application.IntegrationEvents.EventHandlers
 {
     public class UserCreatedIntegrationEventHandler : ICapSubscribe
     {

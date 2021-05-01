@@ -1,4 +1,6 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Threading.Tasks;
+using BuildingBlocks.Core.Interfaces;
 using DotNetCore.CAP;
 using Hive.Identity.Contracts.IntegrationEvents;
 using Microsoft.EntityFrameworkCore;
@@ -10,10 +12,12 @@ namespace Ordering.Application.IntegrationEvents.EventHandlers
     public class BuyerCreatedIntegrationEventHandler : ICapSubscribe
     {
         private readonly IOrderingContext _context;
+        private readonly IIntegrationEventPublisher _publisher;
 
-        public BuyerCreatedIntegrationEventHandler(IOrderingContext context)
+        public BuyerCreatedIntegrationEventHandler(IOrderingContext context, IIntegrationEventPublisher publisher)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _publisher = publisher ?? throw new ArgumentNullException(nameof(publisher));
         }
         
         [CapSubscribe(nameof(BuyerCreatedIntegrationEvent), Group = "hive.ordering.buyers")]
@@ -23,10 +27,13 @@ namespace Ordering.Application.IntegrationEvents.EventHandlers
             if (alreadyRegistered)
                 return;
             
-            var investor = new Buyer(@event.UserId);
+            var buyer = new Buyer(@event.UserId);
 
-            _context.Buyers.Add(investor);
+            _context.Buyers.Add(buyer);
             await _context.SaveChangesAsync(default);
+
+            await _publisher.PublishAsync(
+                new ConformationEvents.BuyerStoredIntegrationEvent(@event.UserId, buyer.Id, true));
         }
     }
 }

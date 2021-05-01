@@ -3,6 +3,7 @@ using Billing.Application.Wallets.Commands;
 using Billing.Application.Wallets.Queries;
 using Hive.Common.Core.Security;
 using Microsoft.AspNetCore.Mvc;
+using Stripe;
 
 namespace Billing.Management.Controllers
 {
@@ -22,6 +23,7 @@ namespace Billing.Management.Controllers
             {
                 return BadRequest();
             }
+            
             var transactionId = await Mediator.Send(command);
             return Ok(transactionId);
         }

@@ -35,7 +35,7 @@ namespace Hive.Identity.Data
                 }
             }
 
-            var user = new ApplicationUser(userTypes) { UserName = email, Email = email };
+            var user = new ApplicationUser(userTypes) { UserName = email, Email = email, EmailConfirmed = true };
             if (userManager.Users.All(u => u.UserName != user.UserName))
             {
                 await userManager.CreateAsync(user, defaultPassword);

@@ -49,8 +49,6 @@ namespace Hive.Identity
 
             try
             {
-
-
                 InitializeDatabase(services);
                 
                 await host.RunAsync();

@@ -47,12 +47,9 @@ namespace Hive.Identity
                 options.UseSqlServer(connectionString,
                     o => o.MigrationsAssembly(assembly)));
             
-            services.AddOfType<ICapSubscribe>(new []{ Assembly.GetExecutingAssembly() });
-            
             services.AddSendGrid(Configuration);
-            
             services.AddRabbitMqBroker<ApplicationDbContext>(false, connectionString, Configuration);
-
+            services.AddOfType<ICapSubscribe>(new []{ Assembly.GetExecutingAssembly() });
             services.AddScoped<IIdentityDispatcher, IdentityDispatcher>();
 
             services.AddIdentity<ApplicationUser, IdentityRole>(options =>
