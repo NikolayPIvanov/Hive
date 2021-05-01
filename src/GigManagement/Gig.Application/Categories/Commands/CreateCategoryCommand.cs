@@ -2,10 +2,8 @@
 using System.Threading;
 using System.Threading.Tasks;
 using FluentValidation;
-using Hive.Common.Core.Security;
 using Hive.Gig.Application.Interfaces;
 using Hive.Gig.Domain.Entities;
-using Hive.Identity.Contracts;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

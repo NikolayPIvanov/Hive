@@ -3,7 +3,6 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using Hive.Common.Core.Interfaces;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 
 namespace Hive.Common.Core.Identity
 {

@@ -1,13 +1,15 @@
+using System;
+using System.Linq;
 using FluentValidation.AspNetCore;
 using Hive.Common.Core;
 using Hive.Common.Core.Filters;
 using Hive.Common.Core.Identity;
 using Hive.Common.Core.Interfaces;
+using Hive.Common.Core.Security.Handlers;
 using Hive.Common.Core.Security.Requirements;
 using Hive.Common.Core.Services;
 using Hive.Gig.Application;
 using Hive.Gig.Infrastructure;
-using Hive.LooselyCoupled.Authorization.Requirements;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -15,6 +17,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using NSwag;
+using NSwag.Generation.Processors.Security;
 
 namespace Gig.Management
 {
@@ -59,7 +63,7 @@ namespace Gig.Management
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("OnlyOwnerPolicy", policy =>
-                    policy.AddRequirements(new OnlyOwnerAuthorizationRequirement()));
+                    policy.AddRequirements(new OnlyOwnerAuthorizationRequirement(Array.Empty<string>())));
             });
             
             services.AddScoped<ICurrentUserService, CurrentUserService>();
@@ -67,6 +71,20 @@ namespace Gig.Management
             services.AddScoped<IDateTimeService, DateTimeService>();
             
             services.AddSingleton<IAuthorizationHandler, EntityOwnerAuthorizationHandler>();
+            
+            services.AddOpenApiDocument(configure =>
+            {
+                configure.Title = "Gig Management API";
+                configure.AddSecurity("JWT", Enumerable.Empty<string>(), new OpenApiSecurityScheme
+                {
+                    Type = OpenApiSecuritySchemeType.ApiKey,
+                    Name = "Authorization",
+                    In = OpenApiSecurityApiKeyLocation.Header,
+                    Description = "Type into the textbox: Bearer {your JWT token}."
+                });
+
+                configure.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("JWT"));
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -76,6 +94,13 @@ namespace Gig.Management
             {
                 app.UseDeveloperExceptionPage();
             }
+            
+            app.UseSwaggerUi3(settings =>
+            {
+                settings.Path = "/api";
+                settings.DocumentPath = "/api/specification.json";
+            });
+
             
             app.UseHttpsRedirection();
 

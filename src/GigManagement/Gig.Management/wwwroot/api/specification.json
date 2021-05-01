@@ -1,0 +1,1506 @@
+{
+  "x-generator": "NSwag v13.9.4.0 (NJsonSchema v10.3.1.0 (Newtonsoft.Json v13.0.0.0))",
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Gig Management API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/Categories/{id}": {
+      "get": {
+        "tags": [
+          "Categories"
+        ],
+        "operationId": "Categories_GetCategoryById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Categories"
+        ],
+        "operationId": "Categories_UpdateCategory",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdateCategoryCommand"
+                  }
+                ]
+              }
+            }
+          },
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Categories"
+        ],
+        "operationId": "Categories_DeleteCategory",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Categories": {
+      "get": {
+        "tags": [
+          "Categories"
+        ],
+        "operationId": "Categories_GetCategories",
+        "parameters": [
+          {
+            "name": "PageNumber",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "PageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 2
+          },
+          {
+            "name": "OnlyParents",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            },
+            "x-position": 3
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedListOfCategoryDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Categories"
+        ],
+        "operationId": "Categories_CreateCategory",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/CreateCategoryCommand"
+                  }
+                ]
+              }
+            }
+          },
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Categories/{id}/gigs": {
+      "get": {
+        "tags": [
+          "Categories"
+        ],
+        "operationId": "Categories_GetCategoryGigs",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            },
+            "x-position": 2
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            },
+            "x-position": 3
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedListOfGigDto"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Gigs/{id}": {
+      "get": {
+        "tags": [
+          "Gigs"
+        ],
+        "operationId": "Gigs_GetGigById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GigDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Gigs"
+        ],
+        "operationId": "Gigs_Update",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdateGigCommand"
+                  }
+                ]
+              }
+            }
+          },
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": [
+              "Seller"
+            ]
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Gigs"
+        ],
+        "operationId": "Gigs_Delete",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": [
+              "Seller"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/Gigs": {
+      "post": {
+        "tags": [
+          "Gigs"
+        ],
+        "operationId": "Gigs_Post",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/CreateGigCommand"
+                  }
+                ]
+              }
+            }
+          },
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": [
+              "Seller"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/Gigs/{id}/packages/{packageId}": {
+      "get": {
+        "tags": [
+          "Gigs"
+        ],
+        "operationId": "Gigs_GetPackageById",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "packageId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PackageDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Gigs"
+        ],
+        "operationId": "Gigs_UpdatePackage",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "packageId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 2
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdatePackageCommand"
+                  }
+                ]
+              }
+            }
+          },
+          "x-position": 3
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": [
+              "Seller"
+            ]
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Gigs"
+        ],
+        "operationId": "Gigs_DeletePackage",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "packageId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": [
+              "Seller"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/Gigs/{id}/packages": {
+      "get": {
+        "tags": [
+          "Gigs"
+        ],
+        "operationId": "Gigs_GetPackages",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/PackageDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Gigs"
+        ],
+        "operationId": "Gigs_CreatePackage",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/CreatePackageCommand"
+                  }
+                ]
+              }
+            }
+          },
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": [
+              "Seller"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/Gigs/{gigId}/reviews/{reviewId}": {
+      "get": {
+        "tags": [
+          "Gigs"
+        ],
+        "operationId": "Gigs_GetReviewById",
+        "parameters": [
+          {
+            "name": "gigId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "reviewId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReviewDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Gigs"
+        ],
+        "operationId": "Gigs_UpdateReview",
+        "parameters": [
+          {
+            "name": "gigId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "reviewId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 2
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/UpdateReviewCommand"
+                  }
+                ]
+              }
+            }
+          },
+          "x-position": 3
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      },
+      "delete": {
+        "tags": [
+          "Gigs"
+        ],
+        "operationId": "Gigs_DeleteReview",
+        "parameters": [
+          {
+            "name": "gigId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "reviewId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Gigs/{gigId}/reviews": {
+      "get": {
+        "tags": [
+          "Gigs"
+        ],
+        "operationId": "Gigs_GetReviewsList",
+        "parameters": [
+          {
+            "name": "gigId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "pageNumber",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            },
+            "x-position": 2
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 10
+            },
+            "x-position": 3
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PaginatedListOfReviewDto"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Gigs"
+        ],
+        "operationId": "Gigs_CreateReview",
+        "parameters": [
+          {
+            "name": "gigId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/CreateReviewCommand"
+                  }
+                ]
+              }
+            }
+          },
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
+    "/api/Sellers": {
+      "get": {
+        "tags": [
+          "Sellers"
+        ],
+        "operationId": "Sellers_GetUserSellerId",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Sellers/{id}/gigs": {
+      "get": {
+        "tags": [
+          "Sellers"
+        ],
+        "operationId": "Sellers_GetMyGigs",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GigDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "CategoryDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "title": {
+            "type": "string"
+          },
+          "parentId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "subCategories": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/CategoryDto"
+            }
+          }
+        }
+      },
+      "PaginatedListOfCategoryDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/CategoryDto"
+            }
+          },
+          "pageIndex": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "hasPreviousPage": {
+            "type": "boolean"
+          },
+          "hasNextPage": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PaginatedListOfGigDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/GigDto"
+            }
+          },
+          "pageIndex": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "hasPreviousPage": {
+            "type": "boolean"
+          },
+          "hasNextPage": {
+            "type": "boolean"
+          }
+        }
+      },
+      "GigDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "categoryId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "category": {
+            "type": "string"
+          },
+          "sellerId": {
+            "type": "string"
+          },
+          "planId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "isDraft": {
+            "type": "boolean"
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "packages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PackageDto"
+            }
+          },
+          "questions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QuestionDto"
+            }
+          }
+        }
+      },
+      "PackageDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "packageTier": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "deliveryTime": {
+            "type": "number",
+            "format": "double"
+          },
+          "deliveryFrequency": {
+            "type": "string"
+          },
+          "revisions": {
+            "type": "string"
+          },
+          "gigId": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "QuestionDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "answer": {
+            "type": "string"
+          }
+        }
+      },
+      "CreateCategoryCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "parentId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        }
+      },
+      "UpdateCategoryCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "title": {
+            "type": "string"
+          },
+          "parentId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        }
+      },
+      "CreateGigCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "categoryId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "planId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "questions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QuestionModel"
+            }
+          }
+        }
+      },
+      "QuestionModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "answer": {
+            "type": "string"
+          }
+        }
+      },
+      "UpdateGigCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "isDraft": {
+            "type": "boolean"
+          },
+          "planId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "questions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QuestionModel"
+            }
+          }
+        }
+      },
+      "CreatePackageCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "packageTier": {
+            "$ref": "#/components/schemas/PackageTier"
+          },
+          "deliveryTime": {
+            "type": "number",
+            "format": "double"
+          },
+          "deliveryFrequency": {
+            "$ref": "#/components/schemas/DeliveryFrequency"
+          },
+          "revisions": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "revisionType": {
+            "$ref": "#/components/schemas/RevisionType"
+          },
+          "gigId": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "PackageTier": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "Basic",
+          "Standard",
+          "Premium"
+        ],
+        "enum": [
+          0,
+          1,
+          2
+        ]
+      },
+      "DeliveryFrequency": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "Hours",
+          "Days",
+          "Weeks"
+        ],
+        "enum": [
+          0,
+          1,
+          2
+        ]
+      },
+      "RevisionType": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "Unlimited",
+          "Numeric"
+        ],
+        "enum": [
+          0,
+          1
+        ]
+      },
+      "UpdatePackageCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "packageId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "gigId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "packageTier": {
+            "$ref": "#/components/schemas/PackageTier"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "price": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "deliveryTime": {
+            "type": "number",
+            "format": "double"
+          },
+          "deliveryFrequency": {
+            "$ref": "#/components/schemas/DeliveryFrequency"
+          },
+          "revisions": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "revisionType": {
+            "$ref": "#/components/schemas/RevisionType"
+          }
+        }
+      },
+      "ReviewDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "comment": {
+            "type": "string"
+          },
+          "rating": {
+            "type": "number",
+            "format": "double"
+          }
+        }
+      },
+      "PaginatedListOfReviewDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/ReviewDto"
+            }
+          },
+          "pageIndex": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "hasPreviousPage": {
+            "type": "boolean"
+          },
+          "hasNextPage": {
+            "type": "boolean"
+          }
+        }
+      },
+      "CreateReviewCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "rating": {
+            "type": "number",
+            "format": "double"
+          },
+          "comment": {
+            "type": "string",
+            "nullable": true
+          },
+          "gigId": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "UpdateReviewCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "rating": {
+            "type": "number",
+            "format": "double"
+          },
+          "comment": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "JWT": {
+        "type": "apiKey",
+        "description": "Type into the textbox: Bearer {your JWT token}.",
+        "name": "Authorization",
+        "in": "header"
+      }
+    }
+  },
+  "security": [
+    {
+      "JWT": []
+    }
+  ]
+}

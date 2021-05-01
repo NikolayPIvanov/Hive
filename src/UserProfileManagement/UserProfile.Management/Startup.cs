@@ -1,11 +1,12 @@
+using System;
 using FluentValidation.AspNetCore;
 using Hive.Common.Core;
 using Hive.Common.Core.Filters;
 using Hive.Common.Core.Identity;
 using Hive.Common.Core.Interfaces;
+using Hive.Common.Core.Security.Handlers;
 using Hive.Common.Core.Security.Requirements;
 using Hive.Common.Core.Services;
-using Hive.LooselyCoupled.Authorization.Requirements;
 using Hive.UserProfile.Application;
 using Hive.UserProfile.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
@@ -59,7 +60,7 @@ namespace UserProfile.Management
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("OnlyOwnerPolicy", policy =>
-                    policy.AddRequirements(new OnlyOwnerAuthorizationRequirement()));
+                    policy.AddRequirements(new OnlyOwnerAuthorizationRequirement(Array.Empty<string>())));
             });
             
             services.AddScoped<ICurrentUserService, CurrentUserService>();

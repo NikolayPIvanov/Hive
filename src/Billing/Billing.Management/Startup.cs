@@ -1,3 +1,4 @@
+using System;
 using Billing.Application;
 using Billing.Infrastructure;
 using FluentValidation.AspNetCore;
@@ -5,9 +6,9 @@ using Hive.Common.Core;
 using Hive.Common.Core.Filters;
 using Hive.Common.Core.Identity;
 using Hive.Common.Core.Interfaces;
+using Hive.Common.Core.Security.Handlers;
 using Hive.Common.Core.Security.Requirements;
 using Hive.Common.Core.Services;
-using Hive.LooselyCoupled.Authorization.Requirements;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -59,7 +60,7 @@ namespace Billing.Management
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("OnlyOwnerPolicy", policy =>
-                    policy.AddRequirements(new OnlyOwnerAuthorizationRequirement()));
+                    policy.AddRequirements(new OnlyOwnerAuthorizationRequirement(Array.Empty<string>())));
             });
             
             services.AddScoped<ICurrentUserService, CurrentUserService>();

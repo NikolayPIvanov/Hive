@@ -1,5 +1,5 @@
+using System;
 using FluentValidation.AspNetCore;
-using Hive.Common.Core;
 using Hive.Common.Core.Filters;
 using Hive.Common.Core.Identity;
 using Hive.Common.Core.Interfaces;
@@ -57,7 +57,7 @@ namespace Investing.Management
             services.AddAuthorization(options =>
             {
                 options.AddPolicy("OnlyOwnerPolicy", policy =>
-                    policy.AddRequirements(new OnlyOwnerAuthorizationRequirement()));
+                    policy.AddRequirements(new OnlyOwnerAuthorizationRequirement(Array.Empty<string>())));
             });
             
             services.AddScoped<ICurrentUserService, CurrentUserService>();
