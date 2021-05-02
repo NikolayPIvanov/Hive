@@ -4,6 +4,7 @@
 
 using Duende.IdentityServer.Models;
 using System.Collections.Generic;
+using Duende.IdentityServer;
 
 namespace Hive.Identity
 {
@@ -19,40 +20,12 @@ namespace Hive.Identity
         public static IEnumerable<ApiScope> ApiScopes =>
             new ApiScope[]
             {
-                new ApiScope("scope1"),
-                new ApiScope("scope2"),
-                new ApiScope("loosely-coupled"),
+                new ApiScope("gig-management"),
             };
 
         public static IEnumerable<Client> Clients =>
             new Client[]
             {
-                new Client
-                {
-                    ClientId = "m2m.monolith",
-                    ClientName = "Loosely Coupled Monolith",
-                    
-                    AllowedGrantTypes = GrantTypes.ClientCredentials,
-                    ClientSecrets = { new Secret("511536EF-F270-4058-80CA-1C89C192F69A".Sha256()) },
-                    
-                    AllowOfflineAccess = true,
-                    
-                    AllowedScopes = new List<string> { "loosely-coupled" }
-                },
-                // m2m client credentials flow client
-                new Client
-                {
-                    ClientId = "m2m.client",
-                    ClientName = "Client Credentials Client",
-
-                    AllowedGrantTypes = GrantTypes.ClientCredentials,
-                    ClientSecrets = {new Secret("511536EF-F270-4058-80CA-1C89C192F69A".Sha256())},
-                    
-                    AllowOfflineAccess = true,
-
-                    AllowedScopes = new List<string> { "loosely-coupled" }
-                },
-
                 // interactive client using code flow + pkce
                 new Client
                 {
@@ -62,13 +35,37 @@ namespace Hive.Identity
                     AllowedGrantTypes = GrantTypes.Code,
                     AccessTokenLifetime = 365 * 24 * 60,
 
-                    RedirectUris = {"https://localhost:44300/signin-oidc"},
+                    RedirectUris = { "https://localhost:44300/signin-oidc" },
                     FrontChannelLogoutUri = "https://localhost:44300/signout-oidc",
                     PostLogoutRedirectUris = {"https://localhost:44300/signout-callback-oidc"},
 
                     AllowOfflineAccess = true,
-                    AllowedScopes = {"openid", "profile", "loosely-coupled"},
+                    AllowedScopes = {"openid", "profile", "gig-management"},
                 },
+                
+                new Client
+                {
+                    ClientName = "Angular-Client",
+                    ClientId = "angular-client",
+                    AllowedGrantTypes = GrantTypes.Code,
+                    RedirectUris = new List<string>
+                    {
+                        "http://localhost:4200/signin-callback"
+                    },
+                    PostLogoutRedirectUris = { "http://localhost:4200/signout-callback" },
+                    RequirePkce = true,
+                    AllowAccessTokensViaBrowser = true,
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        "gig-management"
+                    },
+                    AllowedCorsOrigins = { "http://localhost:4200" },
+                    RequireClientSecret = false,
+                    RequireConsent = false,
+                    AccessTokenLifetime = 600
+                }
             };
     }
 }

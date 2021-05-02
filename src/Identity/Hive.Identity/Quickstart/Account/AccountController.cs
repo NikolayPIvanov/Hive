@@ -190,7 +190,7 @@ namespace IdentityServerHost.Quickstart.UI
             }
 
             // check if we need to trigger sign-out at an upstream identity provider
-            if (vm.TriggerExternalSignout)
+            if (vm.TriggerExternalSignout || vm.PostLogoutRedirectUri != null)
             {
                 // build a return URL so the upstream provider will redirect back
                 // to us after the user has logged out. this allows us to then
@@ -316,7 +316,7 @@ namespace IdentityServerHost.Quickstart.UI
                 PostLogoutRedirectUri = logout?.PostLogoutRedirectUri,
                 ClientName = string.IsNullOrEmpty(logout?.ClientName) ? logout?.ClientId : logout?.ClientName,
                 SignOutIframeUrl = logout?.SignOutIFrameUrl,
-                LogoutId = logoutId
+                LogoutId = logoutId,
             };
 
             if (User?.Identity.IsAuthenticated == true)

@@ -11,7 +11,7 @@
         <small>You are now logged out</small>
     </h1>
 
-    @if (Model.PostLogoutRedirectUri != null)
+    @if (@Model.PostLogoutRedirectUri != null)
     {
         <div>
             Click <a class="PostLogoutRedirectUri" href="@Model.PostLogoutRedirectUri">here</a> to return to the
