@@ -190,7 +190,7 @@ namespace IdentityServerHost.Quickstart.UI
             }
 
             // check if we need to trigger sign-out at an upstream identity provider
-            if (vm.TriggerExternalSignout || vm.PostLogoutRedirectUri != null)
+            if (vm.TriggerExternalSignout)
             {
                 // build a return URL so the upstream provider will redirect back
                 // to us after the user has logged out. this allows us to then
@@ -202,6 +202,12 @@ namespace IdentityServerHost.Quickstart.UI
             }
 
             return View("LoggedOut", vm);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> LoggedOut(LoggedOutViewModel model)
+        {
+            return View("LoggedOut", model);
         }
 
         [HttpGet]
