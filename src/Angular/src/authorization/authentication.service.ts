@@ -22,6 +22,7 @@ export class AuthenticationService {
       post_logout_redirect_uri: `${Constants.clientRoot}/signout-callback`
     }
   }
+  
   constructor() { 
     this._userManager = new UserManager(this.idpSettings);
   }
@@ -64,6 +65,4 @@ export class AuthenticationService {
   private checkUser = (user : User): boolean => {
     return !!user && !user.expired;
   }
-
-  
 }
