@@ -62,7 +62,11 @@ export class AuthenticationService {
     return this._userManager.signoutRedirectCallback();
   }
 
+  public getCurrentUser = () => this._user;
+
   private checkUser = (user : User): boolean => {
     return !!user && !user.expired;
   }
+
+
 }

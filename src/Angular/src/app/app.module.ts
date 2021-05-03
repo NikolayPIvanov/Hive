@@ -7,21 +7,27 @@ import { AppComponent } from './app.component';
 import { MenuComponent } from './menu/menu.component';
 import { HomeComponent } from './home/home.component';
 import { NotFoundComponent } from './not-found/not-found.component';
-import { SigninRedirectCallbackComponent } from './signin-redirect-callback/signin-redirect-callback.component';
-import { SignoutRedirectCallbackComponent } from './signout-redirect-callback/signout-redirect-callback.component';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { SharedModule } from './shared/shared.module';
+import { CoreModule } from './core/core.module';
+import { AuthorizationModule } from 'src/authorization/authorization.module';
+import { DashboardModule } from './dashboard/dashboard.module';
 
 @NgModule({
   declarations: [
     AppComponent,
     MenuComponent,
     HomeComponent,
-    NotFoundComponent,
-    SigninRedirectCallbackComponent,
-    SignoutRedirectCallbackComponent
+    NotFoundComponent
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    BrowserAnimationsModule,
+    CoreModule,
+    SharedModule,
+    DashboardModule,
+    AuthorizationModule,
+    AppRoutingModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
