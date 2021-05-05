@@ -1,1 +1,18 @@
-<p>explore-overview works!</p>
+<div class="container" fxLayout="column" fxLayoutGap="20px" fxFlexFill >
+    <mat-card fxLayout="row" class="example-card">
+        <mat-card class="child-1">
+            <mat-card-header>
+                <mat-card-title>Categories</mat-card-title>
+            </mat-card-header>
+            <mat-divider></mat-divider>
+            <mat-card-content>
+                <app-categories-tree></app-categories-tree>
+            </mat-card-content>
+        </mat-card>
+    </mat-card>
+
+    <mat-card fxLayout="row" class="example-card mr-3">
+        <app-gigs-list></app-gigs-list>
+    </mat-card>
+</div>
+
