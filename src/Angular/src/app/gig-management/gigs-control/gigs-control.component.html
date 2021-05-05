@@ -1,0 +1,39 @@
+<mat-card class="example-card-container">
+    <mat-card-header>
+      <mat-card-title>Gigs Control</mat-card-title>
+      <mat-card-subtitle>Modify Gigs</mat-card-subtitle>
+
+      <form class="example-form">
+        <mat-form-field class="example-full-width">
+          <mat-label>Gig Name</mat-label>
+          <input type="text" matInput [formControl]="myControl" [matAutocomplete]="auto">
+          <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
+            <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+              {{option.name}}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </form>
+    </mat-card-header>
+
+    <mat-card-content>
+        <div fxLayout="row" fxLayoutWrap fxLayoutGap="20px">
+            <mat-card fxFlex.lg="33" fxFlex.lt-lg="50" fxFlex.xs="100" *ngFor="let gig of gigs$ | async">
+                <mat-card-header>
+                    <mat-card-title>{{ gig.title }}</mat-card-title>
+                </mat-card-header>
+                <mat-card-content>
+                    <p>
+                        {{ gig.description }}
+                    </p>
+                </mat-card-content>
+            </mat-card>
+        </div>
+         
+    </mat-card-content>
+  </mat-card>
+
+
+
+
+

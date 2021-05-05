@@ -13,6 +13,7 @@ import { DashboardModule } from './dashboard/dashboard.module';
 import { API_BASE_URL } from './gigs-client';
 import { HomeModule } from './home/home.module';
 import { ExploreModule } from './explore/explore.module';
+import { GigManagementModule } from './gig-management/gig-management.module';
 
 @NgModule({
   declarations: [
@@ -30,6 +31,7 @@ import { ExploreModule } from './explore/explore.module';
     DashboardModule,
     AuthorizationModule,
     ExploreModule,
+    GigManagementModule,
 
     AppRoutingModule
   ],

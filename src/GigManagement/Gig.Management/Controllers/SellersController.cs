@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Hive.Common.Core.Security;
 using Hive.Gig.Application.Gigs.Queries;
 using Hive.Gig.Application.Sellers.Queries;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Gig.Management.Controllers
@@ -12,7 +13,9 @@ namespace Gig.Management.Controllers
     public class SellersController : ApiControllerBase
     {
         [HttpGet]
-        public async Task<IActionResult> GetUserSellerId(CancellationToken cancellationToken) 
+        [Consumes("application/json")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<string>> GetUserSellerId(CancellationToken cancellationToken) 
             => Ok(await Mediator.Send(new GetSellerIdQuery(), cancellationToken));
             
         [HttpGet("{id:int}/gigs")]

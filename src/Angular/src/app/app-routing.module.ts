@@ -19,6 +19,11 @@ const routes: Routes = [
     loadChildren: './explore/explore.module#ExploreModule',
     canActivate: [AuthGuard]
   },
+  {
+    path: 'gigs-management',
+    loadChildren: './gig-management/gig-management.module#GigManagementModule',
+    canActivate: [AuthGuard]
+  },
   
   { path: '', redirectTo: '/home', pathMatch: 'full' },
   { path: '**', redirectTo: '/404', pathMatch: 'full'}

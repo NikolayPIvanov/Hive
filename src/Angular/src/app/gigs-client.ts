@@ -1142,7 +1142,7 @@ export class GigsClient implements IGigsClient {
 }
 
 export interface ISellersClient {
-    getUserSellerId(): Observable<FileResponse>;
+    getUserSellerId(): Observable<string>;
     getMyGigs(id: string): Observable<GigDto[]>;
 }
 
@@ -1159,7 +1159,7 @@ export class SellersClient implements ISellersClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    getUserSellerId(): Observable<FileResponse> {
+    getUserSellerId(): Observable<string> {
         let url_ = this.baseUrl + "/api/Sellers";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -1167,7 +1167,7 @@ export class SellersClient implements ISellersClient {
             observe: "response",
             responseType: "blob",
             headers: new HttpHeaders({
-                "Accept": "application/octet-stream"
+                "Accept": "application/json"
             })
         };
 
@@ -1178,31 +1178,33 @@ export class SellersClient implements ISellersClient {
                 try {
                     return this.processGetUserSellerId(<any>response_);
                 } catch (e) {
-                    return <Observable<FileResponse>><any>_observableThrow(e);
+                    return <Observable<string>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<FileResponse>><any>_observableThrow(response_);
+                return <Observable<string>><any>_observableThrow(response_);
         }));
     }
 
-    protected processGetUserSellerId(response: HttpResponseBase): Observable<FileResponse> {
+    protected processGetUserSellerId(response: HttpResponseBase): Observable<string> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
             (<any>response).error instanceof Blob ? (<any>response).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            return _observableOf({ fileName: fileName, data: <any>responseBlob, status: status, headers: _headers });
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 !== undefined ? resultData200 : <any>null;
+            return _observableOf(result200);
+            }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<FileResponse>(<any>null);
+        return _observableOf<string>(<any>null);
     }
 
     getMyGigs(id: string): Observable<GigDto[]> {
