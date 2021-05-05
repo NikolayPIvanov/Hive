@@ -1,0 +1,12 @@
+<mat-card *ngIf="gig$ | async as gig">
+    <mat-card-header>
+        <mat-card-title>{{gig.title}}</mat-card-title>
+        <mat-card-subtitle>{{gig.id}}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+    
+    </mat-card-content>
+    <mat-card-actions>
+        <button mat-button>Ok</button>
+    </mat-card-actions>
+</mat-card>

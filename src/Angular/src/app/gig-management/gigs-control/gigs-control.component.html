@@ -17,17 +17,19 @@
     </mat-card-header>
 
     <mat-card-content>
-        <div fxLayout="row" fxLayoutWrap fxLayoutGap="20px">
-            <mat-card fxFlex.lg="33" fxFlex.lt-lg="50" fxFlex.xs="100" *ngFor="let gig of gigs$ | async">
-                <mat-card-header>
-                    <mat-card-title>{{ gig.title }}</mat-card-title>
-                </mat-card-header>
-                <mat-card-content>
-                    <p>
-                        {{ gig.description }}
-                    </p>
-                </mat-card-content>
+        <div fxLayout="row" fxLayoutWrap fxLayoutGap="20px"> 
+          <a *ngFor="let gig of gigs$ | async" [routerLink]="['/gigs-management', gig.id, 'details']" >
+            <mat-card  fxFlex.lg="33" fxFlex.lt-lg="50" fxFlex.xs="100" class="hover-card">
+              <mat-card-header>
+                  <mat-card-title>{{ gig.title }}</mat-card-title>
+              </mat-card-header>
+              <mat-card-content>
+                <p>
+                    {{ gig.description }}
+                </p>
+              </mat-card-content>
             </mat-card>
+          </a>
         </div>
          
     </mat-card-content>

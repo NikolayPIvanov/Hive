@@ -72,6 +72,13 @@
             </mat-icon>
             <p mat-line> Dashboard </p>
           </a>
+
+          <a *ngIf="isInRole('Seller')" mat-list-item [routerLink]="['/gigs-management']" routerLinkActive="active">
+            <mat-icon mat-list-icon>
+              dashboard
+            </mat-icon>
+            <p mat-line> Gigs Control </p>
+          </a>
   
           <mat-divider></mat-divider>
   

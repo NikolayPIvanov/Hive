@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { UserManager, User, UserManagerSettings } from 'oidc-client';
 import { Subject } from 'rxjs';
 import { Constants } from './authorization.constants';
+import jwt_decode from 'jwt-decode';
 
 @Injectable({
   providedIn: 'root'
@@ -30,6 +31,18 @@ export class AuthenticationService {
   public login = () => {
     return this._userManager.signinRedirect();
   }
+
+  public isInRole(role: string): boolean {
+    let user = this.getCurrentUser();
+    if (!user) return false;
+
+    let token = user.access_token;
+    let decodedToken: any = jwt_decode(token!);
+    
+    let isInRole = (decodedToken.role as string[]).indexOf(role) > -1;
+    return isInRole;
+  }
+  
 
   public loginChanged = this._loginChangedSubject.asObservable();
 

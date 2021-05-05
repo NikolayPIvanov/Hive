@@ -3,12 +3,14 @@ import { CommonModule } from '@angular/common';
 import { SharedModule } from '../shared/shared.module';
 import { GigManagementRoutingModule } from './gig-management-routing.module';
 import { GigsControlComponent } from './gigs-control/gigs-control.component';
+import { GigsDetailsComponent } from './gigs-details/gigs-details.component';
 
 
 
 @NgModule({
   declarations: [
-    GigsControlComponent
+    GigsControlComponent,
+    GigsDetailsComponent
   ],
   imports: [
     CommonModule,
