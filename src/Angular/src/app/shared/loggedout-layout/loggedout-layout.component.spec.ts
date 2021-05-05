@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { MenuComponent } from './menu.component';
+import { LoggedoutLayoutComponent } from './loggedout-layout.component';
 
-describe('MenuComponent', () => {
-  let component: MenuComponent;
-  let fixture: ComponentFixture<MenuComponent>;
+describe('LoggedoutLayoutComponent', () => {
+  let component: LoggedoutLayoutComponent;
+  let fixture: ComponentFixture<LoggedoutLayoutComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ MenuComponent ]
+      declarations: [ LoggedoutLayoutComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(MenuComponent);
+    fixture = TestBed.createComponent(LoggedoutLayoutComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

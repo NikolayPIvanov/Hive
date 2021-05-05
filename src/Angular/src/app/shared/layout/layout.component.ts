@@ -21,7 +21,7 @@ export class LayoutComponent implements OnInit, OnDestroy, AfterViewInit {
     private autoLogoutSubscription: Subscription | undefined;
 
     constructor(private changeDetectorRef: ChangeDetectorRef,
-        private media: MediaMatcher,
+      private media: MediaMatcher,
         //public spinnerService: SpinnerService,
         private authService: AuthenticationService,
         private authGuard: AuthGuard
@@ -29,6 +29,10 @@ export class LayoutComponent implements OnInit, OnDestroy, AfterViewInit {
         this.mobileQuery = this.media.matchMedia('(max-width: 1000px)');
         this._mobileQueryListener = () => changeDetectorRef.detectChanges();
         this.mobileQuery.addEventListener("change", this._mobileQueryListener);
+    }
+  
+    public logout = () => {
+      this.authService.logout();
     }
 
     ngOnInit(): void {

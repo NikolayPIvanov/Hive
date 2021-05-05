@@ -1,0 +1,16 @@
+<p>
+  <mat-toolbar  color="primary">
+    <span>Hive</span>
+    <div class="example-spacer"></div>
+    
+    <div>
+      <button *ngIf="!isLoggedIn" mat-raised-button>Sign Up</button>
+      <button *ngIf="!isLoggedIn" mat-raised-button (click)="login()">Sign In</button>
+      <button *ngIf="isLoggedIn" mat-raised-button [routerLink]="['/dashboard']">To Dashboard</button>
+
+    </div>
+    
+  </mat-toolbar>
+  <router-outlet></router-outlet>
+</p>
+  

@@ -4,9 +4,10 @@ import { RouterModule } from '@angular/router';
 import { CustomMaterialModule } from '../custom-material/custom-material.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FlexLayoutModule } from '@angular/flex-layout';
+import { LoggedoutLayoutComponent } from './loggedout-layout/loggedout-layout.component';
 
 @NgModule({
-  declarations: [LayoutComponent],
+  declarations: [LayoutComponent, LoggedoutLayoutComponent],
   imports: [
     RouterModule,
     CustomMaterialModule,

@@ -36,12 +36,12 @@
       </button>
       <mat-menu #userMenu="matMenu" xPosition="before" yPosition="above" [overlapTrigger]="false">
   
-        <a mat-menu-item [routerLink]="['/account/profile']">
+        <!-- <a mat-menu-item [routerLink]="['/account/profile']">
           <mat-icon>person</mat-icon>
           <span>Account</span>
-        </a>
+        </a> -->
   
-        <a mat-menu-item [routerLink]="['/auth/login']">
+        <a mat-menu-item (click)="logout()">
           <mat-icon>exit_to_app</mat-icon>
           <span>Log out</span>
         </a>
@@ -58,35 +58,19 @@
   
         <mat-nav-list>
           <h3 mat-subheader>Home</h3>
+
+          <a mat-list-item [routerLink]="['/explore']" routerLinkActive="active">
+            <mat-icon mat-list-icon>
+              shopping_bag
+            </mat-icon>
+            <p mat-line> Explore </p>
+          </a>
   
           <a mat-list-item [routerLink]="['/dashboard']" routerLinkActive="active">
             <mat-icon mat-list-icon>
               dashboard
             </mat-icon>
             <p mat-line> Dashboard </p>
-          </a>
-  
-          <a mat-list-item [routerLink]="['/customers']" routerLinkActive="active">
-            <mat-icon mat-list-icon>
-              business
-            </mat-icon>
-            <p mat-line> Customers </p>
-          </a>
-          <a mat-list-item [routerLink]="['/users']" routerLinkActive="active">
-            <mat-icon mat-list-icon>
-              people
-            </mat-icon>
-            <p mat-line> Users </p>
-          </a>
-  
-          <a mat-list-item [routerLink]="['/account/profile']">
-            <mat-icon mat-list-icon>person</mat-icon>
-            <p mat-line> Account </p>
-          </a>
-  
-          <a mat-list-item [routerLink]="['/auth/login']">
-            <mat-icon mat-list-icon>exit_to_app</mat-icon>
-            <p mat-line> Log out </p>
           </a>
   
           <mat-divider></mat-divider>

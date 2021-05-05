@@ -27,6 +27,8 @@ import {MatSortModule} from '@angular/material/sort';
 import {MatExpansionModule} from '@angular/material/expansion';
 import { MatNativeDateModule } from '@angular/material/core';
 import {MatMenuModule} from '@angular/material/menu';
+import {MatGridListModule} from '@angular/material/grid-list';
+import {MatTreeModule} from '@angular/material/tree';
 
 
 import { DragDropModule } from '@angular/cdk/drag-drop';
@@ -49,10 +51,11 @@ export const MY_FORMATS = {
   imports: [
     CommonModule,
     DragDropModule, MatSlideToggleModule,
+    MatGridListModule,
     MatSidenavModule, MatIconModule, MatToolbarModule, MatButtonModule,
     MatListModule, MatCardModule, MatProgressBarModule, MatInputModule,
     MatSnackBarModule, MatProgressSpinnerModule, MatDatepickerModule,
-    MatAutocompleteModule, MatTableModule,
+    MatAutocompleteModule, MatTableModule, MatTreeModule,
     MatNativeDateModule, MatDialogModule, MatTabsModule,
     MatTooltipModule, MatSelectModule, MatPaginatorModule, MatChipsModule,
     MatButtonToggleModule, MatSlideToggleModule, MatBadgeModule, MatCheckboxModule,
@@ -62,6 +65,7 @@ export const MY_FORMATS = {
   exports: [
     CommonModule,
     DragDropModule, MatSlideToggleModule,
+    MatGridListModule, MatTreeModule,
     MatSidenavModule, MatIconModule, MatToolbarModule, MatButtonModule,
     MatListModule, MatCardModule, MatProgressBarModule, MatInputModule,
     MatSnackBarModule, MatProgressSpinnerModule, MatDatepickerModule,
