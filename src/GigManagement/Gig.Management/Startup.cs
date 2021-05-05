@@ -65,6 +65,17 @@ namespace Gig.Management
                 options.AddPolicy("OnlyOwnerPolicy", policy =>
                     policy.AddRequirements(new OnlyOwnerAuthorizationRequirement(Array.Empty<string>())));
             });
+
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: "Angular",
+                    builder =>
+                    {
+                        builder.WithOrigins("http://localhost:4200")
+                                .AllowAnyHeader()
+                                .AllowAnyMethod();
+                    });
+            });
             
             services.AddScoped<ICurrentUserService, CurrentUserService>();
             services.AddScoped<IIdentityService, IdentityService>();
@@ -101,10 +112,12 @@ namespace Gig.Management
                 settings.DocumentPath = "/api/specification.json";
             });
 
-            
+
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors("Angular");
 
             app.UseAuthentication();
             app.UseAuthorization();

@@ -12,10 +12,11 @@ import { AuthGuard } from 'src/app/core/guards/auth.guard';
 export class LayoutComponent implements OnInit, OnDestroy, AfterViewInit {
 
   private _mobileQueryListener: () => void;
-    mobileQuery: MediaQueryList;
-    showSpinner: boolean | undefined;
-    userName: string | undefined;
-    isAdmin: boolean | undefined;
+  mobileQuery: MediaQueryList;
+  showSpinner: boolean | undefined;
+  userName: string | undefined;
+  isAdmin: boolean | undefined;
+  title: string = 'Hive'
 
     private autoLogoutSubscription: Subscription | undefined;
 

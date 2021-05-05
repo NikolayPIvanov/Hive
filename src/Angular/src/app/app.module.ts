@@ -12,6 +12,7 @@ import { SharedModule } from './shared/shared.module';
 import { CoreModule } from './core/core.module';
 import { AuthorizationModule } from 'src/authorization/authorization.module';
 import { DashboardModule } from './dashboard/dashboard.module';
+import { API_BASE_URL } from './gigs-client';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,14 @@ import { DashboardModule } from './dashboard/dashboard.module';
     AuthorizationModule,
     AppRoutingModule,
   ],
-  providers: [],
+  providers: [
+    {
+      provide: API_BASE_URL,
+      useFactory: () => {
+        return 'https://localhost:5057'
+      }
+    }
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }
