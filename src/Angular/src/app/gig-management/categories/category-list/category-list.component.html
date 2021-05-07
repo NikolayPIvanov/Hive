@@ -4,7 +4,7 @@
         <mat-card fxFlexFill fxLayoutAlign="space-around center" fxLayout="row wrap" class="control-card">
             <button mat-raised-button (click)="openDialog()">Create new</button>
             <button mat-raised-button (click)="clear()">Clear</button>
-            <app-category-search (categorySelectedEvent)="setCategories($event)"></app-category-search>
+            <app-category-search (filteredEmitter)="setCategories($event)"></app-category-search>
         </mat-card>
     </div>
     <div fxLayout="row wrap" fxFlex="85%" class="category-card">
@@ -16,7 +16,7 @@
             <mat-card-content>
             </mat-card-content>
             <mat-card-actions>
-                <button mat-raised-button color="primary" (click)="openUpdateDialog(item.id!)">Update</button>
+                <button mat-raised-button color="primary" (click)="openUpdateDialog(item)">Update</button>
                 <button mat-raised-button color="warn" (click)="deleteCategory(item.id!)">Delete</button>
             </mat-card-actions>
         </mat-card>

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, map, switchMap, tap } from 'rxjs/operators';
@@ -20,6 +20,11 @@ export class CategorySearchComponent implements OnInit {
   constructor(private categoriesApiClient: CategoriesClient) { }
 
   ngOnInit() {
+    if (this.initCategory) {
+      this.categories = [this.initCategory];
+      this.form.setValue(this.initCategory.title!)
+    }
+
     this.filteredOptions = this.form.valueChanges
       .pipe(
         filter(value => value != ''),
@@ -29,15 +34,11 @@ export class CategorySearchComponent implements OnInit {
         map(options => {
           if (this.categories) {
             this.csEmitter.emit(this.categories);
+            this.form.setValue(this.categories[0].title!)
           }
           return options;
         })
     );
-    
-    if (this.initCategory) {
-      this.categories = [this.initCategory];
-      this.form.setValue(this.initCategory.title)
-    }
   }
 
   private filter(value: string): Observable<string[]> {

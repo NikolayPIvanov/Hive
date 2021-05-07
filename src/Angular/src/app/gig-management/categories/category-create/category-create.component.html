@@ -7,7 +7,7 @@
           <input matInput placeholder="Title" formControlName="title">
         </mat-form-field>
         
-        <app-category-search (categorySelected)="storeCategoryId($event)"></app-category-search>
+        <app-category-search (filteredEmitter)="storeCategoryId($event)"></app-category-search>
     </form>
 </div>
 <div mat-dialog-actions>
