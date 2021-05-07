@@ -1,9 +1,8 @@
 import {FlatTreeControl} from '@angular/cdk/tree';
 import {Component} from '@angular/core';
-import { NumberValueAccessor } from '@angular/forms';
 import { PageEvent } from '@angular/material/paginator';
 import {MatTreeFlatDataSource, MatTreeFlattener} from '@angular/material/tree';
-import { CategoriesClient, CategoryDto, PaginatedListOfCategoryDto } from 'src/app/gigs-client';
+import { CategoriesClient, CategoryDto, PaginatedListOfCategoryDto } from 'src/app/clients/gigs-client';
 import { ExploreService } from '../explore.service';
 
 /**

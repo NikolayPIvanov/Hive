@@ -13,7 +13,7 @@ import { LoggedoutLayoutComponent } from './loggedout-layout/loggedout-layout.co
     CustomMaterialModule,
     FormsModule,
     ReactiveFormsModule,
-    FlexLayoutModule
+    FlexLayoutModule,
   ],
   exports: [
     CustomMaterialModule,

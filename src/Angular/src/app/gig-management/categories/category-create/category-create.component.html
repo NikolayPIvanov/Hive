@@ -1,0 +1,16 @@
+<h1 mat-dialog-title>Create Category</h1>
+<div mat-dialog-content>
+    <form [formGroup]="form" novalidate fxLayout="column">
+        <!-- Title -->
+        <mat-form-field class="example-full-width" appearance="fill">
+          <mat-label>Title</mat-label>
+          <input matInput placeholder="Title" formControlName="title">
+        </mat-form-field>
+        
+        <app-category-search (categorySelected)="storeCategoryId($event)"></app-category-search>
+    </form>
+</div>
+<div mat-dialog-actions>
+  <button mat-raised-button (click)="onNoClick()">Cancel</button>
+  <button mat-raised-button color="primary" [mat-dialog-close]="form" [disabled]="!form.valid" >Create</button>
+</div>

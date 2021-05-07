@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
 import { Observable } from 'rxjs';
-import { CategoriesClient, PaginatedListOfCategoryDto } from 'src/app/gigs-client';
+import { CategoriesClient } from 'src/app/clients/gigs-client';
 
 @Component({
   selector: 'app-dashboard-categories',
@@ -15,7 +15,7 @@ export class DashboardCategoriesComponent implements OnInit {
   pageSizeOptions = [5, 10, 25];
   showFirstLastButtons = true;
   
-  categories$!: Observable<PaginatedListOfCategoryDto>;
+  categories$!: Observable<any>;
 
   handlePageEvent(event: PageEvent) {
     this.length = event.length;

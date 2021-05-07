@@ -1,6 +1,5 @@
 import { Injectable } from '@angular/core';
 import { Router, CanActivate, CanActivateChild, CanLoad, CanDeactivate, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree, Route, UrlSegment } from '@angular/router';
-import * as moment from 'moment';
 import { Observable } from 'rxjs';
 import { AuthenticationService } from 'src/authorization/authentication.service';
 import { NotificationService } from '../services/notification.service';
@@ -46,7 +45,7 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanDeactivate<u
         if (isAuthenticated) {
           if (route.data.role && !this.authService.isInRole(route.data.role)) {
               this.router.navigate(['/home']);
-              this.notificationService.openSnackBar('Your session has expired.');
+              this.notificationService.openSnackBar('You do not have the required permissions.');
             return false;
           }
             

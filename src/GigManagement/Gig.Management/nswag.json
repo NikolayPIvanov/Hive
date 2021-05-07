@@ -110,7 +110,7 @@
       "enumNameGeneratorType": null,
       "serviceHost": null,
       "serviceSchemes": null,
-      "output": "../../Angular/src/app/gigs-client.ts"
+      "output": "../../Angular/src/app/clients/gigs-client.ts"
     }
   }
 }

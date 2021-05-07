@@ -29,6 +29,7 @@ import { MatNativeDateModule } from '@angular/material/core';
 import {MatMenuModule} from '@angular/material/menu';
 import {MatGridListModule} from '@angular/material/grid-list';
 import {MatTreeModule} from '@angular/material/tree';
+import {MatRadioModule} from '@angular/material/radio';
 
 
 import { DragDropModule } from '@angular/cdk/drag-drop';
@@ -60,7 +61,8 @@ export const MY_FORMATS = {
     MatTooltipModule, MatSelectModule, MatPaginatorModule, MatChipsModule,
     MatButtonToggleModule, MatSlideToggleModule, MatBadgeModule, MatCheckboxModule,
     MatExpansionModule, DragDropModule, MatSortModule,
-    MatFormFieldModule, MatMenuModule
+    MatFormFieldModule, MatMenuModule,
+    MatRadioModule
   ],
   exports: [
     CommonModule,
@@ -74,7 +76,7 @@ export const MY_FORMATS = {
     MatTooltipModule, MatSelectModule, MatPaginatorModule, MatChipsModule,
     MatButtonToggleModule, MatSlideToggleModule, MatBadgeModule, MatCheckboxModule,
     MatExpansionModule, DragDropModule, MatSortModule,
-    MatFormFieldModule, MatMenuModule
+    MatFormFieldModule, MatMenuModule, MatRadioModule
   ],
   providers: [
     {

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Hive.Common.Core.Models;
@@ -11,9 +12,11 @@ using Hive.Gig.Application.Reviews.Commands;
 using Hive.Gig.Application.Reviews.Queries;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 
 namespace Gig.Management.Controllers
 {
+    [Produces("application/json")]
     public class GigsController : ApiControllerBase
     {
         [HttpGet("{id:int}")]
@@ -31,6 +34,9 @@ namespace Gig.Management.Controllers
        
         [HttpPut("{id}")]
         [Authorize(Roles = "Seller")]
+        [SwaggerResponse(HttpStatusCode.NoContent, typeof(IActionResult), Description = "Successful operation")]
+        [SwaggerResponse(HttpStatusCode.BadRequest, typeof(ProblemDetails), Description = "Invalid ID supplied")]
+        [SwaggerResponse(HttpStatusCode.NotFound, typeof(ProblemDetails), Description = "Anomaly not found")]
         public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateGigCommand command, CancellationToken cancellationToken)
         { 
             if (id != command.Id)
@@ -43,6 +49,9 @@ namespace Gig.Management.Controllers
 
         [HttpDelete("{id}")]
         [Authorize(Roles = "Seller")]
+        [SwaggerResponse(HttpStatusCode.NoContent, typeof(IActionResult), Description = "Successful operation")]
+        [SwaggerResponse(HttpStatusCode.BadRequest, typeof(ProblemDetails), Description = "Invalid ID supplied")]
+        [SwaggerResponse(HttpStatusCode.NotFound, typeof(ProblemDetails), Description = "Anomaly not found")]
         // TODO: Cannot delete if there are orders in process or if there is a plan active
         public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
         {

@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { LoggedoutLayoutComponent } from './loggedout-layout.component';
+import { GigsCreateComponent } from './gigs-create.component';
 
-describe('LoggedoutLayoutComponent', () => {
-  let component: LoggedoutLayoutComponent;
-  let fixture: ComponentFixture<LoggedoutLayoutComponent>;
+describe('GigsCreateComponent', () => {
+  let component: GigsCreateComponent;
+  let fixture: ComponentFixture<GigsCreateComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ LoggedoutLayoutComponent ]
+      declarations: [ GigsCreateComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(LoggedoutLayoutComponent);
+    fixture = TestBed.createComponent(GigsCreateComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

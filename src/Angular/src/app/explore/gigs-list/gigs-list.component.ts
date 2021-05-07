@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
 import { Observable } from 'rxjs';
 import { filter, mergeMap } from 'rxjs/operators';
-import { CategoriesClient, GigsClient, PaginatedListOfGigDto } from 'src/app/gigs-client';
+import { CategoriesClient, GigsClient, PaginatedListOfGigDto } from 'src/app/clients/gigs-client';
 import { ExploreService } from '../explore.service';
 
 @Component({

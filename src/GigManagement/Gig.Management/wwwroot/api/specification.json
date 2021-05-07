@@ -26,11 +26,22 @@
         ],
         "responses": {
           "200": {
-            "description": "",
+            "description": "Successful operation",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/CategoryDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found operation",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
                 }
               }
             }
@@ -71,8 +82,22 @@
           "x-position": 2
         },
         "responses": {
-          "200": {
-            "description": "",
+          "204": {
+            "description": "Successful operation"
+          },
+          "404": {
+            "description": "Not Found operation",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request operation",
             "content": {
               "application/octet-stream": {
                 "schema": {
@@ -107,8 +132,11 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "",
+          "204": {
+            "description": "Successful operation"
+          },
+          "404": {
+            "description": "Not Found operation",
             "content": {
               "application/octet-stream": {
                 "schema": {
@@ -162,7 +190,7 @@
         ],
         "responses": {
           "200": {
-            "description": "",
+            "description": "Successful operation",
             "content": {
               "application/json": {
                 "schema": {
@@ -195,8 +223,19 @@
           "x-position": 1
         },
         "responses": {
-          "200": {
-            "description": "",
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request operation",
             "content": {
               "application/octet-stream": {
                 "schema": {
@@ -254,11 +293,56 @@
         ],
         "responses": {
           "200": {
-            "description": "",
+            "description": "Successful operation",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/PaginatedListOfGigDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found operation",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Categories/search": {
+      "get": {
+        "tags": [
+          "Categories"
+        ],
+        "operationId": "Categories_GetCategoriesByName",
+        "parameters": [
+          {
+            "name": "Name",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CategoryDto"
+                  }
                 }
               }
             }
@@ -331,13 +415,33 @@
           "x-position": 2
         },
         "responses": {
-          "200": {
-            "description": "",
+          "204": {
+            "description": "Successful operation",
             "content": {
               "application/octet-stream": {
                 "schema": {
                   "type": "string",
                   "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Anomaly not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -369,13 +473,33 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "",
+          "204": {
+            "description": "Successful operation",
             "content": {
               "application/octet-stream": {
                 "schema": {
                   "type": "string",
                   "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid ID supplied",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Anomaly not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProblemDetails"
                 }
               }
             }
@@ -1249,6 +1373,40 @@
           },
           "answer": {
             "type": "string"
+          }
+        }
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "additionalProperties": {
+          "nullable": true
+        },
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          },
+          "extensions": {
+            "type": "object",
+            "nullable": true,
+            "additionalProperties": {}
           }
         }
       },

@@ -28,7 +28,7 @@ namespace Hive.Common.Core.Behaviours
                 
                 var failures = validationResults
                     .SelectMany(r => r.Errors)
-                    //.Where(f => f != null)
+                    .Where(f => f != null)
                     .ToList();
 
                 if (failures.Count != 0)

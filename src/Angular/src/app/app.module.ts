@@ -10,7 +10,7 @@ import { SharedModule } from './shared/shared.module';
 import { CoreModule } from './core/core.module';
 import { AuthorizationModule } from 'src/authorization/authorization.module';
 import { DashboardModule } from './dashboard/dashboard.module';
-import { API_BASE_URL } from './gigs-client';
+import { API_BASE_URL } from './clients/gigs-client';
 import { HomeModule } from './home/home.module';
 import { ExploreModule } from './explore/explore.module';
 import { GigManagementModule } from './gig-management/gig-management.module';

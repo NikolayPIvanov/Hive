@@ -2,7 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, mergeAll, startWith } from 'rxjs/operators';
-import { GigDto, SellersClient } from 'src/app/gigs-client';
+import { GigDto, SellersClient } from 'src/app/clients/gigs-client';
+import { QuestionBase, TextboxQuestion } from '../questions-list/questions-list.component';
 
 export interface MyUser {
   name: string;
@@ -21,6 +22,16 @@ export class GigsControlComponent implements OnInit {
     {name: 'Shelley'},
     {name: 'Igor'}
   ];
+
+  qs: QuestionBase<string>[] = [
+    new TextboxQuestion({
+      key: 'firstName',
+      label: 'First name',
+      value: 'Bombasto',
+      required: true,
+      order: 1
+    })
+  ]
 
   filteredOptions!: Observable<MyUser[]>;
 

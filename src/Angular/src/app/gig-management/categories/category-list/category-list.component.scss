@@ -1,0 +1,11 @@
+.container {
+    height: 100%;
+}
+
+.category-card {
+    margin-top: 3rem;
+
+    mat-card {
+        max-height: 6rem    ;
+    }
+}
