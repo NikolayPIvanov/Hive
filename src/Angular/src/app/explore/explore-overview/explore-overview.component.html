@@ -1,18 +1,35 @@
-<div class="container" fxLayout="column" fxLayoutGap="20px" fxFlexFill >
-    <mat-card fxLayout="row" class="example-card">
-        <mat-card class="child-1">
-            <mat-card-header>
-                <mat-card-title>Categories</mat-card-title>
-            </mat-card-header>
-            <mat-divider></mat-divider>
-            <mat-card-content>
-                <app-categories-tree></app-categories-tree>
-            </mat-card-content>
-        </mat-card>
-    </mat-card>
-
-    <mat-card fxLayout="row" class="example-card mr-3">
-        <app-gigs-list></app-gigs-list>
-    </mat-card>
+<div fxLayout="column" fxLayoutAlign="start start" class="container">
+    <mat-toolbar fxFlex="15">
+        <button *ngFor="let category of (categories$ | async)" mat-button [matMenuTriggerFor]="menu">
+            <span>{{category.title}}</span>
+            <mat-menu #menu="matMenu">
+                <button mat-menu-item *ngFor="let subCategory of category!.subCategories">{{subCategory.title}}</button>
+            </mat-menu>
+        </button>
+    </mat-toolbar>
+    
+    <mat-card fxLayout="column" fxFlexFill>
+        <h2>Gigs</h2>
+        <div fxLayout="row wrap" fxLayoutGap="30px"  fxLayoutAlign="start start">
+            <mat-card *ngFor="let item of numbers" class="gig-card">
+                <img mat-card-image src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu">
+                <mat-card-content>
+                    <span>Test</span>
+                </mat-card-content>
+                <mat-card-actions>
+                    <button mat-button>LIKE</button>
+                    <button mat-button>SHARE</button>
+                </mat-card-actions>
+            </mat-card>
+        </div>
+        <div fxFlexAlign="end">
+            <mat-paginator [length]="500"
+                [pageSize]="1"
+                [pageSizeOptions]="[5]">
+            </mat-paginator>
+        </div>
+        
+    </mat-card>    
+    
+    
 </div>
-

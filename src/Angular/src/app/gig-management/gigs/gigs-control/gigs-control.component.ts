@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
-import { map, mergeAll, startWith } from 'rxjs/operators';
+import { map, mergeAll, startWith, switchMap } from 'rxjs/operators';
 import { GigDto, SellersClient } from 'src/app/clients/gigs-client';
-import { QuestionBase, TextboxQuestion } from '../questions-list/questions-list.component';
+import { QuestionBase, TextboxQuestion } from '../../questions-list/questions-list.component';
 
 export interface MyUser {
   name: string;
@@ -39,7 +39,7 @@ export class GigsControlComponent implements OnInit {
 
   ngOnInit(): void {
     this.gigs$ = this.sellersApiClient.getUserSellerId()
-      .pipe(map(sellerId => this.sellersApiClient.getMyGigs(sellerId)), mergeAll());
+      .pipe(switchMap((sellerId: string) => this.sellersApiClient.getMyGigs(sellerId)));
     
     this.filteredOptions = this.myControl.valueChanges
       .pipe(

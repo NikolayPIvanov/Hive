@@ -1,28 +1,34 @@
 <div *ngIf="paginatedList$; let list" fxLayout="column" class="container">
-    <h1 fxFlex="5%" fxLayoutAlign="space-around center">Manage Categories</h1>
-    <div fxLayout="row wrap" fxFlex="10%">
-        <mat-card fxFlexFill fxLayoutAlign="space-around center" fxLayout="row wrap" class="control-card">
-            <button mat-raised-button (click)="openDialog()">Create new</button>
-            <button mat-raised-button (click)="clear()">Clear</button>
-            <app-category-search (filteredEmitter)="setCategories($event)"></app-category-search>
-        </mat-card>
+    <mat-card fxLayout="column" fxLayoutAlign="center center" >
+        <h1 fxLayoutGap="3px">Manage Categories</h1>
+        <div fxLayout="row" >
+            <button mat-raised-button (click)="openDialog()" color="accent" class="control-btn">Create new</button>
+            <button mat-raised-button (click)="clear()" fxFlexOffset="20%" class="control-btn">Clear</button>
+            <app-category-search (filteredEmitter)="setCategories($event)" class="search-input"></app-category-search>
+        </div>
+    </mat-card>
+
+    <div fxFlex="90%" fxLayout="row" class="categories-list" >
+        <div fxFlexOffset="5%"></div>
+        <div *ngFor="let item of list.items" fxLayout="row" fxFlex="15%" class="category-card">
+            <mat-card fxLayoutGap="20px" fxLayout="column">
+                <mat-card-header fxLayoutAlign="center center">
+                    <mat-card-title>{{item.title}}</mat-card-title>
+                    <mat-card-subtitle>{{item.parentId}}</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content>
+                </mat-card-content>
+                <mat-card-actions>
+                    <button mat-raised-button color="primary" (click)="openUpdateDialog(item)">Update</button>
+                    <button mat-raised-button color="warn" (click)="deleteCategory(item.id!)">Delete</button>
+                </mat-card-actions>
+            </mat-card>
+        </div>
+        
+        <div fxFlexOffset="5%"></div>
     </div>
-    <div fxLayout="row wrap" fxFlex="85%" class="category-card">
-        <mat-card *ngFor="let item of list.items" fxFlexOffset="3" >
-            <mat-card-header  fxLayoutAlign="space-around center">
-                <mat-card-title>{{item.title}}</mat-card-title>
-                <mat-card-subtitle>{{item.parentId}}</mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-content>
-            </mat-card-content>
-            <mat-card-actions>
-                <button mat-raised-button color="primary" (click)="openUpdateDialog(item)">Update</button>
-                <button mat-raised-button color="warn" (click)="deleteCategory(item.id!)">Delete</button>
-            </mat-card-actions>
-        </mat-card>
-    </div>
-    <div fxLayout="row">
-        <mat-paginator fxFill 
+    <div fxLayout="row" >
+        <mat-paginator fxFill
             [length]="500"
             [pageSize]="pageSize"
             [pageSizeOptions]="[5, 10, 25, 100]"

@@ -1,7 +1,30 @@
 .container {
-    margin: 1rem 3rem;
+    height: 100%;
 }
 
-.display {
+.gigs-list {
     height: 100%;
+}
+
+.gig-card {
+    max-height: 20rem;
+    width: 13rem;
+    
+}
+  
+.example-header-image {
+    background-image: url('https://material.angular.io/assets/img/examples/shiba1.jpg');
+    background-size: cover;
+}
+.gig-card {
+    margin-bottom: 1rem;
+}
+
+.container {
+    height: 90%;
+    margin: 1rem;
+}
+
+.row {
+  margin: 3rem;
 }

@@ -59,7 +59,7 @@
         <mat-nav-list>
           <h3 mat-subheader>Home</h3>
 
-          <a mat-list-item [routerLink]="['/explore']" routerLinkActive="active">
+          <a mat-list-item [routerLink]="['/explore/overview']" routerLinkActive="active">
             <mat-icon mat-list-icon>
               shopping_bag
             </mat-icon>
@@ -73,11 +73,18 @@
             <p mat-line> Dashboard </p>
           </a>
 
-          <a *ngIf="isInRole('Seller')" mat-list-item [routerLink]="['/gigs-management']" routerLinkActive="active">
+          <a *ngIf="isInRole('Seller')" mat-list-item [routerLink]="['/gigs-management/gigs']" routerLinkActive="active">
             <mat-icon mat-list-icon>
               dashboard
             </mat-icon>
             <p mat-line> Gigs Control </p>
+          </a>
+
+          <a *ngIf="isInRole('Admin')" mat-list-item [routerLink]="['/gigs-management/categories/list']" routerLinkActive="active">
+            <mat-icon mat-list-icon>
+              dashboard
+            </mat-icon>
+            <p mat-line> Categories Control </p>
           </a>
   
           <mat-divider></mat-divider>

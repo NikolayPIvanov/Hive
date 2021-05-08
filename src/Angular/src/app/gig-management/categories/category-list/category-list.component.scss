@@ -2,10 +2,19 @@
     height: 100%;
 }
 
-.category-card {
-    margin-top: 3rem;
+.categories-list {
+    height: 100%;
+    margin-top: 1rem;
+}
 
-    mat-card {
-        max-height: 6rem    ;
-    }
+.control-btn {
+    width: 10rem;
+}
+
+.search-input {
+    margin-left: 5rem;
+}
+
+.category-card {
+    height: 10rem;
 }

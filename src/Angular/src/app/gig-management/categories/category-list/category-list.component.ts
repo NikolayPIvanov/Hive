@@ -41,7 +41,6 @@ export class CategoryListComponent implements OnInit, OnDestroy {
   }
 
   openUpdateDialog(entity: CategoryDto | undefined): void {
-    debugger;
     const dialogRef = this.dialog.open(CategoryUpdateComponent, {
       width: '250px',
       data: {entity: entity}
@@ -82,6 +81,7 @@ export class CategoryListComponent implements OnInit, OnDestroy {
   }
 
   setCategories($event: CategoryDto[]) {
+    debugger;
     this.paginatedList$.items = $event
   }
 
