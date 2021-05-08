@@ -1,3 +1,22 @@
-mat-card {
-    background: whitesmoke;
+.container {
+    background: rgb(103,58,183);
+    background: linear-gradient(180deg, rgba(103,58,183,1) 0%, rgba(103,58,183,1) 75%, rgba(255,255,255,0) 100%);
+}
+
+.container-card {
+    background: none;
+    box-shadow: none;
+}
+.main-page {
+    max-width: fit-content;
+}
+
+.info-card {
+    width: 30rem;
+    height: 10rem;
+}
+
+.explore {
+    width: 10rem;
+    height: 5rem;
 }

@@ -1,10 +1,20 @@
-<mat-grid-list cols="2" rowHeight="2:1">
-    <mat-grid-tile [colspan]="2" [rowspan]="1" margin="0">
-        <mat-card>
-            <img mat-card-image src="/assets/icons/logo.png" alt="image">
-        </mat-card>
-    </mat-grid-tile>
-    <mat-grid-tile [colspan]="2">
-        
-    </mat-grid-tile>
-</mat-grid-list>
+<div fxLayout="column">
+    <div fxFlex="60%">
+        <div fxLayout="row" fxLayoutAlign="center center" class="container">
+            <mat-card class="container-card"> 
+                <img mat-card-image src="/assets/icons/main-page.png" alt="image" >
+            </mat-card>
+        </div>
+    </div>
+    
+    <mat-divider fxFlexOffset="1%"></mat-divider>
+
+    <div fxFlex="10%" fxFlexOffset="5%">
+        <div fxLayout="column" fxLayoutAlign="center center">
+            <mat-card> 
+                <h2 class="mat-h2">With Hive you can find the best freelancers for your buisness.</h2>
+            </mat-card>
+            <button fxFlexOffset="2%" mat-raised-button color="primary" class="mat-subheading-1" [routerLink]="['/dashboard']">Explore</button>
+        </div>
+    </div>
+</div>
