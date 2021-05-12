@@ -5,22 +5,24 @@ using Hive.Identity.Contracts;
 using Hive.Identity.Models;
 using Hive.Identity.Services;
 using Microsoft.AspNetCore.Identity;
+using StackExchange.Redis.Extensions.Core.Abstractions;
 
 namespace Hive.Identity.Data
 {
     public static class ApplicationDbContextSeed
     {
-        public static async Task SeedDefaultUserAsync(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, 
-                                                      ApplicationDbContext context, IIdentityDispatcher dispatcher)
+        public static async Task SeedDefaultUserAsync(UserManager<ApplicationUser> userManager, 
+                                                      RoleManager<IdentityRole> roleManager,
+                                                      ApplicationDbContext context, IIdentityDispatcher dispatcher, IRedisCacheClient cacheClient)
         {
-            await SeedOfType(new [] {IdentityType.Admin, IdentityType.Seller, IdentityType.Investor}, "admin@gmail.com", userManager, roleManager, context, dispatcher);
-            await SeedOfType(new [] {IdentityType.Buyer}, "buyer@gmail.com", userManager, roleManager, context, dispatcher);
-            await SeedOfType(new [] {IdentityType.Seller}, "seller@gmail.com", userManager, roleManager, context, dispatcher);
-            await SeedOfType(new [] {IdentityType.Investor}, "investor@gmail.com", userManager, roleManager, context, dispatcher);
+            await SeedOfType(new [] {IdentityType.Admin, IdentityType.Seller, IdentityType.Investor}, "admin@gmail.com", userManager, roleManager, context, dispatcher, cacheClient);
+            await SeedOfType(new [] {IdentityType.Buyer}, "buyer@gmail.com", userManager, roleManager, context, dispatcher,cacheClient);
+            await SeedOfType(new [] {IdentityType.Seller}, "seller@gmail.com", userManager, roleManager, context, dispatcher,cacheClient);
+            await SeedOfType(new [] {IdentityType.Investor}, "investor@gmail.com", userManager, roleManager, context, dispatcher,cacheClient);
         }
         
         private static async Task SeedOfType(IEnumerable<IdentityType> types, string email, UserManager<ApplicationUser> userManager,
-            RoleManager<IdentityRole> roleManager, ApplicationDbContext context, IIdentityDispatcher dispatcher)
+            RoleManager<IdentityRole> roleManager, ApplicationDbContext context, IIdentityDispatcher dispatcher, IRedisCacheClient cacheClient)
         {
             const string defaultPassword = "YourStr0ngPassword!";
 
@@ -41,6 +43,12 @@ namespace Hive.Identity.Data
                 await userManager.CreateAsync(user, defaultPassword);
                 await userManager.AddToRolesAsync(user, userRoles);
                 
+                var key = $"username:{user.Id}";
+                var r = await cacheClient.GetDbFromConfiguration().AddAsync(key, user.UserName);
+                if (!r)
+                {
+                        
+                }
                 await dispatcher.PublishUserCreatedEventAsync(user.Id);
 
                 foreach (var type in userTypes)

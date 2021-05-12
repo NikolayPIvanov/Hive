@@ -3,6 +3,7 @@
 
 using System;
 using System.Reflection;
+using BuildingBlocks.Core.Caching;
 using BuildingBlocks.Core.Email;
 using BuildingBlocks.Core.MessageBus;
 using DotNetCore.CAP;
@@ -21,6 +22,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using StackExchange.Redis.Extensions.Core.Abstractions;
 
 namespace Hive.Identity
 {
@@ -48,6 +50,7 @@ namespace Hive.Identity
                     o => o.MigrationsAssembly(assembly)));
             
             services.AddSendGrid(Configuration);
+            services.AddRedis(Configuration);
             services.AddRabbitMqBroker<ApplicationDbContext>(false, connectionString, Configuration);
             services.AddOfType<ICapSubscribe>(new []{ Assembly.GetExecutingAssembly() });
             services.AddScoped<IIdentityDispatcher, IdentityDispatcher>();
@@ -126,8 +129,9 @@ namespace Hive.Identity
             var roleManager = serviceScope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
             var dispatcher = serviceScope.ServiceProvider.GetRequiredService<IIdentityDispatcher>();
             var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            var cache = serviceScope.ServiceProvider.GetRequiredService<IRedisCacheClient>();
 
-            ApplicationDbContextSeed.SeedDefaultUserAsync(userManager, roleManager, context, dispatcher).Wait();
+            ApplicationDbContextSeed.SeedDefaultUserAsync(userManager, roleManager, context, dispatcher, cache).Wait();
         }
     }
 }

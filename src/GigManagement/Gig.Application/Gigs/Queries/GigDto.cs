@@ -7,6 +7,16 @@ namespace Hive.Gig.Application.Gigs.Queries
 
     public record GigScopeDto(int Id, string Description);
 
+    public class GigOverviewDto
+    {
+        public int Id { get; set; }
+        public string PictureUri { get; set; }
+        public decimal StartsAt { get; set; }
+        public string Title { get; set; }
+        public string SellerUserId { get; set; }
+        public int? PlanId { get; set; }
+    }
+
     public class GigDto
     {
         public int Id { get; set; }

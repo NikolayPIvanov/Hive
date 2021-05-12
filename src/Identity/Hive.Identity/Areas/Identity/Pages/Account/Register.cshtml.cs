@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
+using StackExchange.Redis.Extensions.Core.Abstractions;
 
 namespace Hive.Identity.Areas.Identity.Pages.Account
 {
@@ -24,6 +25,7 @@ namespace Hive.Identity.Areas.Identity.Pages.Account
     public class RegisterModel : PageModel
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IRedisCacheClient _cacheClient;
         private readonly IIdentityDispatcher _dispatcher;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
@@ -33,12 +35,14 @@ namespace Hive.Identity.Areas.Identity.Pages.Account
             IIdentityDispatcher dispatcher,
             UserManager<ApplicationUser> userManager,
             SignInManager<ApplicationUser> signInManager,
+            IRedisCacheClient cacheClient,
             ILogger<RegisterModel> logger,
             IEmailSender emailSender)
         {
             _dispatcher = dispatcher;
             _userManager = userManager;
             _signInManager = signInManager;
+            _cacheClient = cacheClient;
             _logger = logger;
             _emailSender = emailSender;
         }
@@ -103,6 +107,12 @@ namespace Hive.Identity.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("User created a new account with password.");
 
+                    var key = $"username:{user.Id}";
+                    var r = await _cacheClient.GetDbFromConfiguration().AddAsync(key, user.UserName);
+                    if (!r)
+                    {
+                        
+                    }
                     await _dispatcher.PublishUserCreatedEventAsync(user.Id);
                     await _dispatcher.PublishUserTypeEventAsync(user.Id, Input.AccountType);
                     _logger.LogInformation("User created a new account with password.");

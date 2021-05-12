@@ -13,9 +13,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Hive.Gig.Application.Gigs.Queries
 {
-    public record GetCategoryGigsQuery(int CategoryId, int PageNumber = 1, int PageSize = 10) : IRequest<PaginatedList<GigDto>>;
+    public record GetCategoryGigsQuery(int CategoryId, int PageNumber = 1, int PageSize = 10) : IRequest<PaginatedList<GigOverviewDto>>;
     
-    public class GetCategoryGigsQueryHandler : IRequestHandler<GetCategoryGigsQuery, PaginatedList<GigDto>>
+    public class GetCategoryGigsQueryHandler : IRequestHandler<GetCategoryGigsQuery, PaginatedList<GigOverviewDto>>
     {
         private readonly IGigManagementDbContext _dbContext;
         private readonly IMapper _mapper;
@@ -28,16 +28,19 @@ namespace Hive.Gig.Application.Gigs.Queries
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
-        public async Task<PaginatedList<GigDto>> Handle(GetCategoryGigsQuery request, CancellationToken cancellationToken)
+        public async Task<PaginatedList<GigOverviewDto>> Handle(GetCategoryGigsQuery request, CancellationToken cancellationToken)
         {
             _logger.LogInformation("Fetching gigs for category id: {Id}", request.CategoryId);
             
-            return await _dbContext.Gigs
-                .Include(g => g.Category)
+            var list = await _dbContext.Gigs
+                .Include(g => g.Packages)
+                .Include(g => g.Seller)
                 .Where(g => g.CategoryId == request.CategoryId && !g.IsDraft)
                 .AsNoTracking()
-                .ProjectTo<GigDto>(_mapper.ConfigurationProvider) 
+                .ProjectTo<GigOverviewDto>(_mapper.ConfigurationProvider) 
                 .PaginatedListAsync(request.PageNumber, request.PageSize);
+
+            return list;
         }
     }
 }

@@ -32,9 +32,9 @@ namespace Gig.Management.Controllers
 
         [HttpGet("{id:int}/gigs")]
         [AllowAnonymous]
-        [SwaggerResponse(HttpStatusCode.OK, typeof(PaginatedList<GigDto>), Description = "Successful operation")]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(PaginatedList<GigOverviewDto>), Description = "Successful operation")]
         [SwaggerResponse(HttpStatusCode.NotFound, typeof(NotFoundObjectResult), Description = "Not Found operation")]
-        public async Task<ActionResult<PaginatedList<GigDto>>> GetCategoryGigs([FromRoute] int id,
+        public async Task<ActionResult<PaginatedList<GigOverviewDto>>> GetCategoryGigs([FromRoute] int id,
             [FromQuery] int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default)
             => Ok(await Mediator.Send(new GetCategoryGigsQuery(id, pageNumber, pageSize), cancellationToken));
         

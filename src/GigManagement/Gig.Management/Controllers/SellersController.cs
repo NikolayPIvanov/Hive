@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Hive.Common.Core.Models;
 using Hive.Common.Core.Security;
 using Hive.Gig.Application.Gigs.Queries;
 using Hive.Gig.Application.Sellers.Queries;
@@ -19,7 +20,7 @@ namespace Gig.Management.Controllers
             => Ok(await Mediator.Send(new GetSellerIdQuery(), cancellationToken));
             
         [HttpGet("{id:int}/gigs")]
-        public async Task<ActionResult<IEnumerable<GigDto>>> GetMyGigs(CancellationToken cancellationToken) 
-            => Ok(await Mediator.Send(new GetMyGigsQuery(), cancellationToken));
+        public async Task<ActionResult<PaginatedList<GigOverviewDto>>> GetMyGigs([FromQuery] GetMyGigsQuery request, CancellationToken cancellationToken) 
+            => Ok(await Mediator.Send(request, cancellationToken));
     }
 }

@@ -1,4 +1,5 @@
-﻿using BuildingBlocks.Core.Email;
+﻿using BuildingBlocks.Core.Caching;
+using BuildingBlocks.Core.Email;
 using BuildingBlocks.Core.MessageBus;
 using Hive.Common.Core.Interfaces;
 using Hive.Common.Core.Services;
@@ -30,6 +31,7 @@ namespace Hive.Gig.Infrastructure
             }
 
             services.AddSendGrid(configuration);
+            services.AddRedis(configuration);
             services.AddRabbitMqBroker<GigManagementDbContext>(useInMemory, sqlServerConnectionString, configuration);
             services.AddScoped<IGigManagementDbContext>(provider => provider.GetService<GigManagementDbContext>());
             

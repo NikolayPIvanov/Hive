@@ -1,42 +1,42 @@
-<mat-card class="example-card-container">
-    <mat-card-header>
-      <mat-card-title>Gigs Control</mat-card-title>
-      <mat-card-subtitle>Modify Gigs</mat-card-subtitle>
+<div fxLayout="column" fxLayoutAlign="start start" class="container">
+  <div fxFlex="15%" fxFlexFill>
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Create and Update your gigs</mat-card-title>
+        <mat-card-subtitle>Panel</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+       <mat-divider>
+       </mat-divider>
+      </mat-card-content>
+      <mat-card-actions fxLayout="row" fxLayoutAlign="space-around start">
+        <button mat-raised-button color="primary">Create a new gig</button>
+        <section fxLayout="row" fxLayoutAlign="center center" fxLayoutGap="20px">
+          <span>Find a gig:</span>
+          <app-gig-name-search (filteredEmitter)="onFilteredEvents($event)"></app-gig-name-search>
+        </section>
+      </mat-card-actions>
+    </mat-card>
+  </div>
 
-      <form class="example-form">
-        <mat-form-field class="example-full-width">
-          <mat-label>Gig Name</mat-label>
-          <input type="text" matInput [formControl]="myControl" [matAutocomplete]="auto">
-          <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn">
-            <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
-              {{option.name}}
-            </mat-option>
-          </mat-autocomplete>
-        </mat-form-field>
-      </form>
+  <div *ngIf="paginatedList$ | async; let items" class="gigs-list" fxFlexFill> 
+    <mat-card>
+      <div fxLayout="row wrap" fxLayoutGap="3rem" fxLayoutAlign="start start">
+        <app-gig-card-overview *ngFor="let item of items.items" [gig]="item"></app-gig-card-overview>
+      </div>
+      <div fxFlexAlign="end">
+        <mat-paginator
+            (page)="handlePageEvent($event)"
+            [length]="500"
+            [pageSize]="pageSize"
+            [showFirstLastButtons]="true"
+            [pageSizeOptions]="pageSizeOptions"
+            [pageIndex]="pageIndex">
+        </mat-paginator>
+      </div>
+    </mat-card>
+  </div>
 
-      <a [routerLink]="['/gigs-management', 'create']" routerLinkActive="router-link-active" >
-          <button mat-button>text</button>
-      </a>
-    </mat-card-header>
-
-    <mat-card-content>
-        <div fxLayout="row" fxLayoutWrap fxLayoutGap="20px"> 
-          <a *ngFor="let gig of gigs$ | async" [routerLink]="['/gigs-management', gig.id, 'details']" >
-            <mat-card  fxFlex.lg="33" fxFlex.lt-lg="50" fxFlex.xs="100" class="hover-card">
-              <mat-card-header>
-                  <mat-card-title>{{ gig.title }}</mat-card-title>
-              </mat-card-header>
-              <mat-card-content>
-                <p>
-                    {{ gig.description }}
-                </p>
-              </mat-card-content>
-            </mat-card>
-          </a>
-        </div>
-         
-    </mat-card-content>
-  </mat-card>
-
-
+  
+  
+</div>

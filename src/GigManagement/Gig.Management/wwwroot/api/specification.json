@@ -297,7 +297,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/PaginatedListOfGigDto"
+                  "$ref": "#/components/schemas/PaginatedListOfGigOverviewDto"
                 }
               }
             }
@@ -370,11 +370,22 @@
         ],
         "responses": {
           "200": {
-            "description": "",
+            "description": "Successful operation",
             "content": {
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/GigDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Anomaly not found",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
                 }
               }
             }
@@ -512,6 +523,74 @@
             ]
           }
         ]
+      }
+    },
+    "/api/Gigs/random": {
+      "get": {
+        "tags": [
+          "Gigs"
+        ],
+        "operationId": "Gigs_GetRandom",
+        "parameters": [
+          {
+            "name": "Quantity",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GigDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Gigs/search": {
+      "get": {
+        "tags": [
+          "Gigs"
+        ],
+        "operationId": "Gigs_GetByName",
+        "parameters": [
+          {
+            "name": "Value",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GigOverviewDto"
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     "/api/Gigs": {
@@ -1083,13 +1162,31 @@
         "operationId": "Sellers_GetMyGigs",
         "parameters": [
           {
+            "name": "PageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "PageNumber",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 2
+          },
+          {
             "name": "id",
             "in": "path",
             "required": true,
             "schema": {
               "type": "string"
             },
-            "x-position": 1
+            "x-position": 3
           }
         ],
         "responses": {
@@ -1098,10 +1195,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/GigDto"
-                  }
+                  "$ref": "#/components/schemas/PaginatedListOfGigOverviewDto"
                 }
               }
             }
@@ -1167,7 +1261,7 @@
           }
         }
       },
-      "PaginatedListOfGigDto": {
+      "PaginatedListOfGigOverviewDto": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
@@ -1175,7 +1269,7 @@
             "type": "array",
             "nullable": true,
             "items": {
-              "$ref": "#/components/schemas/GigDto"
+              "$ref": "#/components/schemas/GigOverviewDto"
             }
           },
           "pageIndex": {
@@ -1195,6 +1289,66 @@
           },
           "hasNextPage": {
             "type": "boolean"
+          }
+        }
+      },
+      "GigOverviewDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "pictureUri": {
+            "type": "string"
+          },
+          "startsAt": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "title": {
+            "type": "string"
+          },
+          "sellerUserId": {
+            "type": "string"
+          },
+          "planId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        }
+      },
+      "CreateCategoryCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "parentId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        }
+      },
+      "UpdateCategoryCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "title": {
+            "type": "string"
+          },
+          "parentId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
           }
         }
       },
@@ -1296,38 +1450,6 @@
           },
           "answer": {
             "type": "string"
-          }
-        }
-      },
-      "CreateCategoryCommand": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "title": {
-            "type": "string"
-          },
-          "parentId": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          }
-        }
-      },
-      "UpdateCategoryCommand": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "title": {
-            "type": "string"
-          },
-          "parentId": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
           }
         }
       },

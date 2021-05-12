@@ -20,8 +20,20 @@ namespace Gig.Management.Controllers
     public class GigsController : ApiControllerBase
     {
         [HttpGet("{id:int}")]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(GigDto), Description = "Successful operation")]
+        [SwaggerResponse(HttpStatusCode.NotFound, typeof(NotFoundObjectResult), Description = "Anomaly not found")]
         public async Task<ActionResult<GigDto>> GetGigById([FromRoute] int id, CancellationToken cancellationToken) 
             => Ok(await Mediator.Send(new GetGigQuery(id), cancellationToken));
+        
+        [HttpGet("random")]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(ICollection<GigDto>), Description = "Successful operation")]
+        public async Task<ActionResult<ICollection<GigDto>>> GetRandom([FromQuery] GetRandomGigsQuery request, CancellationToken cancellationToken) 
+            => Ok(await Mediator.Send(request, cancellationToken));
+            
+        [HttpGet("search")]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(ICollection<GigOverviewDto>), Description = "Successful operation")]
+        public async Task<ActionResult<ICollection<GigOverviewDto>>> GetByName([FromQuery] GetGigByNameQuery request, CancellationToken cancellationToken) 
+            => Ok(await Mediator.Send(request, cancellationToken));
         
         [HttpPost]
         [Authorize(Roles = "Seller")]

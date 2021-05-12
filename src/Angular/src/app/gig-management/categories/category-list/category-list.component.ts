@@ -81,7 +81,6 @@ export class CategoryListComponent implements OnInit, OnDestroy {
   }
 
   setCategories($event: CategoryDto[]) {
-    debugger;
     this.paginatedList$.items = $event
   }
 

@@ -1,19 +1,22 @@
+<div fxLayout="column" fxLayoutAlign="start,center,end,space-around,space-between| |start,center,end,stretch|" fxLayoutGap="gappx">
+  
+</div>
+
+
+<!-- 
 <mat-card>
   <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate fxLayout="column">
         
-    <!-- Name -->
     <mat-form-field class="example-full-width" appearance="fill">
       <mat-label>Title</mat-label>
       <input matInput placeholder="Title" formControlName="title">
     </mat-form-field>
 
-    <!-- Description -->
     <mat-form-field class="example-full-width" appearance="fill">
       <mat-label>Description</mat-label>
       <textarea matInput placeholder="Description" formControlName="description"></textarea>
     </mat-form-field>
 
-    <!-- Draft Mode -->
     <mat-form-field appearance="fill">
       <mat-label>Is in Draft Mode?</mat-label>
       <mat-select [value]="isInDraftModeValue()" formControlName="isDraft">
@@ -24,10 +27,10 @@
 
     <app-tags-list (updateEvent)="receiveTagsList($event)" [tags]="tags"></app-tags-list>
     
-    <!-- Submit -->
+    
     <div class="button-wrapper">
       <button mat-flat-button color="primary">Update</button>
     </div>
 
 </form>
-</mat-card>
+</mat-card> -->

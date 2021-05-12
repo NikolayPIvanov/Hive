@@ -1,13 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
-import { Observable } from 'rxjs';
+import { PageEvent } from '@angular/material/paginator';
+import { Observable, Subscription } from 'rxjs';
 import { map, mergeAll, startWith, switchMap } from 'rxjs/operators';
-import { GigDto, SellersClient } from 'src/app/clients/gigs-client';
-import { QuestionBase, TextboxQuestion } from '../../questions-list/questions-list.component';
+import { GigDto, GigOverviewDto, PaginatedListOfGigOverviewDto, SellersClient } from 'src/app/clients/gigs-client';
 
-export interface MyUser {
-  name: string;
-}
 
 @Component({
   selector: 'app-gigs-control',
@@ -15,48 +12,33 @@ export interface MyUser {
   styleUrls: ['./gigs-control.component.scss']
 })
 export class GigsControlComponent implements OnInit {
-  gigs$!: Observable<GigDto[]>;
-  myControl = new FormControl();
-  options: MyUser[] = [
-    {name: 'Mary'},
-    {name: 'Shelley'},
-    {name: 'Igor'}
-  ];
-
-  qs: QuestionBase<string>[] = [
-    new TextboxQuestion({
-      key: 'firstName',
-      label: 'First name',
-      value: 'Bombasto',
-      required: true,
-      order: 1
-    })
-  ]
-
-  filteredOptions!: Observable<MyUser[]>;
+  pageSize = 10
+  pageIndex = 0
+  pageSizeOptions = [5, 10, 25]
+  paginatedList$: Observable<PaginatedListOfGigOverviewDto> | undefined;
 
   constructor(private sellersApiClient: SellersClient) { }
 
   ngOnInit(): void {
-    this.gigs$ = this.sellersApiClient.getUserSellerId()
-      .pipe(switchMap((sellerId: string) => this.sellersApiClient.getMyGigs(sellerId)));
-    
-    this.filteredOptions = this.myControl.valueChanges
+    this.paginatedList$ = this.sellersApiClient.getUserSellerId()
       .pipe(
-        startWith(''),
-        map(value => typeof value === 'string' ? value : value.name),
-        map(name => name ? this._filter(name) : this.options.slice())
-      );
+        switchMap((sellerId: string) => this.sellersApiClient.getMyGigs(this.pageSize, this.pageIndex + 1, sellerId)))
   }
 
-  displayFn(user: MyUser): string {
-    return user && user.name ? user.name : '';
+  onFilteredEvents($event: GigOverviewDto[]) {
+    // todo: navigate and open up the gig
   }
 
-  private _filter(name: string): MyUser[] {
-    const filterValue = name.toLowerCase();
+  handlePageEvent(event: PageEvent) {
+    this.pageSize = event.pageSize;
+    this.pageIndex = event.pageIndex;
+    if (this.pageIndex == 0) {
+      
+    }
+    
+    this.paginatedList$ = this.sellersApiClient.getUserSellerId()
+      .pipe(
+        switchMap((sellerId: string) => this.sellersApiClient.getMyGigs(this.pageSize, this.pageIndex + 1, sellerId)))
 
-    return this.options.filter(option => option.name.toLowerCase().indexOf(filterValue) === 0);
   }
-
 }

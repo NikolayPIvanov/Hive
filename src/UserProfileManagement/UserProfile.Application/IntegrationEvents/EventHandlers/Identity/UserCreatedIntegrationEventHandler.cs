@@ -5,6 +5,7 @@ using Hive.Identity.Contracts.IntegrationEvents;
 using Hive.UserProfile.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using StackExchange.Redis.Extensions.Core.Abstractions;
 
 namespace Hive.UserProfile.Application.IntegrationEvents.EventHandlers.Identity
 {
@@ -13,11 +14,13 @@ namespace Hive.UserProfile.Application.IntegrationEvents.EventHandlers.Identity
     public class UserCreatedIntegrationEventHandler : ICapSubscribe
     {
         private readonly IUserProfileDbContext _dbContext;
+        private readonly IRedisCacheClient _cacheClient;
         private readonly ILogger<UserCreatedIntegrationEventHandler> _logger;
 
-        public UserCreatedIntegrationEventHandler(IUserProfileDbContext dbContext, ILogger<UserCreatedIntegrationEventHandler> logger)
+        public UserCreatedIntegrationEventHandler(IUserProfileDbContext dbContext, IRedisCacheClient cacheClient,  ILogger<UserCreatedIntegrationEventHandler> logger)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _cacheClient = cacheClient ?? throw new ArgumentNullException(nameof(cacheClient));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 

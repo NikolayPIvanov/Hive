@@ -49,10 +49,10 @@ export class LayoutComponent implements OnInit, OnDestroy, AfterViewInit {
       this.userName = user?.profile.name;
 
       // Auto log-out subscription
-      const timer$ = timer(2000, 5000)
-      this.autoLogoutSubscription = timer$.subscribe(t => {
-        this.authGuard.canActivate(this.activatedRoute.snapshot, this.router.routerState.snapshot)
-      });
+      // const timer$ = timer(2000, 5000)
+      // this.autoLogoutSubscription = timer$.subscribe(t => {
+      //   this.authGuard.canActivate(this.activatedRoute.snapshot, this.router.routerState.snapshot)
+      // });
   }
 
   ngOnDestroy(): void {

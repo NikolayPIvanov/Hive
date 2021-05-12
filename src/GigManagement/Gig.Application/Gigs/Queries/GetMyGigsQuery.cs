@@ -1,13 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Hive.Common.Core.Exceptions;
 using Hive.Common.Core.Interfaces;
 using Hive.Common.Core.Mappings;
-using Hive.Common.Core.Security;
+using Hive.Common.Core.Models;
 using Hive.Gig.Application.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -15,9 +15,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Hive.Gig.Application.Gigs.Queries
 {
-    public record GetMyGigsQuery : IRequest<IEnumerable<GigDto>>;
+    public record GetMyGigsQuery(int PageSize = 10, int PageNumber = 1) : IRequest<PaginatedList<GigOverviewDto>>;
 
-    public class GetMyGigsQueryHandler : IRequestHandler<GetMyGigsQuery, IEnumerable<GigDto>>
+    public class GetMyGigsQueryHandler : IRequestHandler<GetMyGigsQuery, PaginatedList<GigOverviewDto>>
     {
         private readonly IGigManagementDbContext _context;
         private readonly ICurrentUserService _currentUserService;
@@ -32,7 +32,7 @@ namespace Hive.Gig.Application.Gigs.Queries
             _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
         }
         
-        public async Task<IEnumerable<GigDto>> Handle(GetMyGigsQuery request, CancellationToken cancellationToken)
+        public async Task<PaginatedList<GigOverviewDto>> Handle(GetMyGigsQuery request, CancellationToken cancellationToken)
         {
             var seller = await _context.Sellers
                 .Select(x => new { x.Id, x.UserId })
@@ -43,9 +43,17 @@ namespace Hive.Gig.Application.Gigs.Queries
                 _logger.LogWarning($"Seller Account does not exist for {_currentUserService.UserId}");
                 throw new NotFoundException($"Seller Account does not exist for {_currentUserService.UserId}");
             }
-            
-            var query = _context.Gigs.AsNoTracking().Where(g => g.SellerId == seller.Id);
-            return await query.ProjectToListAsync<GigDto>(_mapper.ConfigurationProvider);
+
+            var query =
+                _context.Gigs
+                    .Include(g => g.Packages)
+                    .Include(g => g.Seller)
+                    .AsNoTracking()
+                    .Where(g => g.SellerId == seller.Id)
+                    .AsNoTracking()
+                    .ProjectTo<GigOverviewDto>(_mapper.ConfigurationProvider);
+
+            return await query.PaginatedListAsync(request.PageNumber, request.PageSize);
         }
     }
 }

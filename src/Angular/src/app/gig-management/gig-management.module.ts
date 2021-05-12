@@ -14,7 +14,6 @@ import { GigsModule } from './gigs/gigs.module';
 
 @NgModule({
   declarations: [
-    GigsControlComponent,
     GigsDetailsComponent,
     GigsCreateComponent,
     TagsListComponent,
