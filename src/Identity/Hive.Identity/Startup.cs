@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
-using System;
 using System.Reflection;
 using BuildingBlocks.Core.Caching;
 using BuildingBlocks.Core.Email;
@@ -9,20 +8,17 @@ using BuildingBlocks.Core.MessageBus;
 using DotNetCore.CAP;
 using Duende.IdentityServer;
 using Hive.Common.Core;
-using Hive.Common.Core.Interfaces;
-using Hive.Common.Core.Services;
 using Hive.Identity.Data;
+using Hive.Identity.Jobs;
 using Hive.Identity.Models;
 using Hive.Identity.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using StackExchange.Redis.Extensions.Core.Abstractions;
 
 namespace Hive.Identity
 {
@@ -86,23 +82,13 @@ namespace Hive.Identity
                 .AddAspNetIdentity<ApplicationUser>()
                 .AddProfileService<IdentityProfileService>();
 
-            services.AddAuthentication()
-                .AddGoogle(options =>
-                {
-                    options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+            services.AddAuthentication();
 
-                    // register your IdentityServer with Google at https://console.developers.google.com
-                    // enable the Google+ API
-                    // set the redirect URI to https://localhost:5001/signin-google
-                    options.ClientId = "copy client ID from Google here";
-                    options.ClientSecret = "copy client secret from Google here";
-                });
+            services.AddHostedService<RoleSeeder>();
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            SeedDefaultData(app);
-
             if (Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
@@ -118,20 +104,6 @@ namespace Hive.Identity
                 endpoints.MapDefaultControllerRoute();
                 endpoints.MapRazorPages();
             });
-        }
-
-        private static void SeedDefaultData(IApplicationBuilder app)
-        {
-            using var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>()?.CreateScope();
-            if (serviceScope == null)
-                throw new Exception("Cannot create IServiceScopeFactory");
-            var userManager = serviceScope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
-            var roleManager = serviceScope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
-            var dispatcher = serviceScope.ServiceProvider.GetRequiredService<IIdentityDispatcher>();
-            var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            var cache = serviceScope.ServiceProvider.GetRequiredService<IRedisCacheClient>();
-
-            ApplicationDbContextSeed.SeedDefaultUserAsync(userManager, roleManager, context, dispatcher, cache).Wait();
         }
     }
 }

@@ -90,20 +90,22 @@ namespace Hive.Identity
             var allClients = context.Clients.AsQueryable();
             context.Clients.RemoveRange(allClients);
             context.Clients.AddRange(Config.Clients.Select(x => x.ToEntity()));
-
-            context.SaveChanges();
             
             var allResources = context.IdentityResources.AsQueryable();
             context.IdentityResources.RemoveRange(allResources);
             context.IdentityResources.AddRange(Config.IdentityResources.Select(x => x.ToEntity()));
-            context.SaveChanges();
             
             var allScopes = context.ApiScopes.AsQueryable();
             context.ApiScopes.RemoveRange(allScopes);
             context.ApiScopes.AddRange(Config.ApiScopes.Select(x => x.ToEntity()));
+
+            var allApiResources = context.ApiResources.AsQueryable();
+            context.ApiResources.RemoveRange(allApiResources);
+            context.ApiResources.AddRange(Config.ApiResources.Select(x => x.ToEntity()));
+            
             context.SaveChanges();
         }
-
+        
         private static void InitializeApplicationDbContext(IServiceScope serviceScope)
         {
             var appContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();

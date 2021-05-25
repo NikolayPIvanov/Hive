@@ -5,7 +5,14 @@ namespace Hive.Identity.Models
 {
     public class UserAccountType : Entity
     {
-        public IdentityType Type { get; set; }
-        public string UserId { get; set; }
+        private UserAccountType() { }
+        public UserAccountType(IdentityType type, string userId) : this()
+        {
+            Type = type;
+            UserId = userId;
+        }
+        
+        public IdentityType Type { get; private init; }
+        public string UserId { get; private init; }
     }
 }

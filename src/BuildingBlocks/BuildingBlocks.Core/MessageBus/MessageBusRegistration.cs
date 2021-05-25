@@ -10,18 +10,18 @@ namespace BuildingBlocks.Core.MessageBus
         public static IServiceCollection AddRabbitMqBroker<TDbContext>(this IServiceCollection services, 
             bool useInMemoryDatabase, string sqlServerConnectionString, IConfiguration configuration) where TDbContext : DbContext
         {
-            services.AddCap(x =>
+            services.AddCap(options =>
             {
-                x.UseEntityFramework<TDbContext>();
+                options.UseEntityFramework<TDbContext>();
 
                 if (!useInMemoryDatabase)
                 {
-                    x.UseSqlServer(sqlServerConnectionString);
+                    options.UseSqlServer(sqlServerConnectionString);
                 }
                 
                 var rabbitMqSettings = configuration.GetSection(nameof(RabbitMqSettings)).Get<RabbitMqSettings>();
                 
-                x.UseRabbitMQ(ro =>
+                options.UseRabbitMQ(ro =>
                 {
                     ro.Password = rabbitMqSettings.Password;
                     ro.UserName = rabbitMqSettings.UserName;
@@ -30,7 +30,7 @@ namespace BuildingBlocks.Core.MessageBus
                     ro.VirtualHost = rabbitMqSettings.VirtualHost;
                 });
 
-                x.UseDashboard(opt => { opt.PathMatch = "/cap"; });
+                options.UseDashboard(opt => { opt.PathMatch = "/cap"; });
             });
             
             services.AddScoped<IIntegrationEventPublisher, RabbitMqPublisher>();

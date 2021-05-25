@@ -1,0 +1,17 @@
+<mat-card fxLayout="column" fxLayoutAlign="start start" class="gig-card">
+    <a [routerLink]="['/gigs', gig.id, 'details']">
+        <img mat-card-image [src]="imageLocation" alt="Photo of the Gig">
+    </a>
+    <mat-card-content>
+        <span>{{gig.title}}</span>
+    </mat-card-content>
+    <mat-card-actions fxLayout="row" fxLayoutAlign="center center">
+        <button mat-icon-button color="warn" aria-label="Example icon button with a heart icon">
+            <mat-icon>favorite_border</mat-icon>
+        </button>
+        <button mat-icon-button color="green" aria-label="Example icon button with a heart icon">
+            <mat-icon>check_circle_outline</mat-icon>
+        </button>
+        <p fxFlexAlign="end">Starting at {{gig.startsAt}} $</p>
+    </mat-card-actions>
+</mat-card>

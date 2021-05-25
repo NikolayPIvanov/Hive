@@ -5,6 +5,7 @@ using Hive.Identity.Contracts;
 using Hive.Identity.Models;
 using Hive.Identity.Services;
 using Microsoft.AspNetCore.Identity;
+using Serilog.Core;
 using StackExchange.Redis.Extensions.Core.Abstractions;
 
 namespace Hive.Identity.Data
@@ -43,23 +44,28 @@ namespace Hive.Identity.Data
                 await userManager.CreateAsync(user, defaultPassword);
                 await userManager.AddToRolesAsync(user, userRoles);
                 
-                var key = $"username:{user.Id}";
-                var r = await cacheClient.GetDbFromConfiguration().AddAsync(key, user.UserName);
-                if (!r)
-                {
-                        
-                }
-                await dispatcher.PublishUserCreatedEventAsync(user.Id);
+                await StoreInCache(cacheClient, user);
 
-                foreach (var type in userTypes)
-                {
-                    await dispatcher.PublishUserTypeEventAsync(user.Id, type);
-                }
+                await DispatchEvents(dispatcher, user, userTypes);
             }
             
             await context.SaveChangesAsync();
+        }
 
-            
+        private static async Task StoreInCache(IRedisCacheClient cacheClient, ApplicationUser user)
+        {
+            var key = $"username:{user.Id}";
+            _ = await cacheClient.GetDbFromConfiguration().AddAsync(key, user.UserName);
+        }
+
+        private static async Task DispatchEvents(IIdentityDispatcher dispatcher, ApplicationUser user, List<IdentityType> userTypes)
+        {
+            await dispatcher.PublishUserCreatedEventAsync(user.Id);
+
+            foreach (var type in userTypes)
+            {
+                await dispatcher.PublishUserTypeEventAsync(user.Id, type);
+            }
         }
     }
 }

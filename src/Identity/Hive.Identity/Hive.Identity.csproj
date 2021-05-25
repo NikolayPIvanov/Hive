@@ -2,6 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
+        <UserSecretsId>7da55536-603e-42ab-8e75-af813d4a5ce4</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
@@ -19,6 +20,8 @@
         <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="5.0.4" />
 
         <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.4" />
+
+        <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="5.0.0" />
 
         <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="5.0.2" />
         <PackageReference Include="Serilog.AspNetCore" Version="4.0.0" />

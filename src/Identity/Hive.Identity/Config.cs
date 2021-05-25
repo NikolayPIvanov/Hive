@@ -17,10 +17,30 @@ namespace Hive.Identity
                 new IdentityResources.Profile(),
             };
 
+        public static IEnumerable<ApiResource> ApiResources =>
+            new ApiResource[]
+            {
+                new ApiResource("gigs-management", "Gigs Management API")
+                {
+                    Scopes = { "gigs.read", "gigs.write", "gigs.delete" }
+                },
+                
+                new ApiResource("ordering", "Orders Management API")
+                {
+                    Scopes = { "ordering.read", "ordering.write", "ordering.delete" }
+                }
+            };
+
         public static IEnumerable<ApiScope> ApiScopes =>
             new ApiScope[]
             {
-                new ApiScope("gig-management"),
+                new ApiScope("gigs.read"),
+                new ApiScope("gigs.write"),
+                new ApiScope("gigs.delete"),
+                
+                new ApiScope("ordering.read"),
+                new ApiScope("ordering.write"),
+                new ApiScope("ordering.delete")
             };
 
         public static IEnumerable<Client> Clients =>
@@ -40,7 +60,21 @@ namespace Hive.Identity
                     PostLogoutRedirectUris = {"https://localhost:44300/signout-callback-oidc"},
 
                     AllowOfflineAccess = true,
-                    AllowedScopes = {"openid", "profile", "gig-management"},
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        
+                        "gigs.read",
+                        "gigs.write",
+                        "gigs.delete",
+                        
+                        "ordering.read",
+                        "ordering.write",
+                        "ordering.delete"
+                        
+                    }
+                    
                 },
                 
                 new Client
@@ -61,6 +95,7 @@ namespace Hive.Identity
                         IdentityServerConstants.StandardScopes.Profile,
                         "gig-management"
                     },
+                    
                     AllowedCorsOrigins = { "http://localhost:4200" },
                     RequireClientSecret = false,
                     RequireConsent = false,

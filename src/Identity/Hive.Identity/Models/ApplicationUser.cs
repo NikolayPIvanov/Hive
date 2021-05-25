@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Identity;
 namespace Hive.Identity.Models
 {
     // Add profile data for application users by adding properties to the ApplicationUser class
-    public class ApplicationUser : IdentityUser
+    public sealed class ApplicationUser : IdentityUser
     {
         private ApplicationUser()
         {
@@ -20,7 +20,7 @@ namespace Hive.Identity.Models
         {
             foreach (var accountType in accountTypes)
             {
-                AccountTypes.Add(new UserAccountType() { UserId = Id, Type = accountType});
+                AccountTypes.Add(new UserAccountType(accountType, Id));
             }
         }
         

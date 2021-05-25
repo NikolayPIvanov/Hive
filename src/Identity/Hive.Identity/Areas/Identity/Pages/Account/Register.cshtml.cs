@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Text.Encodings.Web;
 using System.Threading.Tasks;
+using BuildingBlocks.Core.Interfaces;
 using Hive.Identity.Contracts;
 using Hive.Identity.Models;
 using Hive.Identity.Services;
@@ -29,7 +30,7 @@ namespace Hive.Identity.Areas.Identity.Pages.Account
         private readonly IIdentityDispatcher _dispatcher;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
-        private readonly IEmailSender _emailSender;
+        private readonly IEmailService _emailService;
 
         public RegisterModel(
             IIdentityDispatcher dispatcher,
@@ -37,14 +38,14 @@ namespace Hive.Identity.Areas.Identity.Pages.Account
             SignInManager<ApplicationUser> signInManager,
             IRedisCacheClient cacheClient,
             ILogger<RegisterModel> logger,
-            IEmailSender emailSender)
+            IEmailService emailService)
         {
             _dispatcher = dispatcher;
             _userManager = userManager;
             _signInManager = signInManager;
             _cacheClient = cacheClient;
             _logger = logger;
-            _emailSender = emailSender;
+            _emailService = emailService;
         }
 
         [BindProperty]
@@ -61,13 +62,13 @@ namespace Hive.Identity.Areas.Identity.Pages.Account
             [Display(Name = "Email")]
             public string Email { get; set; }
             
-            [Required]
-            [Display(Name = "Given Name")]
-            public string GivenName { get; set; }
-            
-            [Required]
-            [Display(Name = "Family Name")]
-            public string FamilyName { get; set; }
+            // [Required]
+            // [Display(Name = "Given Name")]
+            // public string GivenName { get; set; }
+            //
+            // [Required]
+            // [Display(Name = "Family Name")]
+            // public string FamilyName { get; set; }
 
             [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
@@ -107,14 +108,9 @@ namespace Hive.Identity.Areas.Identity.Pages.Account
                 {
                     _logger.LogInformation("User created a new account with password.");
 
-                    var key = $"username:{user.Id}";
-                    var r = await _cacheClient.GetDbFromConfiguration().AddAsync(key, user.UserName);
-                    if (!r)
-                    {
-                        
-                    }
-                    await _dispatcher.PublishUserCreatedEventAsync(user.Id);
-                    await _dispatcher.PublishUserTypeEventAsync(user.Id, Input.AccountType);
+                    await StoreInCache(_cacheClient, user);
+                    await DispatchEvents(_dispatcher, user, new List<IdentityType>() {Input.AccountType});
+                    
                     _logger.LogInformation("User created a new account with password.");
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
@@ -125,7 +121,9 @@ namespace Hive.Identity.Areas.Identity.Pages.Account
                         values: new { area = "Identity", userId = user.Id, code = code, returnUrl = returnUrl },
                         protocol: Request.Scheme);
 
-                    await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
+                    await _emailService.SendAsync(
+                        new []{ Input.Email },
+                        "Confirm your email",
                         $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
@@ -146,6 +144,22 @@ namespace Hive.Identity.Areas.Identity.Pages.Account
 
             // If we got this far, something failed, redisplay form
             return Page();
+        }
+        
+        private static async Task StoreInCache(IRedisCacheClient cacheClient, ApplicationUser user)
+        {
+            var key = $"username:{user.Id}";
+            _ = await cacheClient.GetDbFromConfiguration().AddAsync(key, user.UserName);
+        }
+
+        private static async Task DispatchEvents(IIdentityDispatcher dispatcher, ApplicationUser user, List<IdentityType> userTypes)
+        {
+            await dispatcher.PublishUserCreatedEventAsync(user.Id);
+
+            foreach (var type in userTypes)
+            {
+                await dispatcher.PublishUserTypeEventAsync(user.Id, type);
+            }
         }
     }
 }
