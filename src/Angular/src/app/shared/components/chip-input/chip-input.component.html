@@ -1,0 +1,20 @@
+<form *ngIf="form && items" [formGroup]="form">
+  <mat-form-field class="example-chip-list">
+    <mat-label>{{title}}</mat-label>
+    <mat-chip-list *ngIf="form && items" #chipList [formControlName]="name">
+      <mat-chip 
+        *ngFor="let item of items.value" 
+        [selectable]="selectable"
+        [removable]="removable" 
+        (removed)="remove(item)">
+        {{ item }}
+        <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+      </mat-chip>
+      <input placeholder="{{ title }}..."
+             [matChipInputFor]="chipList"
+             [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+             [matChipInputAddOnBlur]="addOnBlur"
+             (matChipInputTokenEnd)="add($event)">
+    </mat-chip-list>
+  </mat-form-field>
+</form>

@@ -1,0 +1,56 @@
+<mat-card *ngIf="profile$ | async"  fxLayout="row" class="m-3">
+    <div fxLayout="column" fxFlex="20%" fxLayoutAlign="start center">
+        <h2>Avatar</h2>
+        <ngx-avatar [name]="name" size="200"></ngx-avatar>
+    </div>
+    <form [formGroup]="form" (ngSubmit)="save()" class="example-form">
+        <div fxLaout="row" fxLayoutGap="3rem">
+            <div fxLayout="column" fxFlex="30%">
+                <h2>Personal Information</h2>
+                <mat-form-field class="example-full-width">
+                    <mat-label>First Name</mat-label>
+                    <input type="text" matInput [formControl]="form.controls.firstName" placeholder="First Name">
+                    <mat-error *ngIf="form.controls.firstName.errors?.maxlength">
+                        Name must be at maximum 50 characters long.
+                    </mat-error>
+                </mat-form-field>
+    
+                <mat-form-field class="example-full-width">
+                    <mat-label>Last Name</mat-label>
+                    <input type="text" matInput [formControl]="form.controls.lastName" placeholder="Last Name">
+                    <mat-error *ngIf="form.controls.firstName.errors?.maxlength">
+                        Name must be at maximum 50 characters long.
+                    </mat-error>
+                </mat-form-field>
+    
+                <mat-form-field class="example-full-width">
+                    <mat-label>Description</mat-label>
+                    <textarea matInput [formControl]="form.controls.description" placeholder="Description"></textarea>
+                </mat-form-field>
+    
+                <mat-form-field class="example-full-width">
+                    <mat-label>Education</mat-label>
+                    <textarea matInput [formControl]="form.controls.education" placeholder="Education"></textarea>
+                </mat-form-field>
+            </div>
+    
+            <div fxLayout="column" fxFlex="30%">
+                <h2>Additional Information</h2>
+                <mat-slide-toggle formControlName="isTransient">Is Transient?</mat-slide-toggle>
+                <shared-chip-input title="Skills" [form]="form" name="skills"></shared-chip-input>
+                <shared-chip-input title="Languages" [form]="form" name="languages"></shared-chip-input>
+            </div>
+    
+            <div fxLayout="column" fxFlexFill>
+                <h2>Notification Settings</h2>
+                <form [formGroup]="notificationForm">
+                    <mat-slide-toggle formControlName="emailNotifications">Email Notifications</mat-slide-toggle>
+                </form>
+            </div>
+        </div>
+        
+        <div fxLayout="column">
+            <button mat-raised-button color="primary" type="submit">Save</button>
+        </div>
+    </form>
+</mat-card>

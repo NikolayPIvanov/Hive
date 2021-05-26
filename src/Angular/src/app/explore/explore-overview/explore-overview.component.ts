@@ -31,15 +31,15 @@ export class ExploreOverviewComponent implements OnInit {
     private gigsApiClient: GigsClient) { }
 
   ngOnInit(): void {
-    this.categories$ = this.categoriesApiClient.getCategories(this.FIRST_PAGE, this.CATEGORY_SIZE, this.PARENT_CATEGORY_ONLY)
-      .pipe(map((list: PaginatedListOfCategoryDto) => list.items));
+    // this.categories$ = this.categoriesApiClient.getCategories(this.FIRST_PAGE, this.CATEGORY_SIZE, this.PARENT_CATEGORY_ONLY)
+    //   .pipe(map((list: PaginatedListOfCategoryDto) => list.items));
     
     this.gigs$ = this.gigsApiClient.getRandom(this.RANDOM_QUANTITY);
   }
 
   categorySelected(category: CategoryDto) {
     this.selectedCategoryId = category.id;
-    this.gigs$ = this.categoriesApiClient.getCategoryGigs(category.id!, this.gigsPageIndex + 1, this.gigsPageSize)
+    this.gigs$ = this.categoriesApiClient.getCategoryGigs(category.id!, undefined, this.gigsPageIndex + 1, this.gigsPageSize)
       .pipe(
         switchMap((list: PaginatedListOfGigOverviewDto) => {
           this.gigsLength = list.totalCount!;
@@ -53,7 +53,7 @@ export class ExploreOverviewComponent implements OnInit {
     this.gigsPageIndex = event.pageIndex;
     
     if (this.selectedCategoryId) {
-      this.gigs$ = this.categoriesApiClient.getCategoryGigs(this.selectedCategoryId, this.gigsPageIndex + 1, this.gigsPageSize)
+      this.gigs$ = this.categoriesApiClient.getCategoryGigs(this.selectedCategoryId, undefined, this.gigsPageIndex + 1, this.gigsPageSize)
       .pipe(
         switchMap((list: PaginatedListOfGigOverviewDto) => {
           this.gigsLength = list.totalCount!;

@@ -2,7 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Observable, of } from 'rxjs';
 import { startWith, debounceTime, distinctUntilChanged, switchMap, map, filter } from 'rxjs/operators';
-import { GigDto, GigOverviewDto, GigsClient } from 'src/app/clients/gigs-client';
+import { CategoriesClient, GigDto, GigOverviewDto, GigsClient } from 'src/app/clients/gigs-client';
 
 class Searchable<TId, TKey> {
   id!: TId;
@@ -21,13 +21,14 @@ class Searchable<TId, TKey> {
 })
 export class GigNameSearchComponent implements OnInit {
   @Input('init') initCategory: GigDto | undefined;
+  // @Input('categoryId') categoryId: number;
   @Output('filteredEmitter') csEmitter = new EventEmitter<GigDto[]>();
 
   gigs: GigOverviewDto[] | undefined;
   control = new FormControl();
   filteredOptions: Observable< Searchable<number, string>[] | undefined>;
 
-  constructor(private gigsApiClient: GigsClient) {
+  constructor(private gigsApiClient: CategoriesClient) {
     this.filteredOptions = this.control.valueChanges.pipe(
       filter(val => val.length >= 3),
       debounceTime(400),
@@ -58,17 +59,17 @@ export class GigNameSearchComponent implements OnInit {
 
     const callApi = !filtered
 
-    if (callApi) {
-      return this.gigsApiClient.getByName(option)
-      .pipe(map((response: GigOverviewDto[]) => {
-        this.gigs = response;
-        return response.map(g => new Searchable<number, string>(g.id!, g.title!))
-      }));
-    }
-    else {
+    // if (callApi) {
+    //   return this.gigsApiClient.getCategoryGigs(option)
+    //   .pipe(map((response: GigOverviewDto[]) => {
+    //     this.gigs = response;
+    //     return response.map(g => new Searchable<number, string>(g.id!, g.title!))
+    //   }));
+    // }
+    // else {
       this.gigs = filtered!;
       return of(filtered!.map(g => new Searchable<number, string>(g.id!, g.title!)));
-    }
+    // }
    }
 
 }

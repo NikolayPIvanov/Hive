@@ -11,9 +11,11 @@ import { CoreModule } from './core/core.module';
 import { AuthorizationModule } from 'src/authorization/authorization.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { API_BASE_URL } from './clients/gigs-client';
+import * as profileClient from './clients/profile-client';
 import { HomeModule } from './home/home.module';
 import { ExploreModule } from './explore/explore.module';
 import { GigManagementModule } from './gig-management/gig-management.module';
+import { AccountModule } from './account/account.module';
 
 @NgModule({
   declarations: [
@@ -32,6 +34,7 @@ import { GigManagementModule } from './gig-management/gig-management.module';
     AuthorizationModule,
     ExploreModule,
     GigManagementModule,
+    AccountModule,
 
     AppRoutingModule
   ],
@@ -40,6 +43,12 @@ import { GigManagementModule } from './gig-management/gig-management.module';
       provide: API_BASE_URL,
       useFactory: () => {
         return 'https://localhost:5057'
+      }
+    },
+    {
+      provide: profileClient.API_BASE_URL,
+      useFactory: () => {
+        return 'https://localhost:5001'
       }
     }
   ],

@@ -26,6 +26,7 @@ namespace Hive.Identity.Areas.Identity.Pages.Account
     public class RegisterModel : PageModel
     {
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IRedisCacheClient _cacheClient;
         private readonly IIdentityDispatcher _dispatcher;
         private readonly UserManager<ApplicationUser> _userManager;
@@ -107,6 +108,8 @@ namespace Hive.Identity.Areas.Identity.Pages.Account
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
+                    
+                    await _userManager.AddToRoleAsync(user, Input.AccountType.ToString());
 
                     await StoreInCache(_cacheClient, user);
                     await DispatchEvents(_dispatcher, user, new List<IdentityType>() {Input.AccountType});

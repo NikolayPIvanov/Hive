@@ -108,7 +108,7 @@ export class CategoryListComponent implements OnInit, OnDestroy {
 
   private _load() {
     this.gigsFetchSubscription =
-      this.categoriesApiClient.getCategories(this.pageIndex, this.pageSize, this.onlyParents)
+      this.categoriesApiClient.getCategories(this.onlyParents, undefined, this.pageIndex, this.pageSize)
         .subscribe((list: any) => this.paginatedList$ = list);
   }
 }

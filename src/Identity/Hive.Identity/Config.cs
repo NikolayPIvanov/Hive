@@ -93,7 +93,14 @@ namespace Hive.Identity
                     {
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile,
-                        "gig-management"
+                        
+                        "gigs.read",
+                        "gigs.write",
+                        "gigs.delete",
+                        
+                        "ordering.read",
+                        "ordering.write",
+                        "ordering.delete"
                     },
                     
                     AllowedCorsOrigins = { "http://localhost:4200" },

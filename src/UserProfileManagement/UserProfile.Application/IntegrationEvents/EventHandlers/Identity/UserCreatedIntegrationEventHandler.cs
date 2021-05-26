@@ -34,12 +34,11 @@ namespace Hive.UserProfile.Application.IntegrationEvents.EventHandlers.Identity
                 return;
             }
 
-            var profile = new UserProfile(@event.UserId)
-            {
-                CreatedBy = @event.UserId
-            };
-
+            var profile = new UserProfile(@event.UserId);
             _dbContext.UserProfiles.Add(profile);
+            await _dbContext.SaveChangesAsync();
+
+            profile.CreatedBy = @event.UserId;
             await _dbContext.SaveChangesAsync();
             
             _logger.LogInformation("User profile for user with id: {@Id} was successfully registered", @event.UserId);

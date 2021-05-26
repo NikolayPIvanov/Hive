@@ -14,6 +14,7 @@ using Hive.UserProfile.Domain;
 using Hive.UserProfile.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Hive.UserProfile.Application.UserProfiles.Commands
@@ -21,7 +22,7 @@ namespace Hive.UserProfile.Application.UserProfiles.Commands
     using Domain.Entities;
     
     public record UpdateUserProfileCommand(int UserProfileId, string? FirstName, string? LastName, string? Description, string? Education,
-        NotificationSettingDto NotificationSetting, ICollection<string> Skills, ICollection<string> Languages) : IRequest;
+        NotificationSettingDto NotificationSettings, ICollection<string> Skills, ICollection<string> Languages) : IRequest;
     
     public class UpdateUserProfileCommandHandler : AuthorizationRequestHandler<UserProfile>, IRequestHandler<UpdateUserProfileCommand>
     {
@@ -38,7 +39,7 @@ namespace Hive.UserProfile.Application.UserProfiles.Commands
         
         public async Task<Unit> Handle(UpdateUserProfileCommand request, CancellationToken cancellationToken)
         {
-            var userProfile = await _dbContext.UserProfiles.FindAsync(new[] {request.UserProfileId}, cancellationToken);
+            var userProfile = await _dbContext.UserProfiles.FirstOrDefaultAsync(x => x.Id == request.UserProfileId,cancellationToken);
 
             if (userProfile is null)
             {
@@ -57,7 +58,7 @@ namespace Hive.UserProfile.Application.UserProfiles.Commands
             userProfile.LastName = request.LastName;
             userProfile.Description = request.Description;
             userProfile.Education = request.Education;
-            userProfile.NotificationSetting = new NotificationSetting(request.NotificationSetting.EmailNotifications);
+            userProfile.NotificationSetting = new NotificationSetting(request.NotificationSettings.EmailNotifications);
             SetSkills(request, userProfile);
             SetLanguages(request, userProfile);
 

@@ -2,7 +2,7 @@ import { AfterViewInit, Component, EventEmitter, Input, OnInit, Output } from '@
 import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, map, switchMap, tap } from 'rxjs/operators';
-import { CategoriesClient, CategoryDto } from 'src/app/clients/gigs-client';
+import { CategoriesClient, CategoryDto, PaginatedListOfCategoryDto } from 'src/app/clients/gigs-client';
 
 @Component({
   selector: 'app-category-search',
@@ -42,13 +42,15 @@ export class CategorySearchComponent implements OnInit {
   }
 
   private filter(value: string): Observable<string[]> {
-    return this.categoriesApiClient.getCategoriesByName(value)
+    return this.categoriesApiClient.getCategories(undefined, value, undefined, undefined)
      .pipe(
-       map((response: CategoryDto[]) => 
+       map((paginatedList: PaginatedListOfCategoryDto) => 
        {
          this.categories =
-           response.filter(option => option.title!.toLowerCase().indexOf(value.toLowerCase()) === 0);
-         return this.categories.map(category => category.title!);
+           paginatedList.items!.filter(option =>
+             option.title!.toLowerCase().indexOf(value.toLowerCase()) === 0);
+         
+        return this.categories.map(category => category.title!);
        })
      )
   }
