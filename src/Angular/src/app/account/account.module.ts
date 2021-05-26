@@ -5,10 +5,12 @@ import { AccountRoutingModule } from './account-routing.module';
 import { SharedModule } from '../shared/shared.module';
 import { CoreModule } from '../core/core.module';
 import { AvatarModule } from 'ngx-avatar';
+import { AccountBalanceComponent } from './account-balance/account-balance.component';
 
 @NgModule({
   declarations: [
-    AccountOverviewComponent
+    AccountOverviewComponent,
+    AccountBalanceComponent
   ],
   imports: [
     CommonModule,

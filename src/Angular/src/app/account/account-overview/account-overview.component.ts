@@ -65,7 +65,11 @@ export class AccountOverviewComponent implements OnInit, OnDestroy {
       .pipe(
         takeUntil(this.subject),
         switchMap(_ => this.profileApiClient.getProfile()))
-      .subscribe(profile => this.form.patchValue(profile))
+      .subscribe(profile => {
+        debugger;
+        this.form.patchValue(profile)
+        // this.form.get('languages')?.value = profile.languages?.map(l => l.value);
+      })
   }
 
   ngOnDestroy(): void {

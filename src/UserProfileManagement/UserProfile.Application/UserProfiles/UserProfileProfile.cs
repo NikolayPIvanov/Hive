@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Linq;
+using AutoMapper;
 using Hive.UserProfile.Application.UserProfiles.Queries;
 
 namespace Hive.UserProfile.Application.UserProfiles
@@ -12,7 +13,9 @@ namespace Hive.UserProfile.Application.UserProfiles
             CreateMap<UserProfile, UserProfileDto>()
                 .ForMember(d => d.IsTransient,
                     x => x.Condition(
-                        profile => !string.IsNullOrEmpty(profile.FirstName) && !string.IsNullOrEmpty(profile.LastName)));
+                        profile => !string.IsNullOrEmpty(profile.FirstName) && !string.IsNullOrEmpty(profile.LastName)))
+                .ForMember(d => d.Languages, x => x.MapFrom(s => s.Languages.Select(l => l.Value)))
+                .ForMember(d => d.Skills, x => x.MapFrom(s => s.Skills.Select(l => l.Value)));
 
             CreateMap<NotificationSetting, NotificationSettingDto>().DisableCtorValidation().ReverseMap();
         }
