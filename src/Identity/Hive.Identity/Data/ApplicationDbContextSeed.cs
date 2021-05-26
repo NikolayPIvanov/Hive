@@ -5,7 +5,6 @@ using Hive.Identity.Contracts;
 using Hive.Identity.Models;
 using Hive.Identity.Services;
 using Microsoft.AspNetCore.Identity;
-using Serilog.Core;
 using StackExchange.Redis.Extensions.Core.Abstractions;
 
 namespace Hive.Identity.Data

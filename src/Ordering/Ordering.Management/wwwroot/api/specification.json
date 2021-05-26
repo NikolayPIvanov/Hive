@@ -1,0 +1,694 @@
+{
+  "x-generator": "NSwag v13.9.4.0 (NJsonSchema v10.3.1.0 (Newtonsoft.Json v13.0.0.0))",
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Ordering Management API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/Orders/{orderNumber}": {
+      "get": {
+        "tags": [
+          "Orders"
+        ],
+        "operationId": "Orders_GetOrder",
+        "parameters": [
+          {
+            "name": "orderNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": [
+              "Seller",
+              " Buyer"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/Orders/my": {
+      "get": {
+        "tags": [
+          "Orders"
+        ],
+        "operationId": "Orders_GetMyOrders",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OrderDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": [
+              "Seller",
+              " Buyer",
+              "Buyer"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/Orders": {
+      "post": {
+        "tags": [
+          "Orders"
+        ],
+        "operationId": "Orders_PlaceOrder",
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/PlaceOrderCommand"
+                  }
+                ]
+              }
+            }
+          },
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "guid"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": [
+              "Seller",
+              " Buyer"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/Orders/{orderNumber}/cancellation": {
+      "put": {
+        "tags": [
+          "Orders"
+        ],
+        "operationId": "Orders_CancelOrder",
+        "parameters": [
+          {
+            "name": "orderNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": [
+              "Seller",
+              " Buyer",
+              "Buyer"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/Orders/{orderNumber}/review": {
+      "put": {
+        "tags": [
+          "Orders"
+        ],
+        "operationId": "Orders_ReviewOrder",
+        "parameters": [
+          {
+            "name": "orderNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/ReviewOrderCommand"
+                  }
+                ]
+              }
+            }
+          },
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": [
+              "Seller",
+              " Buyer"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/Orders/{orderNumber}/progress": {
+      "put": {
+        "tags": [
+          "Orders"
+        ],
+        "operationId": "Orders_SetInProgress",
+        "parameters": [
+          {
+            "name": "orderNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/SetInProgressOrderCommand"
+                  }
+                ]
+              }
+            }
+          },
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": [
+              "Seller",
+              " Buyer"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/Orders/{orderNumber}/resolutions/{resolutionId}": {
+      "get": {
+        "tags": [
+          "Orders"
+        ],
+        "operationId": "Orders_GetResolution",
+        "parameters": [
+          {
+            "name": "orderNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "resolutionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": [
+              "Seller",
+              " Buyer"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/Orders/{orderNumber}/resolutions/{resolutionId}/file": {
+      "get": {
+        "tags": [
+          "Orders"
+        ],
+        "operationId": "Orders_DownloadResolutionFile",
+        "parameters": [
+          {
+            "name": "resolutionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "orderNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": [
+              "Seller",
+              " Buyer"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/Orders/{orderNumber}/resolutions": {
+      "get": {
+        "tags": [
+          "Orders"
+        ],
+        "operationId": "Orders_GetResolutions",
+        "parameters": [
+          {
+            "name": "orderNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": [
+              "Seller",
+              " Buyer"
+            ]
+          }
+        ]
+      },
+      "post": {
+        "tags": [
+          "Orders"
+        ],
+        "operationId": "Orders_SubmitResolution",
+        "parameters": [
+          {
+            "name": "orderNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "Version": {
+                    "type": "string",
+                    "nullable": true
+                  },
+                  "File": {
+                    "type": "string",
+                    "format": "binary",
+                    "nullable": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "guid"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": [
+              "Seller",
+              " Buyer"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/Orders/{orderNumber}/resolutions/{resolutionId}/acceptance": {
+      "put": {
+        "tags": [
+          "Orders"
+        ],
+        "operationId": "Orders_AcceptResolution",
+        "parameters": [
+          {
+            "name": "orderNumber",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "resolutionId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "guid"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": [
+              "Seller",
+              " Buyer",
+              "Buyer"
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "OrderDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "orderNumber": {
+            "type": "string",
+            "format": "guid"
+          },
+          "orderedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "sellerUserId": {
+            "type": "string"
+          },
+          "buyerUserId": {
+            "type": "string"
+          },
+          "unitPrice": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "isClosed": {
+            "type": "boolean"
+          },
+          "requirements": {
+            "type": "string"
+          },
+          "gigId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "packageId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "orderStates": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/StateDto"
+            }
+          }
+        }
+      },
+      "StateDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "orderState": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string",
+            "nullable": true
+          },
+          "created": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "createdBy": {
+            "type": "string"
+          }
+        }
+      },
+      "PlaceOrderCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "unitPrice": {
+            "type": "number",
+            "format": "decimal"
+          },
+          "requirements": {
+            "type": "string"
+          },
+          "sellerUserId": {
+            "type": "string"
+          },
+          "packageId": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "ReviewOrderCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "orderNumber": {
+            "type": "string",
+            "format": "guid"
+          },
+          "orderState": {
+            "$ref": "#/components/schemas/OrderState"
+          },
+          "reason": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "OrderState": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "Validation",
+          "OrderDataValid",
+          "UserBalanceValid",
+          "Invalid",
+          "Canceled",
+          "Accepted",
+          "Declined",
+          "InProgress",
+          "Completed"
+        ],
+        "enum": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ]
+      },
+      "SetInProgressOrderCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "orderNumber": {
+            "type": "string",
+            "format": "guid"
+          }
+        }
+      }
+    },
+    "securitySchemes": {
+      "JWT": {
+        "type": "apiKey",
+        "description": "Type into the textbox: Bearer {your JWT token}.",
+        "name": "Authorization",
+        "in": "header"
+      }
+    }
+  },
+  "security": [
+    {
+      "JWT": []
+    }
+  ]
+}

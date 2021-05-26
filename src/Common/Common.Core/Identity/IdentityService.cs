@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿#nullable enable
+using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Hive.Common.Core.Interfaces;
@@ -18,17 +19,23 @@ namespace Hive.Common.Core.Identity
         public Task<bool> IsInRoleAsync(string userId, string role)
         {
             var roleClaims = _httpContext?.User.Claims.Where(x => x.Type == ClaimsIdentity.DefaultRoleClaimType);
-            if (!roleClaims.Any())
+            if (roleClaims == null)
+            {
+                return Task.FromResult(false);
+            }
+            
+            var claims = roleClaims.ToList();
+            if (!claims.Any())
             {
                 return Task.FromResult(false);
             }
 
-            var isInRole = roleClaims.Any(c => c.Value == role);
+            var isInRole = claims.Any(c => c.Value == role);
 
             return Task.FromResult(isInRole);
         }
 
-        public ValueTask<string> GetClaimValue(string key)
+        public ValueTask<string?> GetClaimValue(string key)
         {
             var claim = _httpContext?.User.Claims.FirstOrDefault(x => x.Type == key);
             return ValueTask.FromResult(claim?.Value);

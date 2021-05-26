@@ -8,6 +8,6 @@ namespace Hive.Common.Core.Interfaces
 
         Task<bool> IsInRoleAsync(string userId, string role);
 
-        ValueTask<string> GetClaimValue(string key);
+        ValueTask<string?> GetClaimValue(string key);
     }
 }

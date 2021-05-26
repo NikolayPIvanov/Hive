@@ -1,4 +1,5 @@
-﻿using BuildingBlocks.Core.Email;
+﻿using BuildingBlocks.Core.Caching;
+using BuildingBlocks.Core.Email;
 using BuildingBlocks.Core.MessageBus;
 using Hive.Common.Core.Interfaces;
 using Hive.Common.Core.Services;
@@ -29,7 +30,7 @@ namespace Hive.UserProfile.Infrastructure
                         b => b.MigrationsAssembly(typeof(UserProfileDbContext).Assembly.FullName)));
             }
             
-            services.AddSendGrid(configuration);
+            services.AddRedis(configuration);
             services.AddRabbitMqBroker<UserProfileDbContext>(useInMemory, sqlServerConnectionString, configuration);
             services.AddScoped<IUserProfileDbContext>(provider => provider.GetService<UserProfileDbContext>());
 

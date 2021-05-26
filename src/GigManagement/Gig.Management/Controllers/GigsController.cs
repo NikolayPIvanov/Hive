@@ -17,6 +17,7 @@ using NSwag.Annotations;
 namespace Gig.Management.Controllers
 {
     [Produces("application/json")]
+    [Authorize]
     public class GigsController : ApiControllerBase
     {
         [HttpGet("{id:int}")]
@@ -24,28 +25,24 @@ namespace Gig.Management.Controllers
         [SwaggerResponse(HttpStatusCode.NotFound, typeof(NotFoundObjectResult), Description = "Anomaly not found")]
         public async Task<ActionResult<GigDto>> GetGigById([FromRoute] int id, CancellationToken cancellationToken) 
             => Ok(await Mediator.Send(new GetGigQuery(id), cancellationToken));
-        
+
         [HttpGet("random")]
         [SwaggerResponse(HttpStatusCode.OK, typeof(ICollection<GigDto>), Description = "Successful operation")]
         public async Task<ActionResult<ICollection<GigDto>>> GetRandom([FromQuery] GetRandomGigsQuery request, CancellationToken cancellationToken) 
             => Ok(await Mediator.Send(request, cancellationToken));
-            
-        [HttpGet("search")]
-        [SwaggerResponse(HttpStatusCode.OK, typeof(ICollection<GigOverviewDto>), Description = "Successful operation")]
-        public async Task<ActionResult<ICollection<GigOverviewDto>>> GetByName([FromQuery] GetGigByNameQuery request, CancellationToken cancellationToken) 
-            => Ok(await Mediator.Send(request, cancellationToken));
-        
+
         [HttpPost]
-        [Authorize(Roles = "Seller")]
-        // TODO: Raise event if the gig is related to a plan so investors can be notified.
+        [Authorize(Roles = "Seller, Admin")]
+        [SwaggerResponse(HttpStatusCode.Created, typeof(int), Description = "Successful operation")]
+        [SwaggerResponse(HttpStatusCode.BadRequest, typeof(BadRequestObjectResult), Description = "Bad Request operation")]
         public async Task<ActionResult<int>> Post([FromBody] CreateGigCommand command, CancellationToken cancellationToken)
         {
             var id = await Mediator.Send(command, cancellationToken);
             return CreatedAtAction(nameof(GetGigById), new {id}, id);
         }
        
-        [HttpPut("{id}")]
-        [Authorize(Roles = "Seller")]
+        [HttpPut("{id:int}")]
+        [Authorize(Roles = "Seller, Admin")]
         [SwaggerResponse(HttpStatusCode.NoContent, typeof(IActionResult), Description = "Successful operation")]
         [SwaggerResponse(HttpStatusCode.BadRequest, typeof(ProblemDetails), Description = "Invalid ID supplied")]
         [SwaggerResponse(HttpStatusCode.NotFound, typeof(ProblemDetails), Description = "Anomaly not found")]
@@ -59,12 +56,12 @@ namespace Gig.Management.Controllers
             return NoContent();
         }
 
+        // TODO: Cannot delete if there are orders in process or if there is a plan active
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Seller")]
+        [Authorize(Roles = "Seller, Admin")]
         [SwaggerResponse(HttpStatusCode.NoContent, typeof(IActionResult), Description = "Successful operation")]
         [SwaggerResponse(HttpStatusCode.BadRequest, typeof(ProblemDetails), Description = "Invalid ID supplied")]
         [SwaggerResponse(HttpStatusCode.NotFound, typeof(ProblemDetails), Description = "Anomaly not found")]
-        // TODO: Cannot delete if there are orders in process or if there is a plan active
         public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
         {
             await Mediator.Send(new DeleteGigCommand(id), cancellationToken);
@@ -72,15 +69,22 @@ namespace Gig.Management.Controllers
         }
         
         [HttpGet("{id:int}/packages/{packageId:int}")]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(PackageDto), Description = "Successful operation")]
+        [SwaggerResponse(HttpStatusCode.NotFound, typeof(ProblemDetails), Description = "Anomaly not found")]
         public async Task<ActionResult<PackageDto>> GetPackageById(int id, int packageId, CancellationToken cancellationToken) =>
             Ok(await Mediator.Send(new GetPackageQuery(packageId), cancellationToken));
         
         [HttpGet("{id:int}/packages")]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(IEnumerable<PackageDto>), Description = "Successful operation")]
+        [SwaggerResponse(HttpStatusCode.NotFound, typeof(ProblemDetails), Description = "Anomaly not found")]
         public async Task<ActionResult<IEnumerable<PackageDto>>> GetPackages([FromRoute] int id, CancellationToken cancellationToken)
             => Ok(await Mediator.Send(new GetGigPackagesQuery(id), cancellationToken));
         
         [HttpPost("{id:int}/packages")]
-        [Authorize(Roles = "Seller")]
+        [Authorize(Roles = "Seller, Admin")]
+        [SwaggerResponse(HttpStatusCode.Created, typeof(int), Description = "Successful operation")]
+        [SwaggerResponse(HttpStatusCode.BadRequest, typeof(ProblemDetails), Description = "Invalid ID supplied")]
+        [SwaggerResponse(HttpStatusCode.NotFound, typeof(ProblemDetails), Description = "Anomaly not found")]
         public async Task<ActionResult<int>> CreatePackage([FromRoute] int id, [FromBody] CreatePackageCommand command,
             CancellationToken cancellationToken)
         {
@@ -94,7 +98,10 @@ namespace Gig.Management.Controllers
         }
         
         [HttpPut("{id:int}/packages/{packageId:int}")]
-        [Authorize(Roles = "Seller")]
+        [Authorize(Roles = "Seller, Admin")]
+        [SwaggerResponse(HttpStatusCode.NoContent, typeof(IActionResult), Description = "Successful operation")]
+        [SwaggerResponse(HttpStatusCode.BadRequest, typeof(ProblemDetails), Description = "Invalid ID supplied")]
+        [SwaggerResponse(HttpStatusCode.NotFound, typeof(ProblemDetails), Description = "Anomaly not found")]
         public async Task<IActionResult> UpdatePackage([FromRoute] int id, int packageId,
             [FromBody] UpdatePackageCommand command, CancellationToken cancellationToken)
         {
@@ -108,7 +115,9 @@ namespace Gig.Management.Controllers
         }
 
         [HttpDelete("{id:int}/packages/{packageId:int}")]
-        [Authorize(Roles = "Seller")]
+        [Authorize(Roles = "Seller, Admin")]
+        [SwaggerResponse(HttpStatusCode.NoContent, typeof(IActionResult), Description = "Successful operation")]
+        [SwaggerResponse(HttpStatusCode.NotFound, typeof(ProblemDetails), Description = "Anomaly not found")]
         public async Task<IActionResult> DeletePackage([FromRoute] int id, int packageId, CancellationToken cancellationToken)
         {
             await Mediator.Send(new DeletePackageCommand(packageId), cancellationToken);
@@ -116,16 +125,22 @@ namespace Gig.Management.Controllers
         }
 
         [HttpGet("{gigId:int}/reviews/{reviewId:int}")]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(ReviewDto), Description = "Successful operation")]
+        [SwaggerResponse(HttpStatusCode.NotFound, typeof(ProblemDetails), Description = "Anomaly not found")]
         public async Task<ActionResult<ReviewDto>> GetReviewById([FromRoute] int gigId, int reviewId, CancellationToken cancellationToken) =>
             Ok(await Mediator.Send(new GetReviewByIdQuery(gigId, reviewId), cancellationToken));
         
         [HttpGet("{gigId:int}/reviews")]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(PaginatedList<ReviewDto>), Description = "Successful operation")]
+        [SwaggerResponse(HttpStatusCode.NotFound, typeof(ProblemDetails), Description = "Anomaly not found")]
         public async Task<ActionResult<PaginatedList<ReviewDto>>> GetReviewsList(
             [FromRoute] int gigId, [FromQuery] int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default) =>
             Ok(await Mediator.Send(new GetGigReviewsQuery(gigId, pageNumber, pageSize), cancellationToken));
 
         [HttpPost("{gigId:int}/reviews")]
-        [Authorize]
+        [SwaggerResponse(HttpStatusCode.Created, typeof(int), Description = "Successful operation")]
+        [SwaggerResponse(HttpStatusCode.BadRequest, typeof(ProblemDetails), Description = "Invalid ID supplied")]
+        [SwaggerResponse(HttpStatusCode.NotFound, typeof(ProblemDetails), Description = "Anomaly not found")]
         public async Task<IActionResult> CreateReview([FromRoute] int gigId, [FromBody] CreateReviewCommand command, 
             CancellationToken cancellationToken)
         {
@@ -139,7 +154,9 @@ namespace Gig.Management.Controllers
         }
 
         [HttpPut("{gigId:int}/reviews/{reviewId:int}")]
-        [Authorize]
+        [SwaggerResponse(HttpStatusCode.NoContent, typeof(IActionResult), Description = "Successful operation")]
+        [SwaggerResponse(HttpStatusCode.BadRequest, typeof(ProblemDetails), Description = "Invalid ID supplied")]
+        [SwaggerResponse(HttpStatusCode.NotFound, typeof(ProblemDetails), Description = "Anomaly not found")]
         public async Task<IActionResult> UpdateReview([FromRoute] int gigId, int reviewId,
             [FromBody] UpdateReviewCommand command, CancellationToken cancellationToken)
         {
@@ -153,7 +170,8 @@ namespace Gig.Management.Controllers
         }
 
         [HttpDelete("{gigId:int}/reviews/{reviewId:int}")]
-        [Authorize]
+        [SwaggerResponse(HttpStatusCode.NoContent, typeof(IActionResult), Description = "Successful operation")]
+        [SwaggerResponse(HttpStatusCode.NotFound, typeof(ProblemDetails), Description = "Anomaly not found")]
         public async Task<IActionResult> DeleteReview([FromRoute] int gigId, int reviewId, CancellationToken cancellationToken)
         {
             await Mediator.Send(new DeleteReviewCommand(reviewId), cancellationToken);

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using FluentValidation.AspNetCore;
 using Hive.Common.Core;
 using Hive.Common.Core.Filters;
@@ -14,7 +15,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
+using NSwag;
+using NSwag.Generation.Processors.Security;
 using Ordering.Application;
 using Ordering.Infrastructure;
 
@@ -63,14 +65,34 @@ namespace Ordering.Management
                     policy.AddRequirements(new OnlyOwnerAuthorizationRequirement(Array.Empty<string>())));
             });
             
+            services.AddCors(options =>
+            {
+                options.AddPolicy(name: "Angular",
+                    builder =>
+                    {
+                        builder.WithOrigins("http://localhost:4200")
+                            .AllowAnyHeader()
+                            .AllowAnyMethod();
+                    });
+            });
+            
             services.AddScoped<ICurrentUserService, CurrentUserService>();
             services.AddScoped<IIdentityService, IdentityService>();
             services.AddScoped<IDateTimeService, DateTimeService>();
             services.AddSingleton<IAuthorizationHandler, EntityOwnerAuthorizationHandler>();
 
-            services.AddSwaggerGen(c =>
+            services.AddOpenApiDocument(configure =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo {Title = "Investing.Management", Version = "v1"});
+                configure.Title = "Ordering Management API";
+                configure.AddSecurity("JWT", Enumerable.Empty<string>(), new OpenApiSecurityScheme
+                {
+                    Type = OpenApiSecuritySchemeType.ApiKey,
+                    Name = "Authorization",
+                    In = OpenApiSecurityApiKeyLocation.Header,
+                    Description = "Type into the textbox: Bearer {your JWT token}."
+                });
+
+                configure.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("JWT"));
             });
         }
 
@@ -80,13 +102,19 @@ namespace Ordering.Management
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Investing.Management v1"));
             }
 
-            app.UseHttpsRedirection();
+            app.UseSwaggerUi3(settings =>
+            {
+                settings.Path = "/api";
+                settings.DocumentPath = "/api/specification.json";
+            });
 
+            app.UseHttpsRedirection();
+            
             app.UseRouting();
+            
+            app.UseCors("Angular");
 
             app.UseAuthentication();
             app.UseAuthorization();

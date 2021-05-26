@@ -2,6 +2,7 @@
 
     <PropertyGroup>
         <TargetFramework>net5.0</TargetFramework>
+        <UserSecretsId>7da55536-603e-42ab-8e75-af813d4a5ce4</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
@@ -12,7 +13,9 @@
     <ItemGroup>
       <PackageReference Include="FluentValidation.AspNetCore" Version="10.1.0" />
       <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.5" />
-      <PackageReference Include="Serilog.AspNetCore" Version="4.1.0" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="5.0.0" />
+
+        <PackageReference Include="Serilog.AspNetCore" Version="4.1.0" />
       <PackageReference Include="Serilog.Enrichers.Environment" Version="2.1.3" />
       <PackageReference Include="Serilog.Sinks.Elasticsearch" Version="8.4.1" />
         <PackageReference Include="NSwag.AspNetCore" Version="13.9.4" />

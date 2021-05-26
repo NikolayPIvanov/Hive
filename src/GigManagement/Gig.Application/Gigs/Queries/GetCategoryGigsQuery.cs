@@ -13,7 +13,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Hive.Gig.Application.Gigs.Queries
 {
-    public record GetCategoryGigsQuery(int CategoryId, int PageNumber = 1, int PageSize = 10) : IRequest<PaginatedList<GigOverviewDto>>;
+    public record GetGigsQuery(int PageNumber = 1, int PageSize = 10, string? SearchKey = null) : PaginatedQuery(
+        PageNumber, PageSize);
+    public record GetCategoryGigsQuery(int CategoryId, GetGigsQuery Query) : IRequest<PaginatedList<GigOverviewDto>>;
     
     public class GetCategoryGigsQueryHandler : IRequestHandler<GetCategoryGigsQuery, PaginatedList<GigOverviewDto>>
     {
@@ -31,14 +33,25 @@ namespace Hive.Gig.Application.Gigs.Queries
         public async Task<PaginatedList<GigOverviewDto>> Handle(GetCategoryGigsQuery request, CancellationToken cancellationToken)
         {
             _logger.LogInformation("Fetching gigs for category id: {Id}", request.CategoryId);
-            
-            var list = await _dbContext.Gigs
-                .Include(g => g.Packages)
-                .Include(g => g.Seller)
-                .Where(g => g.CategoryId == request.CategoryId && !g.IsDraft)
-                .AsNoTracking()
+            var (number, size, key) = request.Query;
+
+            var query =
+                _dbContext.Gigs
+                    .AsNoTracking()
+                    .Include(g => g.Packages)
+                    .Include(g => g.Seller)
+                    .Where(g => g.CategoryId == request.CategoryId && !g.IsDraft);
+
+            if (key != null)
+            {
+                query = query
+                    .Where(g => g.Title.ToLowerInvariant().Contains(key.ToLowerInvariant()));
+            }
+                
+            var list = 
+                await query
                 .ProjectTo<GigOverviewDto>(_mapper.ConfigurationProvider) 
-                .PaginatedListAsync(request.PageNumber, request.PageSize);
+                .PaginatedListAsync(number, size);
 
             return list;
         }

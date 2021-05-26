@@ -7,6 +7,7 @@ using AutoMapper;
 using Hive.Common.Core.Mappings;
 using Hive.Gig.Application.Interfaces;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Hive.Gig.Application.GigPackages.Queries
@@ -29,7 +30,9 @@ namespace Hive.Gig.Application.GigPackages.Queries
         public async Task<IEnumerable<PackageDto>> Handle(GetGigPackagesQuery request, CancellationToken cancellationToken)
         {
             _logger.LogInformation("Fetching packages for gig with id: {@GigId}", request.GigId);
+            
             return await _context.Packages
+                .AsNoTracking()
                 .Where(p => p.GigId == request.GigId)
                 .ProjectToListAsync<PackageDto>(_mapper.ConfigurationProvider);
         }

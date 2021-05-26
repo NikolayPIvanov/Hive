@@ -7,13 +7,12 @@ using Hive.Gig.Application.Categories.Commands;
 using Hive.Gig.Application.Categories.Queries;
 using Hive.Gig.Application.Gigs.Queries;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
 
 namespace Gig.Management.Controllers
 {
-    [Authorize]
+    [Authorize(Roles = "Admin")]
     public class CategoriesController : ApiControllerBase
     {
         [HttpGet("{id:int}")]
@@ -35,15 +34,8 @@ namespace Gig.Management.Controllers
         [SwaggerResponse(HttpStatusCode.OK, typeof(PaginatedList<GigOverviewDto>), Description = "Successful operation")]
         [SwaggerResponse(HttpStatusCode.NotFound, typeof(NotFoundObjectResult), Description = "Not Found operation")]
         public async Task<ActionResult<PaginatedList<GigOverviewDto>>> GetCategoryGigs([FromRoute] int id,
-            [FromQuery] int pageNumber = 1, int pageSize = 10, CancellationToken cancellationToken = default)
-            => Ok(await Mediator.Send(new GetCategoryGigsQuery(id, pageNumber, pageSize), cancellationToken));
-        
-        [HttpGet("search")]
-        [AllowAnonymous]
-        [SwaggerResponse(HttpStatusCode.OK, typeof(ICollection<CategoryDto>), Description = "Successful operation")]
-        public async Task<ActionResult<ICollection<CategoryDto>>> GetCategoriesByName([FromQuery] GetCategoryByNameQuery query,
-            CancellationToken cancellationToken) 
-            => Ok(await Mediator.Send(query, cancellationToken));
+            [FromQuery] GetGigsQuery query, CancellationToken cancellationToken = default)
+            => Ok(await Mediator.Send(new GetCategoryGigsQuery(id, query), cancellationToken));
         
         [HttpPost]
         [SwaggerResponse(HttpStatusCode.Created, typeof(int), Description = "Successful operation")]
@@ -55,7 +47,7 @@ namespace Gig.Management.Controllers
         }
         
         [HttpPut("{id:int}")]
-        [SwaggerResponse(HttpStatusCode.NoContent, typeof(void), Description = "Successful operation")]
+        [SwaggerResponse(HttpStatusCode.NoContent, typeof(ActionResult), Description = "Successful operation")]
         [SwaggerResponse(HttpStatusCode.NotFound, typeof(NotFoundObjectResult), Description = "Not Found operation")]
         [SwaggerResponse(HttpStatusCode.BadRequest, typeof(BadRequestObjectResult), Description = "Bad Request operation")]
         public async Task<ActionResult> UpdateCategory([FromRoute] int id, [FromBody] UpdateCategoryCommand command,

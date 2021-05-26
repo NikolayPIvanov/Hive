@@ -6,17 +6,18 @@ using FluentValidation;
 using Hive.Billing.Domain.Entities;
 using Hive.Billing.Domain.Enums;
 using Hive.Common.Core.Exceptions;
+using Hive.Common.Core.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Billing.Application.Wallets.Commands
 {
-    public record CreateTransactionCommand(decimal Amount, Guid? OrderNumber, int WalletId, TransactionType TransactionType = TransactionType.Fund) : IRequest<int>;
+    public record CreateTransactionCommand(decimal Amount, Guid? OrderNumber, int WalletId) : IRequest<int>;
 
     public class CreateTransactionCommandValidator : AbstractValidator<CreateTransactionCommand>
     {
-        public CreateTransactionCommandValidator()
+        public CreateTransactionCommandValidator(IBillingDbContext billingDbContext, ICurrentUserService currentUserService)
         {
             RuleFor(x => x.Amount)
                 .GreaterThan(0.0m).WithMessage("{Property} be above {ComparisonValue}");
@@ -24,6 +25,17 @@ namespace Billing.Application.Wallets.Commands
             RuleFor(x => x.OrderNumber)
                 .Must(x => x != Guid.Empty).When(x => x.OrderNumber.HasValue)
                 .WithMessage("{Property} cannot be a default one");
+
+            RuleFor(x => x.WalletId)
+                .MustAsync(async (id, token) =>
+                {
+                    var wallet = await billingDbContext.Wallets
+                        .AsNoTracking()
+                        .Include(x => x.AccountHolder)
+                        .FirstOrDefaultAsync(x => x.Id == id, token);
+                    return wallet == null || wallet.AccountHolder.UserId == currentUserService.UserId;
+                })
+                .WithMessage("Can only fund own wallets");
         }
     }
     
@@ -40,14 +52,16 @@ namespace Billing.Application.Wallets.Commands
         
         public async Task<int> Handle(CreateTransactionCommand request, CancellationToken cancellationToken)
         {
-            var wallet = await _context.Wallets.FirstOrDefaultAsync(w => w.Id == request.WalletId, cancellationToken);
+            var wallet = await _context.Wallets
+                .FirstOrDefaultAsync(w => w.Id == request.WalletId, cancellationToken);
+            
             if (wallet == null)
             {
                 _logger.LogWarning("Wallet with id: {@Id} does not exist", request.WalletId);
                 throw new NotFoundException(nameof(Wallet), request.WalletId);
             } 
             
-            var transaction = new Transaction(request.Amount, request.OrderNumber, request.TransactionType);
+            var transaction = new Transaction(request.Amount, request.OrderNumber, TransactionType.Fund);
             wallet.AddTransaction(transaction);
 
             await _context.SaveChangesAsync(cancellationToken);

@@ -29,6 +29,7 @@ namespace Hive.Gig.Application.GigPackages.Queries
         public async Task<PackageDto> Handle(GetPackageQuery request, CancellationToken cancellationToken)
         {
             var entity = await _context.Packages
+                .AsNoTracking()
                 .FirstOrDefaultAsync(g => g.Id == request.Id, cancellationToken);
 
             if (entity is null)

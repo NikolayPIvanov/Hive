@@ -1,8 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections;
+using System.Collections.Generic;
+using System.Net;
+using System.Threading.Tasks;
 using Billing.Application.Wallets.Commands;
 using Billing.Application.Wallets.Queries;
 using Hive.Common.Core.Security;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 using Stripe;
 
 namespace Billing.Management.Controllers
@@ -11,13 +15,21 @@ namespace Billing.Management.Controllers
     public class AccountHoldersController : ApiControllerBase
     {
         [HttpGet("{accountHolderId:int}/wallets")]
-        public async Task<IActionResult> GetMyWallet() => Ok(await Mediator.Send(new GetMyWalletCommand()));
+        [SwaggerResponse(HttpStatusCode.OK, typeof(WalletDto), Description = "Successful operation")]
+        [SwaggerResponse(HttpStatusCode.NotFound, typeof(NotFoundObjectResult), Description = "Not Found operation")]
+        public async Task<ActionResult<WalletDto>> GetMyWallet() => Ok(await Mediator.Send(new GetMyWalletCommand()));
         
         [HttpGet("{accountHolderId:int}/wallets/{walletId:int}")]
-        public async Task<IActionResult> GetWalletTransactions(int walletId) => Ok(await Mediator.Send(new GetWalletByIdQuery(walletId)));
+        [SwaggerResponse(HttpStatusCode.OK, typeof(IEnumerable<TransactionDto>), Description = "Successful operation")]
+        [SwaggerResponse(HttpStatusCode.NotFound, typeof(NotFoundObjectResult), Description = "Not Found operation")]
+        public async Task<ActionResult<IEnumerable<TransactionDto>>> GetWalletTransactions(int walletId) 
+            => Ok(await Mediator.Send(new GetWalletByIdQuery(walletId)));
 
         [HttpPost("{accountHolderId:int}/wallets/{walletId:int}/transactions")]
-        public async Task<IActionResult> CreateTransaction([FromRoute] int walletId, [FromBody] CreateTransactionCommand command)
+        [SwaggerResponse(HttpStatusCode.Created, typeof(int), Description = "Successful operation")]
+        [SwaggerResponse(HttpStatusCode.BadRequest, typeof(BadRequestObjectResult), Description = "Bad Request operation")]
+        [SwaggerResponse(HttpStatusCode.NotFound, typeof(NotFoundObjectResult), Description = "Not Found operation")]
+        public async Task<IActionResult> DepositInWallet([FromRoute] int walletId, [FromBody] CreateTransactionCommand command)
         {
             if (walletId != command.WalletId)
             {

@@ -8,11 +8,13 @@ using Hive.Common.Core.Mappings;
 using Hive.Common.Core.Models;
 using Hive.Gig.Application.Interfaces;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Hive.Gig.Application.Categories.Queries
 {
-    public record GetCategoriesQuery(int PageNumber = 1, int PageSize = 10, bool OnlyParents = false) : IRequest<PaginatedList<CategoryDto>>;
+    public record GetCategoriesQuery(int PageNumber = 1, int PageSize = 10, bool OnlyParents = false, string? SearchKey = null) :
+        PaginatedQuery(PageNumber, PageSize), IRequest<PaginatedList<CategoryDto>>;
 
     public class GetCategoriesQueryHandler : IRequestHandler<GetCategoriesQuery, PaginatedList<CategoryDto>>
     {
@@ -29,11 +31,16 @@ namespace Hive.Gig.Application.Categories.Queries
         
         public async Task<PaginatedList<CategoryDto>> Handle(GetCategoriesQuery request, CancellationToken cancellationToken)
         {
-            var query = _dbContext.Categories.AsQueryable();
-            var (pageNumber, pageSize, onlyParents) = request;
+            var query = _dbContext.Categories.AsNoTracking().AsQueryable();
+            var (pageNumber, pageSize, onlyParents, searchKey) = request;
             if (onlyParents)
             {
                 query = query.Where(c => !c.ParentId.HasValue);
+            }
+
+            if (searchKey != null)
+            {
+                query = query.Where(c => c.Title.ToLowerInvariant().Contains(searchKey.ToLowerInvariant()));
             }
 
             var categories = await query

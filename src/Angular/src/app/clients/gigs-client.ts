@@ -23,34 +23,31 @@ export interface ICategoriesClient {
      * @param command (optional) 
      * @return Successful operation
      */
-    updateCategory(id: number, command: UpdateCategoryCommand | null | undefined): Observable<void>;
+    updateCategory(id: number, command: UpdateCategoryCommand | null | undefined): Observable<FileResponse>;
     /**
      * @return Successful operation
      */
     deleteCategory(id: number): Observable<void>;
     /**
-     * @param pageNumber (optional) 
-     * @param pageSize (optional) 
      * @param onlyParents (optional) 
+     * @param searchKey (optional) 
+     * @param pageSize (optional) 
+     * @param pageNumber (optional) 
      * @return Successful operation
      */
-    getCategories(pageNumber: number | undefined, pageSize: number | undefined, onlyParents: boolean | undefined): Observable<PaginatedListOfCategoryDto>;
+    getCategories(onlyParents: boolean | undefined, searchKey: string | null | undefined, pageSize: number | undefined, pageNumber: number | undefined): Observable<PaginatedListOfCategoryDto>;
     /**
      * @param command (optional) 
      * @return Successful operation
      */
     createCategory(command: CreateCategoryCommand | null | undefined): Observable<number>;
     /**
-     * @param pageNumber (optional) 
+     * @param searchKey (optional) 
      * @param pageSize (optional) 
+     * @param pageNumber (optional) 
      * @return Successful operation
      */
-    getCategoryGigs(id: number, pageNumber: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfGigOverviewDto>;
-    /**
-     * @param name (optional) 
-     * @return Successful operation
-     */
-    getCategoriesByName(name: string | null | undefined): Observable<CategoryDto[]>;
+    getCategoryGigs(id: number, searchKey: string | null | undefined, pageSize: number | undefined, pageNumber: number | undefined): Observable<PaginatedListOfGigOverviewDto>;
 }
 
 @Injectable({
@@ -131,7 +128,7 @@ export class CategoriesClient implements ICategoriesClient {
      * @param command (optional) 
      * @return Successful operation
      */
-    updateCategory(id: number, command: UpdateCategoryCommand | null | undefined): Observable<void> {
+    updateCategory(id: number, command: UpdateCategoryCommand | null | undefined): Observable<FileResponse> {
         let url_ = this.baseUrl + "/api/Categories/{id}";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
@@ -146,6 +143,7 @@ export class CategoriesClient implements ICategoriesClient {
             responseType: "blob",
             headers: new HttpHeaders({
                 "Content-Type": "application/json",
+                "Accept": "application/octet-stream"
             })
         };
 
@@ -156,14 +154,14 @@ export class CategoriesClient implements ICategoriesClient {
                 try {
                     return this.processUpdateCategory(<any>response_);
                 } catch (e) {
-                    return <Observable<void>><any>_observableThrow(e);
+                    return <Observable<FileResponse>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<void>><any>_observableThrow(response_);
+                return <Observable<FileResponse>><any>_observableThrow(response_);
         }));
     }
 
-    protected processUpdateCategory(response: HttpResponseBase): Observable<void> {
+    protected processUpdateCategory(response: HttpResponseBase): Observable<FileResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -172,7 +170,10 @@ export class CategoriesClient implements ICategoriesClient {
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
         if (status === 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return _observableOf<void>(<any>null);
+            let result204: any = null;
+            let resultData204 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result204 = resultData204 !== undefined ? resultData204 : <any>null;
+            return _observableOf(result204);
             }));
         } else if (status === 404) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
@@ -193,7 +194,7 @@ export class CategoriesClient implements ICategoriesClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<void>(<any>null);
+        return _observableOf<FileResponse>(<any>null);
     }
 
     /**
@@ -254,25 +255,28 @@ export class CategoriesClient implements ICategoriesClient {
     }
 
     /**
-     * @param pageNumber (optional) 
-     * @param pageSize (optional) 
      * @param onlyParents (optional) 
+     * @param searchKey (optional) 
+     * @param pageSize (optional) 
+     * @param pageNumber (optional) 
      * @return Successful operation
      */
-    getCategories(pageNumber: number | undefined, pageSize: number | undefined, onlyParents: boolean | undefined): Observable<PaginatedListOfCategoryDto> {
+    getCategories(onlyParents: boolean | undefined, searchKey: string | null | undefined, pageSize: number | undefined, pageNumber: number | undefined): Observable<PaginatedListOfCategoryDto> {
         let url_ = this.baseUrl + "/api/Categories?";
-        if (pageNumber === null)
-            throw new Error("The parameter 'pageNumber' cannot be null.");
-        else if (pageNumber !== undefined)
-            url_ += "PageNumber=" + encodeURIComponent("" + pageNumber) + "&";
-        if (pageSize === null)
-            throw new Error("The parameter 'pageSize' cannot be null.");
-        else if (pageSize !== undefined)
-            url_ += "PageSize=" + encodeURIComponent("" + pageSize) + "&";
         if (onlyParents === null)
             throw new Error("The parameter 'onlyParents' cannot be null.");
         else if (onlyParents !== undefined)
             url_ += "OnlyParents=" + encodeURIComponent("" + onlyParents) + "&";
+        if (searchKey !== undefined && searchKey !== null)
+            url_ += "SearchKey=" + encodeURIComponent("" + searchKey) + "&";
+        if (pageSize === null)
+            throw new Error("The parameter 'pageSize' cannot be null.");
+        else if (pageSize !== undefined)
+            url_ += "PageSize=" + encodeURIComponent("" + pageSize) + "&";
+        if (pageNumber === null)
+            throw new Error("The parameter 'pageNumber' cannot be null.");
+        else if (pageNumber !== undefined)
+            url_ += "PageNumber=" + encodeURIComponent("" + pageNumber) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -383,23 +387,26 @@ export class CategoriesClient implements ICategoriesClient {
     }
 
     /**
-     * @param pageNumber (optional) 
+     * @param searchKey (optional) 
      * @param pageSize (optional) 
+     * @param pageNumber (optional) 
      * @return Successful operation
      */
-    getCategoryGigs(id: number, pageNumber: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfGigOverviewDto> {
+    getCategoryGigs(id: number, searchKey: string | null | undefined, pageSize: number | undefined, pageNumber: number | undefined): Observable<PaginatedListOfGigOverviewDto> {
         let url_ = this.baseUrl + "/api/Categories/{id}/gigs?";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        if (pageNumber === null)
-            throw new Error("The parameter 'pageNumber' cannot be null.");
-        else if (pageNumber !== undefined)
-            url_ += "pageNumber=" + encodeURIComponent("" + pageNumber) + "&";
+        if (searchKey !== undefined && searchKey !== null)
+            url_ += "SearchKey=" + encodeURIComponent("" + searchKey) + "&";
         if (pageSize === null)
             throw new Error("The parameter 'pageSize' cannot be null.");
         else if (pageSize !== undefined)
-            url_ += "pageSize=" + encodeURIComponent("" + pageSize) + "&";
+            url_ += "PageSize=" + encodeURIComponent("" + pageSize) + "&";
+        if (pageNumber === null)
+            throw new Error("The parameter 'pageNumber' cannot be null.");
+        else if (pageNumber !== undefined)
+            url_ += "PageNumber=" + encodeURIComponent("" + pageNumber) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -452,64 +459,6 @@ export class CategoriesClient implements ICategoriesClient {
         }
         return _observableOf<PaginatedListOfGigOverviewDto>(<any>null);
     }
-
-    /**
-     * @param name (optional) 
-     * @return Successful operation
-     */
-    getCategoriesByName(name: string | null | undefined): Observable<CategoryDto[]> {
-        let url_ = this.baseUrl + "/api/Categories/search?";
-        if (name !== undefined && name !== null)
-            url_ += "Name=" + encodeURIComponent("" + name) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetCategoriesByName(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetCategoriesByName(<any>response_);
-                } catch (e) {
-                    return <Observable<CategoryDto[]>><any>_observableThrow(e);
-                }
-            } else
-                return <Observable<CategoryDto[]>><any>_observableThrow(response_);
-        }));
-    }
-
-    protected processGetCategoriesByName(response: HttpResponseBase): Observable<CategoryDto[]> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(CategoryDto.fromJS(item));
-            }
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<CategoryDto[]>(<any>null);
-    }
 }
 
 export interface IGigsClient {
@@ -532,21 +481,56 @@ export interface IGigsClient {
      */
     getRandom(quantity: number | undefined): Observable<GigDto[]>;
     /**
-     * @param value (optional) 
+     * @param command (optional) 
      * @return Successful operation
      */
-    getByName(value: string | null | undefined): Observable<GigOverviewDto[]>;
     post(command: CreateGigCommand | null | undefined): Observable<number>;
+    /**
+     * @return Successful operation
+     */
     getPackageById(id: number, packageId: number): Observable<PackageDto>;
+    /**
+     * @param command (optional) 
+     * @return Successful operation
+     */
     updatePackage(id: number, packageId: number, command: UpdatePackageCommand | null | undefined): Observable<FileResponse>;
+    /**
+     * @return Successful operation
+     */
     deletePackage(id: number, packageId: number): Observable<FileResponse>;
+    /**
+     * @return Successful operation
+     */
     getPackages(id: number): Observable<PackageDto[]>;
+    /**
+     * @param command (optional) 
+     * @return Successful operation
+     */
     createPackage(id: number, command: CreatePackageCommand | null | undefined): Observable<number>;
+    /**
+     * @return Successful operation
+     */
     getReviewById(gigId: number, reviewId: number): Observable<ReviewDto>;
+    /**
+     * @param command (optional) 
+     * @return Successful operation
+     */
     updateReview(gigId: number, reviewId: number, command: UpdateReviewCommand | null | undefined): Observable<FileResponse>;
+    /**
+     * @return Successful operation
+     */
     deleteReview(gigId: number, reviewId: number): Observable<FileResponse>;
+    /**
+     * @param pageNumber (optional) 
+     * @param pageSize (optional) 
+     * @return Successful operation
+     */
     getReviewsList(gigId: number, pageNumber: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfReviewDto>;
-    createReview(gigId: number, command: CreateReviewCommand | null | undefined): Observable<FileResponse>;
+    /**
+     * @param command (optional) 
+     * @return Successful operation
+     */
+    createReview(gigId: number, command: CreateReviewCommand | null | undefined): Observable<number>;
 }
 
 @Injectable({
@@ -825,63 +809,9 @@ export class GigsClient implements IGigsClient {
     }
 
     /**
-     * @param value (optional) 
+     * @param command (optional) 
      * @return Successful operation
      */
-    getByName(value: string | null | undefined): Observable<GigOverviewDto[]> {
-        let url_ = this.baseUrl + "/api/Gigs/search?";
-        if (value !== undefined && value !== null)
-            url_ += "Value=" + encodeURIComponent("" + value) + "&";
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetByName(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processGetByName(<any>response_);
-                } catch (e) {
-                    return <Observable<GigOverviewDto[]>><any>_observableThrow(e);
-                }
-            } else
-                return <Observable<GigOverviewDto[]>><any>_observableThrow(response_);
-        }));
-    }
-
-    protected processGetByName(response: HttpResponseBase): Observable<GigOverviewDto[]> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(GigOverviewDto.fromJS(item));
-            }
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<GigOverviewDto[]>(<any>null);
-    }
-
     post(command: CreateGigCommand | null | undefined): Observable<number> {
         let url_ = this.baseUrl + "/api/Gigs";
         url_ = url_.replace(/[?&]$/, "");
@@ -919,12 +849,19 @@ export class GigsClient implements IGigsClient {
             (<any>response).error instanceof Blob ? (<any>response).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
+        if (status === 201) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = resultData200 !== undefined ? resultData200 : <any>null;
-            return _observableOf(result200);
+            let result201: any = null;
+            let resultData201 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result201 = resultData201 !== undefined ? resultData201 : <any>null;
+            return _observableOf(result201);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = resultData400 !== undefined ? resultData400 : <any>null;
+            return throwException("Bad Request operation", status, _responseText, _headers, result400);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
@@ -934,6 +871,9 @@ export class GigsClient implements IGigsClient {
         return _observableOf<number>(<any>null);
     }
 
+    /**
+     * @return Successful operation
+     */
     getPackageById(id: number, packageId: number): Observable<PackageDto> {
         let url_ = this.baseUrl + "/api/Gigs/{id}/packages/{packageId}";
         if (id === undefined || id === null)
@@ -980,6 +920,13 @@ export class GigsClient implements IGigsClient {
             result200 = PackageDto.fromJS(resultData200);
             return _observableOf(result200);
             }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result404 = ProblemDetails.fromJS(resultData404);
+            return throwException("Anomaly not found", status, _responseText, _headers, result404);
+            }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
@@ -988,6 +935,10 @@ export class GigsClient implements IGigsClient {
         return _observableOf<PackageDto>(<any>null);
     }
 
+    /**
+     * @param command (optional) 
+     * @return Successful operation
+     */
     updatePackage(id: number, packageId: number, command: UpdatePackageCommand | null | undefined): Observable<FileResponse> {
         let url_ = this.baseUrl + "/api/Gigs/{id}/packages/{packageId}";
         if (id === undefined || id === null)
@@ -1031,11 +982,27 @@ export class GigsClient implements IGigsClient {
             (<any>response).error instanceof Blob ? (<any>response).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            return _observableOf({ fileName: fileName, data: <any>responseBlob, status: status, headers: _headers });
+        if (status === 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result204: any = null;
+            let resultData204 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result204 = resultData204 !== undefined ? resultData204 : <any>null;
+            return _observableOf(result204);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("Invalid ID supplied", status, _responseText, _headers, result400);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result404 = ProblemDetails.fromJS(resultData404);
+            return throwException("Anomaly not found", status, _responseText, _headers, result404);
+            }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
@@ -1044,6 +1011,9 @@ export class GigsClient implements IGigsClient {
         return _observableOf<FileResponse>(<any>null);
     }
 
+    /**
+     * @return Successful operation
+     */
     deletePackage(id: number, packageId: number): Observable<FileResponse> {
         let url_ = this.baseUrl + "/api/Gigs/{id}/packages/{packageId}";
         if (id === undefined || id === null)
@@ -1083,11 +1053,20 @@ export class GigsClient implements IGigsClient {
             (<any>response).error instanceof Blob ? (<any>response).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            return _observableOf({ fileName: fileName, data: <any>responseBlob, status: status, headers: _headers });
+        if (status === 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result204: any = null;
+            let resultData204 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result204 = resultData204 !== undefined ? resultData204 : <any>null;
+            return _observableOf(result204);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result404 = ProblemDetails.fromJS(resultData404);
+            return throwException("Anomaly not found", status, _responseText, _headers, result404);
+            }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
@@ -1096,6 +1075,9 @@ export class GigsClient implements IGigsClient {
         return _observableOf<FileResponse>(<any>null);
     }
 
+    /**
+     * @return Successful operation
+     */
     getPackages(id: number): Observable<PackageDto[]> {
         let url_ = this.baseUrl + "/api/Gigs/{id}/packages";
         if (id === undefined || id === null)
@@ -1143,6 +1125,13 @@ export class GigsClient implements IGigsClient {
             }
             return _observableOf(result200);
             }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result404 = ProblemDetails.fromJS(resultData404);
+            return throwException("Anomaly not found", status, _responseText, _headers, result404);
+            }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
@@ -1151,6 +1140,10 @@ export class GigsClient implements IGigsClient {
         return _observableOf<PackageDto[]>(<any>null);
     }
 
+    /**
+     * @param command (optional) 
+     * @return Successful operation
+     */
     createPackage(id: number, command: CreatePackageCommand | null | undefined): Observable<number> {
         let url_ = this.baseUrl + "/api/Gigs/{id}/packages";
         if (id === undefined || id === null)
@@ -1191,12 +1184,26 @@ export class GigsClient implements IGigsClient {
             (<any>response).error instanceof Blob ? (<any>response).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
+        if (status === 201) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = resultData200 !== undefined ? resultData200 : <any>null;
-            return _observableOf(result200);
+            let result201: any = null;
+            let resultData201 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result201 = resultData201 !== undefined ? resultData201 : <any>null;
+            return _observableOf(result201);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("Invalid ID supplied", status, _responseText, _headers, result400);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result404 = ProblemDetails.fromJS(resultData404);
+            return throwException("Anomaly not found", status, _responseText, _headers, result404);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
@@ -1206,6 +1213,9 @@ export class GigsClient implements IGigsClient {
         return _observableOf<number>(<any>null);
     }
 
+    /**
+     * @return Successful operation
+     */
     getReviewById(gigId: number, reviewId: number): Observable<ReviewDto> {
         let url_ = this.baseUrl + "/api/Gigs/{gigId}/reviews/{reviewId}";
         if (gigId === undefined || gigId === null)
@@ -1252,6 +1262,13 @@ export class GigsClient implements IGigsClient {
             result200 = ReviewDto.fromJS(resultData200);
             return _observableOf(result200);
             }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result404 = ProblemDetails.fromJS(resultData404);
+            return throwException("Anomaly not found", status, _responseText, _headers, result404);
+            }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
@@ -1260,6 +1277,10 @@ export class GigsClient implements IGigsClient {
         return _observableOf<ReviewDto>(<any>null);
     }
 
+    /**
+     * @param command (optional) 
+     * @return Successful operation
+     */
     updateReview(gigId: number, reviewId: number, command: UpdateReviewCommand | null | undefined): Observable<FileResponse> {
         let url_ = this.baseUrl + "/api/Gigs/{gigId}/reviews/{reviewId}";
         if (gigId === undefined || gigId === null)
@@ -1303,11 +1324,27 @@ export class GigsClient implements IGigsClient {
             (<any>response).error instanceof Blob ? (<any>response).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            return _observableOf({ fileName: fileName, data: <any>responseBlob, status: status, headers: _headers });
+        if (status === 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result204: any = null;
+            let resultData204 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result204 = resultData204 !== undefined ? resultData204 : <any>null;
+            return _observableOf(result204);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("Invalid ID supplied", status, _responseText, _headers, result400);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result404 = ProblemDetails.fromJS(resultData404);
+            return throwException("Anomaly not found", status, _responseText, _headers, result404);
+            }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
@@ -1316,6 +1353,9 @@ export class GigsClient implements IGigsClient {
         return _observableOf<FileResponse>(<any>null);
     }
 
+    /**
+     * @return Successful operation
+     */
     deleteReview(gigId: number, reviewId: number): Observable<FileResponse> {
         let url_ = this.baseUrl + "/api/Gigs/{gigId}/reviews/{reviewId}";
         if (gigId === undefined || gigId === null)
@@ -1355,11 +1395,20 @@ export class GigsClient implements IGigsClient {
             (<any>response).error instanceof Blob ? (<any>response).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            return _observableOf({ fileName: fileName, data: <any>responseBlob, status: status, headers: _headers });
+        if (status === 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result204: any = null;
+            let resultData204 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result204 = resultData204 !== undefined ? resultData204 : <any>null;
+            return _observableOf(result204);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result404 = ProblemDetails.fromJS(resultData404);
+            return throwException("Anomaly not found", status, _responseText, _headers, result404);
+            }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
@@ -1368,6 +1417,11 @@ export class GigsClient implements IGigsClient {
         return _observableOf<FileResponse>(<any>null);
     }
 
+    /**
+     * @param pageNumber (optional) 
+     * @param pageSize (optional) 
+     * @return Successful operation
+     */
     getReviewsList(gigId: number, pageNumber: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfReviewDto> {
         let url_ = this.baseUrl + "/api/Gigs/{gigId}/reviews?";
         if (gigId === undefined || gigId === null)
@@ -1419,6 +1473,13 @@ export class GigsClient implements IGigsClient {
             result200 = PaginatedListOfReviewDto.fromJS(resultData200);
             return _observableOf(result200);
             }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result404 = ProblemDetails.fromJS(resultData404);
+            return throwException("Anomaly not found", status, _responseText, _headers, result404);
+            }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
@@ -1427,7 +1488,11 @@ export class GigsClient implements IGigsClient {
         return _observableOf<PaginatedListOfReviewDto>(<any>null);
     }
 
-    createReview(gigId: number, command: CreateReviewCommand | null | undefined): Observable<FileResponse> {
+    /**
+     * @param command (optional) 
+     * @return Successful operation
+     */
+    createReview(gigId: number, command: CreateReviewCommand | null | undefined): Observable<number> {
         let url_ = this.baseUrl + "/api/Gigs/{gigId}/reviews";
         if (gigId === undefined || gigId === null)
             throw new Error("The parameter 'gigId' must be defined.");
@@ -1442,7 +1507,7 @@ export class GigsClient implements IGigsClient {
             responseType: "blob",
             headers: new HttpHeaders({
                 "Content-Type": "application/json",
-                "Accept": "application/octet-stream"
+                "Accept": "application/json"
             })
         };
 
@@ -1453,36 +1518,60 @@ export class GigsClient implements IGigsClient {
                 try {
                     return this.processCreateReview(<any>response_);
                 } catch (e) {
-                    return <Observable<FileResponse>><any>_observableThrow(e);
+                    return <Observable<number>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<FileResponse>><any>_observableThrow(response_);
+                return <Observable<number>><any>_observableThrow(response_);
         }));
     }
 
-    protected processCreateReview(response: HttpResponseBase): Observable<FileResponse> {
+    protected processCreateReview(response: HttpResponseBase): Observable<number> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
             (<any>response).error instanceof Blob ? (<any>response).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            return _observableOf({ fileName: fileName, data: <any>responseBlob, status: status, headers: _headers });
+        if (status === 201) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result201: any = null;
+            let resultData201 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result201 = resultData201 !== undefined ? resultData201 : <any>null;
+            return _observableOf(result201);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = ProblemDetails.fromJS(resultData400);
+            return throwException("Invalid ID supplied", status, _responseText, _headers, result400);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result404 = ProblemDetails.fromJS(resultData404);
+            return throwException("Anomaly not found", status, _responseText, _headers, result404);
+            }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<FileResponse>(<any>null);
+        return _observableOf<number>(<any>null);
     }
 }
 
 export interface ISellersClient {
+    /**
+     * @return Successful operation
+     */
     getUserSellerId(): Observable<string>;
+    /**
+     * @param pageSize (optional) 
+     * @param pageNumber (optional) 
+     * @return Successful operation
+     */
     getMyGigs(pageSize: number | undefined, pageNumber: number | undefined, id: string): Observable<PaginatedListOfGigOverviewDto>;
 }
 
@@ -1499,6 +1588,9 @@ export class SellersClient implements ISellersClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
+    /**
+     * @return Successful operation
+     */
     getUserSellerId(): Observable<string> {
         let url_ = this.baseUrl + "/api/Sellers";
         url_ = url_.replace(/[?&]$/, "");
@@ -1539,6 +1631,13 @@ export class SellersClient implements ISellersClient {
             result200 = resultData200 !== undefined ? resultData200 : <any>null;
             return _observableOf(result200);
             }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result404 = ProblemDetails.fromJS(resultData404);
+            return throwException("Anomaly not found", status, _responseText, _headers, result404);
+            }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
@@ -1547,6 +1646,11 @@ export class SellersClient implements ISellersClient {
         return _observableOf<string>(<any>null);
     }
 
+    /**
+     * @param pageSize (optional) 
+     * @param pageNumber (optional) 
+     * @return Successful operation
+     */
     getMyGigs(pageSize: number | undefined, pageNumber: number | undefined, id: string): Observable<PaginatedListOfGigOverviewDto> {
         let url_ = this.baseUrl + "/api/Sellers/{id}/gigs?";
         if (id === undefined || id === null)
@@ -1597,6 +1701,13 @@ export class SellersClient implements ISellersClient {
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = PaginatedListOfGigOverviewDto.fromJS(resultData200);
             return _observableOf(result200);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result404 = ProblemDetails.fromJS(resultData404);
+            return throwException("Anomaly not found", status, _responseText, _headers, result404);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {

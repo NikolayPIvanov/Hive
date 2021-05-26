@@ -6,8 +6,26 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Hive.Common.Core.Models
 {
-    public record PaginatedQuery(int PageNumber = 1, int PageSize = 10);
-    public class PaginatedList<T> 
+    public record PaginatedQuery
+    {
+        public int PageSize { get; private set; }
+
+        public int PageNumber { get; private set; }
+        
+        public PaginatedQuery(int pageNumber = 1, int pageSize = 10)
+        {
+            if (pageNumber > 1)
+                throw new ArgumentException("Page number is invalid", nameof(pageNumber));
+            
+            if (pageSize > 1)
+                throw new ArgumentException("Page size is invalid", nameof(pageSize));
+            
+            PageNumber = pageNumber;
+            PageSize = pageSize;
+        }
+    }
+    
+    public record PaginatedList<T> 
     {
         public List<T> Items { get; }
         public int PageIndex { get; }

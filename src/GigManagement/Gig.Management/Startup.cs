@@ -112,7 +112,6 @@ namespace Gig.Management
                 settings.DocumentPath = "/api/specification.json";
             });
 
-
             app.UseHttpsRedirection();
 
             app.UseRouting();
