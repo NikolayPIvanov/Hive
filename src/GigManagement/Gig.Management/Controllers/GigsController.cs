@@ -25,6 +25,11 @@ namespace Gig.Management.Controllers
         [SwaggerResponse(HttpStatusCode.NotFound, typeof(NotFoundObjectResult), Description = "Anomaly not found")]
         public async Task<ActionResult<GigDto>> GetGigById([FromRoute] int id, CancellationToken cancellationToken) 
             => Ok(await Mediator.Send(new GetGigQuery(id), cancellationToken));
+            
+        [HttpGet]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(PaginatedList<GigDto>), Description = "Successful operation")]
+        public async Task<ActionResult<PaginatedList<GigDto>>> GetGigs([FromQuery] GetGigsQuery request, CancellationToken cancellationToken) 
+            => Ok(await Mediator.Send(new GetCategoryGigsQuery(null, request), cancellationToken));
 
         [HttpGet("random")]
         [SwaggerResponse(HttpStatusCode.OK, typeof(ICollection<GigDto>), Description = "Successful operation")]

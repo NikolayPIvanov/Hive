@@ -1,20 +1,28 @@
 .container {
-    height: 100%;
-}
+    margin: 1rem;
+    width: calc(100% - 1rem) !important;
 
-.categories-list {
-    height: 100%;
-    margin-top: 1rem;
-}
+    .menu-pane {
+        width: inherit;
+        mat-card {
+            min-width: calc(100% - 2rem);
+        }
+    }
 
-.control-btn {
-    width: 10rem;
-}
+    .items-list {
+        margin-top: 1rem;
 
-.search-input {
-    margin-left: 5rem;
-}
+        >mat-card {
+            height: 10rem;
+            -ms-word-break: break-all;
+                word-break: break-all;
 
-.category-card {
-    height: 10rem;
+            /* Non standard for WebKit */
+                word-break: break-word;
+
+            -webkit-hyphens: auto;
+            -moz-hyphens: auto;
+                hyphens: auto;
+        }
+    }
 }

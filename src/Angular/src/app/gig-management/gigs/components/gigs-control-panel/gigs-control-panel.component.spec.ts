@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { GigNameSearchComponent } from './gig-name-search.component';
+import { GigsControlPanelComponent } from './gigs-control-panel.component';
 
-describe('GigNameSearchComponent', () => {
-  let component: GigNameSearchComponent;
-  let fixture: ComponentFixture<GigNameSearchComponent>;
+describe('GigsControlPanelComponent', () => {
+  let component: GigsControlPanelComponent;
+  let fixture: ComponentFixture<GigsControlPanelComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ GigNameSearchComponent ]
+      declarations: [ GigsControlPanelComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(GigNameSearchComponent);
+    fixture = TestBed.createComponent(GigsControlPanelComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -20,6 +20,8 @@ export class CategorySearchComponent implements OnInit {
   constructor(private categoriesApiClient: CategoriesClient) { }
 
   ngOnInit() {
+    debugger;
+
     if (this.initCategory) {
       this.categories = [this.initCategory];
       this.form.setValue(this.initCategory.title!)
@@ -30,10 +32,12 @@ export class CategorySearchComponent implements OnInit {
         filter(value => value != ''),
         debounceTime(400),
         distinctUntilChanged(),
-        switchMap(val => this.filter(val || '')),
+        switchMap(value => this.filter(value)),
         map(options => {
           if (this.categories) {
             this.csEmitter.emit(this.categories);
+          }
+          if (this.categories && this.categories.length == 0) {
             this.form.setValue(this.categories[0].title!)
           }
           return options;
@@ -41,15 +45,16 @@ export class CategorySearchComponent implements OnInit {
     );
   }
 
+  clear(): void {
+    this.form.setValue(null);
+  }
+
   private filter(value: string): Observable<string[]> {
-    return this.categoriesApiClient.getCategories(undefined, value, undefined, undefined)
+    return this.categoriesApiClient.getCategories(undefined, undefined, undefined, value)
      .pipe(
        map((paginatedList: PaginatedListOfCategoryDto) => 
        {
-         this.categories =
-           paginatedList.items!.filter(option =>
-             option.title!.toLowerCase().indexOf(value.toLowerCase()) === 0);
-         
+        this.categories = paginatedList.items!
         return this.categories.map(category => category.title!);
        })
      )

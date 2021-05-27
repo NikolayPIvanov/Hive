@@ -58,6 +58,11 @@
         <mat-nav-list>
           <h3 mat-subheader>Home</h3>
 
+          <a mat-list-item [routerLink]="['/account/overview']" routerLinkActive="active">
+            <mat-icon mat-list-icon>person</mat-icon>
+            <p mat-line> Account </p>
+          </a>
+
           <a mat-list-item [routerLink]="['/explore/overview']" routerLinkActive="active">
             <mat-icon mat-list-icon>
               shopping_bag
@@ -122,14 +127,6 @@
   
       <!-- Main content -->
       <mat-sidenav-content class="sidenav-content">
-  
-        <div class="progress-bar-container">
-          <mat-progress-bar color="accent" mode="indeterminate" >
-            <!-- *ngIf="spinnerService.visibility | async" -->
-          </mat-progress-bar>
-          <!-- <mat-spinner class="spinner" [diameter]="50" *ngIf="showSpinner"></mat-spinner> -->
-        </div>
-  
   
         <router-outlet></router-outlet>
   

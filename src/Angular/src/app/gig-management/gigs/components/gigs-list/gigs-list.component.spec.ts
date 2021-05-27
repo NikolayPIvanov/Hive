@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { GigCardOverviewComponent } from './gig-card-overview.component';
+import { GigsListComponent } from './gigs-list.component';
 
-describe('GigCardOverviewComponent', () => {
-  let component: GigCardOverviewComponent;
-  let fixture: ComponentFixture<GigCardOverviewComponent>;
+describe('GigsListComponent', () => {
+  let component: GigsListComponent;
+  let fixture: ComponentFixture<GigsListComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ GigCardOverviewComponent ]
+      declarations: [ GigsListComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(GigCardOverviewComponent);
+    fixture = TestBed.createComponent(GigsListComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

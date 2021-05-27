@@ -1,25 +1,23 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { SharedModule } from 'src/app/shared/shared.module';
+import { GigsControlPanelComponent } from './components/gigs-control-panel/gigs-control-panel.component';
+import { GigsListComponent } from './components/gigs-list/gigs-list.component';
 import { GigsRoutingModule } from './gigs-routing.module';
-import { GigNameSearchComponent } from './gig-name-search/gig-name-search.component';
-import { GigsControlComponent } from './gigs-control/gigs-control.component';
-import { GigCardOverviewComponent } from './gig-card-overview/gig-card-overview.component';
-
+import { SharedModule } from 'src/app/shared/shared.module';
+import { GigsSingleCardComponent } from './components/gigs-single-card/gigs-single-card.component';
 
 @NgModule({
   declarations: [
-    GigNameSearchComponent,
-    GigsControlComponent,
-    GigCardOverviewComponent
+    GigsControlPanelComponent,
+    GigsListComponent,
+    GigsSingleCardComponent
   ],
   imports: [
     CommonModule,
+
     SharedModule,
+    
     GigsRoutingModule
-  ],
-  exports: [
-    GigCardOverviewComponent
   ]
 })
 export class GigsModule { }

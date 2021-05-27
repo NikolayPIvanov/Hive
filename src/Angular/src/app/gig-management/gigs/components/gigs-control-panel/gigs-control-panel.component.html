@@ -1,0 +1,37 @@
+<div
+    *ngIf="gigs$ | async; let gigs"
+    fxLayout="column"
+    class="container">
+
+    <div
+        fxLayout="row"
+        fxFlex="15"
+        class="menu-pane">
+        <mat-card>
+            <div 
+                fxLayout="column">
+                <!-- header -->
+                <h1 fxFill="10" fxLayoutAlign="center center">New</h1>
+                <h2 fxFill="10" fxLayoutAlign="center center">This will be a subtitle</h2>
+                <mat-divider [inset]="true"></mat-divider>
+
+                <div
+                    fxFill="80"
+                    fxLayoutAlign="space-between center"
+                    fxLayout="row">
+
+                    <span>filters here</span>
+                </div>
+            </div>
+        </mat-card>
+    </div>
+
+    <div 
+        *ngIf="paginatedList$ | async; let paginated"
+        fxLayout="row wrap">
+
+        <app-gigs-single-card *ngFor="let gig of gigs.items" [gig]="gig">
+        </app-gigs-single-card>
+    </div>
+
+</div>

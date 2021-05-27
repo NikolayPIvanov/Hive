@@ -28,6 +28,7 @@ export class CategoryCreateComponent implements OnInit {
   storeCategoryId($event: any) {
     if ($event.length == 1) {
       this.selectedCategoryId = $event[0].id
+      this.form.patchValue({ "parentId": this.selectedCategoryId });
     }
   }
 

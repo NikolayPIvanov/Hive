@@ -25,9 +25,9 @@ namespace Gig.Management.Controllers
         [HttpGet]
         [AllowAnonymous]
         [SwaggerResponse(HttpStatusCode.OK, typeof(PaginatedList<CategoryDto>), Description = "Successful operation")]
-        public async Task<ActionResult<PaginatedList<CategoryDto>>> GetCategories([FromQuery] GetCategoriesQuery query,
+        public async Task<ActionResult<PaginatedList<CategoryDto>>> GetCategories([FromQuery] ParametersQuery query,
             CancellationToken cancellationToken) 
-            => Ok(await Mediator.Send(query, cancellationToken));
+            => Ok(await Mediator.Send(new GetCategoriesQuery(query), cancellationToken));
 
         [HttpGet("{id:int}/gigs")]
         [AllowAnonymous]

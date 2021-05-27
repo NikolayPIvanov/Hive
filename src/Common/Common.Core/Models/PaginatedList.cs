@@ -12,7 +12,11 @@ namespace Hive.Common.Core.Models
 
         public int PageNumber { get; private set; }
         
-        public PaginatedQuery(int pageNumber = 1, int pageSize = 10)
+        public PaginatedQuery() 
+        {
+        }
+        
+        public PaginatedQuery(int pageNumber = 1, int pageSize = 10) : this()
         {
             if (pageNumber > 1)
                 throw new ArgumentException("Page number is invalid", nameof(pageNumber));

@@ -27,12 +27,12 @@ export class DashboardCategoriesComponent implements OnInit {
       this.pageIndex = event.pageIndex;
     }
     
-    this.categories$ = this.categoriesApiClient.getCategories(false, undefined, this.pageIndex, this.pageSize);
+    this.categories$ = this.categoriesApiClient.getCategories(this.pageIndex, this.pageSize, false, undefined);
   }
   
   constructor(private categoriesApiClient: CategoriesClient) { }
 
   ngOnInit(): void {
-    this.categories$ = this.categoriesApiClient.getCategories(false, undefined, this.pageIndex, this.pageSize);
+    this.categories$ = this.categoriesApiClient.getCategories(this.pageIndex, this.pageSize, false, undefined);
   }
 }

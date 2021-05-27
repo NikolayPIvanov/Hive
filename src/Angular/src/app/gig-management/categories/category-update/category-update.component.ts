@@ -4,7 +4,6 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Observable, of, Subscription } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { CategoriesClient, CategoryDto, UpdateCategoryCommand } from 'src/app/clients/gigs-client';
-import { CategoryCreateComponent } from '../category-create/category-create.component';
 
 @Component({
   selector: 'app-category-update',
@@ -12,31 +11,27 @@ import { CategoryCreateComponent } from '../category-create/category-create.comp
   styleUrls: ['./category-update.component.scss']
 })
 export class CategoryUpdateComponent implements OnInit {
-  
-  private updateSubscription!: Subscription;
   parentCategory$!: Observable<CategoryDto>;
 
-  parentCategory: CategoryDto | undefined;
+  parentCategory: CategoryDto | undefined = undefined;
   updatedCategory: CategoryDto | undefined;
   form!: FormGroup;
-
 
   constructor(
     public formBuilder: FormBuilder,
     public categoriesApiClient: CategoriesClient,
     public dialogRef: MatDialogRef<CategoryUpdateComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any) { }
+    @Inject(MAT_DIALOG_DATA) public data: CategoryDto) { }
   
   ngOnInit(): void {
     this.form = this.formBuilder.group({
-      id: [0, Validators.required],
-      title: ['', Validators.required],
-      parentId: [null]
+      id: [this.data.id, Validators.required],
+      title: [this.data.title, Validators.required],
+      parentId: [this.data.parentId]
     });
 
-    this.form.patchValue(this.data.entity);
-
-    this.parentCategory$ = this.categoriesApiClient.getCategoryById(+this.data.entity.parentId)
+    if (this.data.parentId) {
+      this.parentCategory$ = this.categoriesApiClient.getCategoryById(+this.data.parentId!)
       .pipe(
         map((category: CategoryDto) => {
           if (category && category.parentId == null) {
@@ -45,6 +40,7 @@ export class CategoryUpdateComponent implements OnInit {
 
           return category;
         }));
+    }
   }
 
   onSubmit() {
@@ -54,7 +50,7 @@ export class CategoryUpdateComponent implements OnInit {
     }
     const command = UpdateCategoryCommand.fromJS(data)
     
-    this.updateSubscription = this.categoriesApiClient.updateCategory(command.id!, command)
+    this.categoriesApiClient.updateCategory(command.id!, command)
       .pipe(switchMap(_ => this.categoriesApiClient.getCategoryById(command.id!)))
       .subscribe((category: CategoryDto) => this.updatedCategory = category)
   }

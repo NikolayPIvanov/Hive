@@ -1,40 +1,61 @@
-<div *ngIf="paginatedList$; let list" fxLayout="column" class="container">
-    <mat-card fxLayout="column" fxLayoutAlign="center center" >
-        <h1 fxLayoutGap="3px">Manage Categories</h1>
-        <div fxLayout="row" >
-            <button mat-raised-button (click)="openDialog()" color="accent" class="control-btn">Create new</button>
-            <button mat-raised-button (click)="clear()" fxFlexOffset="20%" class="control-btn">Clear</button>
-            <app-category-search (filteredEmitter)="setCategories($event)" class="search-input"></app-category-search>
-        </div>
-    </mat-card>
+<div
+    fxLayout="column"
+    fxFlexFill
+    class="container">
 
-    <div fxFlex="90%" fxLayout="row" class="categories-list" >
-        <div fxFlexOffset="5%"></div>
-        <div *ngFor="let item of list.items" fxLayout="row" fxFlex="15%" class="category-card">
-            <mat-card fxLayoutGap="20px" fxLayout="column">
-                <mat-card-header fxLayoutAlign="center center">
-                    <mat-card-title>{{item.title}}</mat-card-title>
-                    <mat-card-subtitle>{{item.parentId}}</mat-card-subtitle>
-                </mat-card-header>
-                <mat-card-content>
-                </mat-card-content>
-                <mat-card-actions>
-                    <button mat-raised-button color="primary" (click)="openUpdateDialog(item)">Update</button>
-                    <button mat-raised-button color="warn" (click)="deleteCategory(item.id!)">Delete</button>
-                </mat-card-actions>
-            </mat-card>
-        </div>
-        
-        <div fxFlexOffset="5%"></div>
+    <!-- control menu pane -->
+    <div
+        fxLayout="row"
+        fxFlex="15"
+        class="menu-pane">
+        <mat-card>
+            <div 
+                fxLayout="column">
+                <!-- header -->
+                <h1 fxFill="20" fxLayoutAlign="center center">Categories Control Panel</h1>
+                <mat-divider [inset]="true"></mat-divider>
+
+                <div
+                    fxFill="80"
+                    fxLayoutAlign="space-between center"
+                    fxLayout="row">
+                    <app-category-search (filteredEmitter)="setCategories($event)"></app-category-search>
+                    <button mat-raised-button (click)="openDialog()">Create new category</button>
+                </div>
+            </div>
+        </mat-card>
     </div>
-    <div fxLayout="row" >
-        <mat-paginator fxFill
-            [length]="500"
+
+    <!-- categories -->
+    <div
+        fxLayout="row wrap"
+        fxLayoutGap="3rem"
+        fxFlex="85"
+        class="items-list">
+
+        <mat-card *ngFor="let category of paginatedList?.items" fxLayout="column" fxFlex="20">
+            <mat-card-header fxFlex="80">
+                <div mat-card-avatar>
+                    <mat-icon>category</mat-icon>
+                </div>
+                <mat-card-title>{{ category.title }}</mat-card-title>
+            </mat-card-header>
+            <mat-card-actions fxLayout="row" fxLayoutGap="5%" fxLayoutAlign="end">
+                <button mat-button>Details</button>
+                <button mat-button (click)="openUpdateDialog(category)">Edit</button>
+                <button mat-button (click)="delete(category.id!)">Delete</button>
+            </mat-card-actions>
+        </mat-card>
+    </div>
+
+    <div
+        fxLayout="row"
+        >
+        <mat-paginator 
+            [length]="paginatedList?.totalCount"
             [pageSize]="pageSize"
             [pageSizeOptions]="[5, 10, 25, 100]"
             (page)="handlePageEvent($event)">
         </mat-paginator>
     </div>
 </div>
-
-

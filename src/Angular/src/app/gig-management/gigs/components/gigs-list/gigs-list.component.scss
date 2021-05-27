@@ -1,0 +1,13 @@
+
+
+.container {
+    margin: 1rem;
+    width: calc(100% - 1rem) !important;
+
+    .menu-pane {
+        width: inherit;
+        mat-card {
+            min-width: calc(100% - 2rem);
+        }
+    }
+}

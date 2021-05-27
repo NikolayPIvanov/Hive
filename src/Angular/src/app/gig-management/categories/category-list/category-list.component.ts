@@ -1,9 +1,9 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Observable, of, Subscription } from 'rxjs';
+import { Observable, of, Subject, Subscription } from 'rxjs';
 import { CategoriesClient, CategoryDto, CreateCategoryCommand, PaginatedListOfCategoryDto, UpdateCategoryCommand } from 'src/app/clients/gigs-client';
 import { NotificationService } from 'src/app/core/services/notification.service';
 import {PageEvent} from '@angular/material/paginator';
-import { map, switchMap } from 'rxjs/operators';
+import { map, switchMap, takeUntil } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { CategoryCreateComponent } from '../category-create/category-create.component';
 import { FormGroup } from '@angular/forms';
@@ -15,14 +15,13 @@ import { CategoryUpdateComponent } from '../category-update/category-update.comp
   styleUrls: ['./category-list.component.scss']
 })
 export class CategoryListComponent implements OnInit, OnDestroy {
-  private deleteSubscription!: Subscription;
-  private gigsFetchSubscription!: Subscription;
+  private subject = new Subject();
+  paginatedList: PaginatedListOfCategoryDto | undefined;
+  listObservable: Observable<PaginatedListOfCategoryDto> | undefined;
 
   pageIndex: number = 1;
   pageSize: number = 10;
   onlyParents: boolean = false;
-
-  paginatedList$!: PaginatedListOfCategoryDto;
 
   constructor(
     private categoriesApiClient: CategoriesClient,
@@ -30,27 +29,25 @@ export class CategoryListComponent implements OnInit, OnDestroy {
     public dialog: MatDialog) { }
 
   ngOnInit(): void {
-    this._load();
+    this.fetchCategories();
   }
 
   ngOnDestroy(): void {
-    this.gigsFetchSubscription.unsubscribe();
-    if (this.deleteSubscription) {
-      this.deleteSubscription.unsubscribe();
-    }
+    this.subject.next();
+    this.subject.complete();
   }
 
   openUpdateDialog(entity: CategoryDto | undefined): void {
     const dialogRef = this.dialog.open(CategoryUpdateComponent, {
       width: '250px',
-      data: {entity: entity}
+      data: entity
     });
 
     dialogRef.afterClosed().subscribe((updatedCategory => {
       if (updatedCategory) {
-        const index = this.paginatedList$.items?.findIndex((value, index, a) => value.id == updatedCategory.id)
-        this.paginatedList$.items?.splice(index!, 1)
-        this.paginatedList$.items?.push(updatedCategory);
+        const index = this.paginatedList?.items?.findIndex((value, index, a) => value.id == updatedCategory.id)
+        this.paginatedList?.items?.splice(index!, 1)
+        this.paginatedList?.items?.push(updatedCategory);
       }
     }))
   }
@@ -77,38 +74,34 @@ export class CategoryListComponent implements OnInit, OnDestroy {
 
     this.categoriesApiClient.createCategory(command)
       .pipe(switchMap((id: number) => this.categoriesApiClient.getCategoryById(id)))
-      .subscribe((category: CategoryDto) => this.setCategories([...this.paginatedList$.items!, category]));
+      .subscribe((category: CategoryDto) => this.setCategories([...this.paginatedList!.items!, category]));
   }
 
   setCategories($event: CategoryDto[]) {
-    this.paginatedList$.items = $event
+    this.paginatedList!.items = $event
   }
 
   handlePageEvent(event: PageEvent) {
     this.pageSize = event.pageSize;
     this.pageIndex = event.pageIndex;
-    this._load();
+    this.fetchCategories();
   }
 
-  clear() {
-    this._load();
-  }
-
-  deleteCategory(categoryId: number) {
-    this.deleteSubscription = this.categoriesApiClient.deleteCategory(categoryId)
+  public delete(categoryId: number) {
+    this.categoriesApiClient.deleteCategory(categoryId)
       .pipe(
+        takeUntil(this.subject),
         map(_ => {
-          const index = this.paginatedList$.items?.findIndex((value, _, __) => value.id == categoryId)
-          this.paginatedList$.items?.splice(index!, 1)
-        }),
-        map(_ => (_: any) => this.notificationService.openSnackBar('Category Deleted')),
-      )
-      .subscribe();
+          const index = this.paginatedList?.items?.findIndex((value, _, __) => value.id == categoryId)
+          this.paginatedList?.items?.splice(index!, 1)
+        })
+      ).subscribe((_: any) => this.notificationService.openSnackBar('Category Deleted'));
   }
 
-  private _load() {
-    this.gigsFetchSubscription =
-      this.categoriesApiClient.getCategories(this.onlyParents, undefined, this.pageIndex, this.pageSize)
-        .subscribe((list: any) => this.paginatedList$ = list);
+  private fetchCategories() {
+    this.categoriesApiClient
+      .getCategories(this.pageIndex, this.pageSize, this.onlyParents, undefined)
+      .pipe(takeUntil(this.subject))
+      .subscribe((list: PaginatedListOfCategoryDto) => this.paginatedList = list);
   }
 }

@@ -13,8 +13,10 @@ using Microsoft.Extensions.Logging;
 
 namespace Hive.Gig.Application.Categories.Queries
 {
-    public record GetCategoriesQuery(int PageNumber = 1, int PageSize = 10, bool OnlyParents = false, string? SearchKey = null) :
-        PaginatedQuery(PageNumber, PageSize), IRequest<PaginatedList<CategoryDto>>;
+    public record ParametersQuery(int PageNumber = 1, int PageSize = 10, bool OnlyParents = false,
+        string? SearchKey = null);
+        
+    public record GetCategoriesQuery(ParametersQuery Query) : IRequest<PaginatedList<CategoryDto>>;
 
     public class GetCategoriesQueryHandler : IRequestHandler<GetCategoriesQuery, PaginatedList<CategoryDto>>
     {
@@ -32,7 +34,7 @@ namespace Hive.Gig.Application.Categories.Queries
         public async Task<PaginatedList<CategoryDto>> Handle(GetCategoriesQuery request, CancellationToken cancellationToken)
         {
             var query = _dbContext.Categories.AsNoTracking().AsQueryable();
-            var (pageNumber, pageSize, onlyParents, searchKey) = request;
+            var (pageNumber, pageSize, onlyParents, searchKey) = request.Query;
             if (onlyParents)
             {
                 query = query.Where(c => !c.ParentId.HasValue);
@@ -40,7 +42,7 @@ namespace Hive.Gig.Application.Categories.Queries
 
             if (searchKey != null)
             {
-                query = query.Where(c => c.Title.ToLowerInvariant().Contains(searchKey.ToLowerInvariant()));
+                query = query.Where(c => c.Title.Contains(searchKey.ToLowerInvariant()));
             }
 
             var categories = await query

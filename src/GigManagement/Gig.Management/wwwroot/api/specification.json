@@ -174,21 +174,13 @@
         "operationId": "Categories_GetCategories",
         "parameters": [
           {
-            "name": "OnlyParents",
+            "name": "PageNumber",
             "in": "query",
             "schema": {
-              "type": "boolean"
+              "type": "integer",
+              "format": "int32"
             },
             "x-position": 1
-          },
-          {
-            "name": "SearchKey",
-            "in": "query",
-            "schema": {
-              "type": "string",
-              "nullable": true
-            },
-            "x-position": 2
           },
           {
             "name": "PageSize",
@@ -197,14 +189,22 @@
               "type": "integer",
               "format": "int32"
             },
+            "x-position": 2
+          },
+          {
+            "name": "OnlyParents",
+            "in": "query",
+            "schema": {
+              "type": "boolean"
+            },
             "x-position": 3
           },
           {
-            "name": "PageNumber",
+            "name": "SearchKey",
             "in": "query",
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "type": "string",
+              "nullable": true
             },
             "x-position": 4
           }
@@ -528,21 +528,39 @@
         ]
       }
     },
-    "/api/Gigs/random": {
+    "/api/Gigs": {
       "get": {
         "tags": [
           "Gigs"
         ],
-        "operationId": "Gigs_GetRandom",
+        "operationId": "Gigs_GetGigs",
         "parameters": [
           {
-            "name": "Quantity",
+            "name": "SearchKey",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 1
+          },
+          {
+            "name": "PageSize",
             "in": "query",
             "schema": {
               "type": "integer",
               "format": "int32"
             },
-            "x-position": 1
+            "x-position": 2
+          },
+          {
+            "name": "PageNumber",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 3
           }
         ],
         "responses": {
@@ -551,10 +569,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/GigDto"
-                  }
+                  "$ref": "#/components/schemas/PaginatedListOfGigDto"
                 }
               }
             }
@@ -565,9 +580,7 @@
             "JWT": []
           }
         ]
-      }
-    },
-    "/api/Gigs": {
+      },
       "post": {
         "tags": [
           "Gigs"
@@ -619,6 +632,45 @@
               "Seller",
               " Admin"
             ]
+          }
+        ]
+      }
+    },
+    "/api/Gigs/random": {
+      "get": {
+        "tags": [
+          "Gigs"
+        ],
+        "operationId": "Gigs_GetRandom",
+        "parameters": [
+          {
+            "name": "Quantity",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GigDto"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
           }
         ]
       }
@@ -1619,6 +1671,37 @@
           },
           "answer": {
             "type": "string"
+          }
+        }
+      },
+      "PaginatedListOfGigDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/GigDto"
+            }
+          },
+          "pageIndex": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "hasPreviousPage": {
+            "type": "boolean"
+          },
+          "hasNextPage": {
+            "type": "boolean"
           }
         }
       },

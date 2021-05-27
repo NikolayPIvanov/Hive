@@ -1,12 +1,14 @@
 <form class="example-form">
     <mat-form-field class="example-full-width">
-      <mat-label>Category Title</mat-label>
-      <input type="text"
+      <mat-label>Search a category</mat-label>
+      <input matInput
+             type="text"
              placeholder="Enter the title of the category"
-             aria-label="Number"
-             matInput
              [formControl]="form"
              [matAutocomplete]="auto">
+      <button *ngIf="form.value" matSuffix mat-icon-button aria-label="Clear" (click)="clear()">
+        <mat-icon>close</mat-icon>
+      </button>
       <mat-autocomplete #auto="matAutocomplete">
         <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
           {{option}}
