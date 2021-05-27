@@ -1,0 +1,5 @@
+<mat-selection-list #transactionList [multiple]="false">
+    <mat-list-option *ngFor="let transaction of transactions" [value]="transaction">
+      {{convertTransactionType(transaction.transactionType)}} - {{transaction.transactionNumber}}: {{transaction.amount}}$
+    </mat-list-option>
+</mat-selection-list>

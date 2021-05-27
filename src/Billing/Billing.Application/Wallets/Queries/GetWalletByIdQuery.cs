@@ -12,7 +12,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Billing.Application.Wallets.Queries
 {
-    public record WalletDto(int Id, decimal Balance, ICollection<TransactionDto> Transactions);
+    public record WalletDto(int Id, int AccountHolderId, decimal Balance, ICollection<TransactionDto> Transactions);
     
     public record GetWalletByIdQuery(int WalletId) : IRequest<WalletDto>;
 

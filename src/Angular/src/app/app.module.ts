@@ -12,6 +12,7 @@ import { AuthorizationModule } from 'src/authorization/authorization.module';
 import { DashboardModule } from './dashboard/dashboard.module';
 import { API_BASE_URL } from './clients/gigs-client';
 import * as profileClient from './clients/profile-client';
+import * as billingClient from './clients/billing-client';
 import { HomeModule } from './home/home.module';
 import { ExploreModule } from './explore/explore.module';
 import { GigManagementModule } from './gig-management/gig-management.module';
@@ -49,6 +50,12 @@ import { AccountModule } from './account/account.module';
       provide: profileClient.API_BASE_URL,
       useFactory: () => {
         return 'https://localhost:5001'
+      }
+    },
+    {
+      provide: billingClient.API_BASE_URL,
+      useFactory: () => {
+        return 'https://localhost:5051'
       }
     }
   ],

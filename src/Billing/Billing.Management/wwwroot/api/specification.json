@@ -6,23 +6,12 @@
     "version": "1.0.0"
   },
   "paths": {
-    "/api/AccountHolders/{accountHolderId}/wallets": {
+    "/api/AccountHolders/wallet": {
       "get": {
         "tags": [
           "AccountHolders"
         ],
-        "operationId": "AccountHolders_GetMyWallet",
-        "parameters": [
-          {
-            "name": "accountHolderId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "x-position": 1
-          }
-        ],
+        "operationId": "AccountHolders_GetWallet",
         "responses": {
           "200": {
             "description": "Successful operation",
@@ -194,6 +183,10 @@
             "type": "integer",
             "format": "int32"
           },
+          "accountHolderId": {
+            "type": "integer",
+            "format": "int32"
+          },
           "balance": {
             "type": "number",
             "format": "decimal"
@@ -211,7 +204,7 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "publicId": {
+          "transactionNumber": {
             "type": "integer",
             "format": "int32"
           },

@@ -14,10 +14,10 @@ namespace Billing.Management.Controllers
     [Authorize]
     public class AccountHoldersController : ApiControllerBase
     {
-        [HttpGet("{accountHolderId:int}/wallets")]
+        [HttpGet("wallet")]
         [SwaggerResponse(HttpStatusCode.OK, typeof(WalletDto), Description = "Successful operation")]
         [SwaggerResponse(HttpStatusCode.NotFound, typeof(NotFoundObjectResult), Description = "Not Found operation")]
-        public async Task<ActionResult<WalletDto>> GetMyWallet() => Ok(await Mediator.Send(new GetMyWalletCommand()));
+        public async Task<ActionResult<WalletDto>> GetWallet() => Ok(await Mediator.Send(new GetMyWalletCommand()));
         
         [HttpGet("{accountHolderId:int}/wallets/{walletId:int}")]
         [SwaggerResponse(HttpStatusCode.OK, typeof(IEnumerable<TransactionDto>), Description = "Successful operation")]

@@ -1,5 +1,5 @@
-<mat-card *ngIf="profile$ | async"  fxLayout="row" class="m-3">
-    <div fxLayout="column" fxFlex="20" fxLayoutAlign="start center" class="m-3">
+<mat-card *ngIf="profile$ | async" fxLayout="row" class="m-3">
+    <div fxLayout="column" fxFlex="20" fxLayoutAlign="space-between center" class="m-3">
         <h2>Avatar</h2>
         <ngx-avatar [name]="name" size="200"></ngx-avatar>
     </div>
@@ -54,4 +54,8 @@
             </div>
         </form>
     </div>
+</mat-card>
+
+<mat-card class="m-3 mt-2">
+    <app-account-balance></app-account-balance>
 </mat-card>

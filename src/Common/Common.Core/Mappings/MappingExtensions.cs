@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using AutoMapper;
+using AutoMapper.Internal;
 using AutoMapper.QueryableExtensions;
 using Hive.Common.Core.Models;
 using Microsoft.EntityFrameworkCore;

@@ -18,7 +18,7 @@ export interface IAccountHoldersClient {
     /**
      * @return Successful operation
      */
-    getMyWallet(accountHolderId: string): Observable<WalletDto>;
+    getWallet(): Observable<WalletDto>;
     /**
      * @return Successful operation
      */
@@ -46,11 +46,8 @@ export class AccountHoldersClient implements IAccountHoldersClient {
     /**
      * @return Successful operation
      */
-    getMyWallet(accountHolderId: string): Observable<WalletDto> {
-        let url_ = this.baseUrl + "/api/AccountHolders/{accountHolderId}/wallets";
-        if (accountHolderId === undefined || accountHolderId === null)
-            throw new Error("The parameter 'accountHolderId' must be defined.");
-        url_ = url_.replace("{accountHolderId}", encodeURIComponent("" + accountHolderId));
+    getWallet(): Observable<WalletDto> {
+        let url_ = this.baseUrl + "/api/AccountHolders/wallet";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -62,11 +59,11 @@ export class AccountHoldersClient implements IAccountHoldersClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetMyWallet(response_);
+            return this.processGetWallet(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetMyWallet(<any>response_);
+                    return this.processGetWallet(<any>response_);
                 } catch (e) {
                     return <Observable<WalletDto>><any>_observableThrow(e);
                 }
@@ -75,7 +72,7 @@ export class AccountHoldersClient implements IAccountHoldersClient {
         }));
     }
 
-    protected processGetMyWallet(response: HttpResponseBase): Observable<WalletDto> {
+    protected processGetWallet(response: HttpResponseBase): Observable<WalletDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -251,6 +248,7 @@ export class AccountHoldersClient implements IAccountHoldersClient {
 
 export class WalletDto implements IWalletDto {
     id?: number;
+    accountHolderId?: number;
     balance?: number;
     transactions?: TransactionDto[] | undefined;
 
@@ -266,6 +264,7 @@ export class WalletDto implements IWalletDto {
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
+            this.accountHolderId = _data["accountHolderId"];
             this.balance = _data["balance"];
             if (Array.isArray(_data["transactions"])) {
                 this.transactions = [] as any;
@@ -285,6 +284,7 @@ export class WalletDto implements IWalletDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
+        data["accountHolderId"] = this.accountHolderId;
         data["balance"] = this.balance;
         if (Array.isArray(this.transactions)) {
             data["transactions"] = [];
@@ -297,12 +297,13 @@ export class WalletDto implements IWalletDto {
 
 export interface IWalletDto {
     id?: number;
+    accountHolderId?: number;
     balance?: number;
     transactions?: TransactionDto[] | undefined;
 }
 
 export class TransactionDto implements ITransactionDto {
-    publicId?: number;
+    transactionNumber?: number;
     amount?: number;
     transactionType?: TransactionType;
     walletId?: number;
@@ -319,7 +320,7 @@ export class TransactionDto implements ITransactionDto {
 
     init(_data?: any) {
         if (_data) {
-            this.publicId = _data["publicId"];
+            this.transactionNumber = _data["transactionNumber"];
             this.amount = _data["amount"];
             this.transactionType = _data["transactionType"];
             this.walletId = _data["walletId"];
@@ -336,7 +337,7 @@ export class TransactionDto implements ITransactionDto {
 
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
-        data["publicId"] = this.publicId;
+        data["transactionNumber"] = this.transactionNumber;
         data["amount"] = this.amount;
         data["transactionType"] = this.transactionType;
         data["walletId"] = this.walletId;
@@ -346,7 +347,7 @@ export class TransactionDto implements ITransactionDto {
 }
 
 export interface ITransactionDto {
-    publicId?: number;
+    transactionNumber?: number;
     amount?: number;
     transactionType?: TransactionType;
     walletId?: number;
