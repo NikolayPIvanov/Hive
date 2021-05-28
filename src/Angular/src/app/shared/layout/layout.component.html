@@ -70,23 +70,23 @@
             <p mat-line> Explore </p>
           </a>
   
-          <a mat-list-item [routerLink]="['/dashboard']" routerLinkActive="active">
+          <!-- <a mat-list-item [routerLink]="['/dashboard']" routerLinkActive="active">
             <mat-icon mat-list-icon>
               dashboard
             </mat-icon>
             <p mat-line> Dashboard </p>
-          </a>
+          </a> -->
 
-          <a *ngIf="isInRole('Seller')" mat-list-item [routerLink]="['/gigs-management/gigs/list']" routerLinkActive="active">
+          <a *ngIf="isInRole('Seller')" mat-list-item [routerLink]="['/gigs-management/gigs/control']" routerLinkActive="active">
             <mat-icon mat-list-icon>
               dashboard
             </mat-icon>
             <p mat-line> Gigs Control </p>
           </a>
 
-          <a *ngIf="isInRole('Admin')" mat-list-item [routerLink]="['/gigs-management/categories/list']" routerLinkActive="active">
+          <a *ngIf="isInRole('Admin')" mat-list-item [routerLink]="['/gigs-management/categories/control']" routerLinkActive="active">
             <mat-icon mat-list-icon>
-              dashboard
+              category
             </mat-icon>
             <p mat-line> Categories Control </p>
           </a>

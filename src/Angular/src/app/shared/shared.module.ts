@@ -6,9 +6,10 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FlexLayoutModule } from '@angular/flex-layout';
 import { LoggedoutLayoutComponent } from './loggedout-layout/loggedout-layout.component';
 import { ChipInputComponent } from './components/chip-input/chip-input.component';
+import { CardListComponent } from './components/card-list/card-list.component';
 
 @NgModule({
-  declarations: [LayoutComponent, LoggedoutLayoutComponent, ChipInputComponent],
+  declarations: [LayoutComponent, LoggedoutLayoutComponent, ChipInputComponent, CardListComponent],
   imports: [
     RouterModule,
     CustomMaterialModule,

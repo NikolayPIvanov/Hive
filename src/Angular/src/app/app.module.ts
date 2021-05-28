@@ -1,22 +1,22 @@
 import { NgModule } from '@angular/core';
-import { BrowserModule } from '@angular/platform-browser';
 import { filter } from 'rxjs/operators';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { NotFoundComponent } from './not-found/not-found.component';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { SharedModule } from './shared/shared.module';
 import { CoreModule } from './core/core.module';
 import { AuthorizationModule } from 'src/authorization/authorization.module';
 import { DashboardModule } from './dashboard/dashboard.module';
-import { API_BASE_URL } from './clients/gigs-client';
+import * as gigsClient from './clients/gigs-client';
 import * as profileClient from './clients/profile-client';
 import * as billingClient from './clients/billing-client';
 import { HomeModule } from './home/home.module';
 import { ExploreModule } from './explore/explore.module';
 import { GigManagementModule } from './gig-management/gig-management.module';
 import { AccountModule } from './account/account.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { BrowserModule } from '@angular/platform-browser';
 
 @NgModule({
   declarations: [
@@ -24,11 +24,11 @@ import { AccountModule } from './account/account.module';
     NotFoundComponent
   ],
   imports: [
-    BrowserModule,
-    BrowserAnimationsModule,
-
     CoreModule,
     SharedModule,
+
+    BrowserModule,
+    BrowserAnimationsModule,
 
     HomeModule,
     DashboardModule,
@@ -41,7 +41,7 @@ import { AccountModule } from './account/account.module';
   ],
   providers: [
     {
-      provide: API_BASE_URL,
+      provide: gigsClient.API_BASE_URL,
       useFactory: () => {
         return 'https://localhost:5057'
       }

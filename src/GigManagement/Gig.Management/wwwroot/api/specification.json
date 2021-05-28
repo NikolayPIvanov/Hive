@@ -294,11 +294,11 @@
             "x-position": 1
           },
           {
-            "name": "SearchKey",
+            "name": "PageNumber",
             "in": "query",
             "schema": {
-              "type": "string",
-              "nullable": true
+              "type": "integer",
+              "format": "int32"
             },
             "x-position": 2
           },
@@ -312,11 +312,11 @@
             "x-position": 3
           },
           {
-            "name": "PageNumber",
+            "name": "SearchKey",
             "in": "query",
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "type": "string",
+              "nullable": true
             },
             "x-position": 4
           }
@@ -536,11 +536,11 @@
         "operationId": "Gigs_GetGigs",
         "parameters": [
           {
-            "name": "SearchKey",
+            "name": "PageNumber",
             "in": "query",
             "schema": {
-              "type": "string",
-              "nullable": true
+              "type": "integer",
+              "format": "int32"
             },
             "x-position": 1
           },
@@ -554,11 +554,11 @@
             "x-position": 2
           },
           {
-            "name": "PageNumber",
+            "name": "SearchKey",
             "in": "query",
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "type": "string",
+              "nullable": true
             },
             "x-position": 3
           }
@@ -659,10 +659,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/GigDto"
-                  }
+                  "$ref": "#/components/schemas/PaginatedListOfGigOverviewDto"
                 }
               }
             }

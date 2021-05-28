@@ -27,12 +27,17 @@
     </div>
 
     <div 
+        fxFlex="75"
         *ngIf="paginatedList$ | async; let paginated"
         fxLayout="row wrap">
-
-        <app-gigs-single-card *ngFor="let gig of paginated.items">
-            
+        <app-gigs-single-card 
+            *ngFor="let gig of paginated.items"
+            [gig]="gig">
         </app-gigs-single-card>
+    </div>
+
+    <div>
+
     </div>
 
 </div>

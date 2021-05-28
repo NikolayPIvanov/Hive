@@ -28,12 +28,12 @@ namespace Gig.Management.Controllers
             
         [HttpGet]
         [SwaggerResponse(HttpStatusCode.OK, typeof(PaginatedList<GigDto>), Description = "Successful operation")]
-        public async Task<ActionResult<PaginatedList<GigDto>>> GetGigs([FromQuery] GetGigsQuery request, CancellationToken cancellationToken) 
+        public async Task<ActionResult<PaginatedList<GigOverviewDto>>> GetGigs([FromQuery] GetGigsQuery request, CancellationToken cancellationToken) 
             => Ok(await Mediator.Send(new GetCategoryGigsQuery(null, request), cancellationToken));
 
         [HttpGet("random")]
-        [SwaggerResponse(HttpStatusCode.OK, typeof(ICollection<GigDto>), Description = "Successful operation")]
-        public async Task<ActionResult<ICollection<GigDto>>> GetRandom([FromQuery] GetRandomGigsQuery request, CancellationToken cancellationToken) 
+        [SwaggerResponse(HttpStatusCode.OK, typeof(PaginatedList<GigOverviewDto>), Description = "Successful operation")]
+        public async Task<ActionResult<PaginatedList<GigOverviewDto>>> GetRandom([FromQuery] GetRandomGigsQuery request, CancellationToken cancellationToken) 
             => Ok(await Mediator.Send(request, cancellationToken));
 
         [HttpPost]

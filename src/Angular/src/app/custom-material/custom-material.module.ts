@@ -30,6 +30,8 @@ import {MatMenuModule} from '@angular/material/menu';
 import {MatGridListModule} from '@angular/material/grid-list';
 import {MatTreeModule} from '@angular/material/tree';
 import {MatRadioModule} from '@angular/material/radio';
+import {ScrollingModule} from '@angular/cdk/scrolling';
+import {MatSliderModule} from '@angular/material/slider';
 
 
 import { DragDropModule } from '@angular/cdk/drag-drop';
@@ -52,7 +54,7 @@ export const MY_FORMATS = {
   imports: [
     CommonModule,
     DragDropModule, MatSlideToggleModule,
-    MatGridListModule,
+    MatGridListModule, MatSliderModule,
     MatSidenavModule, MatIconModule, MatToolbarModule, MatButtonModule,
     MatListModule, MatCardModule, MatProgressBarModule, MatInputModule,
     MatSnackBarModule, MatProgressSpinnerModule, MatDatepickerModule,
@@ -62,12 +64,13 @@ export const MY_FORMATS = {
     MatButtonToggleModule, MatSlideToggleModule, MatBadgeModule, MatCheckboxModule,
     MatExpansionModule, DragDropModule, MatSortModule,
     MatFormFieldModule, MatMenuModule,
-    MatRadioModule
+    MatRadioModule,
+    ScrollingModule
   ],
   exports: [
     CommonModule,
     DragDropModule, MatSlideToggleModule,
-    MatGridListModule, MatTreeModule,
+    MatGridListModule, MatTreeModule, MatSliderModule,
     MatSidenavModule, MatIconModule, MatToolbarModule, MatButtonModule,
     MatListModule, MatCardModule, MatProgressBarModule, MatInputModule,
     MatSnackBarModule, MatProgressSpinnerModule, MatDatepickerModule,
@@ -76,7 +79,7 @@ export const MY_FORMATS = {
     MatTooltipModule, MatSelectModule, MatPaginatorModule, MatChipsModule,
     MatButtonToggleModule, MatSlideToggleModule, MatBadgeModule, MatCheckboxModule,
     MatExpansionModule, DragDropModule, MatSortModule,
-    MatFormFieldModule, MatMenuModule, MatRadioModule
+    MatFormFieldModule, MatMenuModule, MatRadioModule, ScrollingModule
   ],
   providers: [
     {

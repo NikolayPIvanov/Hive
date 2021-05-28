@@ -20,8 +20,6 @@ export class CategorySearchComponent implements OnInit {
   constructor(private categoriesApiClient: CategoriesClient) { }
 
   ngOnInit() {
-    debugger;
-
     if (this.initCategory) {
       this.categories = [this.initCategory];
       this.form.setValue(this.initCategory.title!)

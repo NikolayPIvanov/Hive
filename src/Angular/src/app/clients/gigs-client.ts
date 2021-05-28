@@ -42,12 +42,12 @@ export interface ICategoriesClient {
      */
     createCategory(command: CreateCategoryCommand | null | undefined): Observable<number>;
     /**
-     * @param searchKey (optional) 
-     * @param pageSize (optional) 
      * @param pageNumber (optional) 
+     * @param pageSize (optional) 
+     * @param searchKey (optional) 
      * @return Successful operation
      */
-    getCategoryGigs(id: number, searchKey: string | null | undefined, pageSize: number | undefined, pageNumber: number | undefined): Observable<PaginatedListOfGigOverviewDto>;
+    getCategoryGigs(id: number, pageNumber: number | undefined, pageSize: number | undefined, searchKey: string | null | undefined): Observable<PaginatedListOfGigOverviewDto>;
 }
 
 @Injectable({
@@ -387,26 +387,26 @@ export class CategoriesClient implements ICategoriesClient {
     }
 
     /**
-     * @param searchKey (optional) 
-     * @param pageSize (optional) 
      * @param pageNumber (optional) 
+     * @param pageSize (optional) 
+     * @param searchKey (optional) 
      * @return Successful operation
      */
-    getCategoryGigs(id: number, searchKey: string | null | undefined, pageSize: number | undefined, pageNumber: number | undefined): Observable<PaginatedListOfGigOverviewDto> {
+    getCategoryGigs(id: number, pageNumber: number | undefined, pageSize: number | undefined, searchKey: string | null | undefined): Observable<PaginatedListOfGigOverviewDto> {
         let url_ = this.baseUrl + "/api/Categories/{id}/gigs?";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");
         url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        if (searchKey !== undefined && searchKey !== null)
-            url_ += "SearchKey=" + encodeURIComponent("" + searchKey) + "&";
-        if (pageSize === null)
-            throw new Error("The parameter 'pageSize' cannot be null.");
-        else if (pageSize !== undefined)
-            url_ += "PageSize=" + encodeURIComponent("" + pageSize) + "&";
         if (pageNumber === null)
             throw new Error("The parameter 'pageNumber' cannot be null.");
         else if (pageNumber !== undefined)
             url_ += "PageNumber=" + encodeURIComponent("" + pageNumber) + "&";
+        if (pageSize === null)
+            throw new Error("The parameter 'pageSize' cannot be null.");
+        else if (pageSize !== undefined)
+            url_ += "PageSize=" + encodeURIComponent("" + pageSize) + "&";
+        if (searchKey !== undefined && searchKey !== null)
+            url_ += "SearchKey=" + encodeURIComponent("" + searchKey) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -476,12 +476,12 @@ export interface IGigsClient {
      */
     delete(id: number): Observable<FileResponse>;
     /**
-     * @param searchKey (optional) 
-     * @param pageSize (optional) 
      * @param pageNumber (optional) 
+     * @param pageSize (optional) 
+     * @param searchKey (optional) 
      * @return Successful operation
      */
-    getGigs(searchKey: string | null | undefined, pageSize: number | undefined, pageNumber: number | undefined): Observable<PaginatedListOfGigDto>;
+    getGigs(pageNumber: number | undefined, pageSize: number | undefined, searchKey: string | null | undefined): Observable<PaginatedListOfGigDto>;
     /**
      * @param command (optional) 
      * @return Successful operation
@@ -491,7 +491,7 @@ export interface IGigsClient {
      * @param quantity (optional) 
      * @return Successful operation
      */
-    getRandom(quantity: number | undefined): Observable<GigDto[]>;
+    getRandom(quantity: number | undefined): Observable<PaginatedListOfGigOverviewDto>;
     /**
      * @return Successful operation
      */
@@ -756,23 +756,23 @@ export class GigsClient implements IGigsClient {
     }
 
     /**
-     * @param searchKey (optional) 
-     * @param pageSize (optional) 
      * @param pageNumber (optional) 
+     * @param pageSize (optional) 
+     * @param searchKey (optional) 
      * @return Successful operation
      */
-    getGigs(searchKey: string | null | undefined, pageSize: number | undefined, pageNumber: number | undefined): Observable<PaginatedListOfGigDto> {
+    getGigs(pageNumber: number | undefined, pageSize: number | undefined, searchKey: string | null | undefined): Observable<PaginatedListOfGigDto> {
         let url_ = this.baseUrl + "/api/Gigs?";
-        if (searchKey !== undefined && searchKey !== null)
-            url_ += "SearchKey=" + encodeURIComponent("" + searchKey) + "&";
-        if (pageSize === null)
-            throw new Error("The parameter 'pageSize' cannot be null.");
-        else if (pageSize !== undefined)
-            url_ += "PageSize=" + encodeURIComponent("" + pageSize) + "&";
         if (pageNumber === null)
             throw new Error("The parameter 'pageNumber' cannot be null.");
         else if (pageNumber !== undefined)
             url_ += "PageNumber=" + encodeURIComponent("" + pageNumber) + "&";
+        if (pageSize === null)
+            throw new Error("The parameter 'pageSize' cannot be null.");
+        else if (pageSize !== undefined)
+            url_ += "PageSize=" + encodeURIComponent("" + pageSize) + "&";
+        if (searchKey !== undefined && searchKey !== null)
+            url_ += "SearchKey=" + encodeURIComponent("" + searchKey) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -886,7 +886,7 @@ export class GigsClient implements IGigsClient {
      * @param quantity (optional) 
      * @return Successful operation
      */
-    getRandom(quantity: number | undefined): Observable<GigDto[]> {
+    getRandom(quantity: number | undefined): Observable<PaginatedListOfGigOverviewDto> {
         let url_ = this.baseUrl + "/api/Gigs/random?";
         if (quantity === null)
             throw new Error("The parameter 'quantity' cannot be null.");
@@ -909,14 +909,14 @@ export class GigsClient implements IGigsClient {
                 try {
                     return this.processGetRandom(<any>response_);
                 } catch (e) {
-                    return <Observable<GigDto[]>><any>_observableThrow(e);
+                    return <Observable<PaginatedListOfGigOverviewDto>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<GigDto[]>><any>_observableThrow(response_);
+                return <Observable<PaginatedListOfGigOverviewDto>><any>_observableThrow(response_);
         }));
     }
 
-    protected processGetRandom(response: HttpResponseBase): Observable<GigDto[]> {
+    protected processGetRandom(response: HttpResponseBase): Observable<PaginatedListOfGigOverviewDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -927,11 +927,7 @@ export class GigsClient implements IGigsClient {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(GigDto.fromJS(item));
-            }
+            result200 = PaginatedListOfGigOverviewDto.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -939,7 +935,7 @@ export class GigsClient implements IGigsClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<GigDto[]>(<any>null);
+        return _observableOf<PaginatedListOfGigOverviewDto>(<any>null);
     }
 
     /**

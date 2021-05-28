@@ -1,15 +1,17 @@
-<mat-card>
+<mat-card class="example-card">
     <mat-card-header>
-        <div mat-card-avatar>
-            <mat-icon>category</mat-icon>
-        </div>
-        <mat-card-title>{{ gig.title! }} </mat-card-title>
-        <mat-card-subtitle>subtitle</mat-card-subtitle>
+    <div mat-card-avatar>
+        <mat-icon>category</mat-icon>
+    </div>
+    <mat-card-title>{{ gig.title! }} </mat-card-title>
+    <mat-card-subtitle>Dog Breed</mat-card-subtitle>
     </mat-card-header>
+    <img mat-card-image src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu">
     <mat-card-content>
-        Image here
+        Starts at 10$
     </mat-card-content>
     <mat-card-actions>
-        <button mat-button>Ok</button>
+      <button mat-button>LIKE</button>
+      <button mat-button>SHARE</button>
     </mat-card-actions>
-</mat-card>
+  </mat-card>

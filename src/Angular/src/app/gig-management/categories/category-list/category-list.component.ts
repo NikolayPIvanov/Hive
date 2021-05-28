@@ -29,7 +29,7 @@ export class CategoryListComponent implements OnInit, OnDestroy {
     public dialog: MatDialog) { }
 
   ngOnInit(): void {
-    this.fetchCategories();
+    // this.fetchCategories();
   }
 
   ngOnDestroy(): void {

@@ -7,7 +7,7 @@ const routes: Routes = [
   {
     path: '',
     children: [
-      { path: 'list', component: CategoryListComponent },
+      { path: 'control', component: CategoryListComponent },
     ]
   }
 ];

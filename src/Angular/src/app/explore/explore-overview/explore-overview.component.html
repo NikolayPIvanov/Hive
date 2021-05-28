@@ -1,32 +1,57 @@
-<div fxLayout="column" fxLayoutAlign="start start" class="container">
-    <div fxFlex="10%"  class="categories-menu">
-        <mat-card fxLayout="row" fxFlex="100%">
-            <button *ngFor="let category of (categories$ | async)" mat-raised-button [matMenuTriggerFor]="menu">
-                <span>{{category.title}}</span>
-                <mat-menu #menu="matMenu">
-                    <button *ngFor="let subCategory of category!.subCategories" 
-                        (click)="categorySelected(subCategory)" mat-menu-item >{{subCategory.title}}</button>
-                </mat-menu>
-            </button>
+<div
+    fxLayout="column"
+    fxLayoutGap="2%"
+    class="container">
+
+    <!-- categories-small -->
+    <div
+        fxLayout="row"
+        fxFlex="5">
+        <mat-card fxFill>
+            <ng-container *ngFor="let category of (categoriesList$ | async)?.items; let i = index;">
+                <ng-container *ngIf="category">
+                    <button mat-button [matMenuTriggerFor]="menu">{{category.title!}}</button>
+                    <mat-menu #menu="matMenu">
+                        <button 
+                            *ngFor="let subcategory of category.subCategories" 
+                            mat-menu-item
+                            (click)="categorySelected(subcategory.id!)">
+                            {{ subcategory.title! }}
+                        </button>
+                    </mat-menu>
+                </ng-container>
+            </ng-container>
         </mat-card>
     </div>
-    
-    <mat-card fxFlexOffset="1rem">
-        <div fxLayout="column" fxFlexFill>
-            <h2>Gigs</h2>
-            <div fxLayout="row wrap" fxLayoutGap="5rem" fxLayoutAlign="start start">
-                <app-gig-card-overview *ngFor="let item of (gigs$ | async)" [gig]="item"></app-gig-card-overview>
-            </div>
-            <div fxFlexAlign="end">
-                <mat-paginator *ngIf="(gigs$ | async)"
-                    (page)="handlePageEvent($event)"
-                    [length]="gigsLength"
-                    [pageSize]="gigsPageSize"
-                    [showFirstLastButtons]="showFirstLastButtons"
-                    [pageSizeOptions]="pageSizeOptions"
-                    [pageIndex]="gigsPageIndex">
-                </mat-paginator>
-            </div>
-        </div>
-    </mat-card>
+
+    <!-- info -->
+    <div 
+        *ngIf="categoryDetails$ | async; let category"
+        fxLayout="column"
+        class="category-info">
+        <h2>{{ category.title }}</h2>
+        <h3>Random description</h3>
+    </div>
+
+    <!-- filters -->
+    <div
+        fxLayout="row">
+        <mat-card>
+            name filter
+        </mat-card>
+        <mat-card>
+            budget filter
+        </mat-card>
+    </div>
+
+    <div
+        fxFill
+        *ngIf="gigsList$ | async; let list"
+        fxLayoutGap="3rem"
+        fxLayout="row wrap">
+        <app-gigs-single-card 
+            *ngFor="let gig of list.items"
+            [gig]="gig">
+        </app-gigs-single-card>
+    </div>
 </div>

@@ -1,0 +1,33 @@
+.container {
+    margin: 1rem;
+    max-width: calc(100% - 5rem);
+}
+
+
+.example-form {
+    
+    mat-form-field {
+        margin-top: 1rem;
+    }
+}
+.menu-pane {
+    height: 100%;
+
+    mat-card {
+        min-width: calc(100% - 4rem);
+    }
+}
+
+
+.main {
+    height: 100%;
+    margin-top: 1rem;
+
+    .controls {
+        position: sticky;
+        app-gigs-list-filter {
+            height: 100% !important;
+        }
+    }
+}
+

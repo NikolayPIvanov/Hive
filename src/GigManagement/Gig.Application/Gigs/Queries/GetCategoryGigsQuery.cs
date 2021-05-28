@@ -14,8 +14,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Hive.Gig.Application.Gigs.Queries
 {
-    public record GetGigsQuery(int PageNumber = 1, int PageSize = 10, string? SearchKey = null) : PaginatedQuery(
-        PageNumber, PageSize);
+    public record GetGigsQuery(int PageNumber = 1, int PageSize = 10, string? SearchKey = null);
     public record GetCategoryGigsQuery(int? CategoryId, GetGigsQuery Query) : IRequest<PaginatedList<GigOverviewDto>>;
     
     public class GetCategoryGigsQueryHandler : IRequestHandler<GetCategoryGigsQuery, PaginatedList<GigOverviewDto>>

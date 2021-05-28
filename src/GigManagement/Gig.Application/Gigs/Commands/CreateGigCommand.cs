@@ -47,7 +47,7 @@ namespace Hive.Gig.Application.Gigs.Commands
                 .NotEmpty().WithMessage("Title should be provided.");
 
             RuleFor(x => x.CategoryId)
-                .MustAsync(async (id, token) => await dbContext.Categories.AnyAsync(x => x.Id == id, cancellationToken: token))
+                .MustAsync(async (id, token) => await dbContext.Categories.AnyAsync(x => x.Id == id && x.ParentId == null, cancellationToken: token))
                 .WithMessage("Must provide an existing category id.");
             
             RuleFor(x => x.Description)

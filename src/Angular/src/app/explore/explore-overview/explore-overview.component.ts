@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { PageEvent } from '@angular/material/paginator';
+import { ActivatedRoute } from '@angular/router';
 import { Observable, of } from 'rxjs';
 import { map, switchMap } from 'rxjs/operators';
 import { CategoriesClient, CategoryDto, GigDto, GigOverviewDto, GigsClient, PaginatedListOfCategoryDto, PaginatedListOfGigOverviewDto } from 'src/app/clients/gigs-client';
@@ -10,61 +11,51 @@ import { CategoriesClient, CategoryDto, GigDto, GigOverviewDto, GigsClient, Pagi
   styleUrls: ['./explore-overview.component.scss']
 })
 export class ExploreOverviewComponent implements OnInit {
-  private FIRST_PAGE = 1;
-  private CATEGORY_SIZE = 5;
-  private PARENT_CATEGORY_ONLY = true;
-  private RANDOM_QUANTITY = 10;
+  gigsList$!: Observable<PaginatedListOfGigOverviewDto>;
+  categoriesList$!: Observable<PaginatedListOfCategoryDto>;
+  categoryDetails$: Observable<CategoryDto> | undefined;
 
-  private selectedCategoryId: number | undefined;
-
-  gigsLength: number | undefined;
-  gigsPageSize = 10;
-  gigsPageIndex = 0;
-  pageSizeOptions = [5, this.gigsPageSize, 25];
-  showFirstLastButtons = true;
- 
-  categories$!: Observable<CategoryDto[] | undefined>;
-  gigs$!: Observable<GigOverviewDto[] | undefined>;
+  private pageNumber: number = 1;
+  private pageSize: number = 10;
 
   constructor(
     private categoriesApiClient: CategoriesClient,
     private gigsApiClient: GigsClient) { }
 
   ngOnInit(): void {
-    // this.categories$ = this.categoriesApiClient.getCategories(this.FIRST_PAGE, this.CATEGORY_SIZE, this.PARENT_CATEGORY_ONLY)
-    //   .pipe(map((list: PaginatedListOfCategoryDto) => list.items));
-    
-    this.gigs$ = this.gigsApiClient.getRandom(this.RANDOM_QUANTITY);
+    this.fetchGigsList();
+    this.fetchCategoriesList();
   }
 
-  categorySelected(category: CategoryDto) {
-    this.selectedCategoryId = category.id;
-    this.gigs$ = this.categoriesApiClient.getCategoryGigs(category.id!, undefined, this.gigsPageIndex + 1, this.gigsPageSize)
-      .pipe(
-        switchMap((list: PaginatedListOfGigOverviewDto) => {
-          this.gigsLength = list.totalCount!;
-          return of(list.items);
-        })
-      );
+  categorySelected(id: number) {
+    this.fetchGigsList(id);
   }
 
-  handlePageEvent(event: PageEvent) {
-    this.gigsPageSize = event.pageSize;
-    this.gigsPageIndex = event.pageIndex;
-    
-    if (this.selectedCategoryId) {
-      this.gigs$ = this.categoriesApiClient.getCategoryGigs(this.selectedCategoryId, undefined, this.gigsPageIndex + 1, this.gigsPageSize)
-      .pipe(
-        switchMap((list: PaginatedListOfGigOverviewDto) => {
-          this.gigsLength = list.totalCount!;
-          return of(list.items);
-        })
-      );
+  private fetchCategoriesList() {
+    const pageNumber = 1;
+    const pageSize = 10;
+    this.categoriesList$ = this.categoriesApiClient.getCategories(pageNumber, pageSize, true, null)
+  }
+
+  private fetchCategory(id: number) {
+    this.categoryDetails$ = this.categoriesApiClient.getCategoryById(id);
+  }
+
+  private fetchGigsList(categoryId: number | undefined = undefined) {
+    debugger;
+    if (categoryId) {
+      this.gigsList$ = this.categoriesApiClient
+        .getCategoryGigs(+categoryId, this.pageNumber, this.pageSize, undefined);
+      this.fetchCategory(+categoryId);
     }
     else {
-      this.gigs$ = this.gigsApiClient.getRandom(this.RANDOM_QUANTITY);
+      this.gigsList$ = this.gigsApiClient.getRandom(10).pipe(map(x => {
+        debugger;
+        console.log(x);
+
+        return x;
+      }));
     }
-
+    
   }
-
 }

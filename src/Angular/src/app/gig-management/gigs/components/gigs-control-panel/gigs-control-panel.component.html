@@ -1,37 +1,37 @@
 <div
     *ngIf="gigs$ | async; let gigs"
     fxLayout="column"
+    fxFlexFill
     class="container">
 
     <div
+        *ngIf="profile$ | async; let profile"
         fxLayout="row"
-        fxFlex="15"
+        fxFlex="20"
         class="menu-pane">
-        <mat-card>
-            <div 
-                fxLayout="column">
-                <!-- header -->
-                <h1 fxFill="10" fxLayoutAlign="center center">New</h1>
-                <h2 fxFill="10" fxLayoutAlign="center center">This will be a subtitle</h2>
-                <mat-divider [inset]="true"></mat-divider>
-
-                <div
-                    fxFill="80"
-                    fxLayoutAlign="space-between center"
-                    fxLayout="row">
-
-                    <span>filters here</span>
-                </div>
-            </div>
+        <mat-card fxLayout="row" fxLayoutGap="2rem">
+            <ngx-avatar name="Nikolay Ivanov" size="120"></ngx-avatar>
+            <h2 fxLayoutAlign="end">Nikolay Ivanov</h2>
+            <p fxLayoutAlign="end">Some extra infomation</p>
         </mat-card>
     </div>
 
-    <div 
-        *ngIf="paginatedList$ | async; let paginated"
-        fxLayout="row wrap">
-
-        <app-gigs-single-card *ngFor="let gig of gigs.items" [gig]="gig">
-        </app-gigs-single-card>
+    <div fxLayout="row" fxLayoutGap="2rem" class="main">
+        <div
+            fxLayout="column"
+            fxFlex="20"
+            class="controls">
+            <app-gigs-list-filter></app-gigs-list-filter>
+        </div>
+        <div 
+            fxLayout="row wrap"
+            fxLayoutGap="2rem grid"
+            fxFlex>
+            <app-gigs-single-card 
+                *ngFor="let gig of gigs.items" 
+                [gig]="gig">
+            </app-gigs-single-card>
+        </div>
     </div>
 
 </div>
