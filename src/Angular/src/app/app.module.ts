@@ -1,64 +1,86 @@
 import { NgModule } from '@angular/core';
-import { filter } from 'rxjs/operators';
-
-import { AppRoutingModule } from './app-routing.module';
-import { AppComponent } from './app.component';
-import { NotFoundComponent } from './not-found/not-found.component';
-import { SharedModule } from './shared/shared.module';
-import { CoreModule } from './core/core.module';
-import { AuthorizationModule } from 'src/authorization/authorization.module';
-import { DashboardModule } from './dashboard/dashboard.module';
-import * as gigsClient from './clients/gigs-client';
-import * as profileClient from './clients/profile-client';
-import * as billingClient from './clients/billing-client';
-import { HomeModule } from './home/home.module';
-import { ExploreModule } from './explore/explore.module';
-import { GigManagementModule } from './gig-management/gig-management.module';
-import { AccountModule } from './account/account.module';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { BrowserModule } from '@angular/platform-browser';
+import { HttpClientModule } from '@angular/common/http';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { RouterModule, Routes } from '@angular/router';
+import { MatMomentDateModule } from '@angular/material-moment-adapter';
+import { MatButtonModule } from '@angular/material/button';
+import { MatIconModule } from '@angular/material/icon';
+import { InMemoryWebApiModule } from 'angular-in-memory-web-api';
+import { TranslateModule } from '@ngx-translate/core';
+
+import { FuseModule } from '@fuse/fuse.module';
+import { FuseSharedModule } from '@fuse/shared.module';
+import { FuseProgressBarModule, FuseSidebarModule, FuseThemeOptionsModule } from '@fuse/components';
+
+import { fuseConfig } from 'app/fuse-config';
+
+import { FakeDbService } from 'app/fake-db/fake-db.service';
+import { AppComponent } from 'app/app.component';
+import { AppStoreModule } from 'app/store/store.module';
+import { LayoutModule } from 'app/layout/layout.module';
+
+const appRoutes: Routes = [
+    {
+        path        : 'apps',
+        loadChildren: () => import('./main/apps/apps.module').then(m => m.AppsModule)
+    },
+    {
+        path        : 'pages',
+        loadChildren: () => import('./main/pages/pages.module').then(m => m.PagesModule)
+    },
+    {
+        path        : 'ui',
+        loadChildren: () => import('./main/ui/ui.module').then(m => m.UIModule)
+    },
+    {
+        path        : 'documentation',
+        loadChildren: () => import('./main/documentation/documentation.module').then(m => m.DocumentationModule)
+    },
+    {
+        path      : '**',
+        redirectTo: 'apps/dashboards/analytics'
+    }
+];
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    NotFoundComponent
-  ],
-  imports: [
-    CoreModule,
-    SharedModule,
+    declarations: [
+        AppComponent
+    ],
+    imports     : [
+        BrowserModule,
+        BrowserAnimationsModule,
+        HttpClientModule,
+        RouterModule.forRoot(appRoutes),
 
-    BrowserModule,
-    BrowserAnimationsModule,
+        TranslateModule.forRoot(),
+        InMemoryWebApiModule.forRoot(FakeDbService, {
+            delay             : 0,
+            passThruUnknownUrl: true
+        }),
 
-    HomeModule,
-    DashboardModule,
-    AuthorizationModule,
-    ExploreModule,
-    GigManagementModule,
-    AccountModule,
+        // Material moment date module
+        MatMomentDateModule,
 
-    AppRoutingModule
-  ],
-  providers: [
-    {
-      provide: gigsClient.API_BASE_URL,
-      useFactory: () => {
-        return 'https://localhost:5057'
-      }
-    },
-    {
-      provide: profileClient.API_BASE_URL,
-      useFactory: () => {
-        return 'https://localhost:5001'
-      }
-    },
-    {
-      provide: billingClient.API_BASE_URL,
-      useFactory: () => {
-        return 'https://localhost:5051'
-      }
-    }
-  ],
-  bootstrap: [AppComponent]
+        // Material
+        MatButtonModule,
+        MatIconModule,
+
+        // Fuse modules
+        FuseModule.forRoot(fuseConfig),
+        FuseProgressBarModule,
+        FuseSharedModule,
+        FuseSidebarModule,
+        FuseThemeOptionsModule,
+
+        // App modules
+        LayoutModule,
+        AppStoreModule
+    ],
+    bootstrap   : [
+        AppComponent
+    ]
 })
-export class AppModule { }
+export class AppModule
+{
+}

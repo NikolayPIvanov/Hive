@@ -1,6 +1,12 @@
-# Angular
+# Fuse - Angular
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 11.2.7.
+Material Design Admin Template with Angular 8 and Angular Material
+
+## The Community
+
+Share your ideas, discuss Fuse and help each other.
+
+[Click here](http://fusetheme.com/community) to see our Community page.
 
 ## Development server
 
@@ -24,4 +30,5 @@ Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protrac
 
 ## Further help
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+
