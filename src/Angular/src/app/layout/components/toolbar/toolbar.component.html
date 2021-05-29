@@ -77,24 +77,9 @@
                     </span>
                 </button>
 
-                <button mat-menu-item [routerLink]="'/components/multi-language'">
-                    <div fxLayout="row" fxLayoutAlign="start center">
-                        <span>Learn more</span>
-                    </div>
-                </button>
-
             </mat-menu>
 
             <div class="toolbar-separator" fxHide fxShow.gt-xs></div>
-
-            <button mat-icon-button fxHide.gt-md
-                    class="chat-panel-toggle-button"
-                    (click)="toggleSidebarOpen('chatPanel')"
-                    aria-label="Toggle chat panel">
-                <mat-icon class="secondary-text">chat</mat-icon>
-            </button>
-
-            <div class="toolbar-separator" fxHide.gt-md></div>
 
             <button mat-icon-button
                     class="quick-panel-toggle-button"

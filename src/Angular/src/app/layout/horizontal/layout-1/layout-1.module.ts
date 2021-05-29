@@ -4,7 +4,6 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { FuseSidebarModule, FuseThemeOptionsModule } from '@fuse/components';
 import { FuseSharedModule } from '@fuse/shared.module';
 
-import { ChatPanelModule } from 'app/layout/components/chat-panel/chat-panel.module';
 import { ContentModule } from 'app/layout/components/content/content.module';
 import { FooterModule } from 'app/layout/components/footer/footer.module';
 import { NavbarModule } from 'app/layout/components/navbar/navbar.module';
@@ -24,7 +23,6 @@ import { HorizontalLayout1Component } from 'app/layout/horizontal/layout-1/layou
         FuseSidebarModule,
         FuseThemeOptionsModule,
 
-        ChatPanelModule,
         ContentModule,
         FooterModule,
         NavbarModule,
