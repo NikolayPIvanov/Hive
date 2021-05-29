@@ -1,64 +1,74 @@
-import { NgModule } from '@angular/core';
-import { filter } from 'rxjs/operators';
-
+import { NgModule, APP_INITIALIZER } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { HttpClientModule } from '@angular/common/http';
+import { HttpClientInMemoryWebApiModule } from 'angular-in-memory-web-api';
+import { ClipboardModule } from 'ngx-clipboard';
+import { TranslateModule } from '@ngx-translate/core';
+import { InlineSVGModule } from 'ng-inline-svg';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { NotFoundComponent } from './not-found/not-found.component';
-import { SharedModule } from './shared/shared.module';
-import { CoreModule } from './core/core.module';
-import { AuthorizationModule } from 'src/authorization/authorization.module';
-import { DashboardModule } from './dashboard/dashboard.module';
-import * as gigsClient from './clients/gigs-client';
-import * as profileClient from './clients/profile-client';
-import * as billingClient from './clients/billing-client';
-import { HomeModule } from './home/home.module';
-import { ExploreModule } from './explore/explore.module';
-import { GigManagementModule } from './gig-management/gig-management.module';
-import { AccountModule } from './account/account.module';
-import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { BrowserModule } from '@angular/platform-browser';
+import { AuthService } from './modules/auth/_services/auth.service';
+import { environment } from 'src/environments/environment';
+// Highlight JS
+import { HighlightModule, HIGHLIGHT_OPTIONS } from 'ngx-highlightjs';
+import { SplashScreenModule } from './_metronic/partials/layout/splash-screen/splash-screen.module';
+// #fake-start#
+import { FakeAPIService } from './_fake/fake-api.service';
+// #fake-end#
+
+function appInitializer(authService: AuthService) {
+  return () => {
+    return new Promise((resolve) => {
+      authService.getUserByToken().subscribe().add(resolve);
+    });
+  };
+}
+
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    NotFoundComponent
-  ],
+  declarations: [AppComponent],
   imports: [
-    CoreModule,
-    SharedModule,
-
     BrowserModule,
     BrowserAnimationsModule,
-
-    HomeModule,
-    DashboardModule,
-    AuthorizationModule,
-    ExploreModule,
-    GigManagementModule,
-    AccountModule,
-
-    AppRoutingModule
+    SplashScreenModule,
+    TranslateModule.forRoot(),
+    HttpClientModule,
+    HighlightModule,
+    ClipboardModule,
+    // #fake-start#
+    environment.isMockEnabled
+      ? HttpClientInMemoryWebApiModule.forRoot(FakeAPIService, {
+        passThruUnknownUrl: true,
+        dataEncapsulation: false,
+      })
+      : [],
+    // #fake-end#
+    AppRoutingModule,
+    InlineSVGModule.forRoot(),
+    NgbModule,
   ],
   providers: [
     {
-      provide: gigsClient.API_BASE_URL,
-      useFactory: () => {
-        return 'https://localhost:5057'
-      }
+      provide: APP_INITIALIZER,
+      useFactory: appInitializer,
+      multi: true,
+      deps: [AuthService],
     },
     {
-      provide: profileClient.API_BASE_URL,
-      useFactory: () => {
-        return 'https://localhost:5001'
-      }
+      provide: HIGHLIGHT_OPTIONS,
+      useValue: {
+        coreLibraryLoader: () => import('highlight.js/lib/core'),
+        languages: {
+          xml: () => import('highlight.js/lib/languages/xml'),
+          typescript: () => import('highlight.js/lib/languages/typescript'),
+          scss: () => import('highlight.js/lib/languages/scss'),
+          json: () => import('highlight.js/lib/languages/json')
+        },
+      },
     },
-    {
-      provide: billingClient.API_BASE_URL,
-      useFactory: () => {
-        return 'https://localhost:5051'
-      }
-    }
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
 export class AppModule { }

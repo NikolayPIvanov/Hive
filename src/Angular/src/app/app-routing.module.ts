@@ -1,41 +1,29 @@
 import { NgModule } from '@angular/core';
-import { RouterModule, Routes } from '@angular/router';
-import { AuthGuard } from './core/guards/auth.guard';
-import { NotFoundComponent } from './not-found/not-found.component';
+import { Routes, RouterModule } from '@angular/router';
+import { AuthGuard } from './modules/auth/_services/auth.guard';
 
-const routes: Routes = [
-  { path: '404', component: NotFoundComponent },
+export const routes: Routes = [
   {
-    path: 'home',
-    loadChildren: './home/home.module#HomeModule'
+    path: 'auth',
+    loadChildren: () =>
+      import('./modules/auth/auth.module').then((m) => m.AuthModule),
   },
   {
-    path: 'account',
-    loadChildren: './account/account.module#AccountModule',
-    canActivate: [AuthGuard]
+    path: 'error',
+    loadChildren: () =>
+      import('./modules/errors/errors.module').then((m) => m.ErrorsModule),
   },
   {
-    path: 'dashboard',
-    loadChildren: './dashboard/dashboard.module#DashboardModule',
-    canActivate: [AuthGuard]
+    path: '',
+    canActivate: [AuthGuard],
+    loadChildren: () =>
+      import('./pages/layout.module').then((m) => m.LayoutModule),
   },
-  {
-    path: 'explore',
-    loadChildren: './explore/explore.module#ExploreModule',
-    canActivate: [AuthGuard]
-  },
-  {
-    path: 'gigs-management',
-    loadChildren: './gig-management/gig-management.module#GigManagementModule',
-    canActivate: [AuthGuard]
-  },
-  
-  { path: '', redirectTo: '/home', pathMatch: 'full' },
-  { path: '**', redirectTo: '/404', pathMatch: 'full'}
+  { path: '**', redirectTo: 'error/404' },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
 export class AppRoutingModule { }

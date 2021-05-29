@@ -56,8 +56,8 @@ namespace Hive.Identity
                     options.SignIn.RequireConfirmedAccount = true;
                 })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders()
-                .AddDefaultUI();
+                .AddDefaultTokenProviders();
+                // .AddDefaultUI();
 
             services.AddIdentityServer(options =>
                 {
