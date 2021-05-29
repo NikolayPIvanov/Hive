@@ -26,6 +26,55 @@
         }
       }
     },
+    "/api/Profile/{id}/avatar": {
+      "put": {
+        "tags": [
+          "Profile"
+        ],
+        "operationId": "Profile_ChangeAvatar",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "model",
+          "content": {
+            "application/json": {
+              "schema": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/FileUploadForm"
+                  }
+                ]
+              }
+            }
+          },
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Profile/{id}": {
       "put": {
         "tags": [
@@ -64,9 +113,10 @@
           "200": {
             "description": "",
             "content": {
-              "application/json": {
+              "application/octet-stream": {
                 "schema": {
-                  "$ref": "#/components/schemas/UserProfileDto"
+                  "type": "string",
+                  "format": "binary"
                 }
               }
             }
@@ -130,6 +180,21 @@
         "properties": {
           "emailNotifications": {
             "type": "boolean"
+          }
+        }
+      },
+      "FileUploadForm": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "version": {
+            "type": "string",
+            "nullable": true
+          },
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "nullable": true
           }
         }
       },

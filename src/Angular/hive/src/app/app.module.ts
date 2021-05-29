@@ -12,6 +12,7 @@ import { MaterialModule } from './modules/material/material.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { HomeModule } from './modules/home/home.module';
 import { AccountModule } from './modules/account/account.module';
+import { AngularFileUploaderModule } from "angular-file-uploader";
 
 @NgModule({
   declarations: [

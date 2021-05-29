@@ -13,13 +13,16 @@ namespace Hive.UserProfile.Infrastructure.Persistence
 
     public class UserProfileDbContext : DbContext, IUserProfileDbContext
     {
+        private readonly ICurrentUserService _currentUserService;
         private readonly IDateTimeService _dateTimeService;
         private const string DefaultSchema = "up";
         
         public UserProfileDbContext(
             DbContextOptions<UserProfileDbContext> options,
+            ICurrentUserService currentUserService,
             IDateTimeService dateTimeService) : base(options)
         {
+            _currentUserService = currentUserService;
             _dateTimeService = dateTimeService;
         }
 
@@ -34,12 +37,12 @@ namespace Hive.UserProfile.Infrastructure.Persistence
                 switch (entry.State)
                 {
                     case EntityState.Added:
-                        entry.Entity.CreatedBy = null;
+                        entry.Entity.CreatedBy = _currentUserService.UserId;
                         entry.Entity.Created = _dateTimeService.Now;
                         break;
 
                     case EntityState.Modified:
-                        entry.Entity.LastModifiedBy = null;
+                        entry.Entity.LastModifiedBy = _currentUserService.UserId;
                         entry.Entity.LastModified = _dateTimeService.Now;
                         break;
                 }

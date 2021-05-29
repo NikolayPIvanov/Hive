@@ -1,5 +1,6 @@
 ﻿using BuildingBlocks.Core.Caching;
 using BuildingBlocks.Core.Email;
+using BuildingBlocks.Core.FileStorage;
 using BuildingBlocks.Core.MessageBus;
 using Hive.Common.Core.Interfaces;
 using Hive.Common.Core.Services;
@@ -31,6 +32,7 @@ namespace Hive.UserProfile.Infrastructure
             }
             
             services.AddRedis(configuration);
+            services.AddFileStorage(configuration);
             services.AddRabbitMqBroker<UserProfileDbContext>(useInMemory, sqlServerConnectionString, configuration);
             services.AddScoped<IUserProfileDbContext>(provider => provider.GetService<UserProfileDbContext>());
 

@@ -1,0 +1,11 @@
+<div
+      fxLayout="column"
+      fxLayoutAlign="center center"
+      fxLayoutGap="2rem">
+      <ngx-avatar fxLayoutAlign="center" *ngIf="url" [src]="url" size="100"></ngx-avatar>
+
+      <input fxLayoutAlign="center" #uploader hidden fxHide="true" type='file' (change)="onSelectFile($event)">
+      <button fxLayoutAlign="center" mat-mini-fab (click)="uploader.click()">
+            <mat-icon>upload</mat-icon>
+      </button>
+</div>

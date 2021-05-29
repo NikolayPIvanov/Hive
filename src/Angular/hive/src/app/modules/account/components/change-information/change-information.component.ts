@@ -1,76 +1,64 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { NGXLogger } from 'ngx-logger';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { UpdateUserProfileCommand, UserProfileDto } from 'src/app/clients/profile-client';
 import { AuthenticationService } from 'src/app/modules/core/services/auth.service';
 import { NotificationService } from 'src/app/modules/core/services/notification.service';
 import { SpinnerService } from 'src/app/modules/core/services/spinner.service';
+import { ProfileService } from '../../services/profile.service';
 
 @Component({
   selector: 'app-change-information',
   templateUrl: './change-information.component.html',
   styleUrls: ['./change-information.component.scss']
 })
-export class ChangeInformationComponent implements OnInit {
+export class ChangeInformationComponent implements OnInit, OnDestroy {
+  private subject = new Subject();
+  private userProfile: UserProfileDto | undefined;
 
   form!: FormGroup;
-  hideCurrentPassword: boolean;
-  hideNewPassword: boolean;
-  currentPassword!: string;
-  newPassword!: string;
-  newPasswordConfirm!: string;
   disableSubmit!: boolean;
 
   constructor(private authService: AuthenticationService,
     private logger: NGXLogger,
     private spinnerService: SpinnerService,
+    private profileService: ProfileService,
     private notificationService: NotificationService) {
-
-    this.hideCurrentPassword = true;
-    this.hideNewPassword = true;
   }
 
   ngOnInit() {
     this.form = new FormGroup({
-      currentPassword: new FormControl('', Validators.required),
-      newPassword: new FormControl('', Validators.required),
-      newPasswordConfirm: new FormControl('', Validators.required),
+      firstName: new FormControl('', Validators.required),
+      lastName: new FormControl('', Validators.required),
     });
 
-    this.form.get('currentPassword')!.valueChanges
-      .subscribe(val => { this.currentPassword = val; });
-
-    this.form.get('newPassword')!.valueChanges
-      .subscribe(val => { this.newPassword = val; });
-
-    this.form.get('newPasswordConfirm')!.valueChanges
-      .subscribe(val => { this.newPasswordConfirm = val; });
+    this.profileService.profile$
+      .pipe(takeUntil(this.subject))
+      .subscribe((profile: UserProfileDto | undefined) => this.userProfile = profile);
 
     this.spinnerService.visibility.subscribe((value) => {
       this.disableSubmit = value;
     });
   }
-
-  changePassword() {
-
-    if (this.newPassword !== this.newPasswordConfirm) {
-      this.notificationService.openSnackBar('New passwords do not match.');
-      return;
-    }
-
-    const email = this.authService.getCurrentUser().email;
-
-    this.authService.changePassword(email, this.currentPassword, this.newPassword)
-      .subscribe(
-        data => {
-          this.logger.info(`User ${email} changed password.`);
-          this.form.reset();
-          this.notificationService.openSnackBar('Your password has been changed.');
-        },
-        error => {
-          this.notificationService.openSnackBar(error.error);
-        }
-      );
+  
+  ngOnDestroy(): void {
+    this.subject.next();
+    this.subject.complete();
   }
 
+  updateProfile() {
+    const fullName =
+      this.form.get('firstName')!.value.trim() +
+      ' ' +
+      this.form.get('lastName')!.value.trim()
 
+    const mockId = -1;
+    const mockCommand = UpdateUserProfileCommand.fromJS({});
+
+    this.profileService.updateProfile(mockId, mockCommand)
+      .pipe(takeUntil(this.subject))
+      .subscribe((profile: UserProfileDto | undefined) => this.userProfile = profile);
+  }
 }

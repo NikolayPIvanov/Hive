@@ -1,18 +1,26 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { COMMA, ENTER } from "@angular/cdk/keycodes";
+import { ProfileService } from '../../services/profile.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { UserProfileDto } from 'src/app/clients/profile-client';
 
 @Component({
   selector: 'app-account-seller-information',
   templateUrl: './account-seller-information.component.html',
   styleUrls: ['./account-seller-information.component.scss']
 })
-export class AccountSellerInformationComponent implements OnInit {
+export class AccountSellerInformationComponent implements OnInit, OnDestroy {
+  private subject = new Subject()
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
   form!: FormGroup;
+  profile: UserProfileDto | undefined;
 
-  constructor() { }
+  constructor(
+    private profileService: ProfileService
+  ) { }
 
   ngOnInit(): void {
     this.form = new FormGroup({
@@ -24,6 +32,19 @@ export class AccountSellerInformationComponent implements OnInit {
         emailNotifications: new FormControl(true)
       })
     });
+
+    this.profileService.getProfile()
+      .pipe(takeUntil(this.subject))
+      .subscribe();
+    
+    this.profileService.profile$
+      .pipe(takeUntil(this.subject))
+      .subscribe(profile => this.profile = profile);
+  }
+
+  ngOnDestroy(): void {
+    this.subject.next();
+    this.subject.complete();
   }
 
   get skills(): FormControl { 

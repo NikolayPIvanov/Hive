@@ -1,46 +1,25 @@
-<form [formGroup]="form">
-    <p>Use the form below to change profile information.</p>
+<form [formGroup]="form" fxLayout="column">
+    <p fxFlexOffset="1">Use the form below to change profile information.</p>
   
     <div fxLayout="row">
   
       <div fxFlex="40%" fxFlex.md="60%" fxFlex.sm="50%" fxFlex.xs="100%">
   
         <mat-form-field class="full-width">
-          <input matInput placeholder="Current Password" formControlName="currentPassword" [type]="hideCurrentPassword ? 'password' : 'text'"
-            autocomplete="current-password">
-          <mat-icon matSuffix (click)="hideCurrentPassword = !hideCurrentPassword">
-            {{hideCurrentPassword ? 'visibility' : 'visibility_off'}}
-          </mat-icon>
-  
-          <mat-error *ngIf="form.controls['currentPassword'].hasError('required')">
-            Please enter a your current password
+          <input matInput placeholder="First name" formControlName="firstName" type="text">
+          <mat-error *ngIf="form.controls['firstName'].hasError('required')">
+            Please enter a your first name
           </mat-error>
         </mat-form-field>
-  
+
         <mat-form-field class="full-width">
-          <input matInput placeholder="New Password" formControlName="newPassword" [type]="hideNewPassword ? 'password' : 'text'" autocomplete="new-password">
-          <mat-icon matSuffix (click)="hideNewPassword = !hideNewPassword">
-            {{hideNewPassword ? 'visibility' : 'visibility_off'}}
-          </mat-icon>
+            <input matInput placeholder="Last name" formControlName="lastName" type="text">
+            <mat-error *ngIf="form.controls['lastName'].hasError('required')">
+              Please enter a your last name
+            </mat-error>
+          </mat-form-field>
   
-          <mat-error *ngIf="form.controls['newPassword'].hasError('required')">
-            Please enter a new password
-          </mat-error>
-        </mat-form-field>
-  
-        <mat-form-field class="full-width">
-          <input matInput placeholder="Confirm New Password" formControlName="newPasswordConfirm" [type]="hideNewPassword ? 'password' : 'text'"
-            autocomplete="new-password">
-          <mat-icon matSuffix (click)="hideNewPassword = !hideNewPassword">
-            {{hideNewPassword ? 'visibility' : 'visibility_off'}}
-          </mat-icon>
-  
-          <mat-error *ngIf="form.controls['newPasswordConfirm'].hasError('required')">
-            Please confirm your new password
-          </mat-error>
-        </mat-form-field>
-  
-        <button mat-raised-button color="primary" [disabled]="form.invalid || disableSubmit" (click)="changePassword()">Save</button>
+        <button mat-raised-button color="primary" [disabled]="form.invalid || disableSubmit" (click)="updateProfile()">Save</button>
   
       </div>
   

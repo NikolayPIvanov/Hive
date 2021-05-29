@@ -30,7 +30,8 @@ import { LayoutSidenavComponent } from './layout/layout-sidenav/layout-sidenav.c
     FormsModule,
     ReactiveFormsModule,
     FlexLayoutModule,
-    MaterialModule
+    MaterialModule,
+
   ]
 })
 export class LayoutModule { }

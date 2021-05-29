@@ -1,28 +1,33 @@
 ﻿using System;
+using System.IO;
 using System.Threading.Tasks;
 using Hive.Common.Core.Interfaces;
 using Hive.UserProfile.Application.UserProfiles.Commands;
 using Hive.UserProfile.Application.UserProfiles.Queries;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace UserProfile.Management.Controllers
 {
+    public record FileUploadForm(string Version, IFormFile File);
+
     [Produces("application/json")]
     public class ProfileController : ApiControllerBase
     {
-        private readonly ICurrentUserService _currentUserService;
-
-        public ProfileController(ICurrentUserService currentUserService)
+        [HttpGet]
+        public async Task<ActionResult<UserProfileDto>> GetProfile() => Ok(await Mediator.Send(new GetUserProfileByIdQuery()));
+        
+        [HttpPut("{id:int}/avatar")]
+        public async Task<IActionResult> ChangeAvatar(int id, [FromBody] FileUploadForm model)
         {
-            _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
+            var extension = Path.GetExtension(model.File.FileName);
+            var command = new UpdateUserAvatarCommand(id, extension, model.File.OpenReadStream());
+            await Mediator.Send(command);
+            return NoContent();
         }
 
-        [HttpGet]
-        public async Task<ActionResult<UserProfileDto>> GetProfile() =>
-            Ok(await Mediator.Send(new GetUserProfileByIdQuery()));
-
         [HttpPut("{id:int}")]
-        public async Task<ActionResult<UserProfileDto>> UpdateProfile(int id, [FromBody] UpdateUserProfileCommand command)
+        public async Task<IActionResult> UpdateProfile(int id, [FromBody] UpdateUserProfileCommand command)
         {
             if (id != command.UserProfileId)
                 return BadRequest();

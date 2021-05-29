@@ -19,6 +19,8 @@ namespace Hive.UserProfile.Domain.Entities
 
         public string UserId { get; private init; }
 
+        public string? AvatarFile { get; set; }
+
         public string? FirstName { get; set; }
 
         public string? LastName { get; set; }
