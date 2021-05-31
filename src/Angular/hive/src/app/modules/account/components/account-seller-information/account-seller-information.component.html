@@ -3,7 +3,9 @@
         fxLayout="column">
         <p>Use the form below to change your seller information.</p>
 
-        <div fxLayout="row" fxLayoutGap="2%">
+        <div fxLayout="row"
+            fxLayout.sm="column" fxLayout.xs="column"
+             fxLayoutGap="2%">
             <!-- Info -->
           <div fxFlex="40%" fxFlex.md="45%" fxFlex.sm="50%" fxFlex.xs="100%">
             
@@ -78,7 +80,7 @@
     
           
           <!-- Email -->
-          <div fxFlex="10%" fxFlex.md="45%" fxFlex.sm="50%" fxFlex.xs="100%" formGroupName="notificationSettings">
+          <div fxFlex="10%" fxFlex.md="45%" fxFlex.sm="50%" fxFlex.xs="100%" fxLayoutAlign.sm="center center" formGroupName="notificationSettings">
             <p>Email Notifications</p>
             <mat-slide-toggle formControlName="emailNotifications">Off/On</mat-slide-toggle>
           </div>

@@ -13,6 +13,8 @@ import { AuthModule } from './modules/auth/auth.module';
 import { HomeModule } from './modules/home/home.module';
 import { AccountModule } from './modules/account/account.module';
 import { AngularFileUploaderModule } from "angular-file-uploader";
+import { CategoryModule } from './modules/category/category.module';
+import { GigModule } from './modules/gig/gig.module';
 
 @NgModule({
   declarations: [
@@ -30,6 +32,8 @@ import { AngularFileUploaderModule } from "angular-file-uploader";
     AuthModule,
     HomeModule,
     AccountModule,
+    CategoryModule,
+    GigModule,
 
     AppRoutingModule,
 

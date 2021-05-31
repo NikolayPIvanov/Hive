@@ -1,0 +1,59 @@
+<div
+    fxLayout="column"
+    fxLayoutGap="2rem"
+    class="container">
+
+    <mat-accordion>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+                Gigs Control Dashboard
+            </mat-panel-title>
+            <mat-panel-description>
+              Expand to explore filter options
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+        
+          <!-- filter -->
+          <div 
+            fxLayout.gt-lg="row"
+            fxLayoutAlign.gt-lg="space-between">
+            
+          </div>
+
+        </mat-expansion-panel>
+      </mat-accordion>
+
+    <div
+        fxLayout="row wrap"
+        fxLayoutAlign="start center"
+        fxLayoutGap="3%"
+        >
+
+        <mat-card *ngFor="let item of elements" fxFlex="22" (click)="onInspect()" class="gig-card">
+          <mat-card-header>
+            <div mat-card-avatar class="example-header-image"></div>
+            <mat-card-title>Shiba Inu</mat-card-title>
+            <mat-card-subtitle>Dog Breed ( By seller )</mat-card-subtitle>
+          </mat-card-header>
+          <img mat-card-image src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu">
+          <mat-card-content>
+            <p>
+             {{ 'The Shiba Inu is the smallest of the six original and distinct spitz breeds of dog from Japan.
+              A small, agile dog that copes very well with mountainous terrain, the Shiba Inu was originally
+              bred for hunting.' | limitTo:'100'
+            }}
+            </p>
+          </mat-card-content>
+          <mat-card-actions fxLayout="row">
+            <h3 fxFlexAlign="end">Starts at 33$</h3>
+          </mat-card-actions>
+        </mat-card>
+
+    </div>
+
+    <mat-paginator [length]="100"
+              [pageSize]="10"
+              [pageSizeOptions]="[5, 10, 25, 100]">
+    </mat-paginator>
+</div>

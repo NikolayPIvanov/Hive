@@ -7,6 +7,7 @@ import { FlexLayoutModule } from '@angular/flex-layout';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SignedOutLayoutComponent } from './signed-out-layout/signed-out-layout.component';
 import { LayoutSidenavComponent } from './layout/layout-sidenav/layout-sidenav.component';
+import { LimitToPipe } from './pipes/limit-to.pipe';
 
 
 
@@ -14,7 +15,8 @@ import { LayoutSidenavComponent } from './layout/layout-sidenav/layout-sidenav.c
   declarations: [
     LayoutComponent,
     SignedOutLayoutComponent,
-    LayoutSidenavComponent
+    LayoutSidenavComponent,
+    LimitToPipe
   ],
   imports: [
     CommonModule,
@@ -32,6 +34,7 @@ import { LayoutSidenavComponent } from './layout/layout-sidenav/layout-sidenav.c
     FlexLayoutModule,
     MaterialModule,
 
+    LimitToPipe
   ]
 })
 export class LayoutModule { }

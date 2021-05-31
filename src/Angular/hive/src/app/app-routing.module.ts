@@ -9,6 +9,12 @@ const routes: Routes = [
   {
     path: 'account', loadChildren: () => import('src/app/modules/account/account.module').then(m => m.AccountModule),
   },
+  {
+    path: 'categories', loadChildren: () => import('src/app/modules/category/category.module').then(m => m.CategoryModule),
+  },
+  {
+    path: 'gigs', loadChildren: () => import('src/app/modules/gig/gig.module').then(m => m.GigModule),
+  },
   { path: '', redirectTo: 'home', pathMatch: 'full' }
 ];
 

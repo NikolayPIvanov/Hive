@@ -1,0 +1,60 @@
+<div
+    fxLayout="column"
+    fxLayoutGap="2rem"
+    class="container">
+
+    <mat-accordion>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+                Categories Control Dashboard
+            </mat-panel-title>
+            <mat-panel-description>
+              Expand to explore filter options
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+        
+          <!-- filter -->
+          <div 
+            fxLayout.gt-lg="row"
+            fxLayoutAlign.gt-lg="space-between">
+            <app-categories-search></app-categories-search>
+            <app-categories-create></app-categories-create>
+          </div>
+
+        </mat-expansion-panel>
+      </mat-accordion>
+
+    <div
+        fxLayout="row wrap"
+        fxLayoutAlign="space-between center"
+        >
+
+        <!-- category-card -->
+        <mat-card *ngFor="let item of array"
+            class="list-item-card"
+            fxFlex.gt-lg="18"
+            fxFlex.gt-md="18">
+            <mat-card-header>
+                <mat-card-title>title</mat-card-title>
+                <mat-card-subtitle>Category</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+                <p>
+                    {{ 'Lorem ipsum dolor sit amet consectetur adipisicing elit. 
+                    Libero quod unde vero. Cum vitae accusantium eligendi,
+                    alias dolorum dicta. Quasi eum soluta exercitationem 
+                    temporibus pariatur ut nostrum architecto minus voluptatem?' | limitTo:'100' }}
+                </p>
+            </mat-card-content>
+            <mat-card-actions 
+                fxLayout.gt-lg="row"
+                fxLayoutAlign.gt-lg="space-between center">
+                <button mat-button color="warn">Delete</button>
+                <button mat-button (click)="openDialog()" color="primary">Details</button>
+            </mat-card-actions>
+        </mat-card>
+
+    </div>
+
+</div>

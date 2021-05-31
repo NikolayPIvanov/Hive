@@ -59,12 +59,20 @@
         <mat-nav-list>
           <h3 mat-subheader>Home</h3>
   
-          <a mat-list-item [routerLink]="['/dashboard']" routerLinkActive="active">
+          <a mat-list-item [routerLink]="['/categories/dashboard']" routerLinkActive="active">
             <mat-icon mat-list-icon>
-              dashboard
+              category
             </mat-icon>
-            <p mat-line> Dashboard </p>
+            <p mat-line> Categories </p>
           </a>
+
+          <a mat-list-item [routerLink]="['/gigs/dashboard']" routerLinkActive="active">
+            <mat-icon mat-list-icon>
+              receipt_long
+            </mat-icon>
+            <p mat-line> Gigs </p>
+          </a>
+
   
           <a mat-list-item [routerLink]="['/customers']" routerLinkActive="active">
             <mat-icon mat-list-icon>

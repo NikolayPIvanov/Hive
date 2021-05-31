@@ -1,0 +1,19 @@
+<div class="full-width">
+  <form>
+    <mat-form-field class="full-width">
+      <mat-label>Search by name</mat-label>
+      <input type="text"
+             appearance="fill"
+             placeholder="Pick one"
+             aria-label="Search by name"
+             matInput
+             [formControl]="autocompleteControl"
+             [matAutocomplete]="auto">
+      <mat-autocomplete #auto="matAutocomplete">
+        <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+          {{option}}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+</form>
+</div>
