@@ -1,5 +1,5 @@
 <!-- main -->
-<div fxLayout="row" class="container">
+<div *ngIf="gig$ | async; let gig" fxLayout="row" class="container">
     <!-- left : title, name, etc -->
     <div fxFlex="60" fxLayout="column" class="full-height">
         <h1 fxFlex="3">I will do flat modern minimalist logo design</h1>
@@ -120,5 +120,7 @@
                   </mat-tab-group>
             </mat-card-content>
         </mat-card>
+        <button mat-raised-button color="primary" (click)="edit(gig)">Edit</button>
+
     </div>
 </div>

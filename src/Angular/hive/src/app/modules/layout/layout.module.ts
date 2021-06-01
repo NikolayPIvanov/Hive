@@ -8,15 +8,17 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { SignedOutLayoutComponent } from './signed-out-layout/signed-out-layout.component';
 import { LayoutSidenavComponent } from './layout/layout-sidenav/layout-sidenav.component';
 import { LimitToPipe } from './pipes/limit-to.pipe';
-
-
+import { CreditCardDirectivesModule } from 'angular-cc-library';
+import { CategoriesSearchComponent } from './components/categories-search/categories-search.component';
 
 @NgModule({
   declarations: [
     LayoutComponent,
     SignedOutLayoutComponent,
     LayoutSidenavComponent,
-    LimitToPipe
+    LimitToPipe,
+
+    CategoriesSearchComponent
   ],
   imports: [
     CommonModule,
@@ -25,6 +27,7 @@ import { LimitToPipe } from './pipes/limit-to.pipe';
     FormsModule,
     ReactiveFormsModule,
     FlexLayoutModule,
+    CreditCardDirectivesModule,
 
     MaterialModule
   ],
@@ -34,7 +37,9 @@ import { LimitToPipe } from './pipes/limit-to.pipe';
     FlexLayoutModule,
     MaterialModule,
 
-    LimitToPipe
+    LimitToPipe,
+
+    CategoriesSearchComponent
   ]
 })
 export class LayoutModule { }

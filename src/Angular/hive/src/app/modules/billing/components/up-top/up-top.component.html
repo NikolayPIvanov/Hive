@@ -1,0 +1,24 @@
+<h1>Up-top your account</h1>
+
+<div >
+    <form fxLayout="column" #demoForm="ngForm" [formGroup]="form" (ngSubmit)="onSubmit(demoForm)" novalidate>
+        <mat-form-field appearance="fill">
+            <mat-label>Amount</mat-label>
+            <input matInput id="amount" type="number">
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>CC Number</mat-label>
+            <input matInput id="cc-number" type="tel" formControlName="creditCard" autocomplete="cc-number" ccNumber>
+        </mat-form-field>
+         <mat-form-field appearance="fill">
+            <mat-label>Exp. Date</mat-label>
+            <input matInput id="cc-exp-date" type="tel" formControlName="expirationDate" autocomplete="cc-exp" ccExp>
+        </mat-form-field>
+        <mat-form-field appearance="fill">
+            <mat-label>CVC</mat-label>
+            <input matInput id="cc-cvc" type="tel" formControlName="cvc" autocomplete="off" ccCvc>
+        </mat-form-field>
+
+        <button mat-button type="submit">Up-top</button>
+    </form>
+</div>

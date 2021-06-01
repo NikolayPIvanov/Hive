@@ -1,11 +1,12 @@
-<mat-card>
-    <mat-card-header>
-        <mat-card-title>Nikolay Ivanov</mat-card-title>
+<mat-card class="mat-elevation-z8">
+    <mat-card-header class="full-width">
+        <mat-card-title fxLayout="row" fxLayoutAlign="space-between">
+            <span>Nikolay Ivanov</span>
+            <span> Balance: {{ wallet.balance }}$</span>
+        </mat-card-title>
         <mat-card-subtitle>Wallet</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content>
-        <p>
-            Balance: {{ wallet.balance }}
-        </p>
+        <button mat-button (click)="openDepositDialog()">Up-top</button>
     </mat-card-content>
 </mat-card>

@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
-import { Observable, Observer, throwError } from 'rxjs';
+import { Observable, Observer, of, throwError } from 'rxjs';
 import { GigDto } from 'src/app/clients/gigs-client';
 import { GigsService } from '../../services/gigs.service';
+import { GigEditComponent } from '../gig-edit/gig-edit.component';
 
 export interface ExampleTab {
   label: string;
@@ -16,13 +18,13 @@ export interface ExampleTab {
 })
 export class GigDetailsComponent implements OnInit {
   public gig$!: Observable<GigDto>;
-
-  asyncTabs: Observable<ExampleTab[]>;
+  public asyncTabs: Observable<ExampleTab[]>;
 
   constructor(
     private activatedRoute: ActivatedRoute,
     private router: Router,
-    private gigsService: GigsService
+    private gigsService: GigsService,
+    public dialog: MatDialog
   ) {
     this.asyncTabs = new Observable((observer: Observer<ExampleTab[]>) => {
       setTimeout(() => {
@@ -42,11 +44,21 @@ export class GigDetailsComponent implements OnInit {
     
     const id = +idParam!;
 
-    this.gig$ = this.gigsService.getGigDetailsById(id)
+    this.gig$ = of(GigDto.fromJS({}))
+      // this.gigsService.getGigDetailsById(id)
   }
 
   checkout() {
     this.router.navigate(['orders/checkout/2'])
+  }
+
+  edit(gig: GigDto) {
+    // only if owner and seller
+
+    this.dialog.open(GigEditComponent, {
+      width: '50%',
+      data: gig
+    })
   }
 
 }

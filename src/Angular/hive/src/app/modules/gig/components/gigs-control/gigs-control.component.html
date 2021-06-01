@@ -1,0 +1,69 @@
+<div fxLayout="column">
+    <div fxFlex="20rem" style="background-color: blue;">
+
+    </div>
+
+    <div fxLayout="column" class="container">
+        <mat-card fxFlexOffset="-10%">
+            <mat-card-header>
+                <mat-card-title>Nikolay Ivanov</mat-card-title>
+                <mat-card-subtitle>Personal Information</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content fxLayout="column" class="full-heigth">
+                <section fxLayout="row">
+                    <div fxFlex="30" fxLayout="column">
+                        <p>
+                            Contact Email: nick@hive.com
+                        </p>
+                    </div>
+                    <div fxFlex="30" fxLayout="column">2</div>
+                    <div fxFlex="30" fxLayout="column">
+                        <div fxLayout="row" fxLayoutAlign="end end">
+                            <button mat-button>Billing</button>
+                            <button mat-button>Orders</button>
+                        </div>
+                    </div>
+                </section>
+            </mat-card-content>
+        </mat-card>
+    
+        <mat-divider fxFlexOffset="1%">
+        </mat-divider>
+
+        <h2>My Gigs</h2>
+
+        <div
+            fxLayout="row wrap"
+            fxLayoutAlign="start center"
+            fxLayoutGap="3%"
+            >
+
+            <mat-card *ngFor="let item of elements" fxFlex="22" (click)="onInspect()" class="gig-card">
+            <mat-card-header>
+                <div mat-card-avatar class="example-header-image"></div>
+                <mat-card-title>Shiba Inu</mat-card-title>
+                <mat-card-subtitle>Dog Breed ( By seller )</mat-card-subtitle>
+            </mat-card-header>
+            <img mat-card-image src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu">
+            <mat-card-content>
+                <p>
+                {{ 'The Shiba Inu is the smallest of the six original and distinct spitz breeds of dog from Japan.
+                A small, agile dog that copes very well with mountainous terrain, the Shiba Inu was originally
+                bred for hunting.' | limitTo:'100'
+                }}
+                </p>
+            </mat-card-content>
+            <mat-card-actions fxLayout="row">
+                <h3 fxFlexAlign="end">Starts at 33$</h3>
+            </mat-card-actions>
+            </mat-card>
+
+        </div>
+
+        <mat-paginator [length]="100"
+              [pageSize]="10"
+              [pageSizeOptions]="[5, 10, 25, 100]">
+        </mat-paginator>
+    </div>
+    
+</div>

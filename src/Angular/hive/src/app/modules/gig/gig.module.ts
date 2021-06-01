@@ -4,13 +4,20 @@ import { GigDashboardComponent } from './components/gig-dashboard/gig-dashboard.
 import { LayoutModule } from '../layout/layout.module';
 import { GigRoutingModule } from './gig-routing.module';
 import { GigDetailsComponent } from './components/gig-details/gig-details.component';
+import { GigsControlComponent } from './components/gigs-control/gigs-control.component';
+import { GigCardComponent } from './components/gig-card/gig-card.component';
+import { GigEditComponent } from './components/gig-edit/gig-edit.component';
+import { CategoryModule } from '../category/category.module';
 
 
 
 @NgModule({
   declarations: [
     GigDashboardComponent,
-    GigDetailsComponent
+    GigDetailsComponent,
+    GigsControlComponent,
+    GigCardComponent,
+    GigEditComponent
   ],
   imports: [
     CommonModule,

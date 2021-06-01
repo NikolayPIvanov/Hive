@@ -1,0 +1,53 @@
+<h2 mat-dialog-title>Edit Gig</h2>
+<mat-dialog-content class="mat-typography">
+    <form [formGroup]="form" id="form" fxLayout="column" (ngSubmit)="onSubmit()">
+        <mat-form-field appearance="outline">
+            <mat-label>Title</mat-label>
+            <input matInput formControlName="title" placeholder="Title">
+            <mat-error *ngIf="form.controls.title.errors">{{getErrorMessage('title')}}</mat-error>
+        </mat-form-field>
+        <mat-form-field appearance="outline">
+            <mat-label>Description</mat-label>
+            <textarea matInput formControlName="description" placeholder="Description"></textarea>
+            <mat-error *ngIf="form.controls.description.errors">{{getErrorMessage('description')}}</mat-error>
+        </mat-form-field>
+        
+        <app-categories-search></app-categories-search>
+    
+        <p><mat-checkbox formControlName="isDraft">Is Draft</mat-checkbox></p>
+
+        <mat-divider></mat-divider>
+
+        <div formArrayName="questions">
+            <div *ngFor="let question of form.controls.questions.controls; let i = index; let last = last;">
+                <!-- address header, show remove button when more than one address available -->
+                <div fxLayout="row">
+                    <h3> Question {{ i + 1 }}</h3>
+                    <mat-icon *ngIf="form.controls.questions.controls.length > 1" fxLayoutAlign="end"
+                        (click)="removeQuestion(i)"> remove </mat-icon>
+                    <mat-icon *ngIf="last" (click)="addQuestion()" fxLayoutAlign="end"> add </mat-icon>
+                </div>
+    
+                <div [formGroupName]="i" fxLayout="column" fxLayoutGap="1rem">
+                    <mat-form-field appearance="outline" fxFill>
+                        <mat-label>Title</mat-label>
+                        <input matInput type="text" formControlName="title">
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" fxFill>
+                        <mat-label>Answer</mat-label>
+                        <input matInput type="text" formControlName="answer">
+                    </mat-form-field>
+                <div>
+            </div>
+            </div>
+            </div>  
+        </div>  
+    </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Cancel</button>
+    <button mat-button type="submit" form="form" [mat-dialog-close]="true" cdkFocusInitial>Install</button>
+</mat-dialog-actions>
+

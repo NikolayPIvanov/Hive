@@ -5,7 +5,6 @@ import { LayoutModule } from '../layout/layout.module';
 import { CategoriesDashboardComponent } from './components/categories-dashboard/categories-dashboard.component';
 import { CategoryRoutingModule } from './category-routing.module';
 import { CategoryDetailsComponent } from './components/category-details/category-details.component';
-import { CategoriesSearchComponent } from './components/categories-search/categories-search.component';
 import { CategoriesCreateComponent } from './components/categories-create/categories-create.component';
 import { CategoriesCreateModalComponent } from './components/categories-create-modal/categories-create-modal.component';
 
@@ -15,7 +14,6 @@ import { CategoriesCreateModalComponent } from './components/categories-create-m
   declarations: [
     CategoriesDashboardComponent,
     CategoryDetailsComponent,
-    CategoriesSearchComponent,
     CategoriesCreateComponent,
     CategoriesCreateModalComponent
   ],
