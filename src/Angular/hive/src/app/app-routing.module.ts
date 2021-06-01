@@ -15,6 +15,9 @@ const routes: Routes = [
   {
     path: 'gigs', loadChildren: () => import('src/app/modules/gig/gig.module').then(m => m.GigModule),
   },
+  {
+    path: 'orders', loadChildren: () => import('src/app/modules/orders/orders.module').then(m => m.OrdersModule),
+  },
   { path: '', redirectTo: 'home', pathMatch: 'full' }
 ];
 

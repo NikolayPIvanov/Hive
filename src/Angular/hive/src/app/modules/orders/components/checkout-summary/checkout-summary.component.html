@@ -1,0 +1,49 @@
+<mat-card *ngIf="quantity$ | async; let quantity">
+    <div *ngIf="package$ | async; let package">
+        <ng-container *ngIf="package; else loading">
+            <mat-card-header>
+                <mat-card-title>Checkout</mat-card-title>
+                <mat-card-subtitle>Once the order is accepted the amount will be deducted from your account</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+                <div fxLayout="row" fxLayoutGap="3%" fxLayoutAlign="space-around">
+                    <div fxLayout="column" fxLayoutGap="3rem">
+                        <div fxLayout="row">
+                            <h3 fxFlex="50"><strong>Subtotal:</strong></h3>
+                            <h3 fxFlexAlign="end"><strong>{{ quantity * package!.price! }}$</strong></h3>
+                        </div>
+
+                        <div fxLayout="row" fxLayoutGap="3rem">
+                            <h3><strong>Service Fee (3%):</strong></h3>
+                            <h3><strong>{{ (3 * quantity * package!.price! / 100)}}$</strong></h3>
+                        </div>
+                    </div>
+                    
+                    <mat-divider
+                        [vertical]="true">
+                    </mat-divider>
+
+                    <div fxLayout="column" fxLayoutGap="3rem">
+                        <div fxLayout="row">
+                            <h3 fxFlex="50"><strong>Total:</strong></h3>
+                            <h3 fxFlexAlign="end"><strong>{{ quantity * package!.price! + (3 * quantity * package!.price! / 100)}}$</strong></h3>
+                        </div>
+
+                        <div fxLayout="row" fxLayoutGap="3rem">
+                            <h3><strong>Delivery Time:</strong></h3>
+                            <h3><strong>{{ package.deliveryTime || 3 }} {{ package.deliveryFrequency || 'days' }}</strong></h3>
+                        </div>
+                    </div>
+                </div>
+            </mat-card-content>
+            <mat-card-actions>
+                <div fxLayout="row">
+                    <button (click)="completeOrder(quantity, package)" fxFlexAlign="end" mat-button>Checkout</button>
+                </div>
+            </mat-card-actions>
+        </ng-container>
+        <ng-template #loading>
+            <ngx-spinner [fullScreen]="false" [name]="spinnerName"></ngx-spinner>
+        </ng-template>
+    </div>
+</mat-card>

@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Observer, throwError } from 'rxjs';
 import { GigDto } from 'src/app/clients/gigs-client';
 import { GigsService } from '../../services/gigs.service';
@@ -21,6 +21,7 @@ export class GigDetailsComponent implements OnInit {
 
   constructor(
     private activatedRoute: ActivatedRoute,
+    private router: Router,
     private gigsService: GigsService
   ) {
     this.asyncTabs = new Observable((observer: Observer<ExampleTab[]>) => {
@@ -42,6 +43,10 @@ export class GigDetailsComponent implements OnInit {
     const id = +idParam!;
 
     this.gig$ = this.gigsService.getGigDetailsById(id)
+  }
+
+  checkout() {
+    this.router.navigate(['orders/checkout/2'])
   }
 
 }

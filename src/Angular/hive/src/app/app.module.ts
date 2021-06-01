@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 
 import { AppRoutingModule } from './app-routing.module';
@@ -15,6 +15,8 @@ import { AccountModule } from './modules/account/account.module';
 import { AngularFileUploaderModule } from "angular-file-uploader";
 import { CategoryModule } from './modules/category/category.module';
 import { GigModule } from './modules/gig/gig.module';
+import { OrdersModule } from './modules/orders/orders.module';
+import { NgxSpinnerModule } from "ngx-spinner";
 
 @NgModule({
   declarations: [
@@ -34,6 +36,7 @@ import { GigModule } from './modules/gig/gig.module';
     AccountModule,
     CategoryModule,
     GigModule,
+    OrdersModule,
 
     AppRoutingModule,
 
@@ -41,9 +44,11 @@ import { GigModule } from './modules/gig/gig.module';
       serverLoggingUrl: `http://my-api/logs`,
       level: environment.logLevel,
       serverLogLevel: environment.serverLogLevel
-    })
+    }),
+    NgxSpinnerModule
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AppModule { }
