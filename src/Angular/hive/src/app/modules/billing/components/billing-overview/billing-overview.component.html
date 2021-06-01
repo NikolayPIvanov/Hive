@@ -1,0 +1,13 @@
+<div *ngIf="wallet$ | async; let wallet" fxLayout="column" class="container">
+    <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="1rem">
+        <mat-icon>credit_card</mat-icon>
+        <h1>Billing account</h1>
+    </div>
+
+    <app-balance-overview [wallet]="wallet"></app-balance-overview>
+    
+    <mat-divider fxFlexOffset="2" fxFill></mat-divider>
+    
+    <app-transactions-overview fxFlexOffset="2" [transactions]="wallet.transactions!"></app-transactions-overview>
+    
+</div>

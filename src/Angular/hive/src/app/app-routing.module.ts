@@ -18,6 +18,9 @@ const routes: Routes = [
   {
     path: 'orders', loadChildren: () => import('src/app/modules/orders/orders.module').then(m => m.OrdersModule),
   },
+  {
+    path: 'billing', loadChildren: () => import('src/app/modules/billing/billing.module').then(m => m.BillingModule),
+  },
   { path: '', redirectTo: 'home', pathMatch: 'full' }
 ];
 
