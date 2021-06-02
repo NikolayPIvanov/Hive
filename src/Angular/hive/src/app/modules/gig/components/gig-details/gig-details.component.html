@@ -3,13 +3,12 @@
     <!-- left : title, name, etc -->
     <div fxFlex="60" fxLayout="column" class="full-height">
         <h1 fxFlex="3">I will do flat modern minimalist logo design</h1>
-        <h3 fxFlex="3">Avatar | name | orders</h3>
-        <div fxFlex="30" fxFlexAlign="row">
-            <img fxFlex="50" class="image-detail" mat-card-image src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu">
+        <div fxFlex="20">
+            <img fxFlex fxFlexAlign="center" class="image-detail" src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu">
         </div>
 
         <h2>About this Gig</h2>
-        <p>
+        <pre>
             Looking for Flat Minimalist Logo that your clients will remember and you will love? Well, that's our peculiarity. :)
 
             Why Choose us?
@@ -51,38 +50,47 @@
             Kindly contact us before placing any custom order.
 
             Happy Fiverring!
-        </p>
+        </pre>
 
 
         <mat-divider>
         </mat-divider>
-
-        <p>
-            tags
-        </p>
 
         <h2>About The Seller</h2>
 
-        <p>info</p>
-
+        <app-seller-overview></app-seller-overview>
         <mat-divider>
         </mat-divider>
 
-        <h2>FAQ</h2>
+        <h2 *ngIf="gig.questions">FAQ</h2>
 
-        <p>info</p>
-
-        <mat-divider>
+        <mat-accordion *ngFor="let question of gig.questions">
+            <mat-expansion-panel>
+              <mat-expansion-panel-header>
+                <mat-panel-title>
+                  {{ question.title }}
+                </mat-panel-title>
+                <mat-panel-description>
+                  Expand to see answer
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+              <p>{{ question.answer }}</p>
+            </mat-expansion-panel>
+          </mat-accordion>
+        <mat-divider *ngIf="gig.questions">
         </mat-divider>
 
-        <h2>Reviews</h2>
+        <div>
+            <h2>Reviews</h2>
 
-        <p>info</p>
+            <p>info</p>
+        </div>
+        
     </div>
 
     <!-- right: packages and price -->
-    <div fxFlexOffset="5" fxFlex="35" fxLayout="column" fxFlexAlign="start" class="packages-overview">
-        <mat-card >
+    <div fxLayout="column" fxFlexOffset="5" fxFlex="35" class="packages-overview">
+        <mat-card>
             <mat-card-content>
                 <ng-container *ngIf="(asyncTabs | async) === null">
                     Loading tabs...
@@ -91,6 +99,7 @@
                   <mat-tab-group mat-align-tabs="center">
                     <mat-tab *ngFor="let tab of asyncTabs | async" >
                       <ng-template mat-tab-label>{{tab.label}}</ng-template>
+                      
                       <!-- {{tab.content}} -->
                       <div fxLayout="column" fxLayoutGap="3">
                         <div fxLayout="row" fxLayoutAlign="space-between center">
@@ -99,28 +108,46 @@
                         </div>
 
                         <p>
-                            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Aperiam voluptatibus tenetur optio deleniti eius. Quo repellat saepe porro ipsum tempore, dolorem officia praesentium tenetur, recusandae eligendi illum impedit vitae explicabo!
+                            Lorem, ipsum dolor sit amet consectetur adipisicing elit. 
+                            Aperiam voluptatibus tenetur optio deleniti eius. 
+                            Quo repellat saepe porro ipsum tempore, 
+                            dolorem officia praesentium tenetur,
+                            recusandae eligendi illum impedit vitae explicabo!
                         </p>
 
-                        <div fxLayout="row" fxFlexAlign="space-between center">
-                            <section fxLayout="row" fxFlexAlign="start center">
+                        <div fxLayout="row" fxLayoutAlign="space-between center">
+                            <section fxLayout="row" fxLayoutGap="1rem" fxFlexAlign="start center">
                                 <mat-icon>schedule</mat-icon>
                                 <span>Delivery Time: 3 days</span>
                             </section>
 
-                            <section fxLayout="row" fxFlexAlign="start center">
+                            <section fxLayout="row" fxLayoutGap="1rem"  fxFlexAlign="start center">
                                 <mat-icon>remove_red_eye</mat-icon>
                                 <span>Revision: 10</span>
                             </section>
                         </div>
 
-                        <button mat-raised-button color="primary" (click)="checkout()">Continue</button>
+                        <mat-divider>
+                        </mat-divider>
+
+                        <button mat-raised-button
+                          fxFlexOffset.gt-lg="1rem" 
+                          color="primary" 
+                          (click)="checkout()">Purchase</button>
                       </div>
                     </mat-tab>
                   </mat-tab-group>
             </mat-card-content>
         </mat-card>
-        <button mat-raised-button color="primary" (click)="edit(gig)">Edit</button>
+        
+        <div *ngIf="canModify" fxFlexOffset.gt-lg="1rem" fxLayout.gt-lg="column" fxLayoutGap.gt-lg="1rem">
+          <button mat-raised-button 
+            (click)="edit(gig)">Edit</button>
+
+          <button mat-raised-button 
+            color="primary" 
+            (click)="edit(gig)">Delete</button>
+        </div>
 
     </div>
 </div>

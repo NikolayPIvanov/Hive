@@ -1,6 +1,9 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, Validators } from '@angular/forms';
-import { GigDto, UpdateGigCommand } from 'src/app/clients/gigs-client';
+import { MatDialogRef } from '@angular/material/dialog';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { tap } from 'rxjs/operators';
+import { GigDto, GigsClient, UpdateGigCommand } from 'src/app/clients/gigs-client';
 
 @Component({
   selector: 'app-gig-edit',
@@ -20,14 +23,26 @@ export class GigEditComponent implements OnInit {
   });
 
   constructor(
-    private fb: FormBuilder) { }
+    public dialogRef: MatDialogRef<GigEditComponent>,
+    private fb: FormBuilder,
+    private gigsApiClient: GigsClient,
+    private spinnerService: NgxSpinnerService) { }
 
   ngOnInit(): void {
     this.form.patchValue(this.gig);
   }
 
   onSubmit() {
+    this.spinnerService.show();
     console.log(this.form.value);
+    const command = UpdateGigCommand.fromJS(this.form.value)
+    this.gigsApiClient.update(this.form.get('id')!.value, command)
+      .pipe(tap({
+        complete: () => {
+          this.spinnerService.hide();
+          this.dialogRef.close();
+        }
+      }))
   }
 
   getErrorMessage(key: string, error: string = 'required') {

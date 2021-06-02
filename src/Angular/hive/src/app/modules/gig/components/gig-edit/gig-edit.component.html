@@ -32,11 +32,15 @@
                     <mat-form-field appearance="outline" fxFill>
                         <mat-label>Title</mat-label>
                         <input matInput type="text" formControlName="title">
+                        <mat-error *ngIf="form.controls.questions.value[i].title.errors">{{getErrorMessage('title')}}</mat-error>
+
                     </mat-form-field>
 
                     <mat-form-field appearance="outline" fxFill>
                         <mat-label>Answer</mat-label>
                         <input matInput type="text" formControlName="answer">
+                        <mat-error *ngIf="form.controls.description.errors">{{getErrorMessage('description')}}</mat-error>
+
                     </mat-form-field>
                 <div>
             </div>
@@ -48,6 +52,6 @@
 
 <mat-dialog-actions align="end">
     <button mat-button mat-dialog-close>Cancel</button>
-    <button mat-button type="submit" form="form" [mat-dialog-close]="true" cdkFocusInitial>Install</button>
+    <button mat-button type="submit" form="form" >Save</button>
 </mat-dialog-actions>
 

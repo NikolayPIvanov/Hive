@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { finalize, map, startWith, switchMap } from 'rxjs/operators';
+import { finalize, map, startWith, switchMap, tap } from 'rxjs/operators';
 import { ProfileClient, UpdateUserProfileCommand, UserProfileDto } from 'src/app/clients/profile-client';
 import { SpinnerService } from '../../core/services/spinner.service';
 
@@ -19,12 +19,11 @@ export class ProfileService {
   getProfile() {
     return this.profileApiClient.getProfile()
       .pipe(
-        // startWith(() => this.spinnerService.show()),
         switchMap(profile => {
           this.currentProfile.next(profile!);
           return this.currentProfile;
         }),
-        finalize(() => this.spinnerService.hide())
+        tap({ complete: () => this.spinnerService.hide() })
       )
   }
 

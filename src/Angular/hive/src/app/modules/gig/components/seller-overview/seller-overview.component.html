@@ -1,0 +1,20 @@
+<div *ngIf="profile$ | async; let profile" fxLayout="row" fxLayoutAlign="start" fxLayoutGap.gt-lg="3rem">
+    <ngx-avatar *ngIf="url" [src]="url" size="100"></ngx-avatar>
+
+    <div fxLayout.gt-lg="column">
+        <h3>{{ profile.firstName }} {{ profile.lastName }}</h3>
+        <h3>{{ profile.education }}</h3>
+    </div>
+
+    <div fxLayout.gt-lg="column">
+        <h4 >Origin: Bulgaria</h4>
+
+        <h4 style="margin: 0;">Languages</h4>
+        <mat-chip-list>
+            <mat-chip *ngFor="let language of profile.languages">{{ language }}</mat-chip>
+        </mat-chip-list>
+
+    </div>
+
+    
+</div>

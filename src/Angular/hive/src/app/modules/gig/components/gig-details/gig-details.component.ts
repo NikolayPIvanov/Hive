@@ -2,7 +2,10 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Observer, of, throwError } from 'rxjs';
+import { tap } from 'rxjs/operators';
 import { GigDto } from 'src/app/clients/gigs-client';
+import { UserProfileDto } from 'src/app/clients/profile-client';
+import { ProfileService } from 'src/app/modules/account/services/profile.service';
 import { GigsService } from '../../services/gigs.service';
 import { GigEditComponent } from '../gig-edit/gig-edit.component';
 
@@ -18,12 +21,16 @@ export interface ExampleTab {
 })
 export class GigDetailsComponent implements OnInit {
   public gig$!: Observable<GigDto>;
+  public profile$!: Observable<UserProfileDto | undefined>;
   public asyncTabs: Observable<ExampleTab[]>;
+
+  public canModify: boolean = true;
 
   constructor(
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private gigsService: GigsService,
+    private userProfileService: ProfileService,
     public dialog: MatDialog
   ) {
     this.asyncTabs = new Observable((observer: Observer<ExampleTab[]>) => {
@@ -43,6 +50,8 @@ export class GigDetailsComponent implements OnInit {
       throwError('Empty id parameter');
     
     const id = +idParam!;
+    
+    this.profile$ = this.userProfileService.getProfile();
 
     this.gig$ = of(GigDto.fromJS({}))
       // this.gigsService.getGigDetailsById(id)
@@ -53,11 +62,13 @@ export class GigDetailsComponent implements OnInit {
   }
 
   edit(gig: GigDto) {
-    // only if owner and seller
-
-    this.dialog.open(GigEditComponent, {
+    const dialogRef = this.dialog.open(GigEditComponent, {
       width: '50%',
       data: gig
+    })
+
+    dialogRef.afterClosed().subscribe(result => {
+      
     })
   }
 
