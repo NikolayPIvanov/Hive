@@ -10,6 +10,7 @@ import { GigEditComponent } from './components/gig-edit/gig-edit.component';
 import { CategoryModule } from '../category/category.module';
 import { SellerOverviewComponent } from './components/seller-overview/seller-overview.component';
 import { AvatarModule } from 'ngx-avatar';
+import { GigCreateComponent } from './components/gig-create/gig-create.component';
 
 
 
@@ -20,7 +21,8 @@ import { AvatarModule } from 'ngx-avatar';
     GigsControlComponent,
     GigCardComponent,
     GigEditComponent,
-    SellerOverviewComponent
+    SellerOverviewComponent,
+    GigCreateComponent
   ],
   imports: [
     CommonModule,

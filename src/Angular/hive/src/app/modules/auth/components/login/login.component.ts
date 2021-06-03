@@ -4,6 +4,9 @@ import { FormControl, Validators, FormGroup } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { NotificationService } from 'src/app/modules/core/services/notification.service';
 import { AuthenticationService } from 'src/app/modules/core/services/auth.service';
+import { AuthService } from 'src/app/modules/layout/services/auth.service';
+import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
 
 
 @Component({
@@ -12,62 +15,30 @@ import { AuthenticationService } from 'src/app/modules/core/services/auth.servic
     styleUrls: ['./login.component.scss']
 })
 export class LoginComponent implements OnInit {
-
-    loginForm!: FormGroup;
-    loading!: boolean;
+    private unsubscribe = new Subject();
+    
+    public isUserAuthenticated: boolean = false;
 
     constructor(private router: Router,
         private titleService: Title,
         private notificationService: NotificationService,
-        private authenticationService: AuthenticationService) {
+        private authenticationService: AuthService) {
     }
 
     ngOnInit() {
         this.titleService.setTitle('Hive - Login');
+        this.authenticationService.loginChanged
+            .pipe(takeUntil(this.unsubscribe))
+            .subscribe(res => {
+                this.isUserAuthenticated = res;
+            })
+    }
+
+    public login = () => {
+        this.authenticationService.login();
+    }
+
+    public logout = () => {
         this.authenticationService.logout();
-        this.createForm();
-    }
-
-    private createForm() {
-        const savedUserEmail = localStorage.getItem('savedUserEmail');
-
-        this.loginForm = new FormGroup({
-            email: new FormControl(savedUserEmail, [Validators.required, Validators.email]),
-            password: new FormControl('', Validators.required),
-            rememberMe: new FormControl(savedUserEmail !== null)
-        });
-    }
-
-    login() {
-        const email = this.loginForm!.get('email')!.value;
-        const password = this.loginForm!.get('password')!.value;
-        const rememberMe = this.loginForm.get('rememberMe')!.value;
-
-        this.loading = true;
-        this.authenticationService
-            .login(email.toLowerCase(), password)
-            .subscribe(
-                data => {
-                    if (rememberMe) {
-                        localStorage.setItem('savedUserEmail', email);
-                    } else {
-                        localStorage.removeItem('savedUserEmail');
-                    }
-                    debugger;
-                    this.router.navigate(['/home/']);
-                },
-                error => {
-                    this.notificationService.openSnackBar(error.error);
-                    this.loading = false;
-                }
-            );
-    }
-
-    resetPassword() {
-        this.router.navigate(['/auth/password-reset-request']);
-    }
-
-    registerAccount() {
-        this.router.navigate(['/auth/register']);
     }
 }

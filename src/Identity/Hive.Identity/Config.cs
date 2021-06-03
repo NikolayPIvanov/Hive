@@ -84,9 +84,9 @@ namespace Hive.Identity
                     AllowedGrantTypes = GrantTypes.Code,
                     RedirectUris = new List<string>
                     {
-                        "http://localhost:4200/signin-callback"
+                        "http://localhost:4200/auth/signin-callback"
                     },
-                    PostLogoutRedirectUris = { "http://localhost:4200/signout-callback" },
+                    PostLogoutRedirectUris = { "http://localhost:4200/auth/signout-callback" },
                     RequirePkce = true,
                     AllowAccessTokensViaBrowser = true,
                     AllowedScopes =

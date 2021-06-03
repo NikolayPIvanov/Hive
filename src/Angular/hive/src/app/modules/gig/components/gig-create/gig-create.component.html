@@ -1,0 +1,106 @@
+<h2 mat-dialog-title>Create</h2>
+<mat-dialog-content class="mat-typography">
+      <mat-horizontal-stepper [linear]="isLinear" #stepper>
+        <mat-step [stepControl]="gigForm">
+            <form [formGroup]="gigForm" fxLayout="column" (ngSubmit)="onSubmit()">
+                <ng-template matStepLabel>Fill out information</ng-template>
+                <mat-form-field appearance="outline">
+                    <mat-label>Title</mat-label>
+                    <input matInput formControlName="title" placeholder="Title">
+                    <mat-error *ngIf="gigForm.controls.title.errors">{{getErrorMessage('title')}}</mat-error>
+                </mat-form-field>
+                <mat-form-field appearance="outline">
+                    <mat-label>Description</mat-label>
+                    <textarea matInput formControlName="description" placeholder="Description"></textarea>
+                    <mat-error *ngIf="gigForm.controls.description.errors">{{getErrorMessage('description')}}</mat-error>
+                </mat-form-field>
+                
+                <app-categories-search></app-categories-search>
+                    
+                <mat-divider></mat-divider>
+        
+                <div formArrayName="questions">
+                    <div *ngFor="let question of gigForm.controls.questions.controls; let i = index; let last = last;">
+                        <!-- address header, show remove button when more than one address available -->
+                        <div fxLayout="row">
+                            <h3> Question {{ i + 1 }}</h3>
+                            <mat-icon *ngIf="gigForm.controls.questions.controls.length > 1" fxLayoutAlign="end"
+                                (click)="removeQuestion(i)"> remove </mat-icon>
+                            <mat-icon *ngIf="last" (click)="addQuestion()" fxLayoutAlign="end"> add </mat-icon>
+                        </div>
+            
+                        <div [formGroupName]="i" fxLayout="column" fxLayoutGap="1rem">
+                            <mat-form-field appearance="outline" fxFill>
+                                <mat-label>Title</mat-label>
+                                <input matInput type="text" formControlName="title">
+                                <mat-error *ngIf="gigForm.controls.questions.value[i].title.errors">{{getErrorMessage('title')}}</mat-error>
+                            </mat-form-field>
+        
+                            <mat-form-field appearance="outline" fxFill>
+                                <mat-label>Answer</mat-label>
+                                <input matInput type="text" formControlName="answer">
+                                <mat-error *ngIf="gigForm.controls.description.errors">{{getErrorMessage('description')}}</mat-error>
+        
+                            </mat-form-field>
+                        <div>
+                    </div>
+                    </div>
+                    </div>  
+                </div>
+
+                <div>
+                    <button mat-button matStepperNext>Next</button>
+                </div>
+            </form>
+        </mat-step>
+        
+        <mat-step [stepControl]="imageForm" label="Add Image" [optional]="true">
+          <form [formGroup]="imageForm">
+
+            <img [src]="imageSrc" alt="">
+            <input #uploader fxHide="true" formControlName="image" type="file" (change)="onFileChange($event)">
+            <button fxLayoutAlign="center" mat-raised-button (click)="uploader.click()">
+              <mat-icon>upload</mat-icon>
+            </button>
+
+            <div>
+              <button mat-button matStepperPrevious>Back</button>
+              <button mat-button matStepperNext>Next</button>
+            </div>
+            
+            
+          </form>
+        </mat-step>
+
+        <mat-step [stepControl]="imageForm" label="Add Packages">
+          <form [formGroup]="imageForm">
+
+            <img [src]="imageSrc" alt="">
+            <input #uploader fxHide="true" formControlName="image" type="file" (change)="onFileChange($event)">
+            <button fxLayoutAlign="center" mat-raised-button (click)="uploader.click()">
+              <mat-icon>upload</mat-icon>
+            </button>
+
+            <div>
+              <button mat-button matStepperPrevious>Back</button>
+              <button mat-button matStepperNext>Next</button>
+            </div>
+            
+            
+          </form>
+        </mat-step>
+
+        <mat-step>
+          <ng-template matStepLabel>Done</ng-template>
+          <p>You are now done.</p>
+          <div>
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-button (click)="stepper.reset()">Reset</button>
+          </div>
+        </mat-step>
+      </mat-horizontal-stepper>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-button [mat-dialog-close]="true" cdkFocusInitial>Install</button>
+</mat-dialog-actions>
