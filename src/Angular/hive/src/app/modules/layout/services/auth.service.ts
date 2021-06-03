@@ -50,7 +50,6 @@ export class AuthService {
     return this._userManager.signoutRedirectCallback();
   }
 
-  
   public isAuthenticated = (): Promise<boolean> => {
     return this._userManager.getUser()
       .then(user => {
@@ -67,6 +66,10 @@ export class AuthService {
       .then( (user: User | null) => {
          return !!user && !user.expired ? user.access_token : null;
     })
+  }
+
+  public get user(): User | null {
+    return this._user;
   }
 
   private checkUser = (user : User | null): boolean => {

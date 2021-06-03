@@ -1,8 +1,14 @@
-<div class="login-container" fxLayout="row" fxLayoutAlign="center center">
-    <section> 
-        <button *ngIf="!isUserAuthenticated" class="btn btn-link" style="color:gray" (click)="login()">Login</button>
-        <button *ngIf="isUserAuthenticated" class="btn btn-link" style="color:gray" (click)="logout()">Logout</button> 
-    </section>
+<div class="login-container" fxLayout="column" fxLayoutAlign="center center">
+    <img src="../../../../../assets/logo.png">
+    <h1 fxFlexAlign="center" style="color: whitesmoke;">Explore the network of freelance</h1>
 
-
+    <ng-container *ngIf="isUserAuthenticated; else anon">
+        <button mat-raised-button class="btn btn-link" (click)="logout()">Logout</button> 
+    </ng-container>
+    <ng-template #anon>
+        <section fxLayout="column" fxLayoutGap="1rem">
+            <button mat-raised-button class="btn btn-link" (click)="login()">Login with Hive Identity Provider</button>
+            <button mat-raised-button class="btn btn-link" (click)="login()">Register with Hive Identity Provider</button>
+        </section>
+    </ng-template>
 </div>
