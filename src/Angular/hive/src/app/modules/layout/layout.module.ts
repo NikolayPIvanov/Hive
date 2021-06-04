@@ -10,6 +10,8 @@ import { LayoutSidenavComponent } from './layout/layout-sidenav/layout-sidenav.c
 import { LimitToPipe } from './pipes/limit-to.pipe';
 import { CreditCardDirectivesModule } from 'angular-cc-library';
 import { CategoriesSearchComponent } from './components/categories-search/categories-search.component';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { AuthInterceptorService } from './services/auth-interceptor.service';
 
 @NgModule({
   declarations: [
@@ -40,6 +42,9 @@ import { CategoriesSearchComponent } from './components/categories-search/catego
     LimitToPipe,
 
     CategoriesSearchComponent
+  ],
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true }
   ]
 })
 export class LayoutModule { }

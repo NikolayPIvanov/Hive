@@ -18,6 +18,8 @@ namespace Hive.UserProfile.Application.UserProfiles.Queries
         
         public string? Education { get; init; }
         
+        public string? AvatarFile { get; init; }
+        
         public NotificationSettingDto NotificationSettings { get; init; }
 
         public bool IsTransient { get; init; }

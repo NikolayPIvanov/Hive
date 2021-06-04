@@ -11,7 +11,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Hive.UserProfile.Application.UserProfiles.Commands
 {
-    public record UpdateUserAvatarCommand(int ProfileId, string Extension, Stream FileStream) : IRequest;
+    public record UpdateUserAvatarCommand(int ProfileId, string Extension, MemoryStream FileStream) : IRequest;
 
     public class UpdateUserAvatarCommandHandler : IRequestHandler<UpdateUserAvatarCommand>
     {
@@ -19,7 +19,7 @@ namespace Hive.UserProfile.Application.UserProfiles.Commands
         private readonly IFileService _fileService;
         private readonly ILogger<UpdateUserAvatarCommand> _logger;
 
-        public UpdateUserAvatarCommandHandler(IUserProfileDbContext context,IFileService fileService, ILogger<UpdateUserAvatarCommand> logger)
+        public UpdateUserAvatarCommandHandler(IUserProfileDbContext context, IFileService fileService, ILogger<UpdateUserAvatarCommand> logger)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _fileService = fileService ?? throw new ArgumentNullException(nameof(fileService));
@@ -36,7 +36,7 @@ namespace Hive.UserProfile.Application.UserProfiles.Commands
                 throw new NotFoundException(nameof(UserProfile), request.ProfileId);
             }
 
-            if (string.IsNullOrEmpty(avatarFile.AvatarFile))
+            if (!string.IsNullOrEmpty(avatarFile.AvatarFile))
             {
                 var deleted = await _fileService.DeleteAsync("avatars", avatarFile.AvatarFile, cancellationToken);
             }

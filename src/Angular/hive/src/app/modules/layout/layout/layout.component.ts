@@ -67,4 +67,8 @@ export class LayoutComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  logout() {
+    this.authService.logout();
+  }
+
 }

@@ -1,11 +1,11 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormControl, FormGroup } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { COMMA, ENTER } from "@angular/cdk/keycodes";
 import { ProfileService } from '../../services/profile.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
-import { UserProfileDto } from 'src/app/clients/profile-client';
+import { UpdateUserProfileCommand, UserProfileDto } from 'src/app/clients/profile-client';
 
 @Component({
   selector: 'app-account-seller-information',
@@ -13,33 +13,29 @@ import { UserProfileDto } from 'src/app/clients/profile-client';
   styleUrls: ['./account-seller-information.component.scss']
 })
 export class AccountSellerInformationComponent implements OnInit, OnDestroy {
-  private subject = new Subject()
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
-  form!: FormGroup;
-  profile: UserProfileDto | undefined;
+  private subject = new Subject()
+  
+  form: FormGroup = this.fb.group({
+    id: ['', Validators.required],
+    description: [''],
+    education: [''],
+    skills: [[]],
+    languages: [[]],
+    notificationSettings: this.fb.group({
+      emailNotifications: [false]
+    })
+  });
 
   constructor(
-    private profileService: ProfileService
+    private profileService: ProfileService,
+    private fb: FormBuilder
   ) { }
 
   ngOnInit(): void {
-    this.form = new FormGroup({
-      description: new FormControl(''),
-      education: new FormControl(''),
-      skills: new FormControl([]),
-      languages: new FormControl([]),
-      notificationSettings: new FormGroup({
-        emailNotifications: new FormControl(true)
-      })
-    });
-
-    this.profileService.getProfile()
-      .pipe(takeUntil(this.subject))
-      .subscribe();
-    
     this.profileService.profile$
       .pipe(takeUntil(this.subject))
-      .subscribe(profile => this.profile = profile);
+      .subscribe(profile => this.form.patchValue(profile!));
   }
 
   ngOnDestroy(): void {
@@ -72,5 +68,12 @@ export class AccountSellerInformationComponent implements OnInit, OnDestroy {
       control.value.splice(index, 1);
       control.updateValueAndValidity();
     }
+  }
+
+  update() {
+    const command = UpdateUserProfileCommand.fromJS(this.form.value);
+    this.profileService.updateProfile(command.id!, command)
+      .pipe(takeUntil(this.subject))
+      .subscribe();
   }
 }

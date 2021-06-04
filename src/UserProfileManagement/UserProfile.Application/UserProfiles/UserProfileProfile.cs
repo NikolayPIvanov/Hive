@@ -15,8 +15,8 @@ namespace Hive.UserProfile.Application.UserProfiles
                     x => x.Condition(
                         profile => !string.IsNullOrEmpty(profile.FirstName) && !string.IsNullOrEmpty(profile.LastName)))
                 .ForMember(d => d.Languages, x => x.MapFrom(s => s.Languages.Select(l => l.Value)))
-                .ForMember(d => d.Skills, x => x.MapFrom(s => s.Skills.Select(l => l.Value)));
-
+                .ForMember(d => d.Skills, x => x.MapFrom(s => s.Skills.Select(l => l.Value)))
+                .ForMember(d => d.NotificationSettings, x => x.MapFrom(s => s.NotificationSetting));
             CreateMap<NotificationSetting, NotificationSettingDto>().DisableCtorValidation().ReverseMap();
         }
     }

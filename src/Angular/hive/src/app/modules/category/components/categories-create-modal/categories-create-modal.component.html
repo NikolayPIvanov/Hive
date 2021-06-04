@@ -10,12 +10,14 @@
             <mat-form-field appearance="fill">
                 <mat-label>Description</mat-label>
                 <textarea matInput placeholder="Description" formControlName="description"></textarea>
+                <mat-error></mat-error>
             </mat-form-field>
 
             <app-categories-search *ngIf="!onlyParent"></app-categories-search>
         </form>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
+        <button type="button" mat-button>Cancel</button>
         <button type="submit" form="cform" mat-button color="primary">Update</button>
     </mat-dialog-actions>
 </div>

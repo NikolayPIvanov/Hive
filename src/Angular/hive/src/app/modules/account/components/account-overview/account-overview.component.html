@@ -1,4 +1,4 @@
-<div fxLayout="row" fxLayoutAlign="center none">
+<div *ngIf="profile$ | async" fxLayout="row" fxLayoutAlign="center none">
 
     <div fxFlex="95%">
       <mat-card>
@@ -14,7 +14,6 @@
             <div fxFlex></div>
   
             <div fxFlex="65%" fxFlex.sm="95%" fxFlex.xs="950%">
-  
   
               <mat-tab-group>
                 <mat-tab label="Change Information">

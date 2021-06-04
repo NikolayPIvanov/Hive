@@ -13,6 +13,9 @@ export class AuthService {
   private _user: User | null = null;
 
   public loginChanged = this._loginChangedSubject.asObservable();
+  public get token() {
+    return this._user?.access_token;
+  }
 
   private get idpSettings() : UserManagerSettings {
     return {

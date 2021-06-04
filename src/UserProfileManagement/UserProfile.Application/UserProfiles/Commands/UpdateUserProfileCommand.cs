@@ -21,7 +21,7 @@ namespace Hive.UserProfile.Application.UserProfiles.Commands
 {
     using Domain.Entities;
     
-    public record UpdateUserProfileCommand(int UserProfileId, string? FirstName, string? LastName, string? Description, string? Education,
+    public record UpdateUserProfileCommand(int Id, string? Description, string? Education,
         NotificationSettingDto NotificationSettings, ICollection<string> Skills, ICollection<string> Languages) : IRequest;
     
     public class UpdateUserProfileCommandHandler : AuthorizationRequestHandler<UserProfile>, IRequestHandler<UpdateUserProfileCommand>
@@ -39,12 +39,12 @@ namespace Hive.UserProfile.Application.UserProfiles.Commands
         
         public async Task<Unit> Handle(UpdateUserProfileCommand request, CancellationToken cancellationToken)
         {
-            var userProfile = await _dbContext.UserProfiles.FirstOrDefaultAsync(x => x.Id == request.UserProfileId,cancellationToken);
+            var userProfile = await _dbContext.UserProfiles.FirstOrDefaultAsync(x => x.Id == request.Id,cancellationToken);
 
             if (userProfile is null)
             {
-                _logger.LogWarning("User Profile with id: {@Id} was not found.", request.UserProfileId);
-                throw new NotFoundException(nameof(Domain.Entities.UserProfile), request.UserProfileId);
+                _logger.LogWarning("User Profile with id: {@Id} was not found.", request.Id);
+                throw new NotFoundException(nameof(Domain.Entities.UserProfile), request.Id);
             }
             
             var result = await base.AuthorizeAsync(userProfile,  new [] {"OnlyOwnerPolicy"});
@@ -54,11 +54,10 @@ namespace Hive.UserProfile.Application.UserProfiles.Commands
                 throw new ForbiddenAccessException();
             }
 
-            userProfile.FirstName = request.FirstName;
-            userProfile.LastName = request.LastName;
             userProfile.Description = request.Description;
             userProfile.Education = request.Education;
             userProfile.NotificationSetting = new NotificationSetting(request.NotificationSettings.EmailNotifications);
+            
             SetSkills(request, userProfile);
             SetLanguages(request, userProfile);
 

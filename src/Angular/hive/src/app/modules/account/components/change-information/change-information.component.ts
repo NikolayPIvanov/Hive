@@ -1,12 +1,13 @@
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
 import { NGXLogger } from 'ngx-logger';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
-import { UpdateUserProfileCommand, UserProfileDto } from 'src/app/clients/profile-client';
+import { pipe, Subject } from 'rxjs';
+import { switchMap, takeUntil } from 'rxjs/operators';
+import { UpdateUserNamesCommand, UserProfileDto } from 'src/app/clients/profile-client';
 import { AuthenticationService } from 'src/app/modules/core/services/auth.service';
 import { NotificationService } from 'src/app/modules/core/services/notification.service';
 import { SpinnerService } from 'src/app/modules/core/services/spinner.service';
+import { AuthService } from 'src/app/modules/layout/services/auth.service';
 import { ProfileService } from '../../services/profile.service';
 
 @Component({
@@ -16,31 +17,26 @@ import { ProfileService } from '../../services/profile.service';
 })
 export class ChangeInformationComponent implements OnInit, OnDestroy {
   private subject = new Subject();
-  private userProfile: UserProfileDto | undefined;
 
-  form!: FormGroup;
-  disableSubmit!: boolean;
-
-  constructor(private authService: AuthenticationService,
-    private logger: NGXLogger,
-    private spinnerService: SpinnerService,
-    private profileService: ProfileService,
-    private notificationService: NotificationService) {
+  form: FormGroup = this.fb.group({
+    id: ['', Validators.required],
+    firstName: [''],
+    lastName: ['']
+  });
+  
+  constructor(
+    private fb: FormBuilder,
+    private profileService: ProfileService) {
   }
 
   ngOnInit() {
-    this.form = new FormGroup({
-      firstName: new FormControl('', Validators.required),
-      lastName: new FormControl('', Validators.required),
-    });
-
     this.profileService.profile$
       .pipe(takeUntil(this.subject))
-      .subscribe((profile: UserProfileDto | undefined) => this.userProfile = profile);
-
-    this.spinnerService.visibility.subscribe((value) => {
-      this.disableSubmit = value;
-    });
+      .subscribe((profile: UserProfileDto | undefined) => {
+        if (profile) {
+          this.form.patchValue(profile!)
+        }
+      });
   }
   
   ngOnDestroy(): void {
@@ -49,16 +45,14 @@ export class ChangeInformationComponent implements OnInit, OnDestroy {
   }
 
   updateProfile() {
-    const fullName =
-      this.form.get('firstName')!.value.trim() +
-      ' ' +
-      this.form.get('lastName')!.value.trim()
-
-    const mockId = -1;
-    const mockCommand = UpdateUserProfileCommand.fromJS({});
-
-    this.profileService.updateProfile(mockId, mockCommand)
-      .pipe(takeUntil(this.subject))
-      .subscribe((profile: UserProfileDto | undefined) => this.userProfile = profile);
+    const command = UpdateUserNamesCommand.fromJS(this.form.value);
+    this.profileService.updateProfileNames(command.id!, command)
+      .pipe(
+        takeUntil(this.subject),
+        switchMap(x => {
+          return this.profileService.getProfile()
+        })
+      )
+      .subscribe();
   }
 }

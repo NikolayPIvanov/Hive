@@ -41,7 +41,8 @@ namespace Hive.UserProfile.Application.UserProfiles.Queries
                 throw new NotFoundException(nameof(Domain.Entities.UserProfile), _currentUserService.UserId);
             }
 
-            return _mapper.Map<UserProfileDto>(userProfile);
+            var dto = _mapper.Map<UserProfileDto>(userProfile);
+            return dto;
         }
     }
 }

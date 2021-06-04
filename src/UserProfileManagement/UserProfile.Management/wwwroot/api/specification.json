@@ -1,5 +1,5 @@
 {
-  "x-generator": "NSwag v13.9.4.0 (NJsonSchema v10.3.1.0 (Newtonsoft.Json v13.0.0.0))",
+  "x-generator": "NSwag v13.11.2.0 (NJsonSchema v10.4.4.0 (Newtonsoft.Json v13.0.0.0))",
   "openapi": "3.0.0",
   "info": {
     "title": "User Profile Management API",
@@ -22,16 +22,27 @@
                 }
               }
             }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
           }
         }
       }
     },
-    "/api/Profile/{id}/avatar": {
+    "/api/Profile/{id}/names": {
       "put": {
         "tags": [
           "Profile"
         ],
-        "operationId": "Profile_ChangeAvatar",
+        "operationId": "Profile_UpdateProfileNames",
         "parameters": [
           {
             "name": "id",
@@ -45,14 +56,14 @@
           }
         ],
         "requestBody": {
-          "x-name": "model",
+          "x-name": "command",
           "content": {
             "application/json": {
               "schema": {
                 "nullable": true,
                 "oneOf": [
                   {
-                    "$ref": "#/components/schemas/FileUploadForm"
+                    "$ref": "#/components/schemas/UpdateUserNamesCommand"
                   }
                 ]
               }
@@ -61,7 +72,17 @@
           "x-position": 2
         },
         "responses": {
-          "200": {
+          "204": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Unit"
+                }
+              }
+            }
+          },
+          "404": {
             "description": "",
             "content": {
               "application/octet-stream": {
@@ -102,6 +123,65 @@
                 "oneOf": [
                   {
                     "$ref": "#/components/schemas/UpdateUserProfileCommand"
+                  }
+                ]
+              }
+            }
+          },
+          "x-position": 2
+        },
+        "responses": {
+          "204": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Unit"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/Profile/{id}/avatar": {
+      "put": {
+        "tags": [
+          "Profile"
+        ],
+        "operationId": "Profile_ChangeAvatar",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "file",
+          "content": {
+            "application/json": {
+              "schema": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/FileUpload"
                   }
                 ]
               }
@@ -183,26 +263,16 @@
           }
         }
       },
-      "FileUploadForm": {
+      "Unit": {
         "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "version": {
-            "type": "string",
-            "nullable": true
-          },
-          "file": {
-            "type": "string",
-            "format": "binary",
-            "nullable": true
-          }
-        }
+        "description": "Represents a void type, since Void is not a valid return type in C#.",
+        "additionalProperties": false
       },
-      "UpdateUserProfileCommand": {
+      "UpdateUserNamesCommand": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "userProfileId": {
+          "id": {
             "type": "integer",
             "format": "int32"
           },
@@ -213,6 +283,16 @@
           "lastName": {
             "type": "string",
             "nullable": true
+          }
+        }
+      },
+      "UpdateUserProfileCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
           },
           "description": {
             "type": "string",
@@ -236,6 +316,16 @@
             "items": {
               "type": "string"
             }
+          }
+        }
+      },
+      "FileUpload": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "fileData": {
+            "type": "string",
+            "nullable": true
           }
         }
       }
