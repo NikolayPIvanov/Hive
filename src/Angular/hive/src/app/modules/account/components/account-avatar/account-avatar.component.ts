@@ -1,9 +1,11 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
+import { from, Subject } from 'rxjs';
+import { switchMap, takeUntil, tap } from 'rxjs/operators';
 import { FileUpload, ProfileClient } from 'src/app/clients/profile-client';
 import { NotificationService } from 'src/app/modules/core/services/notification.service';
 import { ProfileService } from '../../services/profile.service';
+import { DomSanitizer } from '@angular/platform-browser';
+
 
 @Component({
   selector: 'app-account-avatar',
@@ -21,15 +23,39 @@ export class AccountAvatarComponent implements OnInit {
   constructor(
     private profileService: ProfileService,
     private notificationService: NotificationService,
-    private profileApiClient: ProfileClient) { }
+    private profileApiClient: ProfileClient,
+    public domSanitizer: DomSanitizer) { }
 
   ngOnInit(): void {
+    
     this.url = this.url || '/assets/user.png';
-
     this.profileService.profile$
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe(data => this.id = data?.id)
+      .pipe(
+        takeUntil(this.unsubscribe),
+        switchMap(profile => {
+          this.id = profile?.id;
+          return this.profileApiClient.getAvatar(this.id!)
+        }),
+        tap({
+          next: (image) => {
+            this.createImageFromBlob(image.data);
+          }
+        })
+      )
+      .subscribe();
   }
+
+  createImageFromBlob(image: Blob) {
+    let reader = new FileReader();
+    reader.addEventListener("load", () => {
+      const base64Image = this.domSanitizer.bypassSecurityTrustUrl(reader.result as string);
+      this.url = (base64Image as string)
+    }, false);
+ 
+    if (image) {
+       reader.readAsDataURL(image);
+    }
+ }
 
   onSelectFile(event: any) {
     if (event.target.files && event.target.files[0]) {
@@ -38,6 +64,7 @@ export class AccountAvatarComponent implements OnInit {
       reader.readAsDataURL(event.target.files[0]); // read file as data url
 
       reader.onload = (event) => { // called once readAsDataURL is completed
+        debugger;
         this.url = <string>event.target!.result;
         if (this.id) {
           var base64result = this.url.split(',')[1];

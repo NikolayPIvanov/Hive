@@ -202,6 +202,37 @@
             }
           }
         }
+      },
+      "get": {
+        "tags": [
+          "Profile"
+        ],
+        "operationId": "Profile_GetAvatar",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        }
       }
     }
   },
@@ -231,6 +262,10 @@
             "nullable": true
           },
           "education": {
+            "type": "string",
+            "nullable": true
+          },
+          "avatarFile": {
             "type": "string",
             "nullable": true
           },

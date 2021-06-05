@@ -19,6 +19,7 @@ export interface IProfileClient {
     updateProfileNames(id: number, command: UpdateUserNamesCommand | null | undefined): Observable<Unit>;
     updateProfile(id: number, command: UpdateUserProfileCommand | null | undefined): Observable<Unit>;
     changeAvatar(id: number, file: FileUpload | null | undefined): Observable<FileResponse>;
+    getAvatar(id: number): Observable<FileResponse>;
 }
 
 @Injectable({
@@ -265,6 +266,55 @@ export class ProfileClient implements IProfileClient {
         }
         return _observableOf<FileResponse>(<any>null);
     }
+
+    getAvatar(id: number): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/Profile/{id}/avatar";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/octet-stream"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAvatar(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAvatar(<any>response_);
+                } catch (e) {
+                    return <Observable<FileResponse>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<FileResponse>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetAvatar(response: HttpResponseBase): Observable<FileResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            return _observableOf({ fileName: fileName, data: <any>responseBlob, status: status, headers: _headers });
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<FileResponse>(<any>null);
+    }
 }
 
 export class UserProfileDto implements IUserProfileDto {
@@ -274,6 +324,7 @@ export class UserProfileDto implements IUserProfileDto {
     lastName?: string | undefined;
     description?: string | undefined;
     education?: string | undefined;
+    avatarFile?: string | undefined;
     notificationSettings?: NotificationSettingDto;
     isTransient?: boolean;
     skills?: string[];
@@ -296,6 +347,7 @@ export class UserProfileDto implements IUserProfileDto {
             this.lastName = _data["lastName"];
             this.description = _data["description"];
             this.education = _data["education"];
+            this.avatarFile = _data["avatarFile"];
             this.notificationSettings = _data["notificationSettings"] ? NotificationSettingDto.fromJS(_data["notificationSettings"]) : <any>undefined;
             this.isTransient = _data["isTransient"];
             if (Array.isArray(_data["skills"])) {
@@ -326,6 +378,7 @@ export class UserProfileDto implements IUserProfileDto {
         data["lastName"] = this.lastName;
         data["description"] = this.description;
         data["education"] = this.education;
+        data["avatarFile"] = this.avatarFile;
         data["notificationSettings"] = this.notificationSettings ? this.notificationSettings.toJSON() : <any>undefined;
         data["isTransient"] = this.isTransient;
         if (Array.isArray(this.skills)) {
@@ -349,6 +402,7 @@ export interface IUserProfileDto {
     lastName?: string | undefined;
     description?: string | undefined;
     education?: string | undefined;
+    avatarFile?: string | undefined;
     notificationSettings?: NotificationSettingDto;
     isTransient?: boolean;
     skills?: string[];

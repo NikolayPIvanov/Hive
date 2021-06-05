@@ -17,16 +17,5 @@ export class AuthInterceptorService {
       }
     });
     return next.handle(request);
-
-
-    return from(
-      this.authService.getAccessToken()
-        .then(token => {
-          debugger;
-        const headers = new HttpHeaders().set('Authorization', `Bearer ${token}`);
-        const authRequest = req.clone({ headers });
-        return next.handle(authRequest).toPromise();
-      })
-    );
   }
 }

@@ -14,6 +14,7 @@ using NSwag.Annotations;
 namespace UserProfile.Management.Controllers
 {
     public record FileUpload(string FileData);
+    
     [Authorize]
     public class ProfileController : ApiControllerBase
     {
@@ -65,6 +66,14 @@ namespace UserProfile.Management.Controllers
             var command = new UpdateUserAvatarCommand(id, extension, imageDataStream);
             await Mediator.Send(command);
             return NoContent();
+        }
+        
+        [HttpGet("{id:int}/avatar")]
+        [ProducesResponseType(typeof(FileContentResult), 200)]
+        [SwaggerResponse(200, typeof(FileContentResult))]
+        public async Task<FileContentResult> GetAvatar([FromRoute] int id)
+        {
+            return await Mediator.Send(new GetAvatarQuery(id));
         }
     }
 }
