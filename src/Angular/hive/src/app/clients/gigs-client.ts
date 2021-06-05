@@ -1789,7 +1789,7 @@ export class CategoryDto implements ICategoryDto {
     id?: number;
     title?: string;
     description?: string;
-    parentId?: number | undefined;
+    parentOverview?: ParentOverview | undefined;
     subCategories?: CategoryDto[];
 
     constructor(data?: ICategoryDto) {
@@ -1806,7 +1806,7 @@ export class CategoryDto implements ICategoryDto {
             this.id = _data["id"];
             this.title = _data["title"];
             this.description = _data["description"];
-            this.parentId = _data["parentId"];
+            this.parentOverview = _data["parentOverview"] ? ParentOverview.fromJS(_data["parentOverview"]) : <any>undefined;
             if (Array.isArray(_data["subCategories"])) {
                 this.subCategories = [] as any;
                 for (let item of _data["subCategories"])
@@ -1827,7 +1827,7 @@ export class CategoryDto implements ICategoryDto {
         data["id"] = this.id;
         data["title"] = this.title;
         data["description"] = this.description;
-        data["parentId"] = this.parentId;
+        data["parentOverview"] = this.parentOverview ? this.parentOverview.toJSON() : <any>undefined;
         if (Array.isArray(this.subCategories)) {
             data["subCategories"] = [];
             for (let item of this.subCategories)
@@ -1841,8 +1841,52 @@ export interface ICategoryDto {
     id?: number;
     title?: string;
     description?: string;
-    parentId?: number | undefined;
+    parentOverview?: ParentOverview | undefined;
     subCategories?: CategoryDto[];
+}
+
+export class ParentOverview implements IParentOverview {
+    id?: number;
+    title?: string;
+    description?: string;
+
+    constructor(data?: IParentOverview) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.title = _data["title"];
+            this.description = _data["description"];
+        }
+    }
+
+    static fromJS(data: any): ParentOverview {
+        data = typeof data === 'object' ? data : {};
+        let result = new ParentOverview();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["title"] = this.title;
+        data["description"] = this.description;
+        return data; 
+    }
+}
+
+export interface IParentOverview {
+    id?: number;
+    title?: string;
+    description?: string;
 }
 
 export class PaginatedListOfCategoryDto implements IPaginatedListOfCategoryDto {

@@ -1,6 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { CategoriesClient, CategoryDto, UpdateCategoryCommand } from 'src/app/clients/gigs-client';
 
 export interface Section {
   name: string;
@@ -13,8 +17,6 @@ export interface Section {
   styleUrls: ['./category-details.component.scss']
 })
 export class CategoryDetailsComponent implements OnInit {
-  public hasParent: boolean = true;
-  public hasChildren: boolean = true;
   folders: Section[] = [
     {
       name: 'Photos',
@@ -43,24 +45,41 @@ export class CategoryDetailsComponent implements OnInit {
 
   public editMode: boolean = false;
 
-
-
   categoryForm = this.fb.group({
     id: ['', Validators.required],
-    title: ['Web Design & Layout', Validators.required],
-    description: ['Achieve the maximum speed possible on the Web Platform today, and take it further, via Web Workers and server-side rendering. Angular puts you in control over scalability. Meet huge data requirements by building data models on RxJS, Immutable.js or another push-model.', Validators.required],
+    title: ['', Validators.required],
+    description: ['', Validators.required],
     parentId: ['']
   });
 
+  category$!: Observable<CategoryDto>;
+
   constructor(
     private fb: FormBuilder,
-    public dialogRef: MatDialogRef<CategoryDetailsComponent>) { }
+    private categoryApiClient: CategoriesClient,
+    private spinner: NgxSpinnerService,
+    public dialogRef: MatDialogRef<CategoryDetailsComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: number) { }
 
   ngOnInit(): void {
+    this.spinner.show();
+    this.category$ = this.categoryApiClient.getCategoryById(this.data)
+      .pipe(tap({
+        next: (data) => {
+          this.categoryForm.patchValue(data);
+          this.categoryForm.patchValue({ parentId: data.parentOverview?.id})
+        },
+        complete: () => this.spinner.hide()
+      }))
   }
 
   onSubmit(): void {
-    
+    this.spinner.show()
+
+    const command = UpdateCategoryCommand.fromJS(this.categoryForm.value)
+    this.categoryApiClient.updateCategory(this.data, command)
+      .pipe(tap({ complete: () => this.spinner.hide() }))
+      .subscribe();
   }
 
 }

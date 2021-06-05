@@ -24,6 +24,8 @@ namespace Hive.Gig.Domain.Entities
         
         public int? ParentId { get; set; }
 
+        public Category Parent { get; set; }
+
         public ICollection<Category> SubCategories { get; private set; }
     }
 }

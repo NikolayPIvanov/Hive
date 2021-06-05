@@ -43,16 +43,16 @@ export class CategoriesDashboardComponent implements OnInit {
       .subscribe()
   }
 
-  openDialog() {
+  openDialog(id: number) {
     const dialogRef = this.dialog.open(CategoryDetailsComponent,
     {
-      width: "50%"
+      width: "50%",
+      data: id
     });
 
     dialogRef.afterClosed()
-      .subscribe(result => {
-        console.log(`Dialog result: ${result}`);
-      });
+      .pipe(tap({ complete: () => this.fetchCategories() }))
+      .subscribe();
   }
 
   private fetchCategories() {

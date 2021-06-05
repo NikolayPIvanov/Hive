@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -30,6 +31,7 @@ namespace Hive.Gig.Application.Categories.Queries
         {
             var category = await _dbContext.Categories
                 .Include(c => c.SubCategories)
+                .Include(c => c.Parent)
                 .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
 
             if (category == null)
@@ -38,7 +40,8 @@ namespace Hive.Gig.Application.Categories.Queries
                 throw new NotFoundException(nameof(Category), request.Id);
             }
 
-            return _mapper.Map<CategoryDto>(category);
+            var dto = _mapper.Map<CategoryDto>(category);
+            return dto;
         }
     }
 }

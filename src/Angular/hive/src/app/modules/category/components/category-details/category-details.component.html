@@ -1,71 +1,70 @@
 
-<ng-container *ngIf="!editMode; else edit">
-    <h2 mat-dialog-title>Category Name</h2>
-    <mat-divider></mat-divider>
-
-    <mat-dialog-content class="mat-typography">
-        <h3>Category Description</h3>
-        <p>Achieve the maximum speed possible on the Web Platform today, and take it further, via Web
-            Workers and server-side rendering. Angular puts you in control over scalability. Meet huge
-            data requirements by building data models on RxJS, Immutable.js or another push-model.
-        </p>
-
-        <section *ngIf="hasParent">
-            <h3>Parent Category</h3>
-            <h4>Parent Category Name</h4>
-            <p>Achieve the maximum speed possible on the Web Platform today, and take it further, via Web
-                Workers and server-side rendering. Angular puts you in control over scalability. Meet huge
-                data requirements by building data models on RxJS, Immutable.js or another push-model.
-            </p>
-        </section>
-
-        <ng-container *ngIf="hasChildren; else noChildren">
-            <mat-list>
-                <div mat-subheader>Child Categories</div>
-                <mat-list-item *ngFor="let folder of folders">
-                  <mat-icon mat-list-icon>folder</mat-icon>
-                  <div mat-line>{{folder.name}}</div>
-                  <div mat-line> {{folder.updated | date}} </div>
-                </mat-list-item>
-                <mat-divider></mat-divider>
-            </mat-list>
-            <mat-paginator [length]="100"
-              [pageSize]="10"
-              [pageSizeOptions]="[5, 10, 25, 100]">
-            </mat-paginator>
-        </ng-container>
-        <ng-template #noChildren>
-            <p>
-                No children
-            </p>
-        </ng-template>
-        
-    </mat-dialog-content>
-    <mat-dialog-actions align="end">
-        <button mat-button mat-dialog-close>Cancel</button>
-        <button mat-button (click)="editMode = true">Edit</button>
-    </mat-dialog-actions>
-</ng-container>
-<ng-template #edit>
-    <div fxLayout="column"> 
+<ng-container *ngIf="category$ | async; let category">
+    <ng-container *ngIf="!editMode; else edit">
+        <h2 mat-dialog-title> {{ category.title! }} </h2>
+        <mat-divider></mat-divider>
+    
         <mat-dialog-content class="mat-typography">
-            <h2 mat-dialog-title>Editting Category Name</h2>
-            <form [formGroup]="categoryForm" fxLayout="column" (ngSubmit)="onSubmit()" id="cform">
-                <mat-form-field appearance="fill">
-                    <mat-label>Title</mat-label>
-                    <input matInput placeholder="Title" formControlName="title">
-                </mat-form-field>
-
-                <mat-form-field appearance="fill">
-                    <mat-label>Description</mat-label>
-                    <textarea matInput placeholder="Description" formControlName="description"></textarea>
-                </mat-form-field>
-
-                <app-categories-search></app-categories-search>
-            </form>
+            <h3>Category Description</h3>
+            <p> {{ category.description }}</p>
+    
+            <section *ngIf="category.parentOverview">
+                <mat-divider></mat-divider>
+                <h3>Parent Category</h3>
+                <h4>{{ category.parentOverview.title }}</h4>
+                <p>{{ category.parentOverview.description! | limitTo:'100'}}</p>
+            </section>
+    
+            <ng-container *ngIf="category.subCategories && category.subCategories.length > 0; else noChildren">
+                <mat-divider>
+                </mat-divider>
+                <mat-list>
+                    <div mat-subheader>Child Categories</div>
+                    <mat-list-item *ngFor="let child of category.subCategories">
+                      <mat-icon mat-list-icon>category</mat-icon>
+                      <div mat-line>{{child.title}}</div>
+                    </mat-list-item>
+                    <mat-divider></mat-divider>
+                </mat-list>
+                <mat-paginator [length]="100"
+                  [pageSize]="10"
+                  [pageSizeOptions]="[5, 10, 25, 100]">
+                </mat-paginator>
+            </ng-container>
+            <ng-template #noChildren>
+                <p>
+                    No children
+                </p>
+            </ng-template>
+            
         </mat-dialog-content>
         <mat-dialog-actions align="end">
-            <button type="submit" form="cform" mat-button color="primary">Update</button>
+            <button mat-button mat-dialog-close>Cancel</button>
+            <button mat-button (click)="editMode = true">Edit</button>
         </mat-dialog-actions>
-    </div>
-</ng-template>
+    </ng-container>
+    <ng-template #edit>
+        <div fxLayout="column"> 
+            <mat-dialog-content class="mat-typography">
+                <h2 mat-dialog-title>Editting {{ category.title! }} </h2>
+                <form [formGroup]="categoryForm" fxLayout="column" (ngSubmit)="onSubmit()" id="cform">
+                    <mat-form-field appearance="fill">
+                        <mat-label>Title</mat-label>
+                        <input matInput placeholder="Title" formControlName="title">
+                    </mat-form-field>
+    
+                    <mat-form-field appearance="fill">
+                        <mat-label>Description</mat-label>
+                        <textarea matInput placeholder="Description" formControlName="description"></textarea>
+                    </mat-form-field>
+    
+                    <app-categories-search></app-categories-search>
+                </form>
+            </mat-dialog-content>
+            <mat-dialog-actions align="end">
+                <button type="submit" form="cform" mat-button color="primary">Update</button>
+            </mat-dialog-actions>
+        </div>
+    </ng-template>
+    
+</ng-container>

@@ -10,7 +10,18 @@ namespace Hive.Gig.Application.Categories
     {
         public CategoriesProfile()
         {
-            CreateMap<Category, CategoryDto>();
+            CreateMap<Category, CategoryDto>()
+                .AfterMap(
+                    (category, dto) =>
+                    {
+                        dto.ParentOverview = category.Parent == null
+                            ? null
+                            : new ParentOverview()
+                            {
+                                Description = category.Parent.Description, Id = category.Parent.Id,
+                                Title = category.Parent.Title
+                            };
+                    });
         }
     }
 }

@@ -2,6 +2,12 @@
 
 namespace Hive.Gig.Application.Categories.Queries
 {
+    public class ParentOverview
+    {
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+    }
     public class CategoryDto
     {
         private CategoryDto()
@@ -12,7 +18,7 @@ namespace Hive.Gig.Application.Categories.Queries
         public int Id { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
-        public int? ParentId { get; set; }
+        public ParentOverview? ParentOverview { get; set; }
         public ICollection<CategoryDto> SubCategories { get; private set; }
     }
 }
