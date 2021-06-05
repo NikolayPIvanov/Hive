@@ -18,7 +18,7 @@ export class CategoriesCreateModalComponent implements OnInit {
     id: ['', Validators.required],
     title: ['', Validators.required],
     description: ['', Validators.required],
-    parentId: ['']
+    parentId: [null]
   });
   
   constructor(
@@ -35,14 +35,26 @@ export class CategoriesCreateModalComponent implements OnInit {
     this.dialogRef.close();
   }
 
+  selected(categoryName: any) {
+    this.categoriesClient.getCategories(1, 1, false, categoryName)
+      .pipe(tap({
+        next: (categoriesList) => {
+          const id = categoriesList.items![0].id;
+          this.categoryForm.patchValue({ parentId: id })
+        }
+      }))
+      .subscribe();
+  }
+
   onSubmit(): void {
-    const command = CreateCategoryCommand.fromJS(this.categoryForm);
+    const command = CreateCategoryCommand.fromJS(this.categoryForm.value);
     this.categoriesClient.createCategory(command)
       .pipe(
         takeUntil(this.unsubscribe),
         tap({
           next: (id) => { this.notificationService.openSnackBar('Category created') },
-          error: (error) => { this.notificationService.openSnackBar('Category creation failed')}
+          error: (error) => { this.notificationService.openSnackBar('Category creation failed') },
+          complete: () => this.onNoClick()
         })
       )
       .subscribe();

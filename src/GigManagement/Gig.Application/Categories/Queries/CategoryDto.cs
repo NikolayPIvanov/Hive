@@ -11,6 +11,7 @@ namespace Hive.Gig.Application.Categories.Queries
         
         public int Id { get; set; }
         public string Title { get; set; }
+        public string Description { get; set; }
         public int? ParentId { get; set; }
         public ICollection<CategoryDto> SubCategories { get; private set; }
     }

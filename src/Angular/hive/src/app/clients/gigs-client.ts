@@ -1788,6 +1788,7 @@ export class SellersClient implements ISellersClient {
 export class CategoryDto implements ICategoryDto {
     id?: number;
     title?: string;
+    description?: string;
     parentId?: number | undefined;
     subCategories?: CategoryDto[];
 
@@ -1804,6 +1805,7 @@ export class CategoryDto implements ICategoryDto {
         if (_data) {
             this.id = _data["id"];
             this.title = _data["title"];
+            this.description = _data["description"];
             this.parentId = _data["parentId"];
             if (Array.isArray(_data["subCategories"])) {
                 this.subCategories = [] as any;
@@ -1824,6 +1826,7 @@ export class CategoryDto implements ICategoryDto {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["title"] = this.title;
+        data["description"] = this.description;
         data["parentId"] = this.parentId;
         if (Array.isArray(this.subCategories)) {
             data["subCategories"] = [];
@@ -1837,6 +1840,7 @@ export class CategoryDto implements ICategoryDto {
 export interface ICategoryDto {
     id?: number;
     title?: string;
+    description?: string;
     parentId?: number | undefined;
     subCategories?: CategoryDto[];
 }
@@ -2027,6 +2031,7 @@ export interface IGigOverviewDto {
 
 export class CreateCategoryCommand implements ICreateCategoryCommand {
     title?: string;
+    description?: string;
     parentId?: number | undefined;
 
     constructor(data?: ICreateCategoryCommand) {
@@ -2041,6 +2046,7 @@ export class CreateCategoryCommand implements ICreateCategoryCommand {
     init(_data?: any) {
         if (_data) {
             this.title = _data["title"];
+            this.description = _data["description"];
             this.parentId = _data["parentId"];
         }
     }
@@ -2055,6 +2061,7 @@ export class CreateCategoryCommand implements ICreateCategoryCommand {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["title"] = this.title;
+        data["description"] = this.description;
         data["parentId"] = this.parentId;
         return data; 
     }
@@ -2062,6 +2069,7 @@ export class CreateCategoryCommand implements ICreateCategoryCommand {
 
 export interface ICreateCategoryCommand {
     title?: string;
+    description?: string;
     parentId?: number | undefined;
 }
 

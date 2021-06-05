@@ -18,8 +18,8 @@
           <div 
             fxLayout.gt-lg="row"
             fxLayoutAlign.gt-lg="space-between">
-            <app-categories-search></app-categories-search>
-            <app-categories-create></app-categories-create>
+            <app-categories-search (onSelectedCategoryName)="selected($event)"></app-categories-search>
+            <app-categories-create (onClosedDialog)="onClosedDialog($event)"></app-categories-create>
           </div>
 
         </mat-expansion-panel>
@@ -27,31 +27,30 @@
 
     <div
         fxLayout="row wrap"
-        fxLayoutAlign="space-between center"
-        >
+        fxLayoutGap="2rem"
+        fxLayoutAlign="start center">
 
         <!-- category-card -->
-        <mat-card *ngFor="let item of array"
+        <mat-card 
+          *ngFor="let category of (categories$ | async)?.items"
             class="list-item-card"
+            fxLayout="column"
             fxFlex.gt-lg="18"
-            fxFlex.gt-md="18">
-            <mat-card-header>
-                <mat-card-title>title</mat-card-title>
+            fxFlex.gt-md="18"> 
+            <mat-card-header fxLayout="column wrap">
+                <mat-card-title>{{ category.title }}</mat-card-title>
                 <mat-card-subtitle>Category</mat-card-subtitle>
             </mat-card-header>
             <mat-card-content>
                 <p>
-                    {{ 'Lorem ipsum dolor sit amet consectetur adipisicing elit. 
-                    Libero quod unde vero. Cum vitae accusantium eligendi,
-                    alias dolorum dicta. Quasi eum soluta exercitationem 
-                    temporibus pariatur ut nostrum architecto minus voluptatem?' | limitTo:'100' }}
+                    {{ category.description! | limitTo:'100' }}
                 </p>
             </mat-card-content>
             <mat-card-actions 
                 fxLayout.gt-lg="row"
                 fxLayoutAlign.gt-lg="space-between center">
-                <button mat-button color="warn">Delete</button>
-                <button mat-button (click)="openDialog()" color="primary">Details</button>
+                <button mat-button (click)="delete(category.id!)">Delete</button>
+                <button mat-button (click)="openDialog()">Details</button>
             </mat-card-actions>
         </mat-card>
 

@@ -1,7 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { FormControl } from '@angular/forms';
+import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { Observable } from 'rxjs';
-import { startWith, map } from 'rxjs/operators';
+import { startWith, map, distinctUntilChanged, debounceTime, switchMap } from 'rxjs/operators';
+import { CategoriesClient, CategoryDto } from 'src/app/clients/gigs-client';
 
 @Component({
   selector: 'app-categories-search',
@@ -9,24 +11,43 @@ import { startWith, map } from 'rxjs/operators';
   styleUrls: ['./categories-search.component.scss']
 })
 export class CategoriesSearchComponent implements OnInit {
-  
-  autocompleteControl = new FormControl('');
-  options: string[] = ['One', 'Two', 'Three'];
-  filteredOptions: Observable<string[]> | undefined;
+  @Output() onSelectedCategoryName = new EventEmitter<string>();
 
-  constructor() { }
+  autocompleteControl = new FormControl('');
+  filteredOptions: Observable<CategoryDto[]> | undefined;
+
+  constructor(private categoriesApiClient: CategoriesClient) { }
 
   ngOnInit(): void {
     this.filteredOptions = this.autocompleteControl.valueChanges
       .pipe(
         startWith(''),
-        map(value => this._filter(value))
+        debounceTime(400),
+        distinctUntilChanged(),
+        switchMap(val => {
+          return this.filter(val || '')
+        })
       );
   }
 
-  private _filter(value: string): string[] {
-    const filterValue = value.toLowerCase();
-    return this.options.filter(option => option.toLowerCase().includes(filterValue));
+  filter(val: string): Observable<any[]> {
+    return this.categoriesApiClient.getCategories(1, 5, false, val)
+     .pipe(
+       map(response => {
+         if (response && response.items) {
+           return response.items
+             .filter(option => {
+                return option.title!.toLowerCase().indexOf(val.toLowerCase()) === 0
+              })
+         }
+         else {
+           return [];
+         }
+       })
+     )
   }
 
+  onSelected($event: MatAutocompleteSelectedEvent) {
+    this.onSelectedCategoryName.emit($event.option.value)
+  }
 }

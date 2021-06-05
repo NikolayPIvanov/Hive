@@ -1,16 +1,16 @@
 <div class="full-width">
   <form>
     <mat-form-field class="full-width" appearance="outline">
-      <mat-label>Search by name</mat-label>
+      <mat-label>Search category by name</mat-label>
       <input type="text"
-             placeholder="Pick one"
-             aria-label="Search by name"
+             placeholder="Search category by name"
+             aria-label="Search category by name"
              matInput
              [formControl]="autocompleteControl"
              [matAutocomplete]="auto">
-      <mat-autocomplete #auto="matAutocomplete">
-        <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
-          {{option}}
+      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSelected($event)">
+        <mat-option *ngFor="let option of filteredOptions | async" [value]="option.title">
+          {{option.title }}
         </mat-option>
       </mat-autocomplete>
     </mat-form-field>

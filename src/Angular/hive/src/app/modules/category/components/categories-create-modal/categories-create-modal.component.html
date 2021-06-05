@@ -13,11 +13,11 @@
                 <mat-error></mat-error>
             </mat-form-field>
 
-            <app-categories-search *ngIf="!onlyParent"></app-categories-search>
+            <app-categories-search *ngIf="!onlyParent" (onSelectedCategoryId)="selected($event)"></app-categories-search>
         </form>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
         <button type="button" mat-button>Cancel</button>
-        <button type="submit" form="cform" mat-button color="primary">Update</button>
+        <button type="submit" form="cform" mat-button color="primary">Create</button>
     </mat-dialog-actions>
 </div>

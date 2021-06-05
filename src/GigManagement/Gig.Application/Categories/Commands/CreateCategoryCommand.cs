@@ -10,7 +10,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Hive.Gig.Application.Categories.Commands
 {
-    public record CreateCategoryCommand(string Title, int? ParentId = null) : IRequest<int>;
+    public record CreateCategoryCommand(string Title, string Description, int? ParentId = null) : IRequest<int>;
     
     public class CreateCategoryCommandValidator : AbstractValidator<CreateCategoryCommand>
     {
@@ -25,6 +25,11 @@ namespace Hive.Gig.Application.Categories.Commands
                 .MinimumLength(3).WithMessage("Title should be at minimum 3 characters")
                 .MaximumLength(50).WithMessage("Title should be at maximum 50 characters")
                 .NotEmpty().WithMessage("Title cannot be empty");
+            
+            RuleFor(c => c.Description)
+                .MinimumLength(3).WithMessage("Description should be at minimum 3 characters")
+                .MaximumLength(500).WithMessage("Description should be at maximum 500 characters")
+                .NotEmpty().WithMessage("Description cannot be empty");
 
             RuleFor(c => c.ParentId)
                 .MustAsync(ParentCategoryExistsAsync).WithMessage("Parent category should be existing one.");
@@ -56,8 +61,8 @@ namespace Hive.Gig.Application.Categories.Commands
         
         public async Task<int> Handle(CreateCategoryCommand request, CancellationToken cancellationToken)
         {
-            var (title, parentId) = request;
-            var category = new Category(title, parentId);
+            var (title, description, parentId) = request;
+            var category = new Category(title, description, parentId);
             
             _dbContext.Categories.Add(category);
             await _dbContext.SaveChangesAsync(cancellationToken);
