@@ -12,6 +12,18 @@
           "AccountHolders"
         ],
         "operationId": "AccountHolders_GetWallet",
+        "parameters": [
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 5
+            },
+            "x-position": 1
+          }
+        ],
         "responses": {
           "200": {
             "description": "Successful operation",
@@ -37,7 +49,7 @@
         }
       }
     },
-    "/api/AccountHolders/{accountHolderId}/wallets/{walletId}": {
+    "/api/AccountHolders/{accountHolderId}/wallets/{walletId}/transactions": {
       "get": {
         "tags": [
           "AccountHolders"
@@ -55,13 +67,33 @@
             "x-position": 1
           },
           {
+            "name": "pageIndex",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 1
+            },
+            "x-position": 2
+          },
+          {
+            "name": "pageSize",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32",
+              "default": 5
+            },
+            "x-position": 3
+          },
+          {
             "name": "accountHolderId",
             "in": "path",
             "required": true,
             "schema": {
               "type": "string"
             },
-            "x-position": 2
+            "x-position": 4
           }
         ],
         "responses": {
@@ -70,10 +102,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/TransactionDto"
-                  }
+                  "$ref": "#/components/schemas/PaginatedListOfTransactionDto"
                 }
               }
             }
@@ -90,9 +119,7 @@
             }
           }
         }
-      }
-    },
-    "/api/AccountHolders/{accountHolderId}/wallets/{walletId}/transactions": {
+      },
       "post": {
         "tags": [
           "AccountHolders"
@@ -237,6 +264,37 @@
           0,
           1
         ]
+      },
+      "PaginatedListOfTransactionDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "items": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "$ref": "#/components/schemas/TransactionDto"
+            }
+          },
+          "pageIndex": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalPages": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "totalCount": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "hasPreviousPage": {
+            "type": "boolean"
+          },
+          "hasNextPage": {
+            "type": "boolean"
+          }
+        }
       },
       "CreateTransactionCommand": {
         "type": "object",

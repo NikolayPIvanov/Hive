@@ -110,7 +110,7 @@
       "enumNameGeneratorType": null,
       "serviceHost": null,
       "serviceSchemes": null,
-      "output": "../../Angular/src/app/clients/billing-client.ts"
+      "output": "../../Angular/hive/src/app/clients/billing-client.ts"
     }
   }
 }

@@ -1,8 +1,11 @@
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { AfterViewInit, Component, Input, OnInit, ViewChild } from '@angular/core';
-import { MatPaginator } from '@angular/material/paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
-import { TransactionDto, TransactionType } from 'src/app/clients/billing-client';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { AccountHoldersClient, PaginatedListOfTransactionDto, TransactionDto, TransactionType, WalletDto } from 'src/app/clients/billing-client';
 
 @Component({
   selector: 'app-transactions-overview',
@@ -17,16 +20,28 @@ import { TransactionDto, TransactionType } from 'src/app/clients/billing-client'
   ],
 })
 export class TransactionsOverviewComponent implements OnInit, AfterViewInit {
-  @Input() transactions!: TransactionDto[];
+  @Input() wallet!: WalletDto;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+
+  itemsCount: number = 0;
+  pageSize = 5;
+  pageIndex = 0;
+  
+  onChange(pageEvent: PageEvent) {
+    this.pageSize = pageEvent.pageSize;
+    this.pageIndex = pageEvent.pageIndex
+    this.getList();
+  }
+
+  public transactions$!: Observable<PaginatedListOfTransactionDto>;
   
   columnsToDisplay = ['transactionNumber', 'amount', 'transactionType', 'orderNumber'];
-  dataSource = new MatTableDataSource<TransactionDto>(this.transactions);
+  dataSource = new MatTableDataSource<TransactionDto>([]);
 
-  constructor() { }
+  constructor(private billingClient: AccountHoldersClient, private spinner: NgxSpinnerService) { }
 
   ngOnInit(): void {
-    this.dataSource = new MatTableDataSource<TransactionDto>(this.transactions);
+    this.getList();
   }
 
   ngAfterViewInit() {
@@ -35,6 +50,22 @@ export class TransactionsOverviewComponent implements OnInit, AfterViewInit {
 
   getTransactionType(index: TransactionType) {
     return TransactionType[index];
+  }
+
+  private getList() {
+    this.spinner.show('inner')
+    this.transactions$ = this.billingClient.getWalletTransactions(
+      this.wallet.id!,
+      this.pageIndex + 1,
+      this.pageSize,
+      this.wallet.accountHolderId?.toString()!)
+      .pipe(tap({
+        next: (paginatedList) => {
+          this.dataSource = new MatTableDataSource<TransactionDto>(paginatedList.items);
+          this.itemsCount = paginatedList.totalCount!;
+        },
+        complete: () => this.spinner.hide('inner')
+      }));
   }
 
 }

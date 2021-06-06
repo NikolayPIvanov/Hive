@@ -15,6 +15,10 @@ namespace Billing.Infrastructure.Persistence.Configurations
             builder.HasMany(x => x.Transactions)
                 .WithOne(x => x.Wallet)
                 .HasForeignKey(x => x.WalletId);
+
+            builder.HasOne(x => x.AccountHolder)
+                .WithOne()
+                .HasForeignKey<Wallet>(x => x.AccountHolderId);
         }
     }
 }

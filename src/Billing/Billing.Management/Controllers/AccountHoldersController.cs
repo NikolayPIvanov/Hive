@@ -4,6 +4,7 @@ using System.Net;
 using System.Threading.Tasks;
 using Billing.Application.Wallets.Commands;
 using Billing.Application.Wallets.Queries;
+using Hive.Common.Core.Models;
 using Hive.Common.Core.Security;
 using Microsoft.AspNetCore.Mvc;
 using NSwag.Annotations;
@@ -17,13 +18,14 @@ namespace Billing.Management.Controllers
         [HttpGet("wallet")]
         [SwaggerResponse(HttpStatusCode.OK, typeof(WalletDto), Description = "Successful operation")]
         [SwaggerResponse(HttpStatusCode.NotFound, typeof(NotFoundObjectResult), Description = "Not Found operation")]
-        public async Task<ActionResult<WalletDto>> GetWallet() => Ok(await Mediator.Send(new GetMyWalletCommand()));
+        public async Task<ActionResult<WalletDto>> GetWallet([FromQuery] int pageSize = 5) => 
+            Ok(await Mediator.Send(new GetMyWalletCommand(pageSize)));
         
-        [HttpGet("{accountHolderId:int}/wallets/{walletId:int}")]
-        [SwaggerResponse(HttpStatusCode.OK, typeof(IEnumerable<TransactionDto>), Description = "Successful operation")]
+        [HttpGet("{accountHolderId:int}/wallets/{walletId:int}/transactions")]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(PaginatedList<TransactionDto>), Description = "Successful operation")]
         [SwaggerResponse(HttpStatusCode.NotFound, typeof(NotFoundObjectResult), Description = "Not Found operation")]
-        public async Task<ActionResult<IEnumerable<TransactionDto>>> GetWalletTransactions(int walletId) 
-            => Ok(await Mediator.Send(new GetWalletByIdQuery(walletId)));
+        public async Task<ActionResult<PaginatedList<TransactionDto>>> GetWalletTransactions(int walletId, [FromQuery] int pageIndex = 1, int pageSize = 5) 
+            => Ok(await Mediator.Send(new GetWalletTransactionsQuery(walletId, pageIndex, pageSize)));
 
         [HttpPost("{accountHolderId:int}/wallets/{walletId:int}/transactions")]
         [SwaggerResponse(HttpStatusCode.Created, typeof(int), Description = "Successful operation")]

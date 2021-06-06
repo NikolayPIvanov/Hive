@@ -12,6 +12,7 @@ import { CreditCardDirectivesModule } from 'angular-cc-library';
 import { CategoriesSearchComponent } from './components/categories-search/categories-search.component';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptorService } from './services/auth-interceptor.service';
+import { NgxSpinnerModule } from "ngx-spinner";
 
 @NgModule({
   declarations: [
@@ -30,6 +31,7 @@ import { AuthInterceptorService } from './services/auth-interceptor.service';
     ReactiveFormsModule,
     FlexLayoutModule,
     CreditCardDirectivesModule,
+    NgxSpinnerModule,
 
     MaterialModule
   ],
@@ -38,6 +40,7 @@ import { AuthInterceptorService } from './services/auth-interceptor.service';
     ReactiveFormsModule,
     FlexLayoutModule,
     MaterialModule,
+    NgxSpinnerModule,
 
     LimitToPipe,
 

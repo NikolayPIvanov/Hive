@@ -17,7 +17,7 @@ namespace Billing.Infrastructure.Persistence.Migrations
             modelBuilder
                 .HasDefaultSchema("billing")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.4")
+                .HasAnnotation("ProductVersion", "5.0.6")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("Hive.Billing.Domain.Entities.AccountHolder", b =>
@@ -43,16 +43,10 @@ namespace Billing.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<int>("WalletId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasAlternateKey("UserId")
                         .IsClustered(false);
-
-                    b.HasIndex("WalletId")
-                        .IsUnique();
 
                     b.ToTable("AccountHolders");
                 });
@@ -129,18 +123,10 @@ namespace Billing.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AccountHolderId")
+                        .IsUnique();
+
                     b.ToTable("Wallets");
-                });
-
-            modelBuilder.Entity("Hive.Billing.Domain.Entities.AccountHolder", b =>
-                {
-                    b.HasOne("Hive.Billing.Domain.Entities.Wallet", "Wallet")
-                        .WithOne("AccountHolder")
-                        .HasForeignKey("Hive.Billing.Domain.Entities.AccountHolder", "WalletId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Wallet");
                 });
 
             modelBuilder.Entity("Hive.Billing.Domain.Entities.Transaction", b =>
@@ -156,8 +142,17 @@ namespace Billing.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Hive.Billing.Domain.Entities.Wallet", b =>
                 {
-                    b.Navigation("AccountHolder");
+                    b.HasOne("Hive.Billing.Domain.Entities.AccountHolder", "AccountHolder")
+                        .WithOne()
+                        .HasForeignKey("Hive.Billing.Domain.Entities.Wallet", "AccountHolderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
+                    b.Navigation("AccountHolder");
+                });
+
+            modelBuilder.Entity("Hive.Billing.Domain.Entities.Wallet", b =>
+                {
                     b.Navigation("Transactions");
                 });
 #pragma warning restore 612, 618

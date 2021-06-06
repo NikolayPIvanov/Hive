@@ -16,6 +16,7 @@ export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 export interface IProfileClient {
     getProfile(): Observable<UserProfileDto>;
+    getProfileById(userId: string | null): Observable<UserProfileDto>;
     updateProfileNames(id: number, command: UpdateUserNamesCommand | null | undefined): Observable<Unit>;
     updateProfile(id: number, command: UpdateUserProfileCommand | null | undefined): Observable<Unit>;
     changeAvatar(id: number, file: FileUpload | null | undefined): Observable<FileResponse>;
@@ -62,6 +63,64 @@ export class ProfileClient implements IProfileClient {
     }
 
     protected processGetProfile(response: HttpResponseBase): Observable<UserProfileDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = UserProfileDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result404 = resultData404 !== undefined ? resultData404 : <any>null;
+            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<UserProfileDto>(<any>null);
+    }
+
+    getProfileById(userId: string | null): Observable<UserProfileDto> {
+        let url_ = this.baseUrl + "/api/Profile/{userId}";
+        if (userId === undefined || userId === null)
+            throw new Error("The parameter 'userId' must be defined.");
+        url_ = url_.replace("{userId}", encodeURIComponent("" + userId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetProfileById(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetProfileById(<any>response_);
+                } catch (e) {
+                    return <Observable<UserProfileDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<UserProfileDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetProfileById(response: HttpResponseBase): Observable<UserProfileDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :

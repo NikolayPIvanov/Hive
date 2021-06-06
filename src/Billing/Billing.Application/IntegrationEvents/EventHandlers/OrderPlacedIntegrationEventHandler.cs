@@ -31,37 +31,37 @@ namespace Billing.Application.IntegrationEvents.EventHandlers
         {
             var accountHolderId = @event.BuyerUserId;
             
-            var account = await _context.AccountHolders
-                .Include(w => w.Wallet)
-                .FirstOrDefaultAsync(a => a.UserId == accountHolderId);
+            var wallet = await _context.Wallets
+                .Include(w => w.AccountHolder)
+                .FirstOrDefaultAsync(a => a.AccountHolder.UserId == accountHolderId);
             
             var integrationEvent = new BuyerBalanceVerifiedIntegrationEvent(@event.OrderNumber, "Account Holder does not exist", IsValid: false);
 
-            if (account == null)
+            if (wallet == null)
             {
                 _logger.LogWarning("Account holder with {@UserId} has not been found.", @event.BuyerUserId);
                 await _publisher.PublishAsync(integrationEvent);
                 return;
             }
+            //
+            // if (wallet == null)
+            // {
+            //     _logger.LogWarning("Account holder with {@UserId} has not set up a default payment method.", @event.BuyerUserId);
+            //     integrationEvent = integrationEvent with {Reason = "A default payment method has not been found."};
+            //     await _publisher.PublishAsync(integrationEvent);
+            //     return;
+            // }
             
-            if (account.Wallet == null)
+            if (wallet.Balance < @event.UnitPrice || wallet.Balance < 0.0m)
             {
-                _logger.LogWarning("Account holder with {@UserId} has not set up a default payment method.", @event.BuyerUserId);
-                integrationEvent = integrationEvent with {Reason = "A default payment method has not been found."};
-                await _publisher.PublishAsync(integrationEvent);
-                return;
-            }
-            
-            if (account.Wallet.Balance < @event.UnitPrice || account.Wallet.Balance < 0.0m)
-            {
-                _logger.LogWarning("Account balance for {@AccountHolder} does not have enough funds {@Funds}", @event.BuyerUserId, account.Wallet.Balance);
+                _logger.LogWarning("Account balance for {@AccountHolder} does not have enough funds {@Funds}", @event.BuyerUserId, wallet.Balance);
                 integrationEvent = integrationEvent with {Reason = "User account does not have enough resources."};
                 await _publisher.PublishAsync(integrationEvent);
                 return;
             }
             
             var paymentTransaction = new Transaction(@event.UnitPrice, @event.OrderNumber, TransactionType.Payment);
-            account.Wallet.AddTransaction(paymentTransaction);
+            wallet.AddTransaction(paymentTransaction);
 
             await _context.SaveChangesAsync(default);
             

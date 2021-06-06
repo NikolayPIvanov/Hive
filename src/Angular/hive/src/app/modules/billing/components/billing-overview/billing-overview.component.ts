@@ -1,6 +1,9 @@
 import { Component, OnInit } from '@angular/core';
+import { NgxSpinnerService } from 'ngx-spinner';
 import { Observable, of } from 'rxjs';
+import { mergeAll } from 'rxjs/operators';
 import { AccountHoldersClient, TransactionDto, TransactionType, WalletDto } from 'src/app/clients/billing-client';
+import { ProfileClient, UserProfileDto } from 'src/app/clients/profile-client';
 
 @Component({
   selector: 'app-billing-overview',
@@ -9,43 +12,19 @@ import { AccountHoldersClient, TransactionDto, TransactionType, WalletDto } from
 })
 export class BillingOverviewComponent implements OnInit {
   wallet$!: Observable<WalletDto>;
+  owner$!: Observable<UserProfileDto>;
 
-  constructor(private billingApiClient: AccountHoldersClient) { }
+  constructor(
+    private billingApiClient: AccountHoldersClient,
+    private profileClient: ProfileClient) { }
+  
   ngOnInit(): void {
-    this.wallet$ = of(
-      new WalletDto({
-        id: 1,
-        accountHolderId: 1,
-        balance: 100.0,
-        transactions: [
-          new TransactionDto({ amount: 100.0, transactionNumber: 1, transactionType: TransactionType.Fund, walletId: 1, orderNumber: undefined }),
-          new TransactionDto({ amount: 20.0, transactionNumber: 2, transactionType: TransactionType.Fund, walletId: 1, orderNumber: undefined }),
-          new TransactionDto({ amount: 20.0, transactionNumber: 3, transactionType: TransactionType.Payment, walletId: 1, orderNumber: undefined }),
-          new TransactionDto({ amount: 100.0, transactionNumber: 1, transactionType: TransactionType.Fund, walletId: 1, orderNumber: undefined }),
-          new TransactionDto({ amount: 20.0, transactionNumber: 2, transactionType: TransactionType.Fund, walletId: 1, orderNumber: undefined }),
-          new TransactionDto({ amount: 20.0, transactionNumber: 3, transactionType: TransactionType.Payment, walletId: 1, orderNumber: undefined }),
-          new TransactionDto({ amount: 100.0, transactionNumber: 1, transactionType: TransactionType.Fund, walletId: 1, orderNumber: undefined }),
-          new TransactionDto({ amount: 20.0, transactionNumber: 2, transactionType: TransactionType.Fund, walletId: 1, orderNumber: undefined }),
-          new TransactionDto({ amount: 20.0, transactionNumber: 3, transactionType: TransactionType.Payment, walletId: 1, orderNumber: undefined }),
-          new TransactionDto({ amount: 100.0, transactionNumber: 1, transactionType: TransactionType.Fund, walletId: 1, orderNumber: undefined }),
-          new TransactionDto({ amount: 20.0, transactionNumber: 2, transactionType: TransactionType.Fund, walletId: 1, orderNumber: undefined }),
-          new TransactionDto({ amount: 20.0, transactionNumber: 3, transactionType: TransactionType.Payment, walletId: 1, orderNumber: undefined }),
-          new TransactionDto({ amount: 100.0, transactionNumber: 1, transactionType: TransactionType.Fund, walletId: 1, orderNumber: undefined }),
-          new TransactionDto({ amount: 20.0, transactionNumber: 2, transactionType: TransactionType.Fund, walletId: 1, orderNumber: undefined }),
-          new TransactionDto({ amount: 20.0, transactionNumber: 3, transactionType: TransactionType.Payment, walletId: 1, orderNumber: undefined }),
-          new TransactionDto({ amount: 100.0, transactionNumber: 1, transactionType: TransactionType.Fund, walletId: 1, orderNumber: undefined }),
-          new TransactionDto({ amount: 20.0, transactionNumber: 2, transactionType: TransactionType.Fund, walletId: 1, orderNumber: undefined }),
-          new TransactionDto({ amount: 20.0, transactionNumber: 3, transactionType: TransactionType.Payment, walletId: 1, orderNumber: undefined }),
-          new TransactionDto({ amount: 100.0, transactionNumber: 1, transactionType: TransactionType.Fund, walletId: 1, orderNumber: undefined }),
-          new TransactionDto({ amount: 20.0, transactionNumber: 2, transactionType: TransactionType.Fund, walletId: 1, orderNumber: undefined }),
-          new TransactionDto({ amount: 20.0, transactionNumber: 3, transactionType: TransactionType.Payment, walletId: 1, orderNumber: undefined }),
-          new TransactionDto({ amount: 100.0, transactionNumber: 1, transactionType: TransactionType.Fund, walletId: 1, orderNumber: undefined }),
-          new TransactionDto({ amount: 20.0, transactionNumber: 2, transactionType: TransactionType.Fund, walletId: 1, orderNumber: undefined }),
-          new TransactionDto({ amount: 20.0, transactionNumber: 3, transactionType: TransactionType.Payment, walletId: 1, orderNumber: undefined }),
-        ]
-      })
-    )
-      // this.billingApiClient.getWallet();
+    this.wallet$ = this.billingApiClient.getWallet(undefined);
+    this.owner$ = this.profileClient.getProfile();
+  }
+
+  onChange(data: any) {
+    this.wallet$ = this.billingApiClient.getWallet(undefined);
   }
 
 }

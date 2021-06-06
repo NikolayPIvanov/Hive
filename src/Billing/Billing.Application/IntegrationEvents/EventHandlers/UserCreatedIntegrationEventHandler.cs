@@ -29,9 +29,9 @@ namespace Billing.Application.IntegrationEvents.EventHandlers
                 _logger.LogWarning("Account holder with {@UserId} already has an account.", @event.UserId);
                 return;
             }
-
-            var account = new AccountHolder(@event.UserId);
-            _context.AccountHolders.Add(account);
+            
+            var wallet = new Wallet(@event.UserId);
+            _context.Wallets.Add(wallet);
             await _context.SaveChangesAsync(default);
             _logger.LogInformation("Account holder with {@UserId} successfully created.");
         }

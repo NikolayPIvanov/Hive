@@ -23,6 +23,12 @@ namespace UserProfile.Management.Controllers
         [SwaggerResponse(StatusCodes.Status200OK, typeof(UserProfileDto))]
         [SwaggerResponse(StatusCodes.Status404NotFound, typeof(NotFoundObjectResult))]
         public async Task<ActionResult<UserProfileDto>> GetProfile() => Ok(await Mediator.Send(new GetUserProfileByIdQuery()));
+        
+        [HttpGet("{userId}")]
+        [Produces(MediaTypeNames.Application.Json)]
+        [SwaggerResponse(StatusCodes.Status200OK, typeof(UserProfileDto))]
+        [SwaggerResponse(StatusCodes.Status404NotFound, typeof(NotFoundObjectResult))]
+        public async Task<ActionResult<UserProfileDto>> GetProfileById(string userId) => Ok(await Mediator.Send(new GetUserProfileByUserIdQuery(userId)));
 
         [HttpPut("{id:int}/names")]
         [Produces(MediaTypeNames.Application.Json)]

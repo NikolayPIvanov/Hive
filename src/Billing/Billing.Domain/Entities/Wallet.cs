@@ -11,15 +11,18 @@ namespace Hive.Billing.Domain.Entities
             Transactions = new HashSet<Transaction>();
         }
 
+        public Wallet(string userId) : this()
+        {
+            AccountHolder = new AccountHolder(userId);
+        }
+
         public int AccountHolderId { get; private init; }
 
         public AccountHolder AccountHolder { get; set; }
         
         public decimal Balance { get; private set; }
         public ICollection<Transaction> Transactions { get; private set; }
-
-        public static Wallet CreateEmpty() => new();
-
+        
         public void AddTransaction(Transaction transaction)
         {
             var difference = transaction.TransactionType == TransactionType.Fund

@@ -2,6 +2,8 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CreditCardValidators } from 'angular-cc-library';
+import { tap } from 'rxjs/operators';
+import { AccountHoldersClient, CreateTransactionCommand, WalletDto } from 'src/app/clients/billing-client';
 
 @Component({
   selector: 'app-up-top',
@@ -13,23 +15,30 @@ export class UpTopDialog implements OnInit {
   submitted: boolean = false;
 
 constructor(
-    private _fb: FormBuilder,
-    public dialogRef: MatDialogRef<UpTopDialog>,
-    @Inject(MAT_DIALOG_DATA) public data: any
+  private _fb: FormBuilder,
+  private billingClient: AccountHoldersClient,
+  public dialogRef: MatDialogRef<UpTopDialog>,
+  @Inject(MAT_DIALOG_DATA) public data: WalletDto
   ) { }
 
   ngOnInit(): void {
     this.form = this._fb.group({
       amount: ['', [Validators.required, Validators.min(1.0)]],
-      creditCard: ['', [CreditCardValidators.validateCCNumber]],
-      expirationDate: ['', [CreditCardValidators.validateExpDate]],
-      cvc: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(4)]] 
+      walletId: [this.data.id, Validators.required]
     });
   }
 
-  onSubmit(form: any) {
+  onSubmit() {
     this.submitted = true;
-    console.log(form);
+    const command = CreateTransactionCommand.fromJS(this.form.value)
+    this.billingClient.depositInWallet(command.walletId!,
+      this.data.accountHolderId?.toString()!, command)
+      .pipe(
+        tap({
+          next: (response) => this.dialogRef.close(response),
+          complete: () => this.dialogRef.close(command.amount)
+        }))
+      .subscribe();
   }
 
   onNoClick(): void {

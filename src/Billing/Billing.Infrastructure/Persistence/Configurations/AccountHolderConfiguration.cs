@@ -11,10 +11,6 @@ namespace Billing.Infrastructure.Persistence.Configurations
             builder.HasKey(x => x.Id);
             builder.HasAlternateKey(x => x.UserId).IsClustered(false);
             builder.Ignore(x => x.DomainEvents);
-
-            builder.HasOne(x => x.Wallet)
-                .WithOne(x => x.AccountHolder)
-                .HasForeignKey<AccountHolder>(x => x.WalletId);
         }
     }
 }

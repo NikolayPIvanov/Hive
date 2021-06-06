@@ -4,17 +4,19 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Billing.Application.Interfaces;
 using Hive.Billing.Domain.Entities;
 using Hive.Common.Core.Exceptions;
 using Hive.Common.Core.Interfaces;
+using Hive.Common.Core.Mappings;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Billing.Application.Wallets.Queries
 {
-    public record GetMyWalletCommand : IRequest<WalletDto>;
+    public record GetMyWalletCommand(int PageSize = 5) : IRequest<WalletDto>;
 
     public class GetMyWalletCommandHandler : IRequestHandler<GetMyWalletCommand, WalletDto>
     {
@@ -36,8 +38,8 @@ namespace Billing.Application.Wallets.Queries
         {
             var wallet = await _context.Wallets
                 .Include(w => w.AccountHolder)
-                .Include(w => w.Transactions)
-                .FirstOrDefaultAsync(x => x.AccountHolder.UserId == _currentUserService.UserId, cancellationToken);
+                .Include(w => w.Transactions.OrderByDescending(x => x.Created).Take(request.PageSize))
+                .FirstOrDefaultAsync(w => w.AccountHolder.UserId == _currentUserService.UserId, cancellationToken);
 
             if (wallet == null)
             {

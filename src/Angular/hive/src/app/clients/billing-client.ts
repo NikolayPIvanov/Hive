@@ -16,13 +16,16 @@ export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 export interface IAccountHoldersClient {
     /**
+     * @param pageSize (optional) 
      * @return Successful operation
      */
-    getWallet(): Observable<WalletDto>;
+    getWallet(pageSize: number | undefined): Observable<WalletDto>;
     /**
+     * @param pageIndex (optional) 
+     * @param pageSize (optional) 
      * @return Successful operation
      */
-    getWalletTransactions(walletId: number, accountHolderId: string): Observable<TransactionDto[]>;
+    getWalletTransactions(walletId: number, pageIndex: number | undefined, pageSize: number | undefined, accountHolderId: string): Observable<PaginatedListOfTransactionDto>;
     /**
      * @param command (optional) 
      * @return Successful operation
@@ -44,10 +47,15 @@ export class AccountHoldersClient implements IAccountHoldersClient {
     }
 
     /**
+     * @param pageSize (optional) 
      * @return Successful operation
      */
-    getWallet(): Observable<WalletDto> {
-        let url_ = this.baseUrl + "/api/AccountHolders/wallet";
+    getWallet(pageSize: number | undefined): Observable<WalletDto> {
+        let url_ = this.baseUrl + "/api/AccountHolders/wallet?";
+        if (pageSize === null)
+            throw new Error("The parameter 'pageSize' cannot be null.");
+        else if (pageSize !== undefined)
+            url_ += "pageSize=" + encodeURIComponent("" + pageSize) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -102,16 +110,26 @@ export class AccountHoldersClient implements IAccountHoldersClient {
     }
 
     /**
+     * @param pageIndex (optional) 
+     * @param pageSize (optional) 
      * @return Successful operation
      */
-    getWalletTransactions(walletId: number, accountHolderId: string): Observable<TransactionDto[]> {
-        let url_ = this.baseUrl + "/api/AccountHolders/{accountHolderId}/wallets/{walletId}";
+    getWalletTransactions(walletId: number, pageIndex: number | undefined, pageSize: number | undefined, accountHolderId: string): Observable<PaginatedListOfTransactionDto> {
+        let url_ = this.baseUrl + "/api/AccountHolders/{accountHolderId}/wallets/{walletId}/transactions?";
         if (walletId === undefined || walletId === null)
             throw new Error("The parameter 'walletId' must be defined.");
         url_ = url_.replace("{walletId}", encodeURIComponent("" + walletId));
         if (accountHolderId === undefined || accountHolderId === null)
             throw new Error("The parameter 'accountHolderId' must be defined.");
         url_ = url_.replace("{accountHolderId}", encodeURIComponent("" + accountHolderId));
+        if (pageIndex === null)
+            throw new Error("The parameter 'pageIndex' cannot be null.");
+        else if (pageIndex !== undefined)
+            url_ += "pageIndex=" + encodeURIComponent("" + pageIndex) + "&";
+        if (pageSize === null)
+            throw new Error("The parameter 'pageSize' cannot be null.");
+        else if (pageSize !== undefined)
+            url_ += "pageSize=" + encodeURIComponent("" + pageSize) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -129,14 +147,14 @@ export class AccountHoldersClient implements IAccountHoldersClient {
                 try {
                     return this.processGetWalletTransactions(<any>response_);
                 } catch (e) {
-                    return <Observable<TransactionDto[]>><any>_observableThrow(e);
+                    return <Observable<PaginatedListOfTransactionDto>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<TransactionDto[]>><any>_observableThrow(response_);
+                return <Observable<PaginatedListOfTransactionDto>><any>_observableThrow(response_);
         }));
     }
 
-    protected processGetWalletTransactions(response: HttpResponseBase): Observable<TransactionDto[]> {
+    protected processGetWalletTransactions(response: HttpResponseBase): Observable<PaginatedListOfTransactionDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -147,11 +165,7 @@ export class AccountHoldersClient implements IAccountHoldersClient {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(TransactionDto.fromJS(item));
-            }
+            result200 = PaginatedListOfTransactionDto.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status === 404) {
@@ -166,7 +180,7 @@ export class AccountHoldersClient implements IAccountHoldersClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<TransactionDto[]>(<any>null);
+        return _observableOf<PaginatedListOfTransactionDto>(<any>null);
     }
 
     /**
@@ -357,6 +371,70 @@ export interface ITransactionDto {
 export enum TransactionType {
     Fund = 0,
     Payment = 1,
+}
+
+export class PaginatedListOfTransactionDto implements IPaginatedListOfTransactionDto {
+    items?: TransactionDto[] | undefined;
+    pageIndex?: number;
+    totalPages?: number;
+    totalCount?: number;
+    hasPreviousPage?: boolean;
+    hasNextPage?: boolean;
+
+    constructor(data?: IPaginatedListOfTransactionDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(TransactionDto.fromJS(item));
+            }
+            this.pageIndex = _data["pageIndex"];
+            this.totalPages = _data["totalPages"];
+            this.totalCount = _data["totalCount"];
+            this.hasPreviousPage = _data["hasPreviousPage"];
+            this.hasNextPage = _data["hasNextPage"];
+        }
+    }
+
+    static fromJS(data: any): PaginatedListOfTransactionDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PaginatedListOfTransactionDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        data["pageIndex"] = this.pageIndex;
+        data["totalPages"] = this.totalPages;
+        data["totalCount"] = this.totalCount;
+        data["hasPreviousPage"] = this.hasPreviousPage;
+        data["hasNextPage"] = this.hasNextPage;
+        return data; 
+    }
+}
+
+export interface IPaginatedListOfTransactionDto {
+    items?: TransactionDto[] | undefined;
+    pageIndex?: number;
+    totalPages?: number;
+    totalCount?: number;
+    hasPreviousPage?: boolean;
+    hasNextPage?: boolean;
 }
 
 export class CreateTransactionCommand implements ICreateTransactionCommand {
