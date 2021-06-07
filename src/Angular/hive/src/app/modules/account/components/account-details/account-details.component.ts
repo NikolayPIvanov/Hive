@@ -1,5 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { UserProfileDto } from 'src/app/clients/profile-client';
 import { AuthenticationService } from 'src/app/modules/core/services/auth.service';
+import { AuthService } from 'src/app/modules/layout/services/auth.service';
+import { ProfileService } from '../../services/profile.service';
 
 @Component({
   selector: 'app-account-details',
@@ -7,16 +10,27 @@ import { AuthenticationService } from 'src/app/modules/core/services/auth.servic
   styleUrls: ['./account-details.component.scss']
 })
 export class AccountDetailsComponent implements OnInit {
+  @Input() profile!: UserProfileDto;
 
   fullName!: string;
   email!: string;
-  alias!: string;
 
-  constructor(private authService: AuthenticationService) { }
+  constructor(private authService: AuthService, private profileService: ProfileService) { }
 
   ngOnInit() {
-    this.fullName = this.authService.getCurrentUser().fullName;
-    this.email = this.authService.getCurrentUser().email;
+    this.email = this.authService.user?.profile.email!;
+    this.setFullName(this.profile);
+
+    this.profileService.profile$
+      .subscribe(profile => {
+        if (profile) {
+          this.setFullName(profile!);
+        }
+      });
+  }
+
+  setFullName(profile: UserProfileDto) {
+    this.fullName = `${profile.firstName} ${profile.lastName}`;
   }
 
 }

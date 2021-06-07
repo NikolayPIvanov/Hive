@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { from, Subject } from 'rxjs';
-import { switchMap, takeUntil, tap } from 'rxjs/operators';
-import { FileUpload, ProfileClient } from 'src/app/clients/profile-client';
+import { map, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { FileUpload, ProfileClient, UserProfileDto } from 'src/app/clients/profile-client';
 import { NotificationService } from 'src/app/modules/core/services/notification.service';
 import { ProfileService } from '../../services/profile.service';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -13,43 +13,34 @@ import { DomSanitizer } from '@angular/platform-browser';
   styleUrls: ['./account-avatar.component.scss']
 })
 export class AccountAvatarComponent implements OnInit {
+  private DEFAULT_IMAGE = '/assets/user.png';
   private unsubscribe = new Subject();
   private id: number | undefined;
   
-  @Input('name') fullName: string | undefined;
-    
-  url: string | null = '';
+  @Input() profile!: UserProfileDto;
+  avatarFile: string | null = '';
 
   constructor(
-    private profileService: ProfileService,
     private notificationService: NotificationService,
     private profileApiClient: ProfileClient,
     public domSanitizer: DomSanitizer) { }
 
   ngOnInit(): void {
-    
-    this.url = this.url || '/assets/user.png';
-    this.profileService.profile$
-      .pipe(
-        takeUntil(this.unsubscribe),
-        switchMap(profile => {
-          this.id = profile?.id;
-          return this.profileApiClient.getAvatar(this.id!)
-        }),
-        tap({
-          next: (image) => {
-            this.createImageFromBlob(image.data);
-          }
-        })
-      )
-      .subscribe();
+    this.avatarFile = this.profile.avatarFile || this.DEFAULT_IMAGE;
+    if (this.avatarFile != this.DEFAULT_IMAGE) {
+      this.profileApiClient.getAvatar(this.profile.id!)
+        .pipe(
+          takeUntil(this.unsubscribe),
+          map(image => this.createImageFromBlob(image.data)))
+        .subscribe();
+    }
   }
 
   createImageFromBlob(image: Blob) {
     let reader = new FileReader();
     reader.addEventListener("load", () => {
       const base64Image = this.domSanitizer.bypassSecurityTrustUrl(reader.result as string);
-      this.url = (base64Image as string)
+      this.avatarFile = (base64Image as string)
     }, false);
  
     if (image) {
@@ -64,10 +55,9 @@ export class AccountAvatarComponent implements OnInit {
       reader.readAsDataURL(event.target.files[0]); // read file as data url
 
       reader.onload = (event) => { // called once readAsDataURL is completed
-        debugger;
-        this.url = <string>event.target!.result;
+        this.avatarFile = <string>event.target!.result;
         if (this.id) {
-          var base64result = this.url.split(',')[1];
+          var base64result = this.avatarFile.split(',')[1];
           this.profileApiClient
             .changeAvatar(this.id!, FileUpload.fromJS({ fileData: base64result }))
             .subscribe();

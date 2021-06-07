@@ -1,23 +1,22 @@
 
-<ng-container *ngIf="category$ | async; let category">
+<ng-container>
     <ng-container *ngIf="!editMode; else edit">
         <h2 mat-dialog-title> {{ category.title! }} </h2>
         <mat-divider></mat-divider>
     
         <mat-dialog-content class="mat-typography">
-            <h3>Category Description</h3>
-            <p> {{ category.description }}</p>
+            <h3> <strong>Category Description:</strong> </h3>
+            <p> <strong>Description:</strong> {{ category.description }}</p>
     
             <section *ngIf="category.parentOverview">
                 <mat-divider></mat-divider>
-                <h3>Parent Category</h3>
-                <h4>{{ category.parentOverview.title }}</h4>
-                <p>{{ category.parentOverview.description! | limitTo:'100'}}</p>
+                <h3> <strong>Parent Category</strong> </h3>
+                <h4> <strong>Title:</strong> {{ category.parentOverview?.title! }}</h4>
+                <p> <strong>Description:</strong> {{ category.parentOverview?.description! | limitTo:'100'}}</p>
             </section>
     
+            <mat-divider></mat-divider>
             <ng-container *ngIf="category.subCategories && category.subCategories.length > 0; else noChildren">
-                <mat-divider>
-                </mat-divider>
                 <mat-list>
                     <div mat-subheader>Child Categories</div>
                     <mat-list-item *ngFor="let child of category.subCategories">
@@ -58,7 +57,7 @@
                         <textarea matInput placeholder="Description" formControlName="description"></textarea>
                     </mat-form-field>
     
-                    <app-categories-search></app-categories-search>
+                    <app-categories-search [init]="category.parentOverview?.title || null"></app-categories-search>
                 </form>
             </mat-dialog-content>
             <mat-dialog-actions align="end">

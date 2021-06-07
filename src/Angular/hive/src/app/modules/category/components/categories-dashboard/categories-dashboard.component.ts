@@ -43,11 +43,11 @@ export class CategoriesDashboardComponent implements OnInit {
       .subscribe()
   }
 
-  openDialog(id: number) {
+  openDialog(category: CategoryDto) {
     const dialogRef = this.dialog.open(CategoryDetailsComponent,
     {
       width: "50%",
-      data: id
+      data: category
     });
 
     dialogRef.afterClosed()

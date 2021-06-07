@@ -1,14 +1,10 @@
 <div class="profile-card" fxLayout="column" >
-    <app-account-avatar></app-account-avatar>
+    <app-account-avatar [profile]="profile"></app-account-avatar>
 
     <h2 class="title" fxFlexOffset="3">
       {{fullName}}
     </h2>
-  
-    <label>
-      {{alias}}
-    </label>
-  
+
     <label>
       {{email}}
     </label>

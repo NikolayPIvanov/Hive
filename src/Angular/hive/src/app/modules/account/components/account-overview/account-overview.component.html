@@ -1,4 +1,4 @@
-<div *ngIf="profile$ | async" fxLayout="row" fxLayoutAlign="center none">
+<div *ngIf="profile$ | async; let profile" fxLayout="row" fxLayoutAlign="center none">
 
     <div fxFlex="95%">
       <mat-card>
@@ -8,7 +8,7 @@
           <div fxLayout="row" fxLayout.sm="column" fxLayout.xs="column">
   
             <div fxFlex="30%" fxFlex.sm="95%" fxFlex.xs="95%">
-              <app-account-details></app-account-details>
+              <app-account-details [profile]="profile"></app-account-details>
             </div>
   
             <div fxFlex></div>
@@ -17,7 +17,7 @@
   
               <mat-tab-group>
                 <mat-tab label="Change Information">
-                  <app-change-information></app-change-information>
+                  <app-change-information [profile]="profile"></app-change-information>
                 </mat-tab>
 
                 <!-- <mat-tab label="Change Password">
@@ -36,7 +36,7 @@
 
           <h2>My Seller Information</h2>
 
-          <app-account-seller-information></app-account-seller-information>
+          <app-account-seller-information [profile]="profile"></app-account-seller-information>
           
         </mat-card-content>
       </mat-card>

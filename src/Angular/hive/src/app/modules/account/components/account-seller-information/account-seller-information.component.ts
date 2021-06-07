@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { COMMA, ENTER } from "@angular/cdk/keycodes";
@@ -15,6 +15,8 @@ import { UpdateUserProfileCommand, UserProfileDto } from 'src/app/clients/profil
 export class AccountSellerInformationComponent implements OnInit, OnDestroy {
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
   private subject = new Subject()
+
+  @Input() profile!: UserProfileDto;
   
   form: FormGroup = this.fb.group({
     id: ['', Validators.required],
@@ -33,9 +35,7 @@ export class AccountSellerInformationComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit(): void {
-    this.profileService.profile$
-      .pipe(takeUntil(this.subject))
-      .subscribe(profile => this.form.patchValue(profile!));
+    this.form.patchValue(this.profile!)
   }
 
   ngOnDestroy(): void {

@@ -1,4 +1,4 @@
-import { Component, EventEmitter, OnInit, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { Observable } from 'rxjs';
@@ -11,6 +11,7 @@ import { CategoriesClient, CategoryDto } from 'src/app/clients/gigs-client';
   styleUrls: ['./categories-search.component.scss']
 })
 export class CategoriesSearchComponent implements OnInit {
+  @Input() init: string | null = null;
   @Output() onSelectedCategoryName = new EventEmitter<string>();
 
   autocompleteControl = new FormControl('');
@@ -19,6 +20,10 @@ export class CategoriesSearchComponent implements OnInit {
   constructor(private categoriesApiClient: CategoriesClient) { }
 
   ngOnInit(): void {
+    if (this.init) {
+      this.autocompleteControl.setValue(this.init);
+    }
+
     this.filteredOptions = this.autocompleteControl.valueChanges
       .pipe(
         startWith(''),

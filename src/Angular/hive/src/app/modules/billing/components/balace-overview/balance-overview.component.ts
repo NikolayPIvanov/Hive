@@ -1,7 +1,9 @@
+import { typeWithParameters } from '@angular/compiler/src/render3/util';
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { AccountHoldersClient, TransactionDto, WalletDto } from 'src/app/clients/billing-client';
 import { UserProfileDto } from 'src/app/clients/profile-client';
+import { AuthService } from 'src/app/modules/layout/services/auth.service';
 import { UpTopDialog } from '../up-top/up-top.component';
 
 @Component({
@@ -15,11 +17,9 @@ export class BalanceOverviewComponent implements OnInit {
 
   @Output() onTransactionAdded = new EventEmitter<number>();
 
-  constructor(public dialog: MatDialog) { }
+  constructor(public dialog: MatDialog, private authService: AuthService) { }
 
   ngOnInit(): void {
-    debugger;
-    console.log(this.owner)
   }
 
   openDepositDialog() {
@@ -35,6 +35,15 @@ export class BalanceOverviewComponent implements OnInit {
           this.onTransactionAdded.emit(0);
         }
       })
+  }
+
+  get displayName() {
+    const fullName = `${this.owner.firstName} ${this.owner.lastName}`;
+    if (fullName.trim() === '') {
+      return this.authService.user?.profile.email;
+    }
+
+    return fullName;
   }
 
 }

@@ -1,13 +1,8 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, Input, OnDestroy, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators, FormBuilder } from '@angular/forms';
-import { NGXLogger } from 'ngx-logger';
 import { pipe, Subject } from 'rxjs';
-import { switchMap, takeUntil } from 'rxjs/operators';
+import { switchMap, takeUntil, tap } from 'rxjs/operators';
 import { UpdateUserNamesCommand, UserProfileDto } from 'src/app/clients/profile-client';
-import { AuthenticationService } from 'src/app/modules/core/services/auth.service';
-import { NotificationService } from 'src/app/modules/core/services/notification.service';
-import { SpinnerService } from 'src/app/modules/core/services/spinner.service';
-import { AuthService } from 'src/app/modules/layout/services/auth.service';
 import { ProfileService } from '../../services/profile.service';
 
 @Component({
@@ -17,6 +12,8 @@ import { ProfileService } from '../../services/profile.service';
 })
 export class ChangeInformationComponent implements OnInit, OnDestroy {
   private subject = new Subject();
+
+  @Input() profile!: UserProfileDto;
 
   form: FormGroup = this.fb.group({
     id: ['', Validators.required],
@@ -30,13 +27,7 @@ export class ChangeInformationComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.profileService.profile$
-      .pipe(takeUntil(this.subject))
-      .subscribe((profile: UserProfileDto | undefined) => {
-        if (profile) {
-          this.form.patchValue(profile!)
-        }
-      });
+    this.form.patchValue(this.profile!)
   }
   
   ngOnDestroy(): void {
@@ -49,9 +40,7 @@ export class ChangeInformationComponent implements OnInit, OnDestroy {
     this.profileService.updateProfileNames(command.id!, command)
       .pipe(
         takeUntil(this.subject),
-        switchMap(x => {
-          return this.profileService.getProfile()
-        })
+        switchMap(x => this.profileService.getProfile())
       )
       .subscribe();
   }

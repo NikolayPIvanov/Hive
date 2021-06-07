@@ -32,6 +32,11 @@ namespace Hive.UserProfile.Application.UserProfiles.Queries
                 throw new NotFoundException(nameof(UserProfile), request.Id);
             }
 
+            if (string.IsNullOrEmpty(user.AvatarFile))
+            {
+                throw new NotFoundException("Avatar has not been found.");
+            }
+
             var file = await _fileService.DownloadAsync("avatars", user.AvatarFile, cancellationToken);
 
             var bytes = file.Source.ReadFully();
