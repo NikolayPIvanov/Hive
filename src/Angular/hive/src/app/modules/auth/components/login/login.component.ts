@@ -3,7 +3,6 @@ import { Router } from '@angular/router';
 import { FormControl, Validators, FormGroup } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { NotificationService } from 'src/app/modules/core/services/notification.service';
-import { AuthenticationService } from 'src/app/modules/core/services/auth.service';
 import { AuthService } from 'src/app/modules/layout/services/auth.service';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';

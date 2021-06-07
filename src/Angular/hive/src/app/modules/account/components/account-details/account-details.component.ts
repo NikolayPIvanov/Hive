@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { UserProfileDto } from 'src/app/clients/profile-client';
-import { AuthenticationService } from 'src/app/modules/core/services/auth.service';
+import { Observable } from 'rxjs';
+import { FileUpload } from 'src/app/clients/gigs-client';
+import { FileResponse, ProfileClient, UserProfileDto } from 'src/app/clients/profile-client';
 import { AuthService } from 'src/app/modules/layout/services/auth.service';
 import { ProfileService } from '../../services/profile.service';
 
@@ -12,12 +13,23 @@ import { ProfileService } from '../../services/profile.service';
 export class AccountDetailsComponent implements OnInit {
   @Input() profile!: UserProfileDto;
 
+  public download!: Observable<FileResponse>;
+  public upload!: (upload: FileUpload) => Observable<any>;
+
   fullName!: string;
   email!: string;
 
-  constructor(private authService: AuthService, private profileService: ProfileService) { }
+  constructor(private authService: AuthService,
+    private profileClient: ProfileClient,
+    private profileService: ProfileService) { }
 
   ngOnInit() {
+    this.download = this.profileClient.getAvatar(this.profile.id!);
+    this.upload = (upload: FileUpload) => {
+      return this.profileClient.changeAvatar(this.profile.id!, upload);
+    }
+
+
     this.email = this.authService.user?.profile.email!;
     this.setFullName(this.profile);
 

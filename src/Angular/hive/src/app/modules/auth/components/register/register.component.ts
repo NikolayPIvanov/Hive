@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-import { AuthenticationService } from 'src/app/modules/core/services/auth.service';
 import { NotificationService } from 'src/app/modules/core/services/notification.service';
 
 @Component({
@@ -17,12 +16,10 @@ export class RegisterComponent implements OnInit {
   
   constructor(private router: Router,
     private titleService: Title,
-    private notificationService: NotificationService,
-    private authenticationService: AuthenticationService) { }
+    private notificationService: NotificationService) { }
 
   ngOnInit() {
     this.titleService.setTitle('Hive - Register');
-    this.authenticationService.logout();
     this.createForm();
   }
 
@@ -36,20 +33,6 @@ export class RegisterComponent implements OnInit {
   }
 
   register() {
-    const email = this.registerForm!.get('email')!.value;
-    const password = this.registerForm!.get('password')!.value;
-    const name = this.registerForm.get('name')!.value;
-
-    this.loading = true;
-    this.authenticationService
-        .register(name, email.toLowerCase(), password)
-        .subscribe(
-            data => this.router.navigate(['/auth/login']),
-            error => {
-                this.notificationService.openSnackBar(error.error);
-                this.loading = false;
-            }
-        );
-}
+  }
 
 }

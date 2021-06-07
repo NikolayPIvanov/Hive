@@ -493,6 +493,12 @@ export interface IGigsClient {
      */
     getRandom(quantity: number | undefined): Observable<PaginatedListOfGigOverviewDto>;
     /**
+     * @param file (optional) 
+     * @return Successful operation
+     */
+    updateImage(id: number, file: FileUpload | null | undefined): Observable<FileResponse>;
+    getAvatar(id: number): Observable<FileResponse>;
+    /**
      * @return Successful operation
      */
     getPackageById(id: number, packageId: number): Observable<PackageDto>;
@@ -936,6 +942,119 @@ export class GigsClient implements IGigsClient {
             }));
         }
         return _observableOf<PaginatedListOfGigOverviewDto>(<any>null);
+    }
+
+    /**
+     * @param file (optional) 
+     * @return Successful operation
+     */
+    updateImage(id: number, file: FileUpload | null | undefined): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/Gigs/{id}/images";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(file);
+
+        let options_ : any = {
+            body: content_,
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Content-Type": "application/json",
+                "Accept": "application/octet-stream"
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processUpdateImage(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processUpdateImage(<any>response_);
+                } catch (e) {
+                    return <Observable<FileResponse>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<FileResponse>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processUpdateImage(response: HttpResponseBase): Observable<FileResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 201) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            return _observableOf({ fileName: fileName, data: <any>responseBlob, status: status, headers: _headers });
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = resultData400 !== undefined ? resultData400 : <any>null;
+            return throwException("Bad Request operation", status, _responseText, _headers, result400);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<FileResponse>(<any>null);
+    }
+
+    getAvatar(id: number): Observable<FileResponse> {
+        let url_ = this.baseUrl + "/api/Gigs/{id}/images";
+        if (id === undefined || id === null)
+            throw new Error("The parameter 'id' must be defined.");
+        url_ = url_.replace("{id}", encodeURIComponent("" + id));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/octet-stream"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetAvatar(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetAvatar(<any>response_);
+                } catch (e) {
+                    return <Observable<FileResponse>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<FileResponse>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetAvatar(response: HttpResponseBase): Observable<FileResponse> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200 || status === 206) {
+            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
+            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
+            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
+            return _observableOf({ fileName: fileName, data: <any>responseBlob, status: status, headers: _headers });
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<FileResponse>(<any>null);
     }
 
     /**
@@ -2545,6 +2664,42 @@ export interface IQuestionModel {
     answer?: string;
 }
 
+export class FileUpload implements IFileUpload {
+    fileData?: string | undefined;
+
+    constructor(data?: IFileUpload) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.fileData = _data["fileData"];
+        }
+    }
+
+    static fromJS(data: any): FileUpload {
+        data = typeof data === 'object' ? data : {};
+        let result = new FileUpload();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["fileData"] = this.fileData;
+        return data; 
+    }
+}
+
+export interface IFileUpload {
+    fileData?: string | undefined;
+}
+
 export class ProblemDetails implements IProblemDetails {
     type?: string | undefined;
     title?: string | undefined;
@@ -2690,6 +2845,50 @@ export interface IUpdateGigCommand {
 }
 
 export class CreatePackageCommand implements ICreatePackageCommand {
+    packages?: PackageModel[];
+
+    constructor(data?: ICreatePackageCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["packages"])) {
+                this.packages = [] as any;
+                for (let item of _data["packages"])
+                    this.packages!.push(PackageModel.fromJS(item));
+            }
+        }
+    }
+
+    static fromJS(data: any): CreatePackageCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new CreatePackageCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.packages)) {
+            data["packages"] = [];
+            for (let item of this.packages)
+                data["packages"].push(item.toJSON());
+        }
+        return data; 
+    }
+}
+
+export interface ICreatePackageCommand {
+    packages?: PackageModel[];
+}
+
+export class PackageModel implements IPackageModel {
     title?: string;
     description?: string;
     price?: number;
@@ -2700,7 +2899,7 @@ export class CreatePackageCommand implements ICreatePackageCommand {
     revisionType?: RevisionType;
     gigId?: number;
 
-    constructor(data?: ICreatePackageCommand) {
+    constructor(data?: IPackageModel) {
         if (data) {
             for (var property in data) {
                 if (data.hasOwnProperty(property))
@@ -2723,9 +2922,9 @@ export class CreatePackageCommand implements ICreatePackageCommand {
         }
     }
 
-    static fromJS(data: any): CreatePackageCommand {
+    static fromJS(data: any): PackageModel {
         data = typeof data === 'object' ? data : {};
-        let result = new CreatePackageCommand();
+        let result = new PackageModel();
         result.init(data);
         return result;
     }
@@ -2745,7 +2944,7 @@ export class CreatePackageCommand implements ICreatePackageCommand {
     }
 }
 
-export interface ICreatePackageCommand {
+export interface IPackageModel {
     title?: string;
     description?: string;
     price?: number;

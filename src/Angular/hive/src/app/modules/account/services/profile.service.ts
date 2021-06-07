@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
+import { NgxSpinnerService } from 'ngx-spinner';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { finalize, map, startWith, switchMap, tap } from 'rxjs/operators';
 import { ProfileClient, UpdateUserNamesCommand, UpdateUserProfileCommand, UserProfileDto } from 'src/app/clients/profile-client';
-import { SpinnerService } from '../../core/services/spinner.service';
 
 @Injectable({
   providedIn: 'root'
@@ -13,7 +13,7 @@ export class ProfileService {
 
   constructor(
     private profileApiClient: ProfileClient,
-    private spinnerService: SpinnerService
+    private spinnerService: NgxSpinnerService
   ) { }
 
   getProfile() {

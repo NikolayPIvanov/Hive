@@ -4,7 +4,6 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { Observable, throwError } from 'rxjs';
 import { delay, map, switchMap, tap } from 'rxjs/operators';
 import { GigsClient, PackageDto } from 'src/app/clients/gigs-client';
-import { SpinnerService } from 'src/app/modules/core/services/spinner.service';
 import { CheckoutService } from '../../services/checkout.service';
 
 @Component({

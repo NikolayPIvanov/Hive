@@ -1,27 +1,49 @@
 <div fxLayout="column">
-    <div fxFlex="20rem" style="background-color: blue;">
-
-    </div>
-
     <div fxLayout="column" class="container">
-        <mat-card fxFlexOffset="-10%">
+        <mat-card *ngIf="profile$ | async; let profile">
             <mat-card-header>
-                <mat-card-title>Nikolay Ivanov</mat-card-title>
+                <mat-card-title>{{ displayName(profile) }}</mat-card-title>
                 <mat-card-subtitle>Personal Information</mat-card-subtitle>
             </mat-card-header>
             <mat-card-content fxLayout="column" class="full-heigth">
                 <section fxLayout="row">
                     <div fxFlex="30" fxLayout="column">
                         <p>
-                            Contact Email: nick@hive.com
+                            <strong> Contact Email: </strong> {{ email }} 
+                        </p>
+
+                        <p>
+                            <strong> Description: </strong> {{ profile.description }} 
+                        </p>
+
+                        <p>
+                            <strong> Education: </strong> {{ profile.education }} 
                         </p>
                     </div>
-                    <div fxFlex="30" fxLayout="column">2</div>
                     <div fxFlex="30" fxLayout="column">
-                        <div fxLayout="row" fxLayoutAlign="end end">
-                            <button mat-button>Billing</button>
+                        <p>
+                            <strong> Contact Email: </strong> {{ email }} 
+                        </p>
+
+                        <p>
+                            <strong> Description: </strong> {{ profile.description }} 
+                        </p>
+
+                        <p>
+                            <strong> Education: </strong> {{ profile.education }} 
+                        </p>
+                    </div>
+                    <div fxFlex="30" fxLayout="column" fxLayoutAlign="end end">
+                        <div fxLayout="row">
+                            <a mat-button [routerLink]="['/billing/overview']">
+                                <mat-icon>credit_card</mat-icon>
+                                <span>Billing</span>
+                            </a>
                             <button mat-button>Orders</button>
-                            <button mat-button (click)="onCreateNew()">Add Gig</button>
+                            <button mat-button (click)="onCreateNew()">
+                                <mat-icon>add</mat-icon>
+                                <span>Create gig</span>
+                            </button>
                         </div>
                     </div>
                 </section>

@@ -14,6 +14,7 @@ namespace Hive.Gig.Domain.Entities
             Packages = new HashSet<Package>(3);
             Questions = new HashSet<Question>();
             Reviews = new HashSet<Review>();
+            Images = new HashSet<ImagePath>();
             IsDraft = true;
         }
         
@@ -43,11 +44,13 @@ namespace Hive.Gig.Domain.Entities
         public int? PlanId { get; set; }
 
         public ICollection<Tag> Tags { get; private set; }
-        
+
         public ICollection<Package> Packages { get; private set; }
         
         public ICollection<Question> Questions { get; private set;  }
         
         public ICollection<Review> Reviews { get; private set;  }
+        
+        public ICollection<ImagePath> Images { get; private set; }
     }
 }

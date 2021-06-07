@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { NGXLogger } from 'ngx-logger';
-import { AuthenticationService } from 'src/app/modules/core/services/auth.service';
 import { NotificationService } from 'src/app/modules/core/services/notification.service';
-import { SpinnerService } from 'src/app/modules/core/services/spinner.service';
 
 @Component({
   selector: 'app-change-password',
@@ -20,9 +18,8 @@ export class ChangePasswordComponent implements OnInit {
   newPasswordConfirm!: string;
   disableSubmit!: boolean;
 
-  constructor(private authService: AuthenticationService,
+  constructor(
     private logger: NGXLogger,
-    private spinnerService: SpinnerService,
     private notificationService: NotificationService) {
 
     this.hideCurrentPassword = true;
@@ -44,32 +41,9 @@ export class ChangePasswordComponent implements OnInit {
 
     this.form.get('newPasswordConfirm')!.valueChanges
       .subscribe(val => { this.newPasswordConfirm = val; });
-
-    this.spinnerService.visibility.subscribe((value) => {
-      this.disableSubmit = value;
-    });
   }
 
   changePassword() {
-
-    if (this.newPassword !== this.newPasswordConfirm) {
-      this.notificationService.openSnackBar('New passwords do not match.');
-      return;
-    }
-
-    const email = this.authService.getCurrentUser().email;
-
-    this.authService.changePassword(email, this.currentPassword, this.newPassword)
-      .subscribe(
-        data => {
-          this.logger.info(`User ${email} changed password.`);
-          this.form.reset();
-          this.notificationService.openSnackBar('Your password has been changed.');
-        },
-        error => {
-          this.notificationService.openSnackBar(error.error);
-        }
-      );
   }
 
 }

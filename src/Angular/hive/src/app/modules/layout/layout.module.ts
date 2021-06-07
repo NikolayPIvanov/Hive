@@ -13,6 +13,7 @@ import { CategoriesSearchComponent } from './components/categories-search/catego
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { AuthInterceptorService } from './services/auth-interceptor.service';
 import { NgxSpinnerModule } from "ngx-spinner";
+import { ImageUploadComponent } from './components/image-upload/image-upload.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { NgxSpinnerModule } from "ngx-spinner";
     LayoutSidenavComponent,
     LimitToPipe,
 
-    CategoriesSearchComponent
+    CategoriesSearchComponent,
+     ImageUploadComponent
   ],
   imports: [
     CommonModule,
@@ -44,7 +46,8 @@ import { NgxSpinnerModule } from "ngx-spinner";
 
     LimitToPipe,
 
-    CategoriesSearchComponent
+    CategoriesSearchComponent,
+    ImageUploadComponent
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true }

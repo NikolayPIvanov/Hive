@@ -9,14 +9,35 @@
                     <input matInput formControlName="title" placeholder="Title">
                     <mat-error *ngIf="gigForm.controls.title.errors">{{getErrorMessage('title')}}</mat-error>
                 </mat-form-field>
+                
                 <mat-form-field appearance="outline">
                     <mat-label>Description</mat-label>
                     <textarea matInput formControlName="description" placeholder="Description"></textarea>
                     <mat-error *ngIf="gigForm.controls.description.errors">{{getErrorMessage('description')}}</mat-error>
                 </mat-form-field>
                 
-                <app-categories-search></app-categories-search>
-                    
+                <app-categories-search (onSelectedCategoryName)="onCategorySelected($event)" ></app-categories-search>
+                
+                <mat-form-field class="full-width mt-1">
+                  <mat-label>Tags</mat-label>
+                  <mat-chip-list #tagsList aria-label="Tags" formControlName="tags">
+                      <mat-chip 
+                          *ngFor="let tag of tags.value" 
+                          selectable="false" removable="true" (removed)="remove(tags, tag)">
+                          {{tag}}
+                          <mat-icon matChipRemove>cancel</mat-icon>
+                      </mat-chip>
+              
+                      <input matInput
+                          class="active-input"
+                          placeholder="Tags..." 
+                          [matChipInputFor]="tagsList" 
+                          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                          matChipInputAddOnBlur="true"
+                          (matChipInputTokenEnd)="add(tags, $event)">
+                  </mat-chip-list>
+              </mat-form-field>
+
                 <mat-divider></mat-divider>
         
                 <div formArrayName="questions">
@@ -49,47 +70,111 @@
                 </div>
 
                 <div>
-                    <button mat-button matStepperNext>Next</button>
+                    <button mat-raised-button matStepperNext>Next</button>
                 </div>
             </form>
         </mat-step>
         
-        <mat-step [stepControl]="imageForm" label="Add Image" [optional]="true">
-          <form [formGroup]="imageForm">
-
-            <img [src]="imageSrc" alt="">
-            <input #uploader fxHide="true" formControlName="image" type="file" (change)="onFileChange($event)">
-            <button fxLayoutAlign="center" mat-raised-button (click)="uploader.click()">
-              <mat-icon>upload</mat-icon>
-            </button>
+        <mat-step label="Add Image" [optional]="true">
+          <app-image-upload
+              [upload]="upload"></app-image-upload>
 
             <div>
               <button mat-button matStepperPrevious>Back</button>
               <button mat-button matStepperNext>Next</button>
             </div>
-            
-            
-          </form>
         </mat-step>
 
-        <mat-step [stepControl]="imageForm" label="Add Packages">
-          <form [formGroup]="imageForm">
 
-            <img [src]="imageSrc" alt="">
-            <input #uploader fxHide="true" formControlName="image" type="file" (change)="onFileChange($event)">
-            <button fxLayoutAlign="center" mat-raised-button (click)="uploader.click()">
-              <mat-icon>upload</mat-icon>
-            </button>
+        <!-- Packages tab -->
+        <mat-step label="Add Packages" [stepControl]="packagesForm">
+          <form [formGroup]="packagesForm" fxLayout="column" (ngSubmit)="onPackagesSubmit()">
+            <ng-template matStepLabel>Add Packages</ng-template>
+                
+            <div formArrayName="packages">
+                <div *ngFor="let package of packagesForm.controls.packages.controls; let i = index; let last = last;">
+                    <div fxLayout="row"> 
+                        <h3> Package {{ i + 1 }}</h3>
+                        <mat-icon 
+                          *ngIf="packagesForm.controls.packages.controls.length > 1" 
+                          fxLayoutAlign="end"
+                          (click)="removePackage(i)"> 
+                            remove 
+                        </mat-icon>
+                        <mat-icon 
+                          *ngIf="last" 
+                          fxLayoutAlign="end"
+                          (click)="addPackage()"> 
+                            add 
+                        </mat-icon>
+                    </div>
+        
+                    <div [formGroupName]="i" fxLayout="column" fxLayoutGap="1rem">
+                        <mat-form-field appearance="outline" fxFill>
+                            <mat-label>Title</mat-label>
+                            <input matInput type="text" formControlName="title">
+                            <!-- <mat-error *ngIf="packagesForm.controls.packages.value[i].title.errors">{{getErrorMessage('title')}}</mat-error> -->
+                        </mat-form-field>
+    
+                        <mat-form-field appearance="outline" fxFill>
+                            <mat-label>Description</mat-label>
+                            <input matInput type="text" formControlName="description">
+                            <!-- <mat-error *ngIf="gigForm.controls.description.errors">{{getErrorMessage('description')}}</mat-error> -->
+                        </mat-form-field> 
+
+                        <mat-form-field appearance="outline" fxFill>
+                          <mat-label>Price</mat-label>
+                          <input matInput type="number" formControlName="price">
+                          <!-- <mat-error *ngIf="gigForm.controls.description.errors">{{getErrorMessage('description')}}</mat-error> -->
+                        </mat-form-field> 
+
+                        <mat-form-field appearance="outline" fxFill>
+                          <mat-label>Package Tier</mat-label>
+                          <input matInput type="text" formControlName="packageTier">
+                          <!-- <mat-error *ngIf="gigForm.controls.description.errors">{{getErrorMessage('description')}}</mat-error> -->
+                        </mat-form-field> 
+
+                        <mat-form-field appearance="outline" fxFill>
+                          <mat-label>Delivery Time</mat-label>
+                          <input matInput type="text" formControlName="deliveryTime">
+                          <!-- <mat-error *ngIf="gigForm.controls.description.errors">{{getErrorMessage('description')}}</mat-error> -->
+                        </mat-form-field> 
+
+                        <mat-form-field appearance="outline" fxFill>
+                          <mat-label>Delivery Frequency</mat-label>
+                          <input matInput type="text" formControlName="deliveryFrequency">
+                          <!-- <mat-error *ngIf="gigForm.controls.description.errors">{{getErrorMessage('description')}}</mat-error> -->
+                        </mat-form-field> 
+
+                        <mat-form-field appearance="outline" fxFill>
+                          <mat-label>Revisions</mat-label>
+                          <input matInput type="text" formControlName="revisions">
+                          <!-- <mat-error *ngIf="gigForm.controls.description.errors">{{getErrorMessage('description')}}</mat-error> -->
+                        </mat-form-field> 
+
+                        <mat-form-field appearance="outline" fxFill>
+                          <mat-label>Revision Type</mat-label>
+                          <input matInput type="text" formControlName="revisionType">
+                          <!-- <mat-error *ngIf="gigForm.controls.description.errors">{{getErrorMessage('description')}}</mat-error> -->
+                        </mat-form-field> 
+
+                  <div>
+                </div>
+                </div>
+                </div>  
+            </div>
 
             <div>
-              <button mat-button matStepperPrevious>Back</button>
-              <button mat-button matStepperNext>Next</button>
+                <button mat-raised-button matStepperNext>Next</button>
             </div>
-            
-            
-          </form>
-        </mat-step>
+        </form>
 
+          <div>
+            <button mat-button matStepperPrevious>Back</button>
+            <button mat-button matStepperNext>Next</button>
+          </div>
+        </mat-step>
+        
         <mat-step>
           <ng-template matStepLabel>Done</ng-template>
           <p>You are now done.</p>
@@ -102,5 +187,4 @@
 </mat-dialog-content>
 <mat-dialog-actions align="end">
   <button mat-button mat-dialog-close>Cancel</button>
-  <button mat-button [mat-dialog-close]="true" cdkFocusInitial>Install</button>
 </mat-dialog-actions>

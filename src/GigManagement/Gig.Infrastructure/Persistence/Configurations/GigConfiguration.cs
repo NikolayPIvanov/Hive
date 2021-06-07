@@ -46,6 +46,16 @@ namespace Hive.Gig.Infrastructure.Persistence.Configurations
                     .IsRequired();
             });
             
+            builder.OwnsMany(g => g.Images, q =>
+            {
+                q.ToTable("GigsImages");
+                q.WithOwner().HasForeignKey("GigId");
+                q.Property<int>("Id");
+                q.HasKey("Id");
+                
+                q.Property(x => x.Path).IsRequired();
+            });
+            
             builder.OwnsOne(g => g.GigScope, q =>
             {
                 q.ToTable("Scopes");

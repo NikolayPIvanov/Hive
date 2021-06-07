@@ -1,5 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Net;
+using System.Net.Mime;
 using System.Threading;
 using System.Threading.Tasks;
 using Hive.Common.Core.Models;
@@ -16,6 +19,8 @@ using NSwag.Annotations;
 
 namespace Gig.Management.Controllers
 {
+    public record FileUpload(string FileData);
+    
     [Produces("application/json")]
     [Authorize]
     public class GigsController : ApiControllerBase
@@ -44,6 +49,31 @@ namespace Gig.Management.Controllers
         {
             var id = await Mediator.Send(command, cancellationToken);
             return CreatedAtAction(nameof(GetGigById), new {id}, id);
+        }
+        
+        [HttpPut("{id:int}/images")]
+        [Authorize(Roles = "Seller, Admin")]
+        [Produces(MediaTypeNames.Application.Json)]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [SwaggerResponse(HttpStatusCode.Created, typeof(IActionResult), Description = "Successful operation")]
+        [SwaggerResponse(HttpStatusCode.BadRequest, typeof(BadRequestObjectResult), Description = "Bad Request operation")]
+        public async Task<IActionResult> UpdateImage([FromRoute] int id, [FromBody] FileUpload file, CancellationToken cancellationToken)
+        {
+            var extension = ".png";
+            var imageDataByteArray = Convert.FromBase64String(file.FileData);
+            var imageDataStream = new MemoryStream(imageDataByteArray) {Position = 0};
+
+            var command = new SetGigImageCommand(id, extension, imageDataStream);
+            await Mediator.Send(command, cancellationToken);
+            return NoContent();
+        }
+        
+        [HttpGet("{id:int}/images")]
+        [ProducesResponseType(typeof(FileContentResult), 200)]
+        [SwaggerResponse(200, typeof(FileContentResult))]
+        public async Task<FileContentResult> GetAvatar([FromRoute] int id)
+        {
+            return await Mediator.Send(new GetGigImageQuery(id));
         }
        
         [HttpPut("{id:int}")]
@@ -93,11 +123,6 @@ namespace Gig.Management.Controllers
         public async Task<ActionResult<int>> CreatePackage([FromRoute] int id, [FromBody] CreatePackageCommand command,
             CancellationToken cancellationToken)
         {
-            if (command.GigId != id)
-            {
-                return BadRequest();
-            }
-            
             var packageId = await Mediator.Send(command, cancellationToken);
             return CreatedAtAction(nameof(GetPackageById), new {id, packageId}, new {id, packageId});
         }

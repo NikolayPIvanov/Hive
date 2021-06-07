@@ -3,8 +3,6 @@ import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit } from '
 import { Router } from '@angular/router';
 import { Subscription, timer } from 'rxjs';
 import { AuthGuard } from '../../core/guards/auth.guard';
-import { AuthenticationService } from '../../core/services/auth.service';
-import { SpinnerService } from '../../core/services/spinner.service';
 import { AuthService } from '../services/auth.service';
 
 @Component({
@@ -25,7 +23,6 @@ export class LayoutComponent implements OnInit, OnDestroy, AfterViewInit {
     constructor(private changeDetectorRef: ChangeDetectorRef,
       private router: Router,
       private media: MediaMatcher,
-      public spinnerService: SpinnerService,
       private authService: AuthService,
       private authGuard: AuthGuard) {
 
@@ -41,17 +38,17 @@ export class LayoutComponent implements OnInit, OnDestroy, AfterViewInit {
       this.isAdmin = user?.profile.role.indexOf('Admin') > -1;
       this.userName = user?.profile.name;
 
-      // Auto log-out subscription
-      const watch = timer(2000, 5000);
-      this.autoLogoutSubscription = watch.subscribe(t => {
-          this.authGuard.canActivate();
-      });
+      // // Auto log-out subscription
+      // const watch = timer(2000, 5000);
+      // this.autoLogoutSubscription = watch.subscribe(t => {
+      //     this.authGuard.canActivate();
+      // });
   }
 
   ngOnDestroy(): void {
       // tslint:disable-next-line: deprecation
       this.mobileQuery.removeListener(this._mobileQueryListener);
-      this.autoLogoutSubscription.unsubscribe();
+      // this.autoLogoutSubscription.unsubscribe();
   }
 
   ngAfterViewInit(): void {

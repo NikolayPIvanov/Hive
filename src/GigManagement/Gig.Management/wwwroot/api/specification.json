@@ -672,6 +672,110 @@
         ]
       }
     },
+    "/api/Gigs/{id}/images": {
+      "put": {
+        "tags": [
+          "Gigs"
+        ],
+        "operationId": "Gigs_UpdateImage",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "requestBody": {
+          "x-name": "file",
+          "content": {
+            "application/json": {
+              "schema": {
+                "nullable": true,
+                "oneOf": [
+                  {
+                    "$ref": "#/components/schemas/FileUpload"
+                  }
+                ]
+              }
+            }
+          },
+          "x-position": 2
+        },
+        "responses": {
+          "201": {
+            "description": "Successful operation",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request operation",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": [
+              "Seller",
+              " Admin"
+            ]
+          }
+        ]
+      },
+      "get": {
+        "tags": [
+          "Gigs"
+        ],
+        "operationId": "Gigs_GetAvatar",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
     "/api/Gigs/{id}/packages/{packageId}": {
       "get": {
         "tags": [
@@ -1772,6 +1876,16 @@
           }
         }
       },
+      "FileUpload": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "fileData": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
       "ProblemDetails": {
         "type": "object",
         "additionalProperties": {
@@ -1843,6 +1957,18 @@
         }
       },
       "CreatePackageCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "packages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PackageModel"
+            }
+          }
+        }
+      },
+      "PackageModel": {
         "type": "object",
         "additionalProperties": false,
         "properties": {

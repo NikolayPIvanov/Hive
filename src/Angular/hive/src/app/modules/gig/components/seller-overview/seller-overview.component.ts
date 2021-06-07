@@ -4,7 +4,6 @@ import { mergeMap, tap } from 'rxjs/operators';
 import { SellersClient } from 'src/app/clients/gigs-client';
 import { UserProfileDto } from 'src/app/clients/profile-client';
 import { ProfileService } from 'src/app/modules/account/services/profile.service';
-import { SpinnerService } from 'src/app/modules/core/services/spinner.service';
 
 @Component({
   selector: 'app-seller-overview',
@@ -18,21 +17,14 @@ export class SellerOverviewComponent implements OnInit {
 
   constructor(
     private profileApiClient: ProfileService,
-    private sellerApiClient: SellersClient,
-    private spinnerService: SpinnerService) { }
+    private sellerApiClient: SellersClient) { }
 
   ngOnInit(): void {
-    this.spinnerService.show();
 
     this.profile$ = of(UserProfileDto.fromJS(
       {
         id: 1, firstName: 'Nikolay', lastName: 'Ivanov', education: 'University of Lorem',
         languages: [ 'Bulgarian', 'English', 'Russian']}))
-
-    // this.profile$ = this.profileApiClient.getProfile()
-    //   .pipe(tap({
-    //     complete: () => this.spinnerService.hide()
-    //   }))
   }
 
 }
