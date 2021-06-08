@@ -15,11 +15,26 @@ import { FileUpload } from 'src/app/clients/profile-client';
   styleUrls: ['./gig-create.component.scss']
 })
 export class GigCreateComponent implements OnInit {
+  // Shared
   private unsubscribe = new Subject();
+  isLinear = true;
+
+  constructor(
+    public dialogRef: MatDialogRef<GigCreateComponent>,
+    private fb: FormBuilder,
+    private spinnerService: NgxSpinnerService,
+    private gigsApiClient: GigsClient,
+    private categoryApiClient: CategoriesClient) { }
+
+  ngOnInit(): void { }
+
+  onNoClick(): void {
+    this.dialogRef.close();
+  }
+
+  // Gig Main Information
   private gigFormSubmitted = false;
   private gigId: number | undefined;
-
-  isLinear = true;
 
   gigForm = this.fb.group({
     title: ['', Validators.required],
@@ -29,57 +44,6 @@ export class GigCreateComponent implements OnInit {
     questions: this.fb.array([ this.initQuestion() ]),
   });
 
-  packagesForm = this.fb.group({
-    packages: this.fb.array([])
-  })
-
-  public initPackage() {
-    return this.fb.group({
-      title: ['', Validators.required],
-      description: ['', Validators.required],
-      price: ['', Validators.required],
-      packageTier: [0, Validators.required],
-      deliveryTime: ['', Validators.required],
-      deliveryFrequency: [0, Validators.required],
-      revisions: [null],
-      revisionType: [0, Validators.required],
-      gigId: [this.gigId, Validators.required],
-    })
-  }
-
-  public addPackage() {
-    const control = <FormArray>this.packagesForm.controls['packages'];
-    control.push(this.initPackage());
-  }
-
-  public removePackage(i: number) {
-    const control = <FormArray>this.packagesForm.controls['packages'];
-    control.removeAt(i);
-  }
-
-  onPackagesSubmit() {
-    debugger;
-    const command = CreatePackageCommand.fromJS(this.packagesForm.value)
-
-    this.gigsApiClient.createPackage(this.gigId!, command)
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe();
-  }
-
-  // ========================
-
-  public upload!: (upload: FileUpload) => Observable<any>;
-
-  constructor(
-    public dialogRef: MatDialogRef<GigCreateComponent>,
-    private fb: FormBuilder,
-    private spinnerService: NgxSpinnerService,
-    private gigsApiClient: GigsClient,
-    private categoryApiClient: CategoriesClient) { }
-
-  ngOnInit(): void {
-  }
-
   getErrorMessage(key: string, error: string = 'required') {
     const control = this.gigForm.get(key)!;
     if (control.hasError('required')) {
@@ -87,10 +51,6 @@ export class GigCreateComponent implements OnInit {
     }
 
     return control.hasError('email') ? 'Not a valid email' : '';
-  }
-  
-  onNoClick(): void {
-    this.dialogRef.close();
   }
 
   onSubmit() {
@@ -173,6 +133,45 @@ export class GigCreateComponent implements OnInit {
           complete: () => this.spinnerService.hide()
         })
       )
+      .subscribe();
+  }
+
+  // Image Upload
+  public upload!: (upload: FileUpload) => Observable<any>;
+
+  // Packages
+  packagesForm = this.fb.group({
+    packages: this.fb.array([])
+  })
+
+  public initPackage() {
+    return this.fb.group({
+      title: ['', Validators.required],
+      description: ['', Validators.required],
+      price: ['', Validators.required],
+      packageTier: [0, Validators.required],
+      deliveryTime: ['', Validators.required],
+      deliveryFrequency: [0, Validators.required],
+      revisions: [null],
+      revisionType: [0, Validators.required],
+      gigId: [this.gigId, Validators.required],
+    })
+  }
+
+  public addPackage() {
+    const control = <FormArray>this.packagesForm.controls['packages'];
+    control.push(this.initPackage());
+  }
+
+  public removePackage(i: number) {
+    const control = <FormArray>this.packagesForm.controls['packages'];
+    control.removeAt(i);
+  }
+
+  onPackagesSubmit() {
+    const command = CreatePackageCommand.fromJS(this.packagesForm.value)
+    this.gigsApiClient.createPackage(this.gigId!, command)
+      .pipe(takeUntil(this.unsubscribe))
       .subscribe();
   }
 

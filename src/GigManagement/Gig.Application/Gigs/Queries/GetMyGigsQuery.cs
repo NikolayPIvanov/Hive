@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -44,16 +45,17 @@ namespace Hive.Gig.Application.Gigs.Queries
                 throw new NotFoundException($"Seller Account does not exist for {_currentUserService.UserId}");
             }
 
-            var query =
+            var list = await
                 _context.Gigs
-                    .Include(g => g.Packages)
+                    .AsNoTracking()
                     .Include(g => g.Seller)
-                    .AsNoTracking()
+                    .Include(g => g.Packages)
                     .Where(g => g.SellerId == seller.Id)
-                    .AsNoTracking()
-                    .ProjectTo<GigOverviewDto>(_mapper.ConfigurationProvider);
+                    .ToListAsync(cancellationToken);
 
-            return await query.PaginatedListAsync(request.PageNumber, request.PageSize);
+            var dtos = _mapper.Map<ICollection<GigOverviewDto>>(list);
+
+            return new PaginatedList<GigOverviewDto>(dtos.ToList(), dtos.Count, request.PageNumber, request.PageSize);
         }
     }
 }

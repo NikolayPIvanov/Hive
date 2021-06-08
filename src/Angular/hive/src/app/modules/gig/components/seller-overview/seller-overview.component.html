@@ -1,20 +1,38 @@
-<div *ngIf="profile$ | async; let profile" fxLayout="row" fxLayoutAlign="start" fxLayoutGap.gt-lg="3rem">
-    <ngx-avatar *ngIf="url" [src]="url" size="100"></ngx-avatar>
+<mat-card>
+    <mat-card-header>
+        <mat-card-title>About the seller</mat-card-title>
+        <mat-card-subtitle>Public information</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content fxLayout="column" fxLayoutGap="1rem">
+        
+        <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap.gt-lg="3rem">
+            <div fxLayout.gt-lg="column">
+                <app-image-upload 
+                    [source]="profile.avatarFile"
+                    [download]="download"
+                    [showUpload]="false"
+                    ></app-image-upload>
+            </div>
+            <div fxLayout.gt-lg="column">
+                <h3>Name: {{ profile.firstName }} {{ profile.lastName }}</h3>
+                <h3>Education: {{ profile.education }}</h3>
+            </div>
+        </div>
+        <div fxLayout.gt-lg="column" fxLayoutGap="1rem" fxLayoutAlign="space-between">
+            <div fxLayout="column">
+                <h4 style="margin: 0;">Languages:</h4>
+                <mat-chip-list>
+                    <mat-chip *ngFor="let language of profile.languages">{{ language }}</mat-chip>
+                </mat-chip-list>
+            </div>
 
-    <div fxLayout.gt-lg="column">
-        <h3>{{ profile.firstName }} {{ profile.lastName }}</h3>
-        <h3>{{ profile.education }}</h3>
-    </div>
+            <div fxLayout="column">
+                <h4 style="margin: 0;">Skills:</h4>
+                <mat-chip-list>
+                    <mat-chip *ngFor="let skill of profile.skills">{{ skill }}</mat-chip>
+                </mat-chip-list>
+            </div>
+        </div>
+    </mat-card-content>
+</mat-card>
 
-    <div fxLayout.gt-lg="column">
-        <h4 >Origin: Bulgaria</h4>
-
-        <h4 style="margin: 0;">Languages</h4>
-        <mat-chip-list>
-            <mat-chip *ngFor="let language of profile.languages">{{ language }}</mat-chip>
-        </mat-chip-list>
-
-    </div>
-
-    
-</div>

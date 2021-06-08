@@ -106,7 +106,7 @@ namespace Hive.Identity
                     AllowedCorsOrigins = { "http://localhost:4200" },
                     RequireClientSecret = false,
                     RequireConsent = false,
-                    AccessTokenLifetime = 600
+                    AccessTokenLifetime = 600 * 600
                 }
             };
     }

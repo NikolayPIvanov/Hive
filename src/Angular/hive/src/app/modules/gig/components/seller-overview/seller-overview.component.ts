@@ -1,8 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Observable, of } from 'rxjs';
 import { mergeMap, tap } from 'rxjs/operators';
-import { SellersClient } from 'src/app/clients/gigs-client';
-import { UserProfileDto } from 'src/app/clients/profile-client';
+import { FileResponse, SellersClient } from 'src/app/clients/gigs-client';
+import { ProfileClient, UserProfileDto } from 'src/app/clients/profile-client';
 import { ProfileService } from 'src/app/modules/account/services/profile.service';
 
 @Component({
@@ -11,20 +11,18 @@ import { ProfileService } from 'src/app/modules/account/services/profile.service
   styleUrls: ['./seller-overview.component.scss']
 })
 export class SellerOverviewComponent implements OnInit {
-  profile$!: Observable<UserProfileDto | undefined>;
+  @Input() profile!: UserProfileDto;
+
+  public download!: Observable<FileResponse>;
+
 
   url = '/assets/user.png';
 
-  constructor(
-    private profileApiClient: ProfileService,
-    private sellerApiClient: SellersClient) { }
+  constructor(private profileClient: ProfileClient) { }
 
   ngOnInit(): void {
+    this.download = this.profileClient.getAvatar(this.profile.id!);
 
-    this.profile$ = of(UserProfileDto.fromJS(
-      {
-        id: 1, firstName: 'Nikolay', lastName: 'Ivanov', education: 'University of Lorem',
-        languages: [ 'Bulgarian', 'English', 'Russian']}))
   }
 
 }

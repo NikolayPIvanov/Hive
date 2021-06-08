@@ -1,91 +1,54 @@
 <!-- main -->
 <div *ngIf="gig$ | async; let gig" fxLayout="row" class="container">
     <!-- left : title, name, etc -->
-    <div fxFlex="60" fxLayout="column" class="full-height">
-        <h1 fxFlex="3">I will do flat modern minimalist logo design</h1>
-        <div fxFlex="20">
-            <img fxFlex fxFlexAlign="center" class="image-detail" src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu">
-        </div>
-
-        <h2>About this Gig</h2>
-        <pre>
-            Looking for Flat Minimalist Logo that your clients will remember and you will love? Well, that's our peculiarity. :)
-
-            Why Choose us?
-
-            - We believe in memorable and timeless designs.
-
-            - Customer happiness is the center of our business.
-
-            - We have 130K+ Happy Buyers on Fiverr combining our all services.
-
-            - On and off the Fiverr, many Fortune 500 companies come to us for their quick jobs. :)
-
-            Standard Package:
-
-            3 Minimalist Logo Designs
-            Trendsetter designers to get a unique business identity.
-            Entire design will be made from scratch.
-            Yes, 5 Revision rounds & Priority Support are part of the package.
-
-            Premium Package:
-
-            5 Timeless Flat Modern Minimalist logo Designs
-            Unlimited Revisions (Changes only- no redesigning)
-            Customized concepts to meet client's expectation.
-            Dedicated relationship manager and VIP support are part of the package.
-
-
-            Basic Package:
-
-            2 Basic Order of 2000px X 2000px in JPG & transparent PNG formats in 300 dpi
-            Customized concepts are accepted
-            Prompt customer support & 2 Modification.
-
-
-            Modification delivery time will be 2 business day.
-
-
-
-            Kindly contact us before placing any custom order.
-
-            Happy Fiverring!
-        </pre>
-
-
-        <mat-divider>
-        </mat-divider>
-
-        <h2>About The Seller</h2>
-
-        <app-seller-overview></app-seller-overview>
-        <mat-divider>
-        </mat-divider>
-
-        <h2 *ngIf="gig.questions">FAQ</h2>
-
-        <mat-accordion *ngFor="let question of gig.questions">
-            <mat-expansion-panel>
-              <mat-expansion-panel-header>
-                <mat-panel-title>
-                  {{ question.title }}
-                </mat-panel-title>
-                <mat-panel-description>
-                  Expand to see answer
-                </mat-panel-description>
-              </mat-expansion-panel-header>
-              <p>{{ question.answer }}</p>
-            </mat-expansion-panel>
-          </mat-accordion>
-        <mat-divider *ngIf="gig.questions">
-        </mat-divider>
-
-        <div>
-            <h2>Reviews</h2>
-
-            <p>info</p>
-        </div>
-        
+    <div fxLayout="column" fxLayoutGap="1rem">
+      <mat-card fxFlex="60" fxLayout="column" class="full-height">
+        <mat-card-header>
+          <mat-card-title>{{ gig.title! }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <div>
+            <app-image-upload
+              [showUpload]="false"
+              [defaultImage]="default"
+              [source]="gig.imagePath?.path"
+              [download]="download">
+            </app-image-upload>
+          </div>
+        </mat-card-content>
+      </mat-card>
+          
+      <mat-card>
+        <mat-card-header>
+          <mat-card-title>About this Gig</mat-card-title>
+          <mat-card-subtitle>Information</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content>
+          <p>
+            {{ gig.description }}
+          </p>
+        </mat-card-content>
+      </mat-card>
+  
+      <app-seller-overview *ngIf="profile$ | async; let profile" [profile]="profile"></app-seller-overview>
+  
+      <h2 *ngIf="gig.questions">FAQ</h2>
+  
+      <mat-accordion *ngFor="let question of gig.questions">
+          <mat-expansion-panel>
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                {{ question.title }}
+              </mat-panel-title>
+              <mat-panel-description>
+                Expand to see answer
+              </mat-panel-description>
+            </mat-expansion-panel-header>
+            <p>{{ question.answer }}</p>
+          </mat-expansion-panel>
+        </mat-accordion>
+      <mat-divider *ngIf="gig.questions">
+      </mat-divider>
     </div>
 
     <!-- right: packages and price -->
@@ -149,5 +112,4 @@
             (click)="edit(gig)">Delete</button>
         </div>
 
-    </div>
 </div>

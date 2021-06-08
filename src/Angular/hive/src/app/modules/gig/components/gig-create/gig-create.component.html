@@ -18,7 +18,7 @@
                 
                 <app-categories-search (onSelectedCategoryName)="onCategorySelected($event)" ></app-categories-search>
                 
-                <mat-form-field class="full-width mt-1">
+                <mat-form-field appearance="outline" class="full-width mt-1">
                   <mat-label>Tags</mat-label>
                   <mat-chip-list #tagsList aria-label="Tags" formControlName="tags">
                       <mat-chip 
@@ -54,14 +54,11 @@
                             <mat-form-field appearance="outline" fxFill>
                                 <mat-label>Title</mat-label>
                                 <input matInput type="text" formControlName="title">
-                                <mat-error *ngIf="gigForm.controls.questions.value[i].title.errors">{{getErrorMessage('title')}}</mat-error>
                             </mat-form-field>
         
                             <mat-form-field appearance="outline" fxFill>
                                 <mat-label>Answer</mat-label>
-                                <input matInput type="text" formControlName="answer">
-                                <mat-error *ngIf="gigForm.controls.description.errors">{{getErrorMessage('description')}}</mat-error>
-        
+                                <textarea matInput type="text" formControlName="answer"></textarea>    
                             </mat-form-field>
                         <div>
                     </div>

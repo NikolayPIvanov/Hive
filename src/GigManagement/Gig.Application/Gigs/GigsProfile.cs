@@ -12,25 +12,24 @@ namespace Hive.Gig.Application.Gigs
         public GigsProfile()
         {
             CreateMap<Gig, GigDto>()
-                .ForMember(d => d.SellerId, x => x.MapFrom(s => s.Seller.UserId))
+                .ForMember(d => d.ImagePath, x
+                    => x.MapFrom(s => s.Images.FirstOrDefault()))
+                .ForMember(d => d.SellerId, x => x.MapFrom(s => s.SellerId))
+                .ForMember(d => d.SellerUserId, x => x.MapFrom(s => s.Seller.UserId))
                 .ForMember(d => d.Category, x => x.MapFrom(s => s.Category.Title))
                 .ForMember(d => d.Tags, x => x.MapFrom(s => s.Tags.Select(t => t.Value)))
                 .ForMember(d => d.Description, x => x.MapFrom(s => s.GigScope.Description));
+    
 
-            /* TODO; */
+            CreateMap<ImagePath, ImagePathDto>().DisableCtorValidation();
+
             CreateMap<Gig, GigOverviewDto>()
-                .ForMember(d => d.SellerUserId, x => x.MapFrom(s => s.Seller.UserId))
-                .ForMember(d => d.PictureUri, x => x.Ignore())
-                .AfterMap((gig, dto) =>
-                {
-                    if (!gig.Packages.Any())
-                    {
-                        dto.StartsAt = 0.0m;
-                        return;
-                    }
-
-                    dto.StartsAt = gig.Packages.OrderBy(p => p.Price).First().Price;
-                });
+                .ForMember(d => d.SellerUserId,
+                    x => x.MapFrom(s => s.Seller.UserId))
+                .ForMember(d => d.ImagePath, x
+                    => x.MapFrom(s => s.Images.FirstOrDefault()))
+                .ForMember(d => d.Prices,
+                    x => x.MapFrom(o => o.Packages.Select(p => p.Price)));
                 
             
             CreateMap<Question, QuestionDto>(MemberList.Destination);

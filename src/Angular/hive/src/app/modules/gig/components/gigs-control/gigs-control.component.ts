@@ -2,10 +2,24 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
 import { Observable } from 'rxjs';
+import { mergeAll, switchMap, tap } from 'rxjs/operators';
+import { GigDto, GigsClient, PaginatedListOfGigDto, PaginatedListOfGigOverviewDto, SellersClient } from 'src/app/clients/gigs-client';
 import { UserProfileDto } from 'src/app/clients/profile-client';
 import { ProfileService } from 'src/app/modules/account/services/profile.service';
 import { AuthService } from 'src/app/modules/layout/services/auth.service';
 import { GigCreateComponent } from '../gig-create/gig-create.component';
+
+export class GigProfileData
+{
+  gig: GigDto;
+  profile: UserProfileDto;
+
+  constructor(gig: GigDto, profile: UserProfileDto) {
+    this.gig = gig;
+    this.profile = profile;
+  }
+}
+
 
 @Component({
   selector: 'app-gigs-control',
@@ -14,23 +28,30 @@ import { GigCreateComponent } from '../gig-create/gig-create.component';
 })
 export class GigsControlComponent implements OnInit {
   public profile$!: Observable<UserProfileDto | undefined>;
-
-  elements = new Array(8);
+  public gigs$!: Observable<PaginatedListOfGigOverviewDto>;
+  sellerId!: string;
 
   constructor(
     private profileService: ProfileService,
+    private gigsClient: GigsClient,
     private authService: AuthService,
-
-    private router: Router,
+    private sellerClient: SellersClient,
     public dialog: MatDialog
   ) { }
 
-  ngOnInit(): void {
-    this.profile$ = this.profileService.getProfile()
+  reload(id: number) {
+    this.gigs$ = this.gigsClient.delete(id)
+      .pipe(switchMap(() => this.sellerClient.getMyGigs(10, 1, this.sellerId)))
   }
 
-  onInspect() {
-    this.router.navigate(['gigs', 2, 'details'])
+  ngOnInit(): void {
+    this.profile$ = this.profileService.getProfile()
+    this.gigs$ = this.sellerClient.getUserSellerId()
+      .pipe(
+        tap({
+          next: (id) => this.sellerId = id
+        }),
+        switchMap(id => this.sellerClient.getMyGigs(10, 1, id)))
   }
 
   onCreateNew() {

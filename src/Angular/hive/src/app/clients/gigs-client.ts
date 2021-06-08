@@ -2138,9 +2138,9 @@ export interface IPaginatedListOfGigOverviewDto {
 
 export class GigOverviewDto implements IGigOverviewDto {
     id?: number;
-    pictureUri?: string;
-    startsAt?: number;
     title?: string;
+    imagePath?: ImagePathDto | undefined;
+    prices?: number[];
     sellerUserId?: string;
     planId?: number | undefined;
 
@@ -2156,9 +2156,13 @@ export class GigOverviewDto implements IGigOverviewDto {
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
-            this.pictureUri = _data["pictureUri"];
-            this.startsAt = _data["startsAt"];
             this.title = _data["title"];
+            this.imagePath = _data["imagePath"] ? ImagePathDto.fromJS(_data["imagePath"]) : <any>undefined;
+            if (Array.isArray(_data["prices"])) {
+                this.prices = [] as any;
+                for (let item of _data["prices"])
+                    this.prices!.push(item);
+            }
             this.sellerUserId = _data["sellerUserId"];
             this.planId = _data["planId"];
         }
@@ -2174,9 +2178,13 @@ export class GigOverviewDto implements IGigOverviewDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
-        data["pictureUri"] = this.pictureUri;
-        data["startsAt"] = this.startsAt;
         data["title"] = this.title;
+        data["imagePath"] = this.imagePath ? this.imagePath.toJSON() : <any>undefined;
+        if (Array.isArray(this.prices)) {
+            data["prices"] = [];
+            for (let item of this.prices)
+                data["prices"].push(item);
+        }
         data["sellerUserId"] = this.sellerUserId;
         data["planId"] = this.planId;
         return data; 
@@ -2185,11 +2193,47 @@ export class GigOverviewDto implements IGigOverviewDto {
 
 export interface IGigOverviewDto {
     id?: number;
-    pictureUri?: string;
-    startsAt?: number;
     title?: string;
+    imagePath?: ImagePathDto | undefined;
+    prices?: number[];
     sellerUserId?: string;
     planId?: number | undefined;
+}
+
+export class ImagePathDto implements IImagePathDto {
+    path?: string;
+
+    constructor(data?: IImagePathDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.path = _data["path"];
+        }
+    }
+
+    static fromJS(data: any): ImagePathDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ImagePathDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["path"] = this.path;
+        return data; 
+    }
+}
+
+export interface IImagePathDto {
+    path?: string;
 }
 
 export class CreateCategoryCommand implements ICreateCategoryCommand {
@@ -2287,8 +2331,10 @@ export class GigDto implements IGigDto {
     categoryId?: number;
     category?: string;
     sellerId?: string;
+    sellerUserId?: string;
     planId?: number | undefined;
     isDraft?: boolean;
+    imagePath?: ImagePathDto | undefined;
     tags?: string[];
     packages?: PackageDto[];
     questions?: QuestionDto[];
@@ -2310,8 +2356,10 @@ export class GigDto implements IGigDto {
             this.categoryId = _data["categoryId"];
             this.category = _data["category"];
             this.sellerId = _data["sellerId"];
+            this.sellerUserId = _data["sellerUserId"];
             this.planId = _data["planId"];
             this.isDraft = _data["isDraft"];
+            this.imagePath = _data["imagePath"] ? ImagePathDto.fromJS(_data["imagePath"]) : <any>undefined;
             if (Array.isArray(_data["tags"])) {
                 this.tags = [] as any;
                 for (let item of _data["tags"])
@@ -2345,8 +2393,10 @@ export class GigDto implements IGigDto {
         data["categoryId"] = this.categoryId;
         data["category"] = this.category;
         data["sellerId"] = this.sellerId;
+        data["sellerUserId"] = this.sellerUserId;
         data["planId"] = this.planId;
         data["isDraft"] = this.isDraft;
+        data["imagePath"] = this.imagePath ? this.imagePath.toJSON() : <any>undefined;
         if (Array.isArray(this.tags)) {
             data["tags"] = [];
             for (let item of this.tags)
@@ -2373,8 +2423,10 @@ export interface IGigDto {
     categoryId?: number;
     category?: string;
     sellerId?: string;
+    sellerUserId?: string;
     planId?: number | undefined;
     isDraft?: boolean;
+    imagePath?: ImagePathDto | undefined;
     tags?: string[];
     packages?: PackageDto[];
     questions?: QuestionDto[];

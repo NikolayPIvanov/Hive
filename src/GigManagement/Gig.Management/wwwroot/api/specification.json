@@ -1644,15 +1644,23 @@
             "type": "integer",
             "format": "int32"
           },
-          "pictureUri": {
-            "type": "string"
-          },
-          "startsAt": {
-            "type": "number",
-            "format": "decimal"
-          },
           "title": {
             "type": "string"
+          },
+          "imagePath": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ImagePathDto"
+              }
+            ]
+          },
+          "prices": {
+            "type": "array",
+            "items": {
+              "type": "number",
+              "format": "decimal"
+            }
           },
           "sellerUserId": {
             "type": "string"
@@ -1661,6 +1669,15 @@
             "type": "integer",
             "format": "int32",
             "nullable": true
+          }
+        }
+      },
+      "ImagePathDto": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "path": {
+            "type": "string"
           }
         }
       },
@@ -1723,6 +1740,9 @@
           "sellerId": {
             "type": "string"
           },
+          "sellerUserId": {
+            "type": "string"
+          },
           "planId": {
             "type": "integer",
             "format": "int32",
@@ -1730,6 +1750,14 @@
           },
           "isDraft": {
             "type": "boolean"
+          },
+          "imagePath": {
+            "nullable": true,
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/ImagePathDto"
+              }
+            ]
           },
           "tags": {
             "type": "array",

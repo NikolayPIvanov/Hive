@@ -15,6 +15,8 @@ export class ImageUploadComponent implements OnInit {
 
   public dataSource: string | undefined = undefined;
   
+  @Input() defaultImage: string | undefined = undefined;
+  @Input() showUpload: boolean = true;
   @Input() source: string | undefined;
   // bad
   @Input() download!: Observable<FileResponse>;
@@ -24,7 +26,8 @@ export class ImageUploadComponent implements OnInit {
 
   ngOnInit(): void {
     debugger;
-    if (this.source && this.source != this.DEFAULT_IMAGE && this.download) {
+    this.defaultImage = this.defaultImage || this.DEFAULT_IMAGE;
+    if (this.source && this.source != this.defaultImage && this.download) {
       this.download
         .pipe(
           takeUntil(this.unsubscribe),
@@ -33,7 +36,7 @@ export class ImageUploadComponent implements OnInit {
         .subscribe();
     }
     else {
-      this.dataSource = this.DEFAULT_IMAGE;
+      this.dataSource = this.defaultImage;
     }
   }
 
@@ -55,9 +58,10 @@ export class ImageUploadComponent implements OnInit {
   }
 
   private createImageFromBlob(image: Blob) {
-    debugger;
     let reader = new FileReader();
-    reader.addEventListener("load", () => {
+    reader.addEventListener("load", () =>
+    {
+      debugger;
       const base64Image = this.domSanitizer.bypassSecurityTrustUrl(reader.result as string);
       this.dataSource = (base64Image as string)
     }, false);

@@ -5,7 +5,10 @@
             *ngIf="dataSource" 
             [src]="dataSource" 
             fxLayoutAlign="center" 
-            width="100%" height="100%" alt="Image"/>
+            class="image-display"
+            width="100%" 
+            height="100%" 
+            alt="Image"/>
 
       <input 
         #uploader 
@@ -13,7 +16,7 @@
         fxHide="true" 
         type='file' 
         (change)="onFileSelected($event)">
-      <button fxLayoutAlign="center" mat-mini-fab (click)="uploader.click()">
+      <button *ngIf="showUpload" fxLayoutAlign="center" mat-mini-fab (click)="uploader.click()">
             <mat-icon>upload</mat-icon>
       </button>
 </div>

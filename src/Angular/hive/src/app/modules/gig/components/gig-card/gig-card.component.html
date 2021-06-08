@@ -1,1 +1,25 @@
-<p>gig-card works!</p>
+<mat-card fxLayout="column">
+    <mat-card-header>
+        <mat-card-title> {{ gig.title! | limitTo:'10' }} </mat-card-title>
+        <mat-card-subtitle> By {{ profile.firstName }} {{ profile.lastName }} </mat-card-subtitle>
+    </mat-card-header>
+    <app-image-upload
+        fxFlex="10"
+        [showUpload]="false"
+        [defaultImage]="default"
+        [source]="gig.imagePath?.path"
+        [download]="download">
+    </app-image-upload>
+
+    
+    <mat-card-actions fxLayout="column">
+        <div fxLayout="row">
+            <h3 fxFlexAlign="end">Starts at {{ gig.prices![0] || '--' }} </h3>
+        </div>
+        <div *ngIf="isOwner" fxLayout="row">
+            <button mat-icon-button (click)="deleteGig(gig.id!)"><mat-icon>delete</mat-icon></button>
+            <button mat-icon-button><mat-icon>edit</mat-icon></button>
+            <button mat-icon-button (click)="onDetails()"><mat-icon>search</mat-icon></button>
+        </div>
+    </mat-card-actions>
+</mat-card>

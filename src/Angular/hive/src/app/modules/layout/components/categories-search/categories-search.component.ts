@@ -12,6 +12,7 @@ import { CategoriesClient, CategoryDto } from 'src/app/clients/gigs-client';
 })
 export class CategoriesSearchComponent implements OnInit {
   @Input() init: string | null = null;
+  @Input() includeParents: boolean = true;
   @Output() onSelectedCategoryName = new EventEmitter<string>();
 
   autocompleteControl = new FormControl('');

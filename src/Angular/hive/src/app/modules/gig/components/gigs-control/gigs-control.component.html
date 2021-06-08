@@ -1,6 +1,6 @@
 <div fxLayout="column">
-    <div fxLayout="column" class="container">
-        <mat-card *ngIf="profile$ | async; let profile">
+    <div fxLayout="column" class="container" *ngIf="profile$ | async; let profile">
+        <mat-card>
             <mat-card-header>
                 <mat-card-title>{{ displayName(profile) }}</mat-card-title>
                 <mat-card-subtitle>Personal Information</mat-card-subtitle>
@@ -13,26 +13,19 @@
                         </p>
 
                         <p>
-                            <strong> Description: </strong> {{ profile.description }} 
-                        </p>
-
-                        <p>
                             <strong> Education: </strong> {{ profile.education }} 
                         </p>
                     </div>
                     <div fxFlex="30" fxLayout="column">
                         <p>
-                            <strong> Contact Email: </strong> {{ email }} 
+                            <strong> Languages: </strong> {{ profile.languages?.join(',') }} 
                         </p>
 
                         <p>
-                            <strong> Description: </strong> {{ profile.description }} 
-                        </p>
-
-                        <p>
-                            <strong> Education: </strong> {{ profile.education }} 
+                            <strong> Skills: </strong> {{ profile.skills?.join(',') }} 
                         </p>
                     </div>
+                    
                     <div fxFlex="30" fxLayout="column" fxLayoutAlign="end end">
                         <div fxLayout="row">
                             <a mat-button [routerLink]="['/billing/overview']">
@@ -56,31 +49,18 @@
         <h2>My Gigs</h2>
 
         <div
+            *ngIf="(gigs$ | async); let list"
             fxLayout="row wrap"
             fxLayoutAlign="start center"
-            fxLayoutGap="3%"
-            >
+            fxLayoutGap="3%">
 
-            <mat-card *ngFor="let item of elements" fxFlex="22" (click)="onInspect()" class="gig-card">
-            <mat-card-header>
-                <div mat-card-avatar class="example-header-image"></div>
-                <mat-card-title>Shiba Inu</mat-card-title>
-                <mat-card-subtitle>Dog Breed ( By seller )</mat-card-subtitle>
-            </mat-card-header>
-            <img mat-card-image src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu">
-            <mat-card-content>
-                <p>
-                {{ 'The Shiba Inu is the smallest of the six original and distinct spitz breeds of dog from Japan.
-                A small, agile dog that copes very well with mountainous terrain, the Shiba Inu was originally
-                bred for hunting.' | limitTo:'100'
-                }}
-                </p>
-            </mat-card-content>
-            <mat-card-actions fxLayout="row">
-                <h3 fxFlexAlign="end">Starts at 33$</h3>
-            </mat-card-actions>
-            </mat-card>
-
+            <app-gig-card 
+                *ngFor="let gig of list.items" 
+                [gig]="gig" 
+                [profile]="profile"
+                (onDeleted)="reload($event)"
+                fxFlex="22"></app-gig-card>
+            
         </div>
 
         <mat-paginator [length]="100"

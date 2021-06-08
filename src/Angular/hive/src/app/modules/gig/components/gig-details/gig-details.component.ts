@@ -3,7 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Observer, of, throwError } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { GigDto } from 'src/app/clients/gigs-client';
+import { FileResponse, GigDto, GigsClient } from 'src/app/clients/gigs-client';
 import { UserProfileDto } from 'src/app/clients/profile-client';
 import { ProfileService } from 'src/app/modules/account/services/profile.service';
 import { GigsService } from '../../services/gigs.service';
@@ -20,6 +20,9 @@ export interface ExampleTab {
   styleUrls: ['./gig-details.component.scss']
 })
 export class GigDetailsComponent implements OnInit {
+  public default = '/assets/no_image.png'
+  public download!: Observable<FileResponse>;
+
   public gig$!: Observable<GigDto>;
   public profile$!: Observable<UserProfileDto | undefined>;
   public asyncTabs: Observable<ExampleTab[]>;
@@ -30,6 +33,7 @@ export class GigDetailsComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private router: Router,
     private gigsService: GigsService,
+    private gigsClient: GigsClient,
     private userProfileService: ProfileService,
     public dialog: MatDialog
   ) {
@@ -48,13 +52,11 @@ export class GigDetailsComponent implements OnInit {
     const idParam = this.activatedRoute.snapshot.paramMap.get('id');
     if (idParam == null)
       throwError('Empty id parameter');
-    
     const id = +idParam!;
-    
-    this.profile$ = this.userProfileService.getProfile();
 
-    this.gig$ = of(GigDto.fromJS({}))
-      // this.gigsService.getGigDetailsById(id)
+    this.profile$ = this.userProfileService.getProfile();
+    this.gig$ = this.gigsService.getGigDetailsById(id)
+    this.download = this.gigsClient.getAvatar(id);
   }
 
   checkout() {
