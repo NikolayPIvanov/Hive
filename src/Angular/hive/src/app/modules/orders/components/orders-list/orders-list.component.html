@@ -1,7 +1,7 @@
 <ng-container *ngIf="orders$ | async; let list">
-    <div class="mat-elevation-z8" fxLayout="column">
+    <div class="mat-elevation-z8" fxLayout="column" class="container">
         <table mat-table [dataSource]="dataSource" multiTemplateDataRows fxFlex>
-    
+            
             <!-- Order Number Column -->
             <ng-container matColumnDef="orderNumber">
                 <th mat-header-cell *matHeaderCellDef> No. </th>
@@ -69,11 +69,11 @@
                         <button 
                             [disabled]="!canProcess(element.orderStates)"
                             mat-icon-button 
-                            (click)="processSeller(element.orderNumber)"><mat-icon>done</mat-icon></button>
+                            (click)="updateStatusAsSeller(element.orderNumber)"><mat-icon>done</mat-icon></button>
                         <button 
                             [disabled]="!canProcess(element.orderStates)"
                             mat-icon-button 
-                            (click)="processSeller(element.orderNumber, false)"><mat-icon>highlight_off</mat-icon></button>
+                            (click)="updateStatusAsSeller(element.orderNumber, false)"><mat-icon>highlight_off</mat-icon></button>
                         <button 
                             [disabled]="!canSetInProgress(element.orderStates)"
                             mat-icon-button 
@@ -89,10 +89,10 @@
                     <ng-template #buyer>
                         <button mat-icon-button 
                             [disabled]="!canProcess(element.orderStates)"
-                            (click)="processSeller(element.orderNumber)"><mat-icon>cancel</mat-icon></button>
+                            (click)="updateStatusAsSeller(element.orderNumber)"><mat-icon>cancel</mat-icon></button>
                         </ng-template>
                     
-                    <button mat-icon-button><mat-icon>info</mat-icon></button>
+                    <button mat-icon-button (click)="openDialog(element)"><mat-icon>info</mat-icon></button>
                 </td>
             </ng-container>
         

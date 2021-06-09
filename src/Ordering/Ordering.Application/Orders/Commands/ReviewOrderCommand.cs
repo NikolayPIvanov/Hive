@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using BuildingBlocks.Core.Interfaces;
 using FluentValidation;
 using FluentValidation.Results;
 using Hive.Common.Core.Exceptions;
@@ -9,6 +10,7 @@ using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Ordering.Application.Interfaces;
+using Ordering.Contracts.IntegrationEvents;
 using Ordering.Domain.Entities;
 using Ordering.Domain.Enums;
 using Ordering.Domain.ValueObjects;
@@ -47,11 +49,13 @@ namespace Ordering.Application.Orders.Commands
     public class ReviewOrderCommandHandler : IRequestHandler<ReviewOrderCommand>
     {
         private readonly IOrderingContext _context;
+        private readonly IIntegrationEventPublisher _publisher;
         private readonly ILogger<ReviewOrderCommandHandler> _logger;
 
-        public ReviewOrderCommandHandler(IOrderingContext context, ILogger<ReviewOrderCommandHandler> logger)
+        public ReviewOrderCommandHandler(IOrderingContext context, IIntegrationEventPublisher publisher, ILogger<ReviewOrderCommandHandler> logger)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
+            _publisher = publisher ?? throw new ArgumentNullException(nameof(publisher));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
@@ -78,6 +82,11 @@ namespace Ordering.Application.Orders.Commands
             order.OrderStates.Add(state);
 
             await _context.SaveChangesAsync(cancellationToken);
+
+            if (request.OrderState == OrderState.Declined)
+            {
+                await _publisher.PublishAsync(new OrderDeclinedIntegrationEvent(order.OrderNumber, order.SellerUserId), cancellationToken);
+            }
             return Unit.Value;
         }
         

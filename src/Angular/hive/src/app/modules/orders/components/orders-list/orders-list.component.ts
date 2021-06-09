@@ -2,6 +2,7 @@ import { trigger, state, style, transition, animate } from '@angular/animations'
 import { HttpClient, HttpEventType } from '@angular/common/http';
 import { ThrowStmt } from '@angular/compiler';
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { Observable, Subject } from 'rxjs';
@@ -9,6 +10,7 @@ import { takeUntil, tap } from 'rxjs/operators';
 import { OrderDto, OrdersClient, OrderState, PaginatedListOfOrderDto, ReviewOrderCommand, SetInProgressOrderCommand, StateDto } from 'src/app/clients/ordering-client';
 import { NotificationService } from 'src/app/modules/core/services/notification.service';
 import { AuthService } from 'src/app/modules/layout/services/auth.service';
+import { OrderDetailsComponent } from '../order-details/order-details.component';
 
 @Component({
   selector: 'app-orders-list',
@@ -24,23 +26,28 @@ import { AuthService } from 'src/app/modules/layout/services/auth.service';
 })
 export class OrdersListComponent implements OnInit, AfterViewInit {
   private unsubscribe = new Subject();
+  private orders!: PaginatedListOfOrderDto;
+
+  // Pagination
   pageSize = 20;
   pageIndex = 1;
-
-  displayedColumns: string[] = [
-    'orderNumber', 'orderedAt', 'isClosed', 'orderStates',
-    'unitPrice', 'quantity', 'totalPrice', 'actions'];
-  dataSource: MatTableDataSource<OrderDto> = new MatTableDataSource<OrderDto>([]);;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
+  // Table
+  displayedColumns: string[] = [
+    'orderNumber', 'orderedAt',  'orderStates',
+    'unitPrice', 'quantity', 'totalPrice', 'actions'];
+  dataSource: MatTableDataSource<OrderDto> = new MatTableDataSource<OrderDto>([]);;
+
+  // Data
   orders$!: Observable<PaginatedListOfOrderDto>
-  private orders!: PaginatedListOfOrderDto;
   isSeller: boolean = false;
 
   constructor(
     private ordersClient: OrdersClient,
     private authService: AuthService,
     private notificationService: NotificationService,
+    public dialog: MatDialog,
     private http: HttpClient) { }
 
   ngOnInit(): void {
@@ -55,7 +62,6 @@ export class OrdersListComponent implements OnInit, AfterViewInit {
     
     const user = this.authService.user;
     const roles = user?.profile.role;
-    
     this.isSeller = (roles as string[]).includes('Seller');
   }
 
@@ -63,7 +69,18 @@ export class OrdersListComponent implements OnInit, AfterViewInit {
     this.dataSource.paginator = this.paginator;
   }
 
-  processSeller(orderNumber: string, accept: boolean = true) {
+  openDialog(order: OrderDto): void {
+    const dialogRef = this.dialog.open(OrderDetailsComponent, {
+      width: '50%',
+      data: order
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      this.setData();
+    });
+  }
+
+  updateStatusAsSeller(orderNumber: string, accept: boolean = true) {
     if (this.orders) {
       const state = accept ? OrderState.Accepted : OrderState.Declined;
       const message = accept ? 'Accepted by seller' : 'Declined by seller'
@@ -98,24 +115,28 @@ export class OrdersListComponent implements OnInit, AfterViewInit {
     let fileToUpload = <File>files[0];
     const formData = new FormData();
     formData.append('file', fileToUpload, fileToUpload.name);
-
  
     this.http.post(`https://localhost:5041/api/orders/${orderNumber}/resolutions`, formData)
       .pipe(
         takeUntil(this.unsubscribe),
         tap({ next: (x) => this.notificationService.openSnackBar('Successfully uploaded resolution to the order') })
       )
-      .subscribe();
+      .subscribe(x => this.setData());
   }
 
   latestState(states: StateDto[]) {
-    const sorted = states.sort((a, b) => b.created!.getTime() - a.created!.getTime())[0]
-    return sorted.orderState;
+    const values = states.map(x => x.orderState);
+    const invalidStateIndex = values.indexOf(OrderState.Invalid);
+    if (invalidStateIndex > -1) {
+      return values[invalidStateIndex];
+    }
+
+    const latest = states.sort((a, b) => b.created!.getTime() - a.created!.getTime())[0]
+    return latest.orderState;
   }
 
   canProcess(states: StateDto[]) {
-    const validState = OrderState.UserBalanceValid
-    return this.canChangeStateTo(states, validState);
+    return this.canChangeStateTo(states, OrderState.Accepted)
   }
 
   canSetInProgress(states: StateDto[]) {
@@ -145,7 +166,20 @@ export class OrdersListComponent implements OnInit, AfterViewInit {
     order?.orderStates?.push(new StateDto(
       { orderState: state, reason: '', created: new Date() }));
     
+    if (state == OrderState.Completed) {
+      order.isClosed = true;
+    }
+    
     this.orders.items?.splice(index!, 1);
     this.orders.items?.push(order);
+  }
+
+  private setData() {
+    this.ordersClient.getMyOrders(this.pageIndex, this.pageSize)
+        .pipe(tap({
+          next: (orders) => {
+            this.dataSource.data = orders.items!;
+          }
+      })).subscribe();
   }
 }

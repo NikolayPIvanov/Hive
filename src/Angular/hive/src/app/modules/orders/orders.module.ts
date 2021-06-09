@@ -8,6 +8,8 @@ import { NgxSpinnerModule } from 'ngx-spinner';
 import { CheckoutSummaryComponent } from './components/checkout-summary/checkout-summary.component';
 import { OrderPlacedComponent } from './components/order-placed/order-placed.component';
 import { OrdersListComponent } from './components/orders-list/orders-list.component';
+import { OrderDetailsComponent } from './components/order-details/order-details.component';
+import { AuthService } from '../layout/services/auth.service';
 
 
 
@@ -17,7 +19,8 @@ import { OrdersListComponent } from './components/orders-list/orders-list.compon
     OrderSummaryComponent,
     CheckoutSummaryComponent,
     OrderPlacedComponent,
-    OrdersListComponent
+    OrdersListComponent,
+    OrderDetailsComponent
   ],
   imports: [
     CommonModule,
@@ -27,6 +30,7 @@ import { OrdersListComponent } from './components/orders-list/orders-list.compon
     OrdersRoutingModule,
 
     NgxSpinnerModule
-  ]
+  ],
+  providers: [AuthService]
 })
 export class OrdersModule { }

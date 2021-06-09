@@ -87,16 +87,16 @@ namespace Ordering.Management.Controllers
         public async Task<IActionResult> GetResolution([FromRoute] Guid orderNumber, int resolutionId) =>
             Ok(await Mediator.Send(new GetResolutionByIdQuery(resolutionId)));
         
-        [HttpGet("{orderNumber:guid}/resolutions/{resolutionId:int}/file")]
-        public async Task<IActionResult> DownloadResolutionFile([FromRoute] int resolutionId)
+        [HttpGet("{orderNumber:guid}/resolutions/{version:guid}/file")]
+        public async Task<IActionResult> DownloadResolutionFile([FromRoute] Guid version)
         {
-            var file = await Mediator.Send(new DownloadResolutionFileQuery(resolutionId));
-            return File(file.Source, file.ContentType, file.FileName);
+            var fileResult = await Mediator.Send(new DownloadResolutionFileQuery(version));
+            return fileResult;
         }
 
-        [HttpGet("{orderNumber:guid}/resolutions")]
-        public async Task<IActionResult> GetResolutions([FromRoute] Guid orderNumber) =>
-            Ok(await Mediator.Send(new GetResolutionsQuery(orderNumber)));
+        // [HttpGet("{orderNumber:guid}/resolutions")]
+        // public async Task<IActionResult> GetResolutions([FromRoute] Guid orderNumber) =>
+        //     Ok(await Mediator.Send(new GetResolutionsQuery(orderNumber)));
         
         [HttpPost("{orderNumber:guid}/resolutions")]
         [Authorize(Roles = "Seller")]
@@ -112,11 +112,16 @@ namespace Ordering.Management.Controllers
                 new { orderNumber = orderNumber.ToString(), resolutionId });
         }
         
-        [HttpPut("{orderNumber:guid}/resolutions/{resolutionId:int}")]
+        [HttpPut("{gigId:guid}/resolutions/{version:guid}")]
         [Authorize(Roles = "Buyer")]
-        public async Task<ActionResult<Guid>> AcceptResolution([FromRoute] int resolutionId)
+        [Produces(MediaTypeNames.Application.Json)]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [SwaggerResponse(HttpStatusCode.NoContent, typeof(ActionResult), Description = "Successful operation")]
+        [SwaggerResponse(HttpStatusCode.BadRequest, typeof(BadRequestObjectResult), Description = "Bad Request operation")]
+        [SwaggerResponse(HttpStatusCode.NotFound, typeof(NotFoundObjectResult), Description = "Not Found operation")]
+        public async Task<ActionResult> AcceptResolution([FromRoute] Guid version)
         {
-            await Mediator.Send(new AcceptResolutionCommand(resolutionId));
+            await Mediator.Send(new AcceptResolutionCommand(version));
             return NoContent();
         }
     }

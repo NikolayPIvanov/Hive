@@ -476,6 +476,10 @@ export interface IGigsClient {
      */
     delete(id: number): Observable<FileResponse>;
     /**
+     * @return Successful operation
+     */
+    getGigByPackageId(packageId: number): Observable<GigDto>;
+    /**
      * @param pageNumber (optional) 
      * @param pageSize (optional) 
      * @param searchKey (optional) 
@@ -754,6 +758,67 @@ export class GigsClient implements IGigsClient {
             }));
         }
         return _observableOf<FileResponse>(<any>null);
+    }
+
+    /**
+     * @return Successful operation
+     */
+    getGigByPackageId(packageId: number): Observable<GigDto> {
+        let url_ = this.baseUrl + "/api/Gigs/packages/{packageId}";
+        if (packageId === undefined || packageId === null)
+            throw new Error("The parameter 'packageId' must be defined.");
+        url_ = url_.replace("{packageId}", encodeURIComponent("" + packageId));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetGigByPackageId(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetGigByPackageId(<any>response_);
+                } catch (e) {
+                    return <Observable<GigDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<GigDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetGigByPackageId(response: HttpResponseBase): Observable<GigDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = GigDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result404 = resultData404 !== undefined ? resultData404 : <any>null;
+            return throwException("Anomaly not found", status, _responseText, _headers, result404);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<GigDto>(<any>null);
     }
 
     /**

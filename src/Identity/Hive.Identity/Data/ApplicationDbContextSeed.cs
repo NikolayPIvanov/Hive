@@ -15,7 +15,7 @@ namespace Hive.Identity.Data
                                                       RoleManager<IdentityRole> roleManager,
                                                       ApplicationDbContext context, IIdentityDispatcher dispatcher, IRedisCacheClient cacheClient)
         {
-            await SeedOfType(new [] {IdentityType.Admin, IdentityType.Seller, IdentityType.Investor}, "admin@gmail.com", userManager, roleManager, context, dispatcher, cacheClient);
+            await SeedOfType(new [] {IdentityType.Admin, IdentityType.Seller, IdentityType.Investor, IdentityType.Buyer}, "admin@gmail.com", userManager, roleManager, context, dispatcher, cacheClient);
             await SeedOfType(new [] {IdentityType.Buyer}, "buyer@gmail.com", userManager, roleManager, context, dispatcher,cacheClient);
             await SeedOfType(new [] {IdentityType.Seller}, "seller@gmail.com", userManager, roleManager, context, dispatcher,cacheClient);
             await SeedOfType(new [] {IdentityType.Investor}, "investor@gmail.com", userManager, roleManager, context, dispatcher,cacheClient);

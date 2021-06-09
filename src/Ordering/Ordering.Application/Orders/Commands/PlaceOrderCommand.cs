@@ -66,7 +66,8 @@ namespace Ordering.Application.Orders.Commands
             }
 
             var totalPrice = request.Quantity * request.UnitPrice;
-            var order = new Order(request.UnitPrice, request.Quantity, totalPrice, request.Requirements, request.PackageId, buyerId.Id, request.SellerUserId);
+            var tax = 3 * totalPrice / 100;
+            var order = new Order(request.UnitPrice, request.Quantity, totalPrice + tax, request.Requirements, request.PackageId, buyerId.Id, request.SellerUserId);
             order.AddDomainEvent(new OrderPlacedEvent(order, buyerId.UserId));
 
             _context.Orders.Add(order);

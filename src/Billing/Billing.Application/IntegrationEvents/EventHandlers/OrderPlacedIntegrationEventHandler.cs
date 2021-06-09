@@ -43,14 +43,6 @@ namespace Billing.Application.IntegrationEvents.EventHandlers
                 await _publisher.PublishAsync(integrationEvent);
                 return;
             }
-            //
-            // if (wallet == null)
-            // {
-            //     _logger.LogWarning("Account holder with {@UserId} has not set up a default payment method.", @event.BuyerUserId);
-            //     integrationEvent = integrationEvent with {Reason = "A default payment method has not been found."};
-            //     await _publisher.PublishAsync(integrationEvent);
-            //     return;
-            // }
             
             if (wallet.Balance < @event.UnitPrice || wallet.Balance < 0.0m)
             {

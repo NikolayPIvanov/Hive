@@ -528,6 +528,54 @@
         ]
       }
     },
+    "/api/Gigs/packages/{packageId}": {
+      "get": {
+        "tags": [
+          "Gigs"
+        ],
+        "operationId": "Gigs_GetGigByPackageId",
+        "parameters": [
+          {
+            "name": "packageId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful operation",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GigDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Anomaly not found",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": []
+          }
+        ]
+      }
+    },
     "/api/Gigs": {
       "get": {
         "tags": [

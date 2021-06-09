@@ -381,58 +381,9 @@
             ]
           }
         ]
-      },
-      "put": {
-        "tags": [
-          "Orders"
-        ],
-        "operationId": "Orders_AcceptResolution",
-        "parameters": [
-          {
-            "name": "resolutionId",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "x-position": 1
-          },
-          {
-            "name": "orderNumber",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            },
-            "x-position": 2
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "string",
-                  "format": "guid"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT": [
-              "Seller",
-              " Buyer",
-              "Buyer"
-            ]
-          }
-        ]
       }
     },
-    "/api/Orders/{orderNumber}/resolutions/{resolutionId}/file": {
+    "/api/Orders/{orderNumber}/resolutions/{version}/file": {
       "get": {
         "tags": [
           "Orders"
@@ -440,12 +391,12 @@
         "operationId": "Orders_DownloadResolutionFile",
         "parameters": [
           {
-            "name": "resolutionId",
+            "name": "version",
             "in": "path",
             "required": true,
             "schema": {
-              "type": "integer",
-              "format": "int32"
+              "type": "string",
+              "format": "guid"
             },
             "x-position": 1
           },
@@ -483,45 +434,6 @@
       }
     },
     "/api/Orders/{orderNumber}/resolutions": {
-      "get": {
-        "tags": [
-          "Orders"
-        ],
-        "operationId": "Orders_GetResolutions",
-        "parameters": [
-          {
-            "name": "orderNumber",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string",
-              "format": "guid"
-            },
-            "x-position": 1
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "",
-            "content": {
-              "application/octet-stream": {
-                "schema": {
-                  "type": "string",
-                  "format": "binary"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT": [
-              "Seller",
-              " Buyer"
-            ]
-          }
-        ]
-      },
       "post": {
         "tags": [
           "Orders"
@@ -595,6 +507,79 @@
             "JWT": [
               "Seller",
               " Buyer"
+            ]
+          }
+        ]
+      }
+    },
+    "/api/Orders/{gigId}/resolutions/{version}": {
+      "put": {
+        "tags": [
+          "Orders"
+        ],
+        "operationId": "Orders_AcceptResolution",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "format": "guid"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "gigId",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful operation",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request operation",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found operation",
+            "content": {
+              "application/octet-stream": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "JWT": [
+              "Seller",
+              " Buyer",
+              "Buyer"
             ]
           }
         ]
