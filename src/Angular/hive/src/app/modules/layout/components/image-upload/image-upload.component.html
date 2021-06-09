@@ -16,7 +16,7 @@
         fxHide="true" 
         type='file' 
         (change)="onFileSelected($event)">
-      <button *ngIf="showUpload" fxLayoutAlign="center" mat-mini-fab (click)="uploader.click()">
+      <button *ngIf="showUpload" fxLayoutAlign="center" type="button" mat-mini-fab (click)="uploader.click()">
             <mat-icon>upload</mat-icon>
       </button>
 </div>

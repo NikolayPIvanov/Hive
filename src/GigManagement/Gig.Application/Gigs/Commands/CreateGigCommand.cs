@@ -1,14 +1,18 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 using DotNetCore.CAP;
 using FluentValidation;
 using Hive.Common.Core.Exceptions;
 using Hive.Common.Core.Interfaces;
+using Hive.Gig.Application.GigPackages.Commands;
 using Hive.Gig.Application.Interfaces;
 using Hive.Gig.Contracts.IntegrationEvents;
+using Hive.Gig.Domain.Enums;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,8 +22,17 @@ namespace Hive.Gig.Application.Gigs.Commands
         
     public record QuestionModel(string Title, string Answer);
     
-    public record CreateGigCommand(string Title, string Description, int CategoryId, int? PlanId,
-        ICollection<string> Tags, ICollection<QuestionModel> Questions) : IRequest<int>;
+    public record PackageModel(string Title, string Description, decimal Price, PackageTier PackageTier,
+        double DeliveryTime, DeliveryFrequency DeliveryFrequency, int? Revisions, RevisionType RevisionType, int GigId);
+    
+    public record CreateGigCommand(
+        string Title, 
+        string Description, 
+        int CategoryId, 
+        int? PlanId,
+        ICollection<string> Tags, 
+        ICollection<QuestionModel> Questions,
+        ICollection<PackageModel> Packages) : IRequest<int>;
     
     public class QuestionValidator : AbstractValidator<QuestionModel>
     {
@@ -34,6 +47,53 @@ namespace Hive.Gig.Application.Gigs.Commands
                 .MaximumLength(1000).WithMessage("Answer length must not be above 1000 characters.")
                 .MinimumLength(3).WithMessage("Answer length must not be below 3 characters.")
                 .NotEmpty().WithMessage("Answer should be provided.");
+        }
+    }
+    
+    public class PackageModelValidator : AbstractValidator<PackageModel>
+    {
+        public PackageModelValidator(IGigManagementDbContext context)
+        {
+            RuleFor(x => x)
+                .MustAsync(async (command, token) =>
+                {
+                    var uniqueNameInGig = await context.Packages.Where(x => x.GigId == command.GigId)
+                        .AllAsync(p => p.Title != command.Title, token);
+                    
+                    var uniqueTier = await context.Packages.Where(x => x.GigId == command.GigId)
+                        .AllAsync(p => p.PackageTier != command.PackageTier, token);
+    
+                    return uniqueNameInGig && uniqueTier;
+                }).WithMessage("Package with selected tier already is present on the gig or the gig does not exist.");
+            
+            
+            RuleFor(x => x.Title)
+                .MaximumLength(50).WithMessage("{PropertyName} cannot have more than {MaxLength} characters.")
+                .MinimumLength(3).WithMessage("{PropertyName} cannot have less than {MinLength} characters.")
+                .NotEmpty().WithMessage("A {PropertyName} must be provided");
+            
+            RuleFor(x => x.Description)
+                .MaximumLength(200).WithMessage("{PropertyName} cannot have more than {MaxLength} characters.")
+                .MinimumLength(10).WithMessage("{PropertyName} cannot have less than {MinLength} characters.")
+                .NotEmpty().WithMessage("A {PropertyName} must be provided");
+    
+            RuleFor(x => x.Price)
+                .NotEmpty().WithMessage("A {PropertyName} must be provided")
+                .GreaterThan(0.0m).WithMessage("{PropertyName} cannot be below {ComparisonValue}.");
+            
+            RuleFor(x => x.DeliveryTime)
+                .NotNull().WithMessage("A {PropertyName} must be provided")
+                .GreaterThanOrEqualTo(1.0d).WithMessage("{PropertyName} cannot be below {ComparisonValue}.");
+            
+            RuleFor(x => x.Revisions)
+                .NotNull().WithMessage("A {PropertyName} must be provided")
+                .GreaterThanOrEqualTo(1).WithMessage("{PropertyName} cannot be below {ComparisonValue}.");
+            
+            RuleFor(x => x.Revisions)
+                .NotNull()
+                .When(x => x.RevisionType == RevisionType.Numeric).WithMessage("A {PropertyName} must be provided")
+                .GreaterThanOrEqualTo(1).When(x => x.Revisions.HasValue)
+                .WithMessage("{PropertyName} cannot be below {ComparisonValue}.");
         }
     }
     
@@ -64,6 +124,9 @@ namespace Hive.Gig.Application.Gigs.Commands
             
             RuleForEach(x => x.Questions)
                 .SetValidator(_ => new QuestionValidator()).WithMessage("Question is not in correct format");
+            
+            RuleForEach(x => x.Packages)
+                .SetValidator(_ => new PackageModelValidator(dbContext)).WithMessage("Package is not in correct format");
 
             RuleFor(x => x)
                 .MustAsync(async (_, token) =>
@@ -75,12 +138,14 @@ namespace Hive.Gig.Application.Gigs.Commands
     public class CreateGigCommandHandler : IRequestHandler<CreateGigCommand, int>
     {
         private readonly IGigManagementDbContext _dbContext;
+        private readonly IMapper _mapper;
         private readonly ICurrentUserService _currentUserService;
         private readonly ICapPublisher _capPublisher;
 
-        public CreateGigCommandHandler(IGigManagementDbContext dbContext, ICurrentUserService currentUserService, ICapPublisher capPublisher)
+        public CreateGigCommandHandler(IGigManagementDbContext dbContext, IMapper mapper, ICurrentUserService currentUserService, ICapPublisher capPublisher)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
             _capPublisher = capPublisher ?? throw new ArgumentNullException(nameof(capPublisher));
         }
@@ -97,7 +162,9 @@ namespace Hive.Gig.Application.Gigs.Commands
             
             var tags = (request.Tags).Select(t => new Tag(t)).ToHashSet();
             var questions = request.Questions.Select(q => new Question(q.Title, q.Answer)).ToHashSet();
-            var gig = new Gig(request.Title, request.Description, sellerId.Id, request.CategoryId, tags, questions, request.PlanId);
+            var packages = _mapper.Map<ICollection<Package>>(request.Packages);
+            
+            var gig = new Gig(request.Title, request.Description, sellerId.Id, request.CategoryId, tags, questions, packages, request.PlanId);
 
             _dbContext.Gigs.Add(gig);
             await _dbContext.SaveChangesAsync(cancellationToken);

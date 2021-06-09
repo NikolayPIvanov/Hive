@@ -16,16 +16,33 @@ export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 export interface IOrdersClient {
     getOrder(orderNumber: string): Observable<OrderDto>;
-    getMyOrders(): Observable<OrderDto[]>;
+    /**
+     * @param pageNumber (optional) 
+     * @param pageSize (optional) 
+     * @return Successful operation
+     */
+    getMyOrders(pageNumber: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfOrderDto>;
+    /**
+     * @param command (optional) 
+     * @return Successful operation
+     */
     placeOrder(command: PlaceOrderCommand | null | undefined): Observable<string>;
     cancelOrder(orderNumber: string): Observable<FileResponse>;
+    /**
+     * @param command (optional) 
+     * @return Successful operation
+     */
     reviewOrder(orderNumber: string, command: ReviewOrderCommand | null | undefined): Observable<FileResponse>;
-    setInProgress(orderNumber: string, command: SetInProgressOrderCommand | null | undefined): Observable<number>;
+    /**
+     * @param command (optional) 
+     * @return Successful operation
+     */
+    setInProgress(orderNumber: string, command: SetInProgressOrderCommand | null | undefined): Observable<FileResponse>;
     getResolution(orderNumber: string, resolutionId: number): Observable<FileResponse>;
+    acceptResolution(resolutionId: number, orderNumber: string): Observable<string>;
     downloadResolutionFile(resolutionId: number, orderNumber: string): Observable<FileResponse>;
     getResolutions(orderNumber: string): Observable<FileResponse>;
-    submitResolution(orderNumber: string, version: string | null | undefined, file: FileParameter | null | undefined): Observable<string>;
-    acceptResolution(orderNumber: string, resolutionId: number): Observable<string>;
+    submitResolution(orderNumber: string, contentType: string | null | undefined, contentDisposition: string | null | undefined, headers: IHeaderDictionary | null | undefined, length: number | undefined, name: string | null | undefined, fileName: string | null | undefined): Observable<string>;
 }
 
 @Injectable({
@@ -92,8 +109,21 @@ export class OrdersClient implements IOrdersClient {
         return _observableOf<OrderDto>(<any>null);
     }
 
-    getMyOrders(): Observable<OrderDto[]> {
-        let url_ = this.baseUrl + "/api/Orders/my";
+    /**
+     * @param pageNumber (optional) 
+     * @param pageSize (optional) 
+     * @return Successful operation
+     */
+    getMyOrders(pageNumber: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfOrderDto> {
+        let url_ = this.baseUrl + "/api/Orders/my?";
+        if (pageNumber === null)
+            throw new Error("The parameter 'pageNumber' cannot be null.");
+        else if (pageNumber !== undefined)
+            url_ += "pageNumber=" + encodeURIComponent("" + pageNumber) + "&";
+        if (pageSize === null)
+            throw new Error("The parameter 'pageSize' cannot be null.");
+        else if (pageSize !== undefined)
+            url_ += "pageSize=" + encodeURIComponent("" + pageSize) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -111,14 +141,14 @@ export class OrdersClient implements IOrdersClient {
                 try {
                     return this.processGetMyOrders(<any>response_);
                 } catch (e) {
-                    return <Observable<OrderDto[]>><any>_observableThrow(e);
+                    return <Observable<PaginatedListOfOrderDto>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<OrderDto[]>><any>_observableThrow(response_);
+                return <Observable<PaginatedListOfOrderDto>><any>_observableThrow(response_);
         }));
     }
 
-    protected processGetMyOrders(response: HttpResponseBase): Observable<OrderDto[]> {
+    protected processGetMyOrders(response: HttpResponseBase): Observable<PaginatedListOfOrderDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -129,11 +159,7 @@ export class OrdersClient implements IOrdersClient {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(OrderDto.fromJS(item));
-            }
+            result200 = PaginatedListOfOrderDto.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -141,9 +167,13 @@ export class OrdersClient implements IOrdersClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<OrderDto[]>(<any>null);
+        return _observableOf<PaginatedListOfOrderDto>(<any>null);
     }
 
+    /**
+     * @param command (optional) 
+     * @return Successful operation
+     */
     placeOrder(command: PlaceOrderCommand | null | undefined): Observable<string> {
         let url_ = this.baseUrl + "/api/Orders";
         url_ = url_.replace(/[?&]$/, "");
@@ -181,12 +211,19 @@ export class OrdersClient implements IOrdersClient {
             (<any>response).error instanceof Blob ? (<any>response).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
+        if (status === 201) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = resultData200 !== undefined ? resultData200 : <any>null;
-            return _observableOf(result200);
+            let result201: any = null;
+            let resultData201 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result201 = resultData201 !== undefined ? resultData201 : <any>null;
+            return _observableOf(result201);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = resultData400 !== undefined ? resultData400 : <any>null;
+            return throwException("Bad Request operation", status, _responseText, _headers, result400);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
@@ -245,6 +282,10 @@ export class OrdersClient implements IOrdersClient {
         return _observableOf<FileResponse>(<any>null);
     }
 
+    /**
+     * @param command (optional) 
+     * @return Successful operation
+     */
     reviewOrder(orderNumber: string, command: ReviewOrderCommand | null | undefined): Observable<FileResponse> {
         let url_ = this.baseUrl + "/api/Orders/{orderNumber}/review";
         if (orderNumber === undefined || orderNumber === null)
@@ -285,11 +326,20 @@ export class OrdersClient implements IOrdersClient {
             (<any>response).error instanceof Blob ? (<any>response).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200 || status === 206) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            return _observableOf({ fileName: fileName, data: <any>responseBlob, status: status, headers: _headers });
+        if (status === 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result204: any = null;
+            let resultData204 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result204 = resultData204 !== undefined ? resultData204 : <any>null;
+            return _observableOf(result204);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = resultData400 !== undefined ? resultData400 : <any>null;
+            return throwException("Bad Request operation", status, _responseText, _headers, result400);
+            }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
@@ -298,7 +348,11 @@ export class OrdersClient implements IOrdersClient {
         return _observableOf<FileResponse>(<any>null);
     }
 
-    setInProgress(orderNumber: string, command: SetInProgressOrderCommand | null | undefined): Observable<number> {
+    /**
+     * @param command (optional) 
+     * @return Successful operation
+     */
+    setInProgress(orderNumber: string, command: SetInProgressOrderCommand | null | undefined): Observable<FileResponse> {
         let url_ = this.baseUrl + "/api/Orders/{orderNumber}/progress";
         if (orderNumber === undefined || orderNumber === null)
             throw new Error("The parameter 'orderNumber' must be defined.");
@@ -313,7 +367,7 @@ export class OrdersClient implements IOrdersClient {
             responseType: "blob",
             headers: new HttpHeaders({
                 "Content-Type": "application/json",
-                "Accept": "application/json"
+                "Accept": "application/octet-stream"
             })
         };
 
@@ -324,33 +378,40 @@ export class OrdersClient implements IOrdersClient {
                 try {
                     return this.processSetInProgress(<any>response_);
                 } catch (e) {
-                    return <Observable<number>><any>_observableThrow(e);
+                    return <Observable<FileResponse>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<number>><any>_observableThrow(response_);
+                return <Observable<FileResponse>><any>_observableThrow(response_);
         }));
     }
 
-    protected processSetInProgress(response: HttpResponseBase): Observable<number> {
+    protected processSetInProgress(response: HttpResponseBase): Observable<FileResponse> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
             (<any>response).error instanceof Blob ? (<any>response).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
+        if (status === 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = resultData200 !== undefined ? resultData200 : <any>null;
-            return _observableOf(result200);
+            let result204: any = null;
+            let resultData204 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result204 = resultData204 !== undefined ? resultData204 : <any>null;
+            return _observableOf(result204);
+            }));
+        } else if (status === 400) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result400: any = null;
+            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result400 = resultData400 !== undefined ? resultData400 : <any>null;
+            return throwException("Bad Request operation", status, _responseText, _headers, result400);
             }));
         } else if (status !== 200 && status !== 204) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<number>(<any>null);
+        return _observableOf<FileResponse>(<any>null);
     }
 
     getResolution(orderNumber: string, resolutionId: number): Observable<FileResponse> {
@@ -403,6 +464,60 @@ export class OrdersClient implements IOrdersClient {
             }));
         }
         return _observableOf<FileResponse>(<any>null);
+    }
+
+    acceptResolution(resolutionId: number, orderNumber: string): Observable<string> {
+        let url_ = this.baseUrl + "/api/Orders/{orderNumber}/resolutions/{resolutionId}";
+        if (resolutionId === undefined || resolutionId === null)
+            throw new Error("The parameter 'resolutionId' must be defined.");
+        url_ = url_.replace("{resolutionId}", encodeURIComponent("" + resolutionId));
+        if (orderNumber === undefined || orderNumber === null)
+            throw new Error("The parameter 'orderNumber' must be defined.");
+        url_ = url_.replace("{orderNumber}", encodeURIComponent("" + orderNumber));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processAcceptResolution(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processAcceptResolution(<any>response_);
+                } catch (e) {
+                    return <Observable<string>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<string>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processAcceptResolution(response: HttpResponseBase): Observable<string> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = resultData200 !== undefined ? resultData200 : <any>null;
+            return _observableOf(result200);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<string>(<any>null);
     }
 
     downloadResolutionFile(resolutionId: number, orderNumber: string): Observable<FileResponse> {
@@ -506,7 +621,7 @@ export class OrdersClient implements IOrdersClient {
         return _observableOf<FileResponse>(<any>null);
     }
 
-    submitResolution(orderNumber: string, version: string | null | undefined, file: FileParameter | null | undefined): Observable<string> {
+    submitResolution(orderNumber: string, contentType: string | null | undefined, contentDisposition: string | null | undefined, headers: IHeaderDictionary | null | undefined, length: number | undefined, name: string | null | undefined, fileName: string | null | undefined): Observable<string> {
         let url_ = this.baseUrl + "/api/Orders/{orderNumber}/resolutions";
         if (orderNumber === undefined || orderNumber === null)
             throw new Error("The parameter 'orderNumber' must be defined.");
@@ -514,10 +629,20 @@ export class OrdersClient implements IOrdersClient {
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = new FormData();
-        if (version !== null && version !== undefined)
-            content_.append("Version", version.toString());
-        if (file !== null && file !== undefined)
-            content_.append("File", file.data, file.fileName ? file.fileName : "File");
+        if (contentType !== null && contentType !== undefined)
+            content_.append("ContentType", contentType.toString());
+        if (contentDisposition !== null && contentDisposition !== undefined)
+            content_.append("ContentDisposition", contentDisposition.toString());
+        if (headers !== null && headers !== undefined)
+            content_.append("Headers", headers.toString());
+        if (length === null || length === undefined)
+            throw new Error("The parameter 'length' cannot be null.");
+        else
+            content_.append("Length", length.toString());
+        if (name !== null && name !== undefined)
+            content_.append("Name", name.toString());
+        if (fileName !== null && fileName !== undefined)
+            content_.append("FileName", fileName.toString());
 
         let options_ : any = {
             body: content_,
@@ -563,60 +688,6 @@ export class OrdersClient implements IOrdersClient {
         }
         return _observableOf<string>(<any>null);
     }
-
-    acceptResolution(orderNumber: string, resolutionId: number): Observable<string> {
-        let url_ = this.baseUrl + "/api/Orders/{orderNumber}/resolutions/{resolutionId}/acceptance";
-        if (orderNumber === undefined || orderNumber === null)
-            throw new Error("The parameter 'orderNumber' must be defined.");
-        url_ = url_.replace("{orderNumber}", encodeURIComponent("" + orderNumber));
-        if (resolutionId === undefined || resolutionId === null)
-            throw new Error("The parameter 'resolutionId' must be defined.");
-        url_ = url_.replace("{resolutionId}", encodeURIComponent("" + resolutionId));
-        url_ = url_.replace(/[?&]$/, "");
-
-        let options_ : any = {
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processAcceptResolution(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processAcceptResolution(<any>response_);
-                } catch (e) {
-                    return <Observable<string>><any>_observableThrow(e);
-                }
-            } else
-                return <Observable<string>><any>_observableThrow(response_);
-        }));
-    }
-
-    protected processAcceptResolution(response: HttpResponseBase): Observable<string> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 200) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result200: any = null;
-            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result200 = resultData200 !== undefined ? resultData200 : <any>null;
-            return _observableOf(result200);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<string>(<any>null);
-    }
 }
 
 export class OrderDto implements IOrderDto {
@@ -626,11 +697,13 @@ export class OrderDto implements IOrderDto {
     sellerUserId?: string;
     buyerUserId?: string;
     unitPrice?: number;
+    quantity?: number;
+    totalPrice?: number;
     isClosed?: boolean;
     requirements?: string;
-    gigId?: number;
     packageId?: number;
     orderStates?: StateDto[];
+    resolution?: ResolutionDto[];
 
     constructor(data?: IOrderDto) {
         if (data) {
@@ -649,14 +722,20 @@ export class OrderDto implements IOrderDto {
             this.sellerUserId = _data["sellerUserId"];
             this.buyerUserId = _data["buyerUserId"];
             this.unitPrice = _data["unitPrice"];
+            this.quantity = _data["quantity"];
+            this.totalPrice = _data["totalPrice"];
             this.isClosed = _data["isClosed"];
             this.requirements = _data["requirements"];
-            this.gigId = _data["gigId"];
             this.packageId = _data["packageId"];
             if (Array.isArray(_data["orderStates"])) {
                 this.orderStates = [] as any;
                 for (let item of _data["orderStates"])
                     this.orderStates!.push(StateDto.fromJS(item));
+            }
+            if (Array.isArray(_data["resolution"])) {
+                this.resolution = [] as any;
+                for (let item of _data["resolution"])
+                    this.resolution!.push(ResolutionDto.fromJS(item));
             }
         }
     }
@@ -676,14 +755,20 @@ export class OrderDto implements IOrderDto {
         data["sellerUserId"] = this.sellerUserId;
         data["buyerUserId"] = this.buyerUserId;
         data["unitPrice"] = this.unitPrice;
+        data["quantity"] = this.quantity;
+        data["totalPrice"] = this.totalPrice;
         data["isClosed"] = this.isClosed;
         data["requirements"] = this.requirements;
-        data["gigId"] = this.gigId;
         data["packageId"] = this.packageId;
         if (Array.isArray(this.orderStates)) {
             data["orderStates"] = [];
             for (let item of this.orderStates)
                 data["orderStates"].push(item.toJSON());
+        }
+        if (Array.isArray(this.resolution)) {
+            data["resolution"] = [];
+            for (let item of this.resolution)
+                data["resolution"].push(item.toJSON());
         }
         return data; 
     }
@@ -696,18 +781,19 @@ export interface IOrderDto {
     sellerUserId?: string;
     buyerUserId?: string;
     unitPrice?: number;
+    quantity?: number;
+    totalPrice?: number;
     isClosed?: boolean;
     requirements?: string;
-    gigId?: number;
     packageId?: number;
     orderStates?: StateDto[];
+    resolution?: ResolutionDto[];
 }
 
 export class StateDto implements IStateDto {
-    orderState?: string;
-    reason?: string | undefined;
+    orderState?: OrderState;
+    reason?: string;
     created?: Date;
-    createdBy?: string;
 
     constructor(data?: IStateDto) {
         if (data) {
@@ -723,7 +809,6 @@ export class StateDto implements IStateDto {
             this.orderState = _data["orderState"];
             this.reason = _data["reason"];
             this.created = _data["created"] ? new Date(_data["created"].toString()) : <any>undefined;
-            this.createdBy = _data["createdBy"];
         }
     }
 
@@ -739,20 +824,139 @@ export class StateDto implements IStateDto {
         data["orderState"] = this.orderState;
         data["reason"] = this.reason;
         data["created"] = this.created ? this.created.toISOString() : <any>undefined;
-        data["createdBy"] = this.createdBy;
         return data; 
     }
 }
 
 export interface IStateDto {
-    orderState?: string;
-    reason?: string | undefined;
+    orderState?: OrderState;
+    reason?: string;
     created?: Date;
-    createdBy?: string;
+}
+
+export enum OrderState {
+    Validation = 0,
+    OrderDataValid = 1,
+    UserBalanceValid = 2,
+    Invalid = 3,
+    Canceled = 4,
+    Accepted = 5,
+    Declined = 6,
+    InProgress = 7,
+    Completed = 8,
+}
+
+export class ResolutionDto implements IResolutionDto {
+    version?: string;
+    location?: string;
+    isApproved?: boolean;
+
+    constructor(data?: IResolutionDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.version = _data["version"];
+            this.location = _data["location"];
+            this.isApproved = _data["isApproved"];
+        }
+    }
+
+    static fromJS(data: any): ResolutionDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new ResolutionDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["version"] = this.version;
+        data["location"] = this.location;
+        data["isApproved"] = this.isApproved;
+        return data; 
+    }
+}
+
+export interface IResolutionDto {
+    version?: string;
+    location?: string;
+    isApproved?: boolean;
+}
+
+export class PaginatedListOfOrderDto implements IPaginatedListOfOrderDto {
+    items?: OrderDto[] | undefined;
+    pageIndex?: number;
+    totalPages?: number;
+    totalCount?: number;
+    hasPreviousPage?: boolean;
+    hasNextPage?: boolean;
+
+    constructor(data?: IPaginatedListOfOrderDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(OrderDto.fromJS(item));
+            }
+            this.pageIndex = _data["pageIndex"];
+            this.totalPages = _data["totalPages"];
+            this.totalCount = _data["totalCount"];
+            this.hasPreviousPage = _data["hasPreviousPage"];
+            this.hasNextPage = _data["hasNextPage"];
+        }
+    }
+
+    static fromJS(data: any): PaginatedListOfOrderDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PaginatedListOfOrderDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        data["pageIndex"] = this.pageIndex;
+        data["totalPages"] = this.totalPages;
+        data["totalCount"] = this.totalCount;
+        data["hasPreviousPage"] = this.hasPreviousPage;
+        data["hasNextPage"] = this.hasNextPage;
+        return data; 
+    }
+}
+
+export interface IPaginatedListOfOrderDto {
+    items?: OrderDto[] | undefined;
+    pageIndex?: number;
+    totalPages?: number;
+    totalCount?: number;
+    hasPreviousPage?: boolean;
+    hasNextPage?: boolean;
 }
 
 export class PlaceOrderCommand implements IPlaceOrderCommand {
     unitPrice?: number;
+    quantity?: number;
     requirements?: string;
     sellerUserId?: string;
     packageId?: number;
@@ -769,6 +973,7 @@ export class PlaceOrderCommand implements IPlaceOrderCommand {
     init(_data?: any) {
         if (_data) {
             this.unitPrice = _data["unitPrice"];
+            this.quantity = _data["quantity"];
             this.requirements = _data["requirements"];
             this.sellerUserId = _data["sellerUserId"];
             this.packageId = _data["packageId"];
@@ -785,6 +990,7 @@ export class PlaceOrderCommand implements IPlaceOrderCommand {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["unitPrice"] = this.unitPrice;
+        data["quantity"] = this.quantity;
         data["requirements"] = this.requirements;
         data["sellerUserId"] = this.sellerUserId;
         data["packageId"] = this.packageId;
@@ -794,6 +1000,7 @@ export class PlaceOrderCommand implements IPlaceOrderCommand {
 
 export interface IPlaceOrderCommand {
     unitPrice?: number;
+    quantity?: number;
     requirements?: string;
     sellerUserId?: string;
     packageId?: number;
@@ -843,18 +1050,6 @@ export interface IReviewOrderCommand {
     reason?: string | undefined;
 }
 
-export enum OrderState {
-    Validation = 0,
-    OrderDataValid = 1,
-    UserBalanceValid = 2,
-    Invalid = 3,
-    Canceled = 4,
-    Accepted = 5,
-    Declined = 6,
-    InProgress = 7,
-    Completed = 8,
-}
-
 export class SetInProgressOrderCommand implements ISetInProgressOrderCommand {
     orderNumber?: string;
 
@@ -891,9 +1086,50 @@ export interface ISetInProgressOrderCommand {
     orderNumber?: string;
 }
 
-export interface FileParameter {
-    data: any;
-    fileName: string;
+export abstract class IHeaderDictionary implements IIHeaderDictionary {
+    item?: string[];
+    contentLength?: number | undefined;
+
+    constructor(data?: IIHeaderDictionary) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["Item"])) {
+                this.item = [] as any;
+                for (let item of _data["Item"])
+                    this.item!.push(item);
+            }
+            this.contentLength = _data["ContentLength"];
+        }
+    }
+
+    static fromJS(data: any): IHeaderDictionary {
+        data = typeof data === 'object' ? data : {};
+        throw new Error("The abstract class 'IHeaderDictionary' cannot be instantiated.");
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.item)) {
+            data["Item"] = [];
+            for (let item of this.item)
+                data["Item"].push(item);
+        }
+        data["ContentLength"] = this.contentLength;
+        return data; 
+    }
+}
+
+export interface IIHeaderDictionary {
+    item?: string[];
+    contentLength?: number | undefined;
 }
 
 export interface FileResponse {

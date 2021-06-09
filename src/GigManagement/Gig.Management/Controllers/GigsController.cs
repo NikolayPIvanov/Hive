@@ -45,7 +45,7 @@ namespace Gig.Management.Controllers
         [Authorize(Roles = "Seller, Admin")]
         [SwaggerResponse(HttpStatusCode.Created, typeof(int), Description = "Successful operation")]
         [SwaggerResponse(HttpStatusCode.BadRequest, typeof(BadRequestObjectResult), Description = "Bad Request operation")]
-        public async Task<ActionResult<int>> Post([FromBody] CreateGigCommand command, CancellationToken cancellationToken)
+        public async Task<ActionResult<int>> CreateGig([FromBody] CreateGigCommand command, CancellationToken cancellationToken)
         {
             var id = await Mediator.Send(command, cancellationToken);
             return CreatedAtAction(nameof(GetGigById), new {id}, id);
@@ -55,7 +55,7 @@ namespace Gig.Management.Controllers
         [Authorize(Roles = "Seller, Admin")]
         [Produces(MediaTypeNames.Application.Json)]
         [Consumes(MediaTypeNames.Application.Json)]
-        [SwaggerResponse(HttpStatusCode.Created, typeof(IActionResult), Description = "Successful operation")]
+        [SwaggerResponse(HttpStatusCode.NoContent, typeof(IActionResult), Description = "Successful operation")]
         [SwaggerResponse(HttpStatusCode.BadRequest, typeof(BadRequestObjectResult), Description = "Bad Request operation")]
         public async Task<IActionResult> UpdateImage([FromRoute] int id, [FromBody] FileUpload file, CancellationToken cancellationToken)
         {
@@ -115,18 +115,18 @@ namespace Gig.Management.Controllers
         public async Task<ActionResult<IEnumerable<PackageDto>>> GetPackages([FromRoute] int id, CancellationToken cancellationToken)
             => Ok(await Mediator.Send(new GetGigPackagesQuery(id), cancellationToken));
         
-        [HttpPost("{id:int}/packages")]
-        [Authorize(Roles = "Seller, Admin")]
-        [SwaggerResponse(HttpStatusCode.Created, typeof(int), Description = "Successful operation")]
-        [SwaggerResponse(HttpStatusCode.BadRequest, typeof(ProblemDetails), Description = "Invalid ID supplied")]
-        [SwaggerResponse(HttpStatusCode.NotFound, typeof(ProblemDetails), Description = "Anomaly not found")]
-        public async Task<ActionResult<int>> CreatePackage([FromRoute] int id, [FromBody] CreatePackageCommand command,
-            CancellationToken cancellationToken)
-        {
-            var packageId = await Mediator.Send(command, cancellationToken);
-            return CreatedAtAction(nameof(GetPackageById), new {id, packageId}, new {id, packageId});
-        }
-        
+        // [HttpPost("{id:int}/packages")]
+        // [Authorize(Roles = "Seller, Admin")]
+        // [SwaggerResponse(HttpStatusCode.Created, typeof(int), Description = "Successful operation")]
+        // [SwaggerResponse(HttpStatusCode.BadRequest, typeof(ProblemDetails), Description = "Invalid ID supplied")]
+        // [SwaggerResponse(HttpStatusCode.NotFound, typeof(ProblemDetails), Description = "Anomaly not found")]
+        // public async Task<ActionResult<int>> CreatePackage([FromRoute] int id, [FromBody] CreatePackageCommand command,
+        //     CancellationToken cancellationToken)
+        // {
+        //     var packageId = await Mediator.Send(command, cancellationToken);
+        //     return CreatedAtAction(nameof(GetPackageById), new {id, packageId}, new {id, packageId});
+        // }
+        //
         [HttpPut("{id:int}/packages/{packageId:int}")]
         [Authorize(Roles = "Seller, Admin")]
         [SwaggerResponse(HttpStatusCode.NoContent, typeof(IActionResult), Description = "Successful operation")]

@@ -29,6 +29,7 @@ namespace Ordering.Application.Orders.Queries
         public async Task<OrderDto> Handle(GetOrderByOrderNumberQuery request, CancellationToken cancellationToken)
         {
             var order = await _context.Orders
+                .Include(o => o.Resolutions)
                 .AsNoTracking()
                 .FirstOrDefaultAsync(o => o.OrderNumber == request.OrderNumber, cancellationToken);
 

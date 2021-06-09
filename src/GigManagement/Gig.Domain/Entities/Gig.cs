@@ -15,11 +15,16 @@ namespace Hive.Gig.Domain.Entities
             Questions = new HashSet<Question>();
             Reviews = new HashSet<Review>();
             Images = new HashSet<ImagePath>();
+            Packages = new HashSet<Package>();
             IsDraft = true;
         }
         
         public Gig(string title, string description, int sellerId, int categoryId, 
-            ICollection<Tag> tags,  ICollection<Question> questions, int? planId = null) : this()
+            ICollection<Tag> tags,  
+            ICollection<Question> questions, 
+            ICollection<Package> packages,
+            int? planId = null
+        ) : this()
         {
             Title = title;
             GigScope = new GigScope(description);
@@ -28,6 +33,7 @@ namespace Hive.Gig.Domain.Entities
             SellerId = sellerId;
             Questions = questions;
             Tags = tags;
+            Packages = packages;
         }
         
         public string Title { get; set; }

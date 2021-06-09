@@ -55,54 +55,36 @@
     <div fxLayout="column" fxFlexOffset="5" fxFlex="35" class="packages-overview">
         <mat-card>
             <mat-card-content>
-                <ng-container *ngIf="(asyncTabs | async) === null">
-                    Loading tabs...
-                  </ng-container>
+              <mat-tab-group mat-align-tabs="center">
+                <mat-tab *ngFor="let package of gig.packages"> 
+                  <ng-template mat-tab-label>{{package.title}}</ng-template>
+                  <div fxLayout="column" fxLayoutGap="3">
+                    <div fxLayout="row" fxLayoutAlign="space-between center">
+                        <h2>{{package.title}}</h2>
+                        <h3>{{ package.price }}$</h3>
+                    </div>
                   
-                  <mat-tab-group mat-align-tabs="center">
-                    <mat-tab *ngFor="let tab of asyncTabs | async" >
-                      <ng-template mat-tab-label>{{tab.label}}</ng-template>
-                      
-                      <!-- {{tab.content}} -->
-                      <div fxLayout="column" fxLayoutGap="3">
-                        <div fxLayout="row" fxLayoutAlign="space-between center">
-                            <h2>Package Name</h2>
-                            <h3>35$ ( Price )</h3>
-                        </div>
+                    <p> {{ package.description }} </p>
 
-                        <p>
-                            Lorem, ipsum dolor sit amet consectetur adipisicing elit. 
-                            Aperiam voluptatibus tenetur optio deleniti eius. 
-                            Quo repellat saepe porro ipsum tempore, 
-                            dolorem officia praesentium tenetur,
-                            recusandae eligendi illum impedit vitae explicabo!
-                        </p>
+                    <div fxLayout="row" fxLayoutAlign="space-between center">
+                        <section fxLayout="row" fxLayoutGap="1rem" fxFlexAlign="start center">
+                            <mat-icon>schedule</mat-icon>
+                            <span>Delivery Time: 3 days</span>
+                        </section>
 
-                        <div fxLayout="row" fxLayoutAlign="space-between center">
-                            <section fxLayout="row" fxLayoutGap="1rem" fxFlexAlign="start center">
-                                <mat-icon>schedule</mat-icon>
-                                <span>Delivery Time: 3 days</span>
-                            </section>
+                        <section fxLayout="row" fxLayoutGap="1rem"  fxFlexAlign="start center">
+                            <mat-icon>remove_red_eye</mat-icon>
+                            <span>Revision: 10</span>
+                        </section>
+                    </div>
 
-                            <section fxLayout="row" fxLayoutGap="1rem"  fxFlexAlign="start center">
-                                <mat-icon>remove_red_eye</mat-icon>
-                                <span>Revision: 10</span>
-                            </section>
-                        </div>
+                    <a mat-button [routerLink]="['/gigs', gig.id, 'packages', package.id, 'checkout']">Link</a>
 
-                        <mat-divider>
-                        </mat-divider>
-
-                        <button mat-raised-button
-                          fxFlexOffset.gt-lg="1rem" 
-                          color="primary" 
-                          (click)="checkout()">Purchase</button>
-                      </div>
-                    </mat-tab>
-                  </mat-tab-group>
+                </div>
+                </mat-tab>
+              </mat-tab-group>
             </mat-card-content>
-        </mat-card>
-        
+          </mat-card>
         <div *ngIf="canModify" fxFlexOffset.gt-lg="1rem" fxLayout.gt-lg="column" fxLayoutGap.gt-lg="1rem">
           <button mat-raised-button 
             (click)="edit(gig)">Edit</button>

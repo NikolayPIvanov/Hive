@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
 import { Observable, Subject } from 'rxjs';
 import { map, takeUntil } from 'rxjs/operators';
@@ -20,12 +20,13 @@ export class ImageUploadComponent implements OnInit {
   @Input() source: string | undefined;
   // bad
   @Input() download!: Observable<FileResponse>;
-  @Input() upload!: (fileUpload: FileUpload) => Observable<any>;
+  @Input() upload!: ((fileUpload: FileUpload) => Observable<any>) | undefined;
+
+  @Output() onUploaded = new EventEmitter<string>();
   
   constructor(public domSanitizer: DomSanitizer) { }
 
   ngOnInit(): void {
-    debugger;
     this.defaultImage = this.defaultImage || this.DEFAULT_IMAGE;
     if (this.source && this.source != this.defaultImage && this.download) {
       this.download
@@ -50,9 +51,14 @@ export class ImageUploadComponent implements OnInit {
         var base64result = this.dataSource.split(',')[1];
         const upload = FileUpload.fromJS({ fileData: base64result });
 
-        this.upload(upload)
-          .pipe(takeUntil(this.unsubscribe))
-          .subscribe();
+        if (this.upload) {
+          this.upload(upload)
+            .pipe(takeUntil(this.unsubscribe))
+            .subscribe();
+        }
+        
+        this.onUploaded.emit(base64result);
+        
       }
     }
   }

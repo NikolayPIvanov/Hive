@@ -15,11 +15,13 @@ namespace Ordering.Domain.Entities
             IsClosed = IsInClosedState();
         }
         
-        public Order(decimal price, string requirements, int packageId, int buyerId, string sellerUserId) : this()
+        public Order(decimal price, int quantity, decimal totalPrice, string requirements, int packageId, int buyerId, string sellerUserId) : this()
         {
             OrderNumber = Guid.NewGuid();
             OrderedAt = DateTime.UtcNow;
             UnitPrice = price;
+            Quantity = quantity;
+            TotalPrice = totalPrice;
             PackageId = packageId;
             BuyerId = buyerId;
             SellerUserId = sellerUserId;
@@ -34,11 +36,15 @@ namespace Ordering.Domain.Entities
         public DateTime OrderedAt { get; private init; }
         public string SellerUserId { get; private init; }
         public int BuyerId { get; private init; }
+        
+        public Buyer Buyer { get; private set; }
         public bool IsClosed { get; private init; }
         public Requirement Requirement { get; private init; }
         public int PackageId { get; private init; }
 
         public decimal UnitPrice { get; private init; }
+        public int Quantity { get; private set; }
+        public decimal TotalPrice { get; private set; }
 
         public ICollection<Resolution> Resolutions { get; private set; }
         

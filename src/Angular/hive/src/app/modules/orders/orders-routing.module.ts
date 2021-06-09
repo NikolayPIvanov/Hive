@@ -4,6 +4,7 @@ import { AuthGuard } from '../core/guards/auth.guard';
 import { LayoutComponent } from '../layout/layout/layout.component';
 import { CheckoutComponent } from './components/checkout/checkout.component';
 import { OrderPlacedComponent } from './components/order-placed/order-placed.component';
+import { OrdersListComponent } from './components/orders-list/orders-list.component';
 
 const routes: Routes = [
     {
@@ -11,14 +12,16 @@ const routes: Routes = [
         component: LayoutComponent,
         children: [
             {
-                path: 'checkout/:id',
-                component: CheckoutComponent,
-                canActivate: [AuthGuard]
+                path: 'gigs/:gigId/packages/:id/checkout',
+                component: CheckoutComponent
             },
             {
                 path: ':id/placed',
-                component: OrderPlacedComponent,
-                canActivate: [AuthGuard]
+                component: OrderPlacedComponent
+            },
+            {
+                path: 'orders',
+                component: OrdersListComponent
             }
         ]
     }

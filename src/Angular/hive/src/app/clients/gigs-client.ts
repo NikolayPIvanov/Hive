@@ -486,7 +486,7 @@ export interface IGigsClient {
      * @param command (optional) 
      * @return Successful operation
      */
-    post(command: CreateGigCommand | null | undefined): Observable<number>;
+    createGig(command: CreateGigCommand | null | undefined): Observable<number>;
     /**
      * @param quantity (optional) 
      * @return Successful operation
@@ -515,11 +515,6 @@ export interface IGigsClient {
      * @return Successful operation
      */
     getPackages(id: number): Observable<PackageDto[]>;
-    /**
-     * @param command (optional) 
-     * @return Successful operation
-     */
-    createPackage(id: number, command: CreatePackageCommand | null | undefined): Observable<number>;
     /**
      * @return Successful operation
      */
@@ -829,7 +824,7 @@ export class GigsClient implements IGigsClient {
      * @param command (optional) 
      * @return Successful operation
      */
-    post(command: CreateGigCommand | null | undefined): Observable<number> {
+    createGig(command: CreateGigCommand | null | undefined): Observable<number> {
         let url_ = this.baseUrl + "/api/Gigs";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -846,11 +841,11 @@ export class GigsClient implements IGigsClient {
         };
 
         return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processPost(response_);
+            return this.processCreateGig(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processPost(<any>response_);
+                    return this.processCreateGig(<any>response_);
                 } catch (e) {
                     return <Observable<number>><any>_observableThrow(e);
                 }
@@ -859,7 +854,7 @@ export class GigsClient implements IGigsClient {
         }));
     }
 
-    protected processPost(response: HttpResponseBase): Observable<number> {
+    protected processCreateGig(response: HttpResponseBase): Observable<number> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -988,11 +983,13 @@ export class GigsClient implements IGigsClient {
             (<any>response).error instanceof Blob ? (<any>response).error : undefined;
 
         let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 201) {
-            const contentDisposition = response.headers ? response.headers.get("content-disposition") : undefined;
-            const fileNameMatch = contentDisposition ? /filename="?([^"]*?)"?(;|$)/g.exec(contentDisposition) : undefined;
-            const fileName = fileNameMatch && fileNameMatch.length > 1 ? fileNameMatch[1] : undefined;
-            return _observableOf({ fileName: fileName, data: <any>responseBlob, status: status, headers: _headers });
+        if (status === 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result204: any = null;
+            let resultData204 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result204 = resultData204 !== undefined ? resultData204 : <any>null;
+            return _observableOf(result204);
+            }));
         } else if (status === 400) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result400: any = null;
@@ -1324,79 +1321,6 @@ export class GigsClient implements IGigsClient {
             }));
         }
         return _observableOf<PackageDto[]>(<any>null);
-    }
-
-    /**
-     * @param command (optional) 
-     * @return Successful operation
-     */
-    createPackage(id: number, command: CreatePackageCommand | null | undefined): Observable<number> {
-        let url_ = this.baseUrl + "/api/Gigs/{id}/packages";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(command);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("post", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processCreatePackage(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processCreatePackage(<any>response_);
-                } catch (e) {
-                    return <Observable<number>><any>_observableThrow(e);
-                }
-            } else
-                return <Observable<number>><any>_observableThrow(response_);
-        }));
-    }
-
-    protected processCreatePackage(response: HttpResponseBase): Observable<number> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 201) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result201: any = null;
-            let resultData201 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result201 = resultData201 !== undefined ? resultData201 : <any>null;
-            return _observableOf(result201);
-            }));
-        } else if (status === 400) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result400: any = null;
-            let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = ProblemDetails.fromJS(resultData400);
-            return throwException("Invalid ID supplied", status, _responseText, _headers, result400);
-            }));
-        } else if (status === 404) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result404: any = null;
-            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result404 = ProblemDetails.fromJS(resultData404);
-            return throwException("Anomaly not found", status, _responseText, _headers, result404);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<number>(<any>null);
     }
 
     /**
@@ -2611,6 +2535,7 @@ export class CreateGigCommand implements ICreateGigCommand {
     planId?: number | undefined;
     tags?: string[];
     questions?: QuestionModel[];
+    packages?: PackageModel[];
 
     constructor(data?: ICreateGigCommand) {
         if (data) {
@@ -2636,6 +2561,11 @@ export class CreateGigCommand implements ICreateGigCommand {
                 this.questions = [] as any;
                 for (let item of _data["questions"])
                     this.questions!.push(QuestionModel.fromJS(item));
+            }
+            if (Array.isArray(_data["packages"])) {
+                this.packages = [] as any;
+                for (let item of _data["packages"])
+                    this.packages!.push(PackageModel.fromJS(item));
             }
         }
     }
@@ -2663,6 +2593,11 @@ export class CreateGigCommand implements ICreateGigCommand {
             for (let item of this.questions)
                 data["questions"].push(item.toJSON());
         }
+        if (Array.isArray(this.packages)) {
+            data["packages"] = [];
+            for (let item of this.packages)
+                data["packages"].push(item.toJSON());
+        }
         return data; 
     }
 }
@@ -2674,6 +2609,7 @@ export interface ICreateGigCommand {
     planId?: number | undefined;
     tags?: string[];
     questions?: QuestionModel[];
+    packages?: PackageModel[];
 }
 
 export class QuestionModel implements IQuestionModel {
@@ -2714,6 +2650,91 @@ export class QuestionModel implements IQuestionModel {
 export interface IQuestionModel {
     title?: string;
     answer?: string;
+}
+
+export class PackageModel implements IPackageModel {
+    title?: string;
+    description?: string;
+    price?: number;
+    packageTier?: PackageTier;
+    deliveryTime?: number;
+    deliveryFrequency?: DeliveryFrequency;
+    revisions?: number | undefined;
+    revisionType?: RevisionType;
+    gigId?: number;
+
+    constructor(data?: IPackageModel) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.title = _data["title"];
+            this.description = _data["description"];
+            this.price = _data["price"];
+            this.packageTier = _data["packageTier"];
+            this.deliveryTime = _data["deliveryTime"];
+            this.deliveryFrequency = _data["deliveryFrequency"];
+            this.revisions = _data["revisions"];
+            this.revisionType = _data["revisionType"];
+            this.gigId = _data["gigId"];
+        }
+    }
+
+    static fromJS(data: any): PackageModel {
+        data = typeof data === 'object' ? data : {};
+        let result = new PackageModel();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["title"] = this.title;
+        data["description"] = this.description;
+        data["price"] = this.price;
+        data["packageTier"] = this.packageTier;
+        data["deliveryTime"] = this.deliveryTime;
+        data["deliveryFrequency"] = this.deliveryFrequency;
+        data["revisions"] = this.revisions;
+        data["revisionType"] = this.revisionType;
+        data["gigId"] = this.gigId;
+        return data; 
+    }
+}
+
+export interface IPackageModel {
+    title?: string;
+    description?: string;
+    price?: number;
+    packageTier?: PackageTier;
+    deliveryTime?: number;
+    deliveryFrequency?: DeliveryFrequency;
+    revisions?: number | undefined;
+    revisionType?: RevisionType;
+    gigId?: number;
+}
+
+export enum PackageTier {
+    Basic = 0,
+    Standard = 1,
+    Premium = 2,
+}
+
+export enum DeliveryFrequency {
+    Hours = 0,
+    Days = 1,
+    Weeks = 2,
+}
+
+export enum RevisionType {
+    Unlimited = 0,
+    Numeric = 1,
 }
 
 export class FileUpload implements IFileUpload {
@@ -2824,10 +2845,12 @@ export class UpdateGigCommand implements IUpdateGigCommand {
     id?: number;
     title?: string;
     description?: string;
+    categoryId?: number;
     isDraft?: boolean;
     planId?: number | undefined;
     tags?: string[];
     questions?: QuestionModel[];
+    image?: string;
 
     constructor(data?: IUpdateGigCommand) {
         if (data) {
@@ -2843,6 +2866,7 @@ export class UpdateGigCommand implements IUpdateGigCommand {
             this.id = _data["id"];
             this.title = _data["title"];
             this.description = _data["description"];
+            this.categoryId = _data["categoryId"];
             this.isDraft = _data["isDraft"];
             this.planId = _data["planId"];
             if (Array.isArray(_data["tags"])) {
@@ -2855,6 +2879,7 @@ export class UpdateGigCommand implements IUpdateGigCommand {
                 for (let item of _data["questions"])
                     this.questions!.push(QuestionModel.fromJS(item));
             }
+            this.image = _data["image"];
         }
     }
 
@@ -2870,6 +2895,7 @@ export class UpdateGigCommand implements IUpdateGigCommand {
         data["id"] = this.id;
         data["title"] = this.title;
         data["description"] = this.description;
+        data["categoryId"] = this.categoryId;
         data["isDraft"] = this.isDraft;
         data["planId"] = this.planId;
         if (Array.isArray(this.tags)) {
@@ -2882,6 +2908,7 @@ export class UpdateGigCommand implements IUpdateGigCommand {
             for (let item of this.questions)
                 data["questions"].push(item.toJSON());
         }
+        data["image"] = this.image;
         return data; 
     }
 }
@@ -2890,139 +2917,12 @@ export interface IUpdateGigCommand {
     id?: number;
     title?: string;
     description?: string;
+    categoryId?: number;
     isDraft?: boolean;
     planId?: number | undefined;
     tags?: string[];
     questions?: QuestionModel[];
-}
-
-export class CreatePackageCommand implements ICreatePackageCommand {
-    packages?: PackageModel[];
-
-    constructor(data?: ICreatePackageCommand) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            if (Array.isArray(_data["packages"])) {
-                this.packages = [] as any;
-                for (let item of _data["packages"])
-                    this.packages!.push(PackageModel.fromJS(item));
-            }
-        }
-    }
-
-    static fromJS(data: any): CreatePackageCommand {
-        data = typeof data === 'object' ? data : {};
-        let result = new CreatePackageCommand();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        if (Array.isArray(this.packages)) {
-            data["packages"] = [];
-            for (let item of this.packages)
-                data["packages"].push(item.toJSON());
-        }
-        return data; 
-    }
-}
-
-export interface ICreatePackageCommand {
-    packages?: PackageModel[];
-}
-
-export class PackageModel implements IPackageModel {
-    title?: string;
-    description?: string;
-    price?: number;
-    packageTier?: PackageTier;
-    deliveryTime?: number;
-    deliveryFrequency?: DeliveryFrequency;
-    revisions?: number | undefined;
-    revisionType?: RevisionType;
-    gigId?: number;
-
-    constructor(data?: IPackageModel) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.title = _data["title"];
-            this.description = _data["description"];
-            this.price = _data["price"];
-            this.packageTier = _data["packageTier"];
-            this.deliveryTime = _data["deliveryTime"];
-            this.deliveryFrequency = _data["deliveryFrequency"];
-            this.revisions = _data["revisions"];
-            this.revisionType = _data["revisionType"];
-            this.gigId = _data["gigId"];
-        }
-    }
-
-    static fromJS(data: any): PackageModel {
-        data = typeof data === 'object' ? data : {};
-        let result = new PackageModel();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["title"] = this.title;
-        data["description"] = this.description;
-        data["price"] = this.price;
-        data["packageTier"] = this.packageTier;
-        data["deliveryTime"] = this.deliveryTime;
-        data["deliveryFrequency"] = this.deliveryFrequency;
-        data["revisions"] = this.revisions;
-        data["revisionType"] = this.revisionType;
-        data["gigId"] = this.gigId;
-        return data; 
-    }
-}
-
-export interface IPackageModel {
-    title?: string;
-    description?: string;
-    price?: number;
-    packageTier?: PackageTier;
-    deliveryTime?: number;
-    deliveryFrequency?: DeliveryFrequency;
-    revisions?: number | undefined;
-    revisionType?: RevisionType;
-    gigId?: number;
-}
-
-export enum PackageTier {
-    Basic = 0,
-    Standard = 1,
-    Premium = 2,
-}
-
-export enum DeliveryFrequency {
-    Hours = 0,
-    Days = 1,
-    Weeks = 2,
-}
-
-export enum RevisionType {
-    Unlimited = 0,
-    Numeric = 1,
+    image?: string;
 }
 
 export class UpdatePackageCommand implements IUpdatePackageCommand {

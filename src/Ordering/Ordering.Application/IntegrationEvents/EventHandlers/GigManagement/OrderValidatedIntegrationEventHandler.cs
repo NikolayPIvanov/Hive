@@ -26,17 +26,16 @@ namespace Ordering.Application.IntegrationEvents.EventHandlers.GigManagement
         public async Task Handle(OrderValidatedIntegrationEvent @event)
         {
             var order = await _context.Orders
-                .Select(o => new { o.Id, o.OrderNumber, o.UnitPrice, o.BuyerId, o.OrderStates})
+                .Include(o => o.Buyer)
                 .FirstOrDefaultAsync(o => o.OrderNumber == @event.OrderNumber);
 
             var orderState = @event.IsValid ? OrderState.OrderDataValid : OrderState.Invalid;
             var state = new State(orderState, @event.Reason);
 
-            var buyer = await _context.Buyers.FindAsync(order.BuyerId);
 
             if (orderState == OrderState.OrderDataValid)
             {
-                await _mediator.Publish(new OrderValidatedEvent(@event.OrderNumber, order.UnitPrice, buyer.UserId));
+                await _mediator.Publish(new OrderValidatedEvent(@event.OrderNumber, order.UnitPrice, order.Buyer.UserId));
             }
 
             order.OrderStates.Add(state);

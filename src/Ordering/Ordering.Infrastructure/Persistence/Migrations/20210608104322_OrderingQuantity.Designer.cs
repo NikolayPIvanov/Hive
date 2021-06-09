@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Ordering.Infrastructure.Persistence;
 
 namespace Ordering.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(OrderingDbContext))]
-    partial class OrderingDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210608104322_OrderingQuantity")]
+    partial class OrderingQuantity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -150,7 +152,7 @@ namespace Ordering.Infrastructure.Persistence.Migrations
 
             modelBuilder.Entity("Ordering.Domain.Entities.Order", b =>
                 {
-                    b.HasOne("Ordering.Domain.Entities.Buyer", "Buyer")
+                    b.HasOne("Ordering.Domain.Entities.Buyer", null)
                         .WithMany("Orders")
                         .HasForeignKey("BuyerId")
                         .OnDelete(DeleteBehavior.SetNull)
@@ -189,9 +191,6 @@ namespace Ordering.Infrastructure.Persistence.Migrations
                                 .HasColumnType("int")
                                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                            b1.Property<DateTime>("Created")
-                                .HasColumnType("datetime2");
-
                             b1.Property<int>("OrderId")
                                 .HasColumnType("int");
 
@@ -210,8 +209,6 @@ namespace Ordering.Infrastructure.Persistence.Migrations
                             b1.WithOwner()
                                 .HasForeignKey("OrderId");
                         });
-
-                    b.Navigation("Buyer");
 
                     b.Navigation("OrderStates");
 

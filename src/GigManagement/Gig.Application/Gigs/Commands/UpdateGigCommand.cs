@@ -17,8 +17,16 @@ namespace Hive.Gig.Application.Gigs.Commands
 {
     using Domain.Entities;
     
-    public record UpdateGigCommand(int Id, string Title, string Description, bool IsDraft, int? PlanId,
-        ICollection<string> Tags, ICollection<QuestionModel> Questions) : IRequest;
+    public record UpdateGigCommand(
+        int Id, 
+        string Title, 
+        string Description, 
+        int CategoryId, 
+        bool IsDraft,
+        int? PlanId,
+        ICollection<string> Tags, 
+        ICollection<QuestionModel> Questions,
+        string Image) : IRequest;
 
     public class UpdateGigCommandValidator : AbstractValidator<UpdateGigCommand>
     {

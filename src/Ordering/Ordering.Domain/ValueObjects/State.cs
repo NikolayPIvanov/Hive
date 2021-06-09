@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Hive.Common.Domain.SeedWork;
 using Ordering.Domain.Enums;
 
@@ -16,10 +17,13 @@ namespace Ordering.Domain.ValueObjects
         {
             OrderState = state;
             Reason = reason ?? Reason;
+            Created = DateTime.UtcNow;
         }
 
         public OrderState OrderState { get; private init; }
         public string Reason { get; private init; }
+        
+        public DateTime Created { get; private init; }
         
         public static State Initial() => new();
         

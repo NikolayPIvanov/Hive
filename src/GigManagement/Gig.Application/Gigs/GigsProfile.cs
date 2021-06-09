@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using AutoMapper;
 using Hive.Gig.Application.Gigs.Commands;
 using Hive.Gig.Application.Gigs.Queries;
@@ -47,7 +48,16 @@ namespace Hive.Gig.Application.Gigs
                     {
                         gig.GigScope.Description = command.Description;
                     }
+
+                    if (!string.IsNullOrEmpty(command.Image))
+                    {
+                        gig.Images.Clear();
+                        gig.Images.Add(new ImagePath(command.Image));
+                    }
                 });
+
+            CreateMap<PackageModel, Package>().DisableCtorValidation();
+
         }
     }
 }

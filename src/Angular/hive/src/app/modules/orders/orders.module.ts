@@ -7,6 +7,7 @@ import { OrderSummaryComponent } from './components/order-summary/order-summary.
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { CheckoutSummaryComponent } from './components/checkout-summary/checkout-summary.component';
 import { OrderPlacedComponent } from './components/order-placed/order-placed.component';
+import { OrdersListComponent } from './components/orders-list/orders-list.component';
 
 
 
@@ -15,7 +16,8 @@ import { OrderPlacedComponent } from './components/order-placed/order-placed.com
     CheckoutComponent,
     OrderSummaryComponent,
     CheckoutSummaryComponent,
-    OrderPlacedComponent
+    OrderPlacedComponent,
+    OrdersListComponent
   ],
   imports: [
     CommonModule,

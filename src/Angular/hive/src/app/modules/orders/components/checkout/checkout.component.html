@@ -1,10 +1,11 @@
-<div fxLayout="column" class="container" fxLayoutGap="3%">
-    <h1>Review your order</h1>
+<mat-card *ngIf="gig$ | async; let gig" class="container">
+    <mat-card-header>
+        <mat-card-title>Review your order</mat-card-title>
+        <mat-card-subtitle>Order</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content fxLayout="column" fxLayoutGap="3%">
+        <app-order-summary [gig]="gig"></app-order-summary>
     
-    <app-order-summary></app-order-summary>
-
-    <mat-divider>
-    </mat-divider>
-
-    <app-checkout-summary></app-checkout-summary>
-</div>
+        <app-checkout-summary [gig]="gig"></app-checkout-summary>
+    </mat-card-content>
+</mat-card>

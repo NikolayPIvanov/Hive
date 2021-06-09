@@ -1,99 +1,98 @@
 <h2 mat-dialog-title>Create</h2>
 <mat-dialog-content class="mat-typography">
+  <form [formGroup]="gigForm" fxLayout="column" (ngSubmit)="onSubmit()">
       <mat-horizontal-stepper [linear]="isLinear" #stepper>
-        <mat-step [stepControl]="gigForm">
-            <form [formGroup]="gigForm" fxLayout="column" (ngSubmit)="onSubmit()">
-                <ng-template matStepLabel>Fill out information</ng-template>
-                <mat-form-field appearance="outline">
-                    <mat-label>Title</mat-label>
-                    <input matInput formControlName="title" placeholder="Title">
-                    <mat-error *ngIf="gigForm.controls.title.errors">{{getErrorMessage('title')}}</mat-error>
-                </mat-form-field>
-                
-                <mat-form-field appearance="outline">
-                    <mat-label>Description</mat-label>
-                    <textarea matInput formControlName="description" placeholder="Description"></textarea>
-                    <mat-error *ngIf="gigForm.controls.description.errors">{{getErrorMessage('description')}}</mat-error>
-                </mat-form-field>
-                
-                <app-categories-search (onSelectedCategoryName)="onCategorySelected($event)" ></app-categories-search>
-                
-                <mat-form-field appearance="outline" class="full-width mt-1">
-                  <mat-label>Tags</mat-label>
-                  <mat-chip-list #tagsList aria-label="Tags" formControlName="tags">
-                      <mat-chip 
-                          *ngFor="let tag of tags.value" 
-                          selectable="false" removable="true" (removed)="remove(tags, tag)">
-                          {{tag}}
-                          <mat-icon matChipRemove>cancel</mat-icon>
-                      </mat-chip>
-              
-                      <input matInput
-                          class="active-input"
-                          placeholder="Tags..." 
-                          [matChipInputFor]="tagsList" 
-                          [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
-                          matChipInputAddOnBlur="true"
-                          (matChipInputTokenEnd)="add(tags, $event)">
-                  </mat-chip-list>
-              </mat-form-field>
-
-                <mat-divider></mat-divider>
-        
-                <div formArrayName="questions">
-                    <div *ngFor="let question of gigForm.controls.questions.controls; let i = index; let last = last;">
-                        <!-- address header, show remove button when more than one address available -->
-                        <div fxLayout="row">
-                            <h3> Question {{ i + 1 }}</h3>
-                            <mat-icon *ngIf="gigForm.controls.questions.controls.length > 1" fxLayoutAlign="end"
-                                (click)="removeQuestion(i)"> remove </mat-icon>
-                            <mat-icon *ngIf="last" (click)="addQuestion()" fxLayoutAlign="end"> add </mat-icon>
-                        </div>
+        <mat-step>
+          <ng-template matStepLabel>Fill out information</ng-template>
+          <div fxLayout="column">
+              <mat-form-field appearance="outline">
+                <mat-label>Title</mat-label>
+                <input matInput formControlName="title" placeholder="Title">
+                <mat-error *ngIf="gigForm.controls.title.errors">{{getErrorMessage('title')}}</mat-error>
+            </mat-form-field>
             
-                        <div [formGroupName]="i" fxLayout="column" fxLayoutGap="1rem">
-                            <mat-form-field appearance="outline" fxFill>
-                                <mat-label>Title</mat-label>
-                                <input matInput type="text" formControlName="title">
-                            </mat-form-field>
-        
-                            <mat-form-field appearance="outline" fxFill>
-                                <mat-label>Answer</mat-label>
-                                <textarea matInput type="text" formControlName="answer"></textarea>    
-                            </mat-form-field>
-                        <div>
-                    </div>
-                    </div>
-                    </div>  
-                </div>
+            <mat-form-field appearance="outline">
+                <mat-label>Description</mat-label>
+                <textarea matInput formControlName="description" placeholder="Description"></textarea>
+                <mat-error *ngIf="gigForm.controls.description.errors">{{getErrorMessage('description')}}</mat-error>
+            </mat-form-field>
+            
+            <app-categories-search (onSelectedCategoryName)="onCategorySelected($event)" ></app-categories-search>
+            
+            <mat-form-field appearance="outline" class="full-width mt-1">
+              <mat-label>Tags</mat-label>
+              <mat-chip-list #tagsList aria-label="Tags" formControlName="tags">
+                  <mat-chip 
+                      *ngFor="let tag of tags.value" 
+                      selectable="false" removable="true" (removed)="remove(tags, tag)">
+                      {{tag}}
+                      <mat-icon matChipRemove>cancel</mat-icon>
+                  </mat-chip>
+          
+                  <input matInput
+                      class="active-input"
+                      placeholder="Tags..." 
+                      [matChipInputFor]="tagsList" 
+                      [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                      matChipInputAddOnBlur="true"
+                      (matChipInputTokenEnd)="add(tags, $event)">
+              </mat-chip-list>
+          </mat-form-field>
 
-                <div>
-                    <button mat-raised-button matStepperNext>Next</button>
+            <mat-divider></mat-divider>
+    
+            <div formArrayName="questions">
+                <div *ngFor="let question of gigForm.controls.questions.controls; let i = index; let last = last;">
+                    <!-- address header, show remove button when more than one address available -->
+                    <div fxLayout="row">
+                        <h3> Question {{ i + 1 }}</h3>
+                        <mat-icon *ngIf="gigForm.controls.questions.controls.length > 1" fxLayoutAlign="end"
+                            (click)="removeQuestion(i)"> remove </mat-icon>
+                        <mat-icon *ngIf="last" (click)="addQuestion()" fxLayoutAlign="end"> add </mat-icon>
+                    </div>
+        
+                    <div [formGroupName]="i" fxLayout="column" fxLayoutGap="1rem">
+                        <mat-form-field appearance="outline" fxFill>
+                            <mat-label>Title</mat-label>
+                            <input matInput type="text" formControlName="title">
+                        </mat-form-field>
+    
+                        <mat-form-field appearance="outline" fxFill>
+                            <mat-label>Answer</mat-label>
+                            <textarea matInput type="text" formControlName="answer"></textarea>    
+                        </mat-form-field>
+                    <div>
                 </div>
-            </form>
+                </div>
+                </div>  
+            </div>
+
+            <div>
+                <button mat-raised-button type="button" matStepperNext>Next</button>
+            </div>
+          </div>
         </mat-step>
         
         <mat-step label="Add Image" [optional]="true">
-          <app-image-upload
-              [upload]="upload"></app-image-upload>
+          <app-image-upload (onUploaded)="setImage($event)"></app-image-upload>
 
             <div>
-              <button mat-button matStepperPrevious>Back</button>
-              <button mat-button matStepperNext>Next</button>
+              <button mat-button  type="button" matStepperPrevious>Back</button>
+              <button mat-button  type="button" matStepperNext>Next</button>
             </div>
         </mat-step>
 
 
         <!-- Packages tab -->
-        <mat-step label="Add Packages" [stepControl]="packagesForm">
-          <form [formGroup]="packagesForm" fxLayout="column" (ngSubmit)="onPackagesSubmit()">
+        <mat-step label="Add Packages" [stepControl]="gigForm" fxLayout="column">
             <ng-template matStepLabel>Add Packages</ng-template>
                 
             <div formArrayName="packages">
-                <div *ngFor="let package of packagesForm.controls.packages.controls; let i = index; let last = last;">
+                <div *ngFor="let package of gigForm.controls.packages.controls; let i = index; let last = last;">
                     <div fxLayout="row"> 
                         <h3> Package {{ i + 1 }}</h3>
                         <mat-icon 
-                          *ngIf="packagesForm.controls.packages.controls.length > 1" 
+                          *ngIf="gigForm.controls.packages.controls.length > 1" 
                           fxLayoutAlign="end"
                           (click)="removePackage(i)"> 
                             remove 
@@ -162,25 +161,21 @@
             </div>
 
             <div>
-                <button mat-raised-button matStepperNext>Next</button>
+              <button mat-button  type="button" matStepperPrevious>Back</button>
+              <button mat-button  type="button" matStepperNext>Next</button>
             </div>
-        </form>
-
-          <div>
-            <button mat-button matStepperPrevious>Back</button>
-            <button mat-button matStepperNext>Next</button>
-          </div>
         </mat-step>
         
         <mat-step>
-          <ng-template matStepLabel>Done</ng-template>
-          <p>You are now done.</p>
+          <ng-template matStepLabel>Finish</ng-template>
+          <p>You are now all done. Click on create when you want to create the gig.</p>
           <div>
-            <button mat-button matStepperPrevious>Back</button>
-            <button mat-button (click)="stepper.reset()">Reset</button>
+            <button mat-button type="submit" matStepperPrevious>Create</button>
+            <button mat-button type="button" (click)="stepper.reset()">To First</button>
           </div>
         </mat-step>
       </mat-horizontal-stepper>
+  </form>
 </mat-dialog-content>
 <mat-dialog-actions align="end">
   <button mat-button mat-dialog-close>Cancel</button>

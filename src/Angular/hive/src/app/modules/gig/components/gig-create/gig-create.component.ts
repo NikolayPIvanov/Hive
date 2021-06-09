@@ -4,10 +4,9 @@ import { FormArray, FormBuilder, FormControl, FormGroup, Validators } from '@ang
 import { MatChipInputEvent } from '@angular/material/chips';
 import { MatDialogRef } from '@angular/material/dialog';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { Observable, Subject, throwError } from 'rxjs';
-import { map, takeUntil, tap } from 'rxjs/operators';
-import { CategoriesClient, CreateGigCommand, CreatePackageCommand, GigsClient } from 'src/app/clients/gigs-client';
-import { FileUpload } from 'src/app/clients/profile-client';
+import { Observable, of, Subject, throwError } from 'rxjs';
+import { map, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { CategoriesClient, CreateGigCommand, FileUpload, GigsClient } from 'src/app/clients/gigs-client';
 
 @Component({
   selector: 'app-gig-create',
@@ -18,6 +17,7 @@ export class GigCreateComponent implements OnInit {
   // Shared
   private unsubscribe = new Subject();
   isLinear = true;
+  readonly separatorKeysCodes: number[] = [ENTER, COMMA];
 
   constructor(
     public dialogRef: MatDialogRef<GigCreateComponent>,
@@ -31,17 +31,20 @@ export class GigCreateComponent implements OnInit {
   onNoClick(): void {
     this.dialogRef.close();
   }
+  setImage(base64: string) {
+    this.gigForm.patchValue({ image: base64 });
+  }
 
   // Gig Main Information
-  private gigFormSubmitted = false;
-  private gigId: number | undefined;
-
   gigForm = this.fb.group({
     title: ['', Validators.required],
     description: ['', Validators.required],
     categoryId: ['', Validators.required],
+    planId: [null],
     tags: [[]],
-    questions: this.fb.array([ this.initQuestion() ]),
+    questions: this.fb.array([this.initQuestion()]),
+    image: [null],
+    packages: this.fb.array([ this.initPackage() ]),
   });
 
   getErrorMessage(key: string, error: string = 'required') {
@@ -54,21 +57,23 @@ export class GigCreateComponent implements OnInit {
   }
 
   onSubmit() {
-    if (!this.gigFormSubmitted) {
-      this.gigFormSubmitted = true;
-      const command = CreateGigCommand.fromJS(this.gigForm.value);
-      this.gigsApiClient.post(command)
+    debugger;
+    const command = CreateGigCommand.fromJS(this.gigForm.value);
+      this.gigsApiClient.createGig(command)
         .pipe(
-          takeUntil(this.unsubscribe)
-        )
-        .subscribe(id => {
-          this.gigId = id;
-          this.addPackage();
-          this.upload = (upload: FileUpload) => {
-            return this.gigsApiClient.updateImage(id, upload);
-          }
-        });
-    }
+          takeUntil(this.unsubscribe),
+          switchMap((id) => {
+            const imageData = this.gigForm.get('image');
+            if (imageData) {
+              return this.gigsApiClient.updateImage(id, FileUpload.fromJS({ fileData: imageData.value }))
+            }
+
+            return of(id);
+          }),
+          tap({
+            complete: () => this.onNoClick()
+          }))
+        .subscribe();
   }
 
   addQuestion() {
@@ -87,9 +92,6 @@ export class GigCreateComponent implements OnInit {
         answer: ['', Validators.required]
     });
   }
-
-  // Tags
-  readonly separatorKeysCodes: number[] = [ENTER, COMMA];
 
   get tags(): FormControl { 
     return this.gigForm.get('tags') as FormControl;
@@ -114,7 +116,6 @@ export class GigCreateComponent implements OnInit {
     }
   }
 
-  // Event Handlers
   public onCategorySelected(title: string) {
     this.spinnerService.show();
     this.categoryApiClient.getCategories(1, 1, false, title)
@@ -136,13 +137,6 @@ export class GigCreateComponent implements OnInit {
       .subscribe();
   }
 
-  // Image Upload
-  public upload!: (upload: FileUpload) => Observable<any>;
-
-  // Packages
-  packagesForm = this.fb.group({
-    packages: this.fb.array([])
-  })
 
   public initPackage() {
     return this.fb.group({
@@ -154,25 +148,17 @@ export class GigCreateComponent implements OnInit {
       deliveryFrequency: [0, Validators.required],
       revisions: [null],
       revisionType: [0, Validators.required],
-      gigId: [this.gigId, Validators.required],
     })
   }
 
   public addPackage() {
-    const control = <FormArray>this.packagesForm.controls['packages'];
+    const control = <FormArray>this.gigForm.controls['packages'];
     control.push(this.initPackage());
   }
 
   public removePackage(i: number) {
-    const control = <FormArray>this.packagesForm.controls['packages'];
+    const control = <FormArray>this.gigForm.controls['packages'];
     control.removeAt(i);
-  }
-
-  onPackagesSubmit() {
-    const command = CreatePackageCommand.fromJS(this.packagesForm.value)
-    this.gigsApiClient.createPackage(this.gigId!, command)
-      .pipe(takeUntil(this.unsubscribe))
-      .subscribe();
   }
 
 }

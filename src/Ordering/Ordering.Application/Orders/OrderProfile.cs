@@ -10,8 +10,16 @@ namespace Ordering.Application.Orders
     {
         public OrderProfile()
         {
-            CreateMap<Order, OrderDto>().DisableCtorValidation();
-            CreateMap<State, StateDto>(MemberList.Destination).DisableCtorValidation();
+            CreateMap<Order, OrderDto>()
+                .ForMember(d => d.Requirements, x => x.MapFrom(s => s.Requirement.Details))
+                .ForMember(d => d.BuyerUserId, x => x.MapFrom(s => s.Buyer.UserId))
+                .DisableCtorValidation();
+            
+            CreateMap<Resolution, ResolutionDto>()
+                .DisableCtorValidation();
+            
+            CreateMap<State, StateDto>()
+                .DisableCtorValidation();
         }
     }
 }

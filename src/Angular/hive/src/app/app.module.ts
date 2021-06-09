@@ -19,6 +19,8 @@ import { NgxSpinnerModule } from "ngx-spinner";
 import * as profileClient from './clients/profile-client';
 import * as categoriesClient from './clients/gigs-client';
 import * as billingClient from './clients/billing-client';
+import * as orderingClient from './clients/ordering-client';
+
 
 @NgModule({
   declarations: [
@@ -52,7 +54,8 @@ import * as billingClient from './clients/billing-client';
   providers: [
     { provide: profileClient.API_BASE_URL, useValue: 'https:localhost:5001' },
     { provide: categoriesClient.API_BASE_URL, useValue: 'https:localhost:5057' },
-    { provide: billingClient.API_BASE_URL, useValue: 'https:localhost:5051' }
+    { provide: billingClient.API_BASE_URL, useValue: 'https:localhost:5051' },
+    { provide: orderingClient.API_BASE_URL, useValue: 'https:localhost:5041' },
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

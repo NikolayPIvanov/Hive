@@ -21,6 +21,10 @@ namespace Ordering.Infrastructure.Persistence.Configurations
             builder.HasMany(o => o.Resolutions)
                 .WithOne(r => r.Order)
                 .HasForeignKey(r => r.OrderId);
+            
+            builder.HasOne(o => o.Buyer)
+                .WithMany(r => r.Orders)
+                .HasForeignKey(r => r.BuyerId);
 
             builder.OwnsMany(o => o.OrderStates, os =>
             {

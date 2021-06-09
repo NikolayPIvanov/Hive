@@ -4,9 +4,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
+using AutoMapper.QueryableExtensions;
 using Hive.Common.Core.Exceptions;
 using Hive.Common.Core.Interfaces;
 using Hive.Common.Core.Mappings;
+using Hive.Common.Core.Models;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -15,9 +17,9 @@ using Ordering.Domain.Entities;
 
 namespace Ordering.Application.Orders.Queries
 {
-    public record GetMyOrdersQuery : IRequest<IEnumerable<OrderDto>>;
+    public record GetMyOrdersQuery(int PageIndex, int PageSize) : IRequest<PaginatedList<OrderDto>>;
 
-    public class GetMyOrdersQueryHandler : IRequestHandler<GetMyOrdersQuery, IEnumerable<OrderDto>>
+    public class GetMyOrdersQueryHandler : IRequestHandler<GetMyOrdersQuery, PaginatedList<OrderDto>>
     {
         private readonly IOrderingContext _context;
         private readonly IMapper _mapper;
@@ -33,24 +35,22 @@ namespace Ordering.Application.Orders.Queries
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
-        public async Task<IEnumerable<OrderDto>> Handle(GetMyOrdersQuery request, CancellationToken cancellationToken)
+        public async Task<PaginatedList<OrderDto>> Handle(GetMyOrdersQuery request, CancellationToken cancellationToken)
         {
-            var buyerId = await _context.Buyers.Select(x => new {x.Id, x.UserId})
-                .AsNoTracking()
-                .FirstOrDefaultAsync(x => x.UserId == _currentUserService.UserId, cancellationToken);
-            
-            if (buyerId == null)
-            {
-                _logger.LogWarning("Buyer with user id: {@Id} was not found", _currentUserService.UserId);
-                throw new NotFoundException(nameof(Buyer));
-            }
-            
             return await _context.Orders
                 .Include(o => o.Requirement)
                 .Include(o => o.OrderStates)
-                .Where(o => o.BuyerId ==  buyerId.Id)
+                .Include(o => o.Buyer)
+                .Where(o => o.SellerUserId ==  _currentUserService.UserId && o.Buyer.UserId == _currentUserService.UserId)
                 .AsNoTracking()
-                .ProjectToListAsync<OrderDto>(_mapper.ConfigurationProvider);
+                .Select(o => new OrderDto(o.Id, o.OrderNumber, o.Created, o.SellerUserId, 
+                    o.Buyer.UserId, o.UnitPrice, o.Quantity, o.TotalPrice, o.IsClosed, 
+                    o.Requirement.Details, o.PackageId, 
+                    o.OrderStates.Select(os => new StateDto(os.OrderState, os.Reason, os.Created)),
+                    o.Resolutions.Select(r => new ResolutionDto(r.Version, r.Location, r.IsApproved))
+                    ))
+                // .ProjectTo<OrderDto>(_mapper.ConfigurationProvider)
+                .PaginatedListAsync(request.PageIndex, request.PageSize);
         }
     }
     

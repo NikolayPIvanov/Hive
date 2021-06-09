@@ -1,10 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net;
+using System.Net.Mime;
 using System.Threading.Tasks;
+using Hive.Common.Core.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NSwag.Annotations;
 using Ordering.Application.Orders.Commands;
 using Ordering.Application.Orders.Queries;
 using Ordering.Application.Resolutions.Commands;
@@ -19,13 +23,18 @@ namespace Ordering.Management.Controllers
         public async Task<ActionResult<OrderDto>> GetOrder(Guid orderNumber) =>
             Ok(await Mediator.Send(new GetOrderByOrderNumberQuery(orderNumber)));
 
-        [Authorize(Roles = "Buyer")]
+        [Authorize(Roles = "Buyer, Seller")]
         [HttpGet("my")]
-        public async Task<ActionResult<IEnumerable<OrderDto>>> GetMyOrders() =>
-            Ok(await Mediator.Send(new GetMyOrdersQuery()));
+        [SwaggerResponse(HttpStatusCode.OK, typeof(PaginatedList<OrderDto>), Description = "Successful operation")]
+        public async Task<ActionResult<PaginatedList<OrderDto>>> GetMyOrders([FromQuery] int pageNumber = 1, int pageSize = 20) =>
+            Ok(await Mediator.Send(new GetMyOrdersQuery(pageNumber, pageSize)));
         
         [HttpPost]
         [Authorize(Roles = "Seller")]
+        [Produces(MediaTypeNames.Application.Json)]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [SwaggerResponse(HttpStatusCode.Created, typeof(ActionResult<Guid>), Description = "Successful operation")]
+        [SwaggerResponse(HttpStatusCode.BadRequest, typeof(BadRequestObjectResult), Description = "Bad Request operation")]
         public async Task<ActionResult<Guid>> PlaceOrder([FromBody] PlaceOrderCommand command)
         {
             var orderNumber = await Mediator.Send(command);
@@ -42,7 +51,11 @@ namespace Ordering.Management.Controllers
         
         [HttpPut("{orderNumber:guid}/review")]
         [Authorize(Roles = "Seller")]
-        public async Task<IActionResult> ReviewOrder([FromRoute] Guid orderNumber, [FromBody] ReviewOrderCommand command)
+        [Produces(MediaTypeNames.Application.Json)]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [SwaggerResponse(HttpStatusCode.NoContent, typeof(ActionResult), Description = "Successful operation")]
+        [SwaggerResponse(HttpStatusCode.BadRequest, typeof(BadRequestObjectResult), Description = "Bad Request operation")]
+        public async Task<ActionResult> ReviewOrder([FromRoute] Guid orderNumber, [FromBody] ReviewOrderCommand command)
         {
             if (orderNumber != command.OrderNumber)
             {
@@ -55,7 +68,11 @@ namespace Ordering.Management.Controllers
         
         [HttpPut("{orderNumber:guid}/progress")]
         [Authorize(Roles = "Seller")]
-        public async Task<ActionResult<int>> SetInProgress([FromRoute] Guid orderNumber, [FromBody] SetInProgressOrderCommand command)
+        [Produces(MediaTypeNames.Application.Json)]
+        [Consumes(MediaTypeNames.Application.Json)]
+        [SwaggerResponse(HttpStatusCode.NoContent, typeof(ActionResult), Description = "Successful operation")]
+        [SwaggerResponse(HttpStatusCode.BadRequest, typeof(BadRequestObjectResult), Description = "Bad Request operation")]
+        public async Task<ActionResult> SetInProgress([FromRoute] Guid orderNumber, [FromBody] SetInProgressOrderCommand command)
         {
             if (orderNumber != command.OrderNumber)
             {
@@ -83,23 +100,24 @@ namespace Ordering.Management.Controllers
         
         [HttpPost("{orderNumber:guid}/resolutions")]
         [Authorize(Roles = "Seller")]
-        public async Task<ActionResult<Guid>> SubmitResolution([FromRoute] Guid orderNumber, [FromForm] FileUploadForm model)
+        [Produces(MediaTypeNames.Application.Json)]
+        [Consumes("multipart/form-data")]
+        public async Task<ActionResult<Guid>> SubmitResolution([FromRoute] Guid orderNumber, [FromForm] IFormFile file)
         {
-            var extension = Path.GetExtension(model.File.FileName);
-            var command = new CreateResolutionCommand(orderNumber, model.Version, extension, model.File.OpenReadStream());
+            var extension = Path.GetExtension(file.FileName);
+            var version = Guid.NewGuid().ToString();
+            var command = new CreateResolutionCommand(orderNumber, version, extension, file.OpenReadStream());
             var resolutionId = await Mediator.Send(command);
             return CreatedAtAction(nameof(GetResolution), new { orderNumber, resolutionId }, 
                 new { orderNumber = orderNumber.ToString(), resolutionId });
         }
         
-        [HttpPut("{orderNumber:guid}/resolutions/{resolutionId:int}/acceptance")]
+        [HttpPut("{orderNumber:guid}/resolutions/{resolutionId:int}")]
         [Authorize(Roles = "Buyer")]
-        public async Task<ActionResult<Guid>> AcceptResolution([FromRoute] Guid orderNumber, int resolutionId)
+        public async Task<ActionResult<Guid>> AcceptResolution([FromRoute] int resolutionId)
         {
             await Mediator.Send(new AcceptResolutionCommand(resolutionId));
             return NoContent();
         }
     }
-
-    public record FileUploadForm(string Version, IFormFile File);
 }

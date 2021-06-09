@@ -11,7 +11,7 @@ namespace Ordering.Infrastructure.Persistence.Configurations
             builder.HasAlternateKey(b => b.UserId).IsClustered(false);
             
             builder.HasMany(b => b.Orders)
-                .WithOne()
+                .WithOne(x => x.Buyer)
                 .HasForeignKey(b => b.BuyerId)
                 .OnDelete(DeleteBehavior.SetNull);
         }

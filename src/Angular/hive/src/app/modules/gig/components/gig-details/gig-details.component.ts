@@ -25,7 +25,6 @@ export class GigDetailsComponent implements OnInit {
 
   public gig$!: Observable<GigDto>;
   public profile$!: Observable<UserProfileDto | undefined>;
-  public asyncTabs: Observable<ExampleTab[]>;
 
   public canModify: boolean = true;
 
@@ -37,15 +36,6 @@ export class GigDetailsComponent implements OnInit {
     private userProfileService: ProfileService,
     public dialog: MatDialog
   ) {
-    this.asyncTabs = new Observable((observer: Observer<ExampleTab[]>) => {
-      setTimeout(() => {
-        observer.next([
-          {label: 'First', content: 'Content 1'},
-          {label: 'Second', content: 'Content 2'},
-          {label: 'Third', content: 'Content 3'},
-        ]);
-      }, 1000);
-    });
   }
 
   ngOnInit(): void {
@@ -53,6 +43,8 @@ export class GigDetailsComponent implements OnInit {
     if (idParam == null)
       throwError('Empty id parameter');
     const id = +idParam!;
+
+    debugger;
 
     this.profile$ = this.userProfileService.getProfile();
     this.gig$ = this.gigsService.getGigDetailsById(id)
@@ -67,11 +59,7 @@ export class GigDetailsComponent implements OnInit {
     const dialogRef = this.dialog.open(GigEditComponent, {
       width: '50%',
       data: gig
-    })
-
-    dialogRef.afterClosed().subscribe(result => {
-      
-    })
+    });
   }
 
 }

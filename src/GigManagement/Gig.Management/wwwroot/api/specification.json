@@ -585,7 +585,7 @@
         "tags": [
           "Gigs"
         ],
-        "operationId": "Gigs_Post",
+        "operationId": "Gigs_CreateGig",
         "requestBody": {
           "x-name": "command",
           "content": {
@@ -707,7 +707,7 @@
           "x-position": 2
         },
         "responses": {
-          "201": {
+          "204": {
             "description": "Successful operation",
             "content": {
               "application/octet-stream": {
@@ -1023,81 +1023,6 @@
         "security": [
           {
             "JWT": []
-          }
-        ]
-      },
-      "post": {
-        "tags": [
-          "Gigs"
-        ],
-        "operationId": "Gigs_CreatePackage",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            },
-            "x-position": 1
-          }
-        ],
-        "requestBody": {
-          "x-name": "command",
-          "content": {
-            "application/json": {
-              "schema": {
-                "nullable": true,
-                "oneOf": [
-                  {
-                    "$ref": "#/components/schemas/CreatePackageCommand"
-                  }
-                ]
-              }
-            }
-          },
-          "x-position": 2
-        },
-        "responses": {
-          "201": {
-            "description": "Successful operation",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "integer",
-                  "format": "int32"
-                }
-              }
-            }
-          },
-          "400": {
-            "description": "Invalid ID supplied",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "Anomaly not found",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
-                }
-              }
-            }
-          }
-        },
-        "security": [
-          {
-            "JWT": [
-              "Seller",
-              " Admin"
-            ]
           }
         ]
       }
@@ -1889,6 +1814,12 @@
             "items": {
               "$ref": "#/components/schemas/QuestionModel"
             }
+          },
+          "packages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PackageModel"
+            }
           }
         }
       },
@@ -1901,98 +1832,6 @@
           },
           "answer": {
             "type": "string"
-          }
-        }
-      },
-      "FileUpload": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "fileData": {
-            "type": "string",
-            "nullable": true
-          }
-        }
-      },
-      "ProblemDetails": {
-        "type": "object",
-        "additionalProperties": {
-          "nullable": true
-        },
-        "properties": {
-          "type": {
-            "type": "string",
-            "nullable": true
-          },
-          "title": {
-            "type": "string",
-            "nullable": true
-          },
-          "status": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "detail": {
-            "type": "string",
-            "nullable": true
-          },
-          "instance": {
-            "type": "string",
-            "nullable": true
-          },
-          "extensions": {
-            "type": "object",
-            "nullable": true,
-            "additionalProperties": {}
-          }
-        }
-      },
-      "UpdateGigCommand": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "id": {
-            "type": "integer",
-            "format": "int32"
-          },
-          "title": {
-            "type": "string"
-          },
-          "description": {
-            "type": "string"
-          },
-          "isDraft": {
-            "type": "boolean"
-          },
-          "planId": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "tags": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          },
-          "questions": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/QuestionModel"
-            }
-          }
-        }
-      },
-      "CreatePackageCommand": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "packages": {
-            "type": "array",
-            "items": {
-              "$ref": "#/components/schemas/PackageModel"
-            }
           }
         }
       },
@@ -2073,6 +1912,93 @@
           0,
           1
         ]
+      },
+      "FileUpload": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "fileData": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "additionalProperties": {
+          "nullable": true
+        },
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          },
+          "extensions": {
+            "type": "object",
+            "nullable": true,
+            "additionalProperties": {}
+          }
+        }
+      },
+      "UpdateGigCommand": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "categoryId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "isDraft": {
+            "type": "boolean"
+          },
+          "planId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "tags": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "questions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/QuestionModel"
+            }
+          },
+          "image": {
+            "type": "string"
+          }
+        }
       },
       "UpdatePackageCommand": {
         "type": "object",

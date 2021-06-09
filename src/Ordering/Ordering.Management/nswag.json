@@ -110,7 +110,7 @@
       "enumNameGeneratorType": null,
       "serviceHost": null,
       "serviceSchemes": null,
-      "output": "../../Angular/src/app/clients/ordering-client.ts"
+      "output": "../../Angular/hive/src/app/clients/ordering-client.ts"
     }
   }
 }

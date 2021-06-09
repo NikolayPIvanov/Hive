@@ -14,7 +14,7 @@ using Ordering.Domain.Entities;
 
 namespace Ordering.Application.Orders.Commands
 {
-    public record PlaceOrderCommand(decimal UnitPrice, string Requirements,
+    public record PlaceOrderCommand(decimal UnitPrice, int Quantity, string Requirements,
             string SellerUserId, int PackageId) : IRequest<Guid>;
 
     public class PlaceOrderCommandValidator : AbstractValidator<PlaceOrderCommand>
@@ -65,7 +65,8 @@ namespace Ordering.Application.Orders.Commands
                 throw new NotFoundException(nameof(Buyer), _currentUserService.UserId);
             }
 
-            var order = new Order(request.UnitPrice, request.Requirements, request.PackageId, buyerId.Id, request.SellerUserId);
+            var totalPrice = request.Quantity * request.UnitPrice;
+            var order = new Order(request.UnitPrice, request.Quantity, totalPrice, request.Requirements, request.PackageId, buyerId.Id, request.SellerUserId);
             order.AddDomainEvent(new OrderPlacedEvent(order, buyerId.UserId));
 
             _context.Orders.Add(order);
