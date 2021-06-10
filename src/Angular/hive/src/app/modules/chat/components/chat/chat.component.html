@@ -1,8 +1,8 @@
-<div fxLayout="row" *ngIf="source | async; let messages" class="container full-height">
+<div fxLayout="row" fxLayoutGap="2rem" *ngIf="source | async; let messages" class="container full-height">
   <div  fxLayout="column">
     <div fxLayout="column">
       <!-- new chat -->
-      <h4>Basic mat-select</h4>
+      <h3>Start a new chat with:</h3>
       <mat-form-field appearance="fill">
         <mat-label>New chat</mat-label>
         <mat-select (selectionChange)="selected($event)">
@@ -13,6 +13,7 @@
       </mat-form-field>
     </div>
 
+    <h3>Already started chatted with:</h3>
     <div *ngIf="unifiers" fxLayout="column">
       <mat-selection-list #roomsList [multiple]="false" (selectionChange)="onRoomSelected($event)">
         <mat-list-option *ngFor="let room of chatService.rooms$ | async" [value]="room">

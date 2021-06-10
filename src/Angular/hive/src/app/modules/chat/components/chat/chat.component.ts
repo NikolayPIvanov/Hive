@@ -74,6 +74,7 @@ export class ChatComponent implements OnInit {
               next: (rooms) => {
                 if (rooms && rooms.length > 0) {
                   this.chatService.setRoom(rooms[0])
+                  this.chatService.roomMessages.subscribe()
                 }
               }
             }))
@@ -93,6 +94,7 @@ export class ChatComponent implements OnInit {
                 })
 
                 this.unifiers = result;
+                this.getOtherChatPersonProfile()
 
                 return result;
               }))
@@ -112,7 +114,6 @@ export class ChatComponent implements OnInit {
   }
 
   selected($event: any) {
-    debugger;
     const index = (Array.from(this.chatService.rooms)).findIndex(r => 
       (r.participantOne == this.chatService.identifier.uniqueIdentifier
       && r.participantTwo == $event.value.uuid)
