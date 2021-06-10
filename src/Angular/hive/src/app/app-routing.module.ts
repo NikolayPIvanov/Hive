@@ -21,6 +21,9 @@ const routes: Routes = [
   {
     path: 'billing', loadChildren: () => import('src/app/modules/billing/billing.module').then(m => m.BillingModule),
   },
+  {
+    path: 'chat', loadChildren: () => import('src/app/modules/chat/chat.module').then(m => m.ChatModule),
+  },
   { path: '', redirectTo: 'home', pathMatch: 'full' }
 ];
 

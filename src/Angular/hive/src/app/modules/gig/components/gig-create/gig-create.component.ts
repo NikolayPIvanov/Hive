@@ -57,7 +57,6 @@ export class GigCreateComponent implements OnInit {
   }
 
   onSubmit() {
-    debugger;
     const command = CreateGigCommand.fromJS(this.gigForm.value);
       this.gigsApiClient.createGig(command)
         .pipe(

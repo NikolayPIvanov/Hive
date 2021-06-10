@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Mime;
@@ -18,6 +19,11 @@ namespace UserProfile.Management.Controllers
     [Authorize]
     public class ProfileController : ApiControllerBase
     {
+        [HttpGet("all")]
+        [Produces(MediaTypeNames.Application.Json)]
+        [SwaggerResponse(StatusCodes.Status200OK, typeof(ICollection<UserProfileDto>))]
+        public async Task<ActionResult<ICollection<UserProfileDto>>> GetProfiles() => Ok(await Mediator.Send(new GetUserProfilesQuery()));
+        
         [HttpGet]
         [Produces(MediaTypeNames.Application.Json)]
         [SwaggerResponse(StatusCodes.Status200OK, typeof(UserProfileDto))]

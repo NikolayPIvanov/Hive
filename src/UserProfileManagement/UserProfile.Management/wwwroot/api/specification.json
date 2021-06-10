@@ -6,6 +6,29 @@
     "version": "1.0.0"
   },
   "paths": {
+    "/api/Profile/all": {
+      "get": {
+        "tags": [
+          "Profile"
+        ],
+        "operationId": "Profile_GetProfiles",
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/UserProfileDto"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/Profile": {
       "get": {
         "tags": [

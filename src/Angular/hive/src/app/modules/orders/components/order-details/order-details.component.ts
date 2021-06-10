@@ -34,7 +34,6 @@ export class OrderDetailsComponent implements OnInit {
         })
     )
     
-    debugger;
     this.authService.user?.profile;
   }
 

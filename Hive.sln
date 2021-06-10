@@ -84,6 +84,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Billing.Management", "src\B
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UserProfile.Management", "src\UserProfileManagement\UserProfile.Management\UserProfile.Management.csproj", "{38929CB6-74A5-4BB1-A252-1BA8F91B0356}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Chat", "Chat", "{4714701E-F404-45A5-884A-A13C19C08680}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Hive.Chat", "src\Chat\Hive.Chat\Hive.Chat.csproj", "{B62DE5E8-F6D9-45DE-B7AE-6FCF133ED251}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -202,6 +206,10 @@ Global
 		{38929CB6-74A5-4BB1-A252-1BA8F91B0356}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{38929CB6-74A5-4BB1-A252-1BA8F91B0356}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{38929CB6-74A5-4BB1-A252-1BA8F91B0356}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B62DE5E8-F6D9-45DE-B7AE-6FCF133ED251}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B62DE5E8-F6D9-45DE-B7AE-6FCF133ED251}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B62DE5E8-F6D9-45DE-B7AE-6FCF133ED251}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B62DE5E8-F6D9-45DE-B7AE-6FCF133ED251}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -243,6 +251,8 @@ Global
 		{C5016945-BE5F-4E8F-B8C1-55DF7EEF9934} = {D2BF2D43-AF5B-4528-AF7B-D5F212B3A05E}
 		{A25A3019-1ACE-4BE6-8105-907FF4966A43} = {0C0C3FD3-1C83-490B-BCAB-193B4D434F72}
 		{38929CB6-74A5-4BB1-A252-1BA8F91B0356} = {76FBDAA3-BF4F-4A4A-B097-14D469FC06CD}
+		{4714701E-F404-45A5-884A-A13C19C08680} = {6ED356A7-8B47-4613-AD01-C85CF28491BD}
+		{B62DE5E8-F6D9-45DE-B7AE-6FCF133ED251} = {4714701E-F404-45A5-884A-A13C19C08680}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3CB609D9-5D54-4C11-A371-DAAC8B74E430}

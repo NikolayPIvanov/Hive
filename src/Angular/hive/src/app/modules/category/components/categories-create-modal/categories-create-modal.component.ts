@@ -39,8 +39,7 @@ export class CategoriesCreateModalComponent implements OnInit {
     this.categoriesClient.getCategories(1, 1, false, categoryName)
       .pipe(tap({
         next: (categoriesList) => {
-          debugger
-          const id = categoriesList.items![0].id;
+                const id = categoriesList.items![0].id;
           this.categoryForm.patchValue({ parentId: id })
         }
       }))
@@ -48,7 +47,6 @@ export class CategoriesCreateModalComponent implements OnInit {
   }
 
   onSubmit(): void {
-    debugger
     const command = CreateCategoryCommand.fromJS(this.categoryForm.value);
     this.categoriesClient.createCategory(command)
       .pipe(

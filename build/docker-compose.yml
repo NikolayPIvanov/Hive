@@ -15,6 +15,11 @@ services:
     image: "redis:alpine"
     ports:
       - "6379:6379"
+
+  mongo:
+    image: "mongo"
+    ports:
+      - "27017:27017"
     
   azurite:
     image: "mcr.microsoft.com/azure-storage/azurite"

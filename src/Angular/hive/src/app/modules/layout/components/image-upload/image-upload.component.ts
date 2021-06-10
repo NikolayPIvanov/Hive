@@ -67,7 +67,6 @@ export class ImageUploadComponent implements OnInit {
     let reader = new FileReader();
     reader.addEventListener("load", () =>
     {
-      debugger;
       const base64Image = this.domSanitizer.bypassSecurityTrustUrl(reader.result as string);
       this.dataSource = (base64Image as string)
     }, false);

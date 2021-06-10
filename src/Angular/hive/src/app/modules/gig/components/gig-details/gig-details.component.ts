@@ -44,7 +44,6 @@ export class GigDetailsComponent implements OnInit {
       throwError('Empty id parameter');
     const id = +idParam!;
 
-    debugger;
 
     this.profile$ = this.userProfileService.getProfile();
     this.gig$ = this.gigsService.getGigDetailsById(id)
