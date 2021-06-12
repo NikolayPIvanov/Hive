@@ -6,8 +6,7 @@
 <div class="mat-elevation-z8" style="position: relative">
     <ngx-spinner [fullScreen]="false" name="inner"></ngx-spinner>
 
-    <ng-container 
-    *ngIf="(transactions$ | async)?.items && (transactions$ | async); let transactions; else notransactions">
+    <ng-container *ngIf="transactions$ | async; else notransactions">
     <mat-table [dataSource]="dataSource">
 
       <!-- Position Column -->

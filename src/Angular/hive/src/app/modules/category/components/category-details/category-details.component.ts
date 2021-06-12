@@ -3,7 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { Observable } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { switchMap, tap } from 'rxjs/operators';
 import { CategoriesClient, CategoryDto, UpdateCategoryCommand } from 'src/app/clients/gigs-client';
 
 export interface Section {
@@ -34,17 +34,28 @@ export class CategoryDetailsComponent implements OnInit {
     @Inject(MAT_DIALOG_DATA) public category: CategoryDto) { }
 
   ngOnInit(): void {
-    this.spinner.show();
     this.categoryForm.patchValue(this.category);
     this.categoryForm.patchValue({ parentId: this.category.parentOverview?.id})
-    this.spinner.hide();
+  }
+
+  onSelected(category: CategoryDto | undefined) {
+    const item = category ? category.id! : undefined;
+    this.categoryForm.patchValue({ parentId: item})
   }
 
   onSubmit(): void {
     this.spinner.show()
     const command = UpdateCategoryCommand.fromJS(this.categoryForm.value)
     this.categoryApiClient.updateCategory(this.category.id!, command)
-      .pipe(tap({ complete: () => this.spinner.hide() }))
+      .pipe(
+        switchMap(id => this.categoryApiClient.getCategoryById(command.id!) ),
+        tap({
+          next: (category) => this.dialogRef.close(category),
+          complete: () => {
+            this.spinner.hide();
+          }
+        })
+      )
       .subscribe();
   }
 

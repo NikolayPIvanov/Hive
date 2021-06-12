@@ -1,38 +1,31 @@
-<div
-    fxLayout="column"
-    fxLayoutGap="2rem"
-    class="container">
+<ng-container *ngIf="categories$ | async; else noCategories">
+  <div fxLayout="column" fxLayoutGap="2rem" class="container">
 
     <mat-accordion>
-        <mat-expansion-panel>
-          <mat-expansion-panel-header>
-            <mat-panel-title>
-                Categories Control Dashboard
-            </mat-panel-title>
-            <mat-panel-description>
-              Expand to explore filter options
-            </mat-panel-description>
-          </mat-expansion-panel-header>
-        
-          <!-- filter -->
-          <div 
-            fxLayout.gt-lg="row"
-            fxLayoutAlign.gt-lg="space-between">
-            <app-categories-search (onSelectedCategoryName)="selected($event)"></app-categories-search>
-            <app-categories-create (onClosedDialog)="onClosedDialog($event)"></app-categories-create>
-          </div>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+              Categories Control Dashboard
+          </mat-panel-title>
+          <mat-panel-description>
+            Expand to explore filter options
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+      
+        <!-- filter -->
+        <div 
+          fxLayout.gt-lg="row"
+          fxLayoutAlign.gt-lg="space-between">
+          <app-categories-search (onSelectedCategory)="selected($event)"></app-categories-search>
+          <app-categories-create (onClosedDialog)="onClosedDialog($event)"></app-categories-create>
+        </div>
 
-        </mat-expansion-panel>
-      </mat-accordion>
-
-    <div
-        fxLayout="row wrap"
-        fxLayoutGap="2rem"
-        fxLayoutAlign="start center">
-
-        <!-- category-card -->
+      </mat-expansion-panel>
+    </mat-accordion>
+    
+    <div fxLayout="row wrap" fxLayoutGap="2rem" fxLayoutAlign="start center">
         <mat-card 
-          *ngFor="let category of (categories$ | async)?.items"
+          *ngFor="let category of categories"
             class="list-item-card"
             fxLayout="column"
             fxFlex.gt-lg="18"
@@ -49,11 +42,17 @@
             <mat-card-actions 
                 fxLayout.gt-lg="row"
                 fxLayoutAlign.gt-lg="space-between center">
-                <button mat-button (click)="delete(category.id!)">Delete</button>
+                <button mat-button (click)="delete(category)">Delete</button>
                 <button mat-button (click)="openDialog(category)">Details</button>
             </mat-card-actions>
         </mat-card>
 
     </div>
+  </div>
 
-</div>
+</ng-container>
+<ng-template #noCategories>
+  <p>
+    no categories found
+  </p>
+</ng-template>

@@ -13,7 +13,7 @@ namespace Hive.UserProfile.Infrastructure.Persistence.Configurations
             builder.Property(p => p.FirstName).HasMaxLength(50).IsRequired(false);
             builder.Property(p => p.LastName).HasMaxLength(50).IsRequired(false);
             builder.Property(p => p.Education).HasMaxLength(100).IsRequired(false);
-            builder.Property(p => p.Description).HasMaxLength(50).IsRequired(false);
+            builder.Property(p => p.Description).HasMaxLength(2500).IsRequired(false);
 
             // https://docs.microsoft.com/en-us/ef/core/modeling/owned-entities#collections-of-owned-types
             builder.OwnsMany(p => p.Languages, l =>

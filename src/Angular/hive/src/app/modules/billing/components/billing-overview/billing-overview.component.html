@@ -1,4 +1,4 @@
-<div *ngIf="wallet$ | async; let wallet" fxLayout="column" class="container">
+<div *ngIf="wallet$ | async" fxLayout="column" fxLayoutGap="1rem" class="container">
     <div fxLayout="row" fxLayoutAlign="start center" fxLayoutGap="1rem">
         <mat-icon>credit_card</mat-icon>
         <h1>Billing account</h1>
@@ -6,12 +6,12 @@
 
     <app-balance-overview 
         *ngIf="owner$ | async; let owner" 
-        (onTransactionAdded)="onChange($event)" 
         [owner]="owner" 
-        [wallet]="wallet"></app-balance-overview>
+        [wallet]="wallet!"></app-balance-overview>
     
     <mat-divider fxFlexOffset="2" fxFill></mat-divider>
     
-    <app-transactions-overview [wallet]="wallet" fxFlexOffset="2"></app-transactions-overview>
+    <app-transactions-overview [wallet]="wallet!" fxFlexOffset="2">
+    </app-transactions-overview>
     
 </div>

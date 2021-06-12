@@ -1,15 +1,14 @@
 <form [formGroup]="form">
-    <div
-        fxLayout="column">
-        <p>Use the form below to change your seller information.</p>
+    <div fxLayout="column">
+        <h4>Use the form below to change your public information.</h4>
 
         <div fxLayout="row"
             fxLayout.sm="column" fxLayout.xs="column"
             fxLayoutGap="2%">
             <!-- Info -->
-          <div fxFlex="40%" fxFlex.md="45%" fxFlex.sm="50%" fxFlex.xs="100%">
+          <div fxFlex="45%" fxFlex.md="45%" fxFlex.sm="50%" fxFlex.xs="100%">
             
-            <mat-form-field class="full-width">
+            <mat-form-field class="full-width" appearance="outline">
                 <mat-label>Description</mat-label>
                 <textarea 
                     matInput 
@@ -17,24 +16,8 @@
                     formControlName="description">
                 </textarea>
             </mat-form-field>
-    
-            <mat-form-field class="full-width">
-                <mat-label>Education</mat-label>
-                <textarea 
-                    matInput 
-                    placeholder="Information about your current or previous education"
-                    formControlName="education">
-                </textarea>
-            </mat-form-field>
-      
-            <!-- <button mat-raised-button color="primary" [disabled]="form.invalid || disableSubmit" (click)="changePassword()">Save</button> -->
-      
-          </div>
-    
-          <!-- Chips -->
-          <div fxFlex="40%" fxFlex.md="45%" fxFlex.sm="50%" fxFlex.xs="100%">
-            
-            <mat-form-field class="full-width active-input">
+
+            <mat-form-field class="full-width active-input" appearance="outline">
                 <mat-label>Languages</mat-label>
                 <mat-chip-list #chipList aria-label="Languages" formControlName="languages">
                     <mat-chip 
@@ -53,8 +36,22 @@
                         (matChipInputTokenEnd)="add(languages, $event)">
                 </mat-chip-list>
             </mat-form-field>
+            
+          </div>
     
-            <mat-form-field class="full-width mt-1">
+          <div fxFlex="45%" fxFlex.md="45%" fxFlex.sm="50%" fxFlex.xs="100%">
+            
+            <mat-form-field class="full-width" appearance="outline">
+                <mat-label>Education</mat-label>
+                <textarea 
+                    matInput 
+                    placeholder="Information about your current or previous education"
+                    formControlName="education">
+                </textarea>
+            </mat-form-field>
+            
+    
+            <mat-form-field class="full-width" appearance="outline">
                 <mat-label>Skills</mat-label>
                 <mat-chip-list #skillsList aria-label="Skills" formControlName="skills">
                     <mat-chip 
@@ -78,15 +75,16 @@
       
           </div>
     
-          
-          <!-- Email -->
+<!--           
           <div fxFlex="10%" fxFlex.md="45%" fxFlex.sm="50%" fxFlex.xs="100%" fxLayoutAlign.sm="center center" formGroupName="notificationSettings">
             <p>Email Notifications</p>
             <mat-slide-toggle formControlName="emailNotifications">Off/On</mat-slide-toggle>
-          </div>
+          </div> -->
         </div>
 
-        <button mat-raised-button color="primary" (click)="update()">Update</button>
+        <div fxLayout="row">
+            <button mat-raised-button color="primary" (click)="update()">Update</button>
+        </div>
     </div>
   
 </form>

@@ -16,7 +16,7 @@ export class AccountDetailsComponent implements OnInit {
   public download!: Observable<FileResponse>;
   public upload!: (upload: FileUpload) => Observable<any>;
 
-  fullName!: string;
+  fullName: string | undefined;
   email!: string;
 
   constructor(private authService: AuthService,
@@ -28,7 +28,6 @@ export class AccountDetailsComponent implements OnInit {
     this.upload = (upload: FileUpload) => {
       return this.profileClient.changeAvatar(this.profile.id!, upload);
     }
-
 
     this.email = this.authService.user?.profile.email!;
     this.setFullName(this.profile);
@@ -42,7 +41,12 @@ export class AccountDetailsComponent implements OnInit {
   }
 
   setFullName(profile: UserProfileDto) {
-    this.fullName = `${profile.firstName} ${profile.lastName}`;
+    if (!profile.firstName && !profile.lastName) {
+      this.fullName = undefined;
+    }
+    else {
+      this.fullName = `${profile.firstName} ${profile.lastName}`;
+    }
   }
 
 }

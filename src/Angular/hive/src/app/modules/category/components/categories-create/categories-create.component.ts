@@ -1,5 +1,6 @@
 import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { CategoryDto } from 'src/app/clients/gigs-client';
 import { CategoriesCreateModalComponent } from '../categories-create-modal/categories-create-modal.component';
 
 @Component({
@@ -8,14 +9,18 @@ import { CategoriesCreateModalComponent } from '../categories-create-modal/categ
   styleUrls: ['./categories-create.component.scss']
 })
 export class CategoriesCreateComponent implements OnInit {
-  @Output() onClosedDialog = new EventEmitter<number>();
+  @Output() onClosedDialog = new EventEmitter<CategoryDto>();
 
   constructor(public dialog: MatDialog) {}
 
   openDialog(onlyParent: boolean = false) {
-    const dia = this.dialog.open(CategoriesCreateModalComponent, { data: onlyParent });
-    dia.afterClosed()
-      .subscribe(result => this.onClosedDialog.emit(1));
+    const dialog = this.dialog.open(CategoriesCreateModalComponent, { data: onlyParent });
+    dialog.afterClosed()
+      .subscribe(newCategory => {
+        if (newCategory) {
+          this.onClosedDialog.emit(newCategory)
+        }
+      });
   }
 
   ngOnInit(): void {

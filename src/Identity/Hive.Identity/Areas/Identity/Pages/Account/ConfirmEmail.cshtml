@@ -1,0 +1,14 @@
+@page
+@model ConfirmEmailModel
+@{
+    ViewData["Title"] = "Confirm email";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<p>
+    @TempData["StatusMessage"]
+</p>
+<p>
+    Your password has been reset. Please <a asp-page="./Login">click here to log in</a>.
+</p>

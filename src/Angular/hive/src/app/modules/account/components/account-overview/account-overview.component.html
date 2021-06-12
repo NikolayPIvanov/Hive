@@ -1,31 +1,26 @@
-<div *ngIf="profile$ | async; let profile" fxLayout="row" fxLayoutAlign="center none">
+<!-- <div  fxLayout="row">
 
-    <div fxFlex="95%">
+    <div fxFlex>
       <mat-card>
         <mat-card-content fxLayout="column" fxLayoutGap="3%">
-          <h2>My Profile</h2>
+          <h1>My Profile</h1>
   
           <div fxLayout="row" fxLayout.sm="column" fxLayout.xs="column">
   
             <div fxFlex="30%" fxFlex.sm="95%" fxFlex.xs="95%">
               <app-account-details [profile]="profile"></app-account-details>
             </div>
-  
-            <div fxFlex></div>
-  
+    
             <div fxFlex="65%" fxFlex.sm="95%" fxFlex.xs="950%">
-  
               <mat-tab-group>
                 <mat-tab label="Change Information">
                   <app-change-information [profile]="profile"></app-change-information>
-                </mat-tab>
+                </mat-tab> -->
 
                 <!-- <mat-tab label="Change Password">
                   <app-change-password></app-change-password>
                 </mat-tab> -->
-              </mat-tab-group>
-  
-  
+              <!-- </mat-tab-group>
             </div>
   
           </div>
@@ -41,5 +36,51 @@
         </mat-card-content>
       </mat-card>
     </div>
-  
   </div>
+
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>title</mat-card-title>
+      <mat-card-subtitle>subtitle</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+    
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-button>Ok</button>
+    </mat-card-actions>
+  </mat-card> -->
+
+<ng-container *ngIf="profile$ | async; let profile; else noprofile"> 
+  <mat-card fxLayout="column" class="container">
+    <mat-card-header>
+      <mat-card-title>My Profile</mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content fxLayout="column">
+      <div fxLayout="row" fxLayoutGap="3rem">
+        <app-account-details fxFlex="30%" [profile]="profile"></app-account-details>
+        <mat-tab-group fxFlex="30%">
+          <mat-tab label="Change Information">
+            <app-change-information [profile]="profile"></app-change-information>
+          </mat-tab>
+        </mat-tab-group>
+      </div>
+
+      <div *ngIf="isSeller">
+        <mat-divider [inset]="true"> </mat-divider>
+
+        <h2>My Seller/Vendor Information</h2>
+
+        <app-account-seller-information [profile]="profile"></app-account-seller-information>
+      </div>
+      
+    </mat-card-content>
+  </mat-card>
+</ng-container>
+<ng-template #noprofile>
+  <p>
+    Sorry, we could not load your profile, please try later.
+  </p>
+</ng-template>
+  

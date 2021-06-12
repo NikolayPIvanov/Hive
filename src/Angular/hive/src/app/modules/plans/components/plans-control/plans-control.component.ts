@@ -41,7 +41,6 @@ export class PlansControlComponent implements OnInit, AfterViewInit  {
   }
 
   onChange(event: PlanListChangeEvent) {
-    debugger;
     const index = this.dataSource.data.findIndex(p => p.id == event.item.id!)
     let copy = this.dataSource.data;
     if (event.type == ChangeType.Update) {

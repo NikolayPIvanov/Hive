@@ -13,7 +13,7 @@ import { CategoriesClient, CategoryDto } from 'src/app/clients/gigs-client';
 export class CategoriesSearchComponent implements OnInit {
   @Input() init: string | null = null;
   @Input() includeParents: boolean = true;
-  @Output() onSelectedCategoryName = new EventEmitter<string>();
+  @Output() onSelectedCategory = new EventEmitter<CategoryDto>();
 
   autocompleteControl = new FormControl('');
   filteredOptions: Observable<CategoryDto[]> | undefined;
@@ -22,7 +22,13 @@ export class CategoriesSearchComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.init) {
-      this.autocompleteControl.setValue(this.init);
+      this.categoriesApiClient.getCategories(1, 1, true, this.init)
+        .subscribe(list => {
+          if (list && list.items) {
+            this.autocompleteControl.setValue(list.items![0]);
+          }
+
+        })
     }
 
     this.filteredOptions = this.autocompleteControl.valueChanges
@@ -37,7 +43,7 @@ export class CategoriesSearchComponent implements OnInit {
   }
 
   filter(val: string): Observable<any[]> {
-    return this.categoriesApiClient.getCategories(1, 5, false, val)
+    return this.categoriesApiClient.getCategories(1, 5, true, val)
      .pipe(
        map(response => {
          if (response && response.items) {
@@ -53,7 +59,16 @@ export class CategoriesSearchComponent implements OnInit {
      )
   }
 
+  displayFunc = (selected: any) => {
+    return selected ? selected.title : undefined;
+  }
+
+  onCleared() {
+    this.autocompleteControl.setValue('')
+    this.onSelectedCategory.emit(undefined)
+  }
+
   onSelected($event: MatAutocompleteSelectedEvent) {
-    this.onSelectedCategoryName.emit($event.option.value)
+    this.onSelectedCategory.emit($event.option.value)
   }
 }

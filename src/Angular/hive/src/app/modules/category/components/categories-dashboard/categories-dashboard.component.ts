@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { MatDialog } from '@angular/material/dialog';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { map, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { CategoriesClient, CategoryDto, PaginatedListOfCategoryDto } from 'src/app/clients/gigs-client';
 import { CategoryDetailsComponent } from '../category-details/category-details.component';
@@ -13,11 +13,15 @@ import { CategoryDetailsComponent } from '../category-details/category-details.c
   styleUrls: ['./categories-dashboard.component.scss']
 })
 export class CategoriesDashboardComponent implements OnInit {
-  pageNumber = 1;
+  pageNumber = 0;
   pageSize = 10;
+  pageOptions = [5, 10, 25];
+  length = 0;
   searchKey: string | null = null;
 
-  public categories$!: Observable<PaginatedListOfCategoryDto>;
+  private categoriesSubject = new BehaviorSubject<PaginatedListOfCategoryDto | undefined>(undefined);
+  public categories$ = this.categoriesSubject.asObservable();
+  public categories: CategoryDto[] = [];
 
   constructor(
     public dialog: MatDialog,
@@ -25,21 +29,26 @@ export class CategoriesDashboardComponent implements OnInit {
     private categoriesApiClient: CategoriesClient) { }
 
   ngOnInit(): void {
-    this.fetchCategories();
+    this.fetchCategories()
   }
 
-  selected(name: string) {
-    this.searchKey = name;
-    this.fetchCategories();
+  selected(category: CategoryDto) {
+    if (category) {
+      this.categories = [category]
+    }
+    else {
+      this.fetchCategories();
+    }
   }
-
-  onClosedDialog(number: any) {
-    this.fetchCategories();
-  }
-
-  delete(id: number) {
-    this.categoriesApiClient.deleteCategory(id)
-      .pipe(map(x => this.fetchCategories()))
+  delete(category: CategoryDto) {
+    this.categoriesApiClient.deleteCategory(category.id!)
+      .pipe(tap({
+        next: () => {
+          const index = this.categories.indexOf(category);
+          if (index > -1) {
+            this.categories.splice(index, 1);
+          }
+      }}))
       .subscribe()
   }
 
@@ -51,20 +60,39 @@ export class CategoriesDashboardComponent implements OnInit {
     });
 
     dialogRef.afterClosed()
-      .pipe(tap({ complete: () => this.fetchCategories() }))
+      .pipe(tap({
+        next: (updatedCategory) => {
+          const index = this.categories.indexOf(category);
+          if (updatedCategory && index > -1) {
+            this.categories.splice(index, 1, updatedCategory);
+          }
+        }
+      }))
       .subscribe();
   }
+
+  onClosedDialog(category: CategoryDto) {
+    this.categories.push(category)
+    this.length += 1;
+  }
+
 
   private fetchCategories() {
     this.spinner.show();
 
-    this.categories$ = this.categoriesApiClient
-      .getCategories(this.pageNumber, this.pageSize, undefined, this.searchKey)
+    this.categoriesApiClient
+      .getCategories(this.pageNumber + 1, this.pageSize, true, this.searchKey)
       .pipe(tap(
         {
+          next: (list) => {
+            this.categoriesSubject.next(list);
+            this.categories = list.items!
+            this.length = list.totalCount!;
+          },
           complete: () => { this.spinner.hide() }
         }
-      ));
+      ))
+    .subscribe()
   }
 
 }

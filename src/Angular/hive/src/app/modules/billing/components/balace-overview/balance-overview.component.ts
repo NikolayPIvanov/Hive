@@ -15,8 +15,6 @@ export class BalanceOverviewComponent implements OnInit {
   @Input() wallet!: WalletDto;
   @Input() owner!: UserProfileDto;
 
-  @Output() onTransactionAdded = new EventEmitter<number>();
-
   constructor(public dialog: MatDialog, private authService: AuthService) { }
 
   ngOnInit(): void {
@@ -29,10 +27,9 @@ export class BalanceOverviewComponent implements OnInit {
     })
 
     dialogRef.afterClosed()
-      .subscribe(depositedAmount => {
-        if (depositedAmount) {
-          this.wallet.balance += depositedAmount;
-          this.onTransactionAdded.emit(0);
+      .subscribe((transactionDto: TransactionDto) => {
+        if (transactionDto) {
+          this.wallet.balance! += transactionDto.amount!;
         }
       })
   }

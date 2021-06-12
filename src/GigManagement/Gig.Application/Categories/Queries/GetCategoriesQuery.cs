@@ -15,8 +15,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Hive.Gig.Application.Categories.Queries
 {
-    public record ParametersQuery(int PageNumber = 1, int PageSize = 10, bool OnlyParents = false,
-        string? SearchKey = null);
+    public record ParametersQuery(int PageNumber = 1, int PageSize = 10, bool IncludeParentCategories = false, string? SearchKey = null);
 
     public record GetCategoriesQuery(ParametersQuery Query) : IRequest<PaginatedList<CategoryDto>>;
 
@@ -43,10 +42,10 @@ namespace Hive.Gig.Application.Categories.Queries
                 .AsNoTracking()
                 .AsQueryable();
 
-            var (pageNumber, pageSize, onlyParents, searchKey) = request.Query;
-            if (onlyParents)
+            var (pageNumber, pageSize, includeParentCategories, searchKey) = request.Query;
+            if (!includeParentCategories)
             {
-                query = query.Where(c => !c.ParentId.HasValue);
+                query = query.Where(c => c.ParentId.HasValue);
             }
 
             if (searchKey != null)
@@ -59,7 +58,7 @@ namespace Hive.Gig.Application.Categories.Queries
 
             _logger.LogInformation(
                 "Successfully executed query for categories - {@PageNumber} {@PageSize} {@OnlyParents}", pageNumber,
-                pageSize, onlyParents);
+                pageSize, includeParentCategories);
             
             return list;
         }

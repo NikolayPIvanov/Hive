@@ -30,7 +30,11 @@ export interface IAccountHoldersClient {
      * @param command (optional) 
      * @return Successful operation
      */
-    depositInWallet(walletId: number, accountHolderId: string, command: CreateTransactionCommand | null | undefined): Observable<number>;
+    depositInWallet(accountHolderId: number, walletId: number, command: CreateTransactionCommand | null | undefined): Observable<number>;
+    /**
+     * @return Successful operation
+     */
+    getTransactionById(accountHolderId: number, walletId: number, transactionNumber: number): Observable<TransactionDto>;
 }
 
 @Injectable({
@@ -187,14 +191,14 @@ export class AccountHoldersClient implements IAccountHoldersClient {
      * @param command (optional) 
      * @return Successful operation
      */
-    depositInWallet(walletId: number, accountHolderId: string, command: CreateTransactionCommand | null | undefined): Observable<number> {
+    depositInWallet(accountHolderId: number, walletId: number, command: CreateTransactionCommand | null | undefined): Observable<number> {
         let url_ = this.baseUrl + "/api/AccountHolders/{accountHolderId}/wallets/{walletId}/transactions";
-        if (walletId === undefined || walletId === null)
-            throw new Error("The parameter 'walletId' must be defined.");
-        url_ = url_.replace("{walletId}", encodeURIComponent("" + walletId));
         if (accountHolderId === undefined || accountHolderId === null)
             throw new Error("The parameter 'accountHolderId' must be defined.");
         url_ = url_.replace("{accountHolderId}", encodeURIComponent("" + accountHolderId));
+        if (walletId === undefined || walletId === null)
+            throw new Error("The parameter 'walletId' must be defined.");
+        url_ = url_.replace("{walletId}", encodeURIComponent("" + walletId));
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(command);
@@ -257,6 +261,73 @@ export class AccountHoldersClient implements IAccountHoldersClient {
             }));
         }
         return _observableOf<number>(<any>null);
+    }
+
+    /**
+     * @return Successful operation
+     */
+    getTransactionById(accountHolderId: number, walletId: number, transactionNumber: number): Observable<TransactionDto> {
+        let url_ = this.baseUrl + "/api/AccountHolders/{accountHolderId}/wallets/{walletId}/transactions/{transactionNumber}";
+        if (accountHolderId === undefined || accountHolderId === null)
+            throw new Error("The parameter 'accountHolderId' must be defined.");
+        url_ = url_.replace("{accountHolderId}", encodeURIComponent("" + accountHolderId));
+        if (walletId === undefined || walletId === null)
+            throw new Error("The parameter 'walletId' must be defined.");
+        url_ = url_.replace("{walletId}", encodeURIComponent("" + walletId));
+        if (transactionNumber === undefined || transactionNumber === null)
+            throw new Error("The parameter 'transactionNumber' must be defined.");
+        url_ = url_.replace("{transactionNumber}", encodeURIComponent("" + transactionNumber));
+        url_ = url_.replace(/[?&]$/, "");
+
+        let options_ : any = {
+            observe: "response",
+            responseType: "blob",
+            headers: new HttpHeaders({
+                "Accept": "application/json"
+            })
+        };
+
+        return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
+            return this.processGetTransactionById(response_);
+        })).pipe(_observableCatch((response_: any) => {
+            if (response_ instanceof HttpResponseBase) {
+                try {
+                    return this.processGetTransactionById(<any>response_);
+                } catch (e) {
+                    return <Observable<TransactionDto>><any>_observableThrow(e);
+                }
+            } else
+                return <Observable<TransactionDto>><any>_observableThrow(response_);
+        }));
+    }
+
+    protected processGetTransactionById(response: HttpResponseBase): Observable<TransactionDto> {
+        const status = response.status;
+        const responseBlob =
+            response instanceof HttpResponse ? response.body :
+            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
+
+        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
+        if (status === 200) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = TransactionDto.fromJS(resultData200);
+            return _observableOf(result200);
+            }));
+        } else if (status === 404) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            let result404: any = null;
+            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result404 = resultData404 !== undefined ? resultData404 : <any>null;
+            return throwException("Not Found operation", status, _responseText, _headers, result404);
+            }));
+        } else if (status !== 200 && status !== 204) {
+            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            }));
+        }
+        return _observableOf<TransactionDto>(<any>null);
     }
 }
 

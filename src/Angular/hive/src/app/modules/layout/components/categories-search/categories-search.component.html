@@ -6,10 +6,14 @@
              placeholder="Search category by name"
              aria-label="Search category by name"
              matInput
+             #searchText
              [formControl]="autocompleteControl"
              [matAutocomplete]="auto">
-      <mat-autocomplete #auto="matAutocomplete" (optionSelected)="onSelected($event)">
-        <mat-option *ngFor="let option of filteredOptions | async" [value]="option.title">
+      <button *ngIf="searchText.value" matSuffix mat-icon-button aria-label="Clear" (click)="onCleared()">
+        <mat-icon>close</mat-icon>
+      </button>
+      <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFunc" (optionSelected)="onSelected($event)">
+        <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
           {{option.title }}
         </mat-option>
       </mat-autocomplete>

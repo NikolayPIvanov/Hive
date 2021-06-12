@@ -31,11 +31,11 @@ export interface ICategoriesClient {
     /**
      * @param pageNumber (optional) 
      * @param pageSize (optional) 
-     * @param onlyParents (optional) 
+     * @param includeParentCategories (optional) 
      * @param searchKey (optional) 
      * @return Successful operation
      */
-    getCategories(pageNumber: number | undefined, pageSize: number | undefined, onlyParents: boolean | undefined, searchKey: string | null | undefined): Observable<PaginatedListOfCategoryDto>;
+    getCategories(pageNumber: number | undefined, pageSize: number | undefined, includeParentCategories: boolean | undefined, searchKey: string | null | undefined): Observable<PaginatedListOfCategoryDto>;
     /**
      * @param command (optional) 
      * @return Successful operation
@@ -257,11 +257,11 @@ export class CategoriesClient implements ICategoriesClient {
     /**
      * @param pageNumber (optional) 
      * @param pageSize (optional) 
-     * @param onlyParents (optional) 
+     * @param includeParentCategories (optional) 
      * @param searchKey (optional) 
      * @return Successful operation
      */
-    getCategories(pageNumber: number | undefined, pageSize: number | undefined, onlyParents: boolean | undefined, searchKey: string | null | undefined): Observable<PaginatedListOfCategoryDto> {
+    getCategories(pageNumber: number | undefined, pageSize: number | undefined, includeParentCategories: boolean | undefined, searchKey: string | null | undefined): Observable<PaginatedListOfCategoryDto> {
         let url_ = this.baseUrl + "/api/Categories?";
         if (pageNumber === null)
             throw new Error("The parameter 'pageNumber' cannot be null.");
@@ -271,10 +271,10 @@ export class CategoriesClient implements ICategoriesClient {
             throw new Error("The parameter 'pageSize' cannot be null.");
         else if (pageSize !== undefined)
             url_ += "PageSize=" + encodeURIComponent("" + pageSize) + "&";
-        if (onlyParents === null)
-            throw new Error("The parameter 'onlyParents' cannot be null.");
-        else if (onlyParents !== undefined)
-            url_ += "OnlyParents=" + encodeURIComponent("" + onlyParents) + "&";
+        if (includeParentCategories === null)
+            throw new Error("The parameter 'includeParentCategories' cannot be null.");
+        else if (includeParentCategories !== undefined)
+            url_ += "IncludeParentCategories=" + encodeURIComponent("" + includeParentCategories) + "&";
         if (searchKey !== undefined && searchKey !== null)
             url_ += "SearchKey=" + encodeURIComponent("" + searchKey) + "&";
         url_ = url_.replace(/[?&]$/, "");

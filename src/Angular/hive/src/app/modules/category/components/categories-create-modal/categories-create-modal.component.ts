@@ -2,8 +2,8 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
-import { takeUntil, tap } from 'rxjs/operators';
-import { CategoriesClient, CreateCategoryCommand } from 'src/app/clients/gigs-client';
+import { switchMap, takeUntil, tap } from 'rxjs/operators';
+import { CategoriesClient, CategoryDto, CreateCategoryCommand } from 'src/app/clients/gigs-client';
 import { NotificationService } from 'src/app/modules/core/services/notification.service';
 
 @Component({
@@ -32,15 +32,20 @@ export class CategoriesCreateModalComponent implements OnInit {
   }
 
   onNoClick(): void {
-    this.dialogRef.close();
+    this.dialogRef.close(undefined);
   }
 
-  selected(categoryName: any) {
-    this.categoriesClient.getCategories(1, 1, false, categoryName)
+  selected(category: CategoryDto) {
+    this.categoriesClient.getCategories(1, 1, true, category.title)
       .pipe(tap({
         next: (categoriesList) => {
-                const id = categoriesList.items![0].id;
-          this.categoryForm.patchValue({ parentId: id })
+          if (categoriesList && categoriesList.items && categoriesList.items.length > 0) {
+            const id = categoriesList.items![0].id;
+            this.categoryForm.patchValue({ parentId: id })
+          }
+          else {
+            this.categoryForm.patchValue({ parentId: null })
+          }
         }
       }))
       .subscribe();
@@ -54,7 +59,10 @@ export class CategoriesCreateModalComponent implements OnInit {
         tap({
           next: (id) => { this.notificationService.openSnackBar('Category created') },
           error: (error) => { this.notificationService.openSnackBar('Category creation failed') },
-          complete: () => this.onNoClick()
+        }),
+        switchMap(id => this.categoriesClient.getCategoryById(id)),
+        tap({
+          next: (category) => this.dialogRef.close(category)
         })
       )
       .subscribe();

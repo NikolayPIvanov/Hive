@@ -1,14 +1,14 @@
-<div class="profile-card" fxLayout="column" >
-    <app-image-upload 
+<div class="profile-card" fxLayout="column" fxLayoutGap="1rem">
+    <app-image-upload
       [source]="profile.avatarFile"
       [download]="download"
       [upload]="upload"></app-image-upload>
 
-    <h2 class="title" fxFlexOffset="3">
-      {{fullName}}
+    <h2 class="title" *ngIf="fullName" > 
+      <strong>Display name:</strong> {{fullName}} 
     </h2>
 
-    <label>
-      {{email}}
-    </label>
+    <h2>
+      <strong>Contact email:</strong> {{email}}
+    </h2>
 </div>

@@ -21,6 +21,13 @@ using StackExchange.Redis.Extensions.Core.Abstractions;
 
 namespace Hive.Identity.Areas.Identity.Pages.Account
 {
+    // quick workaround
+    public enum InputUserType
+    {
+        Buyer = 0,
+        Seller,
+        Investor
+    }
     
     [AllowAnonymous]
     public class RegisterModel : PageModel
@@ -62,14 +69,6 @@ namespace Hive.Identity.Areas.Identity.Pages.Account
             [EmailAddress]
             [Display(Name = "Email")]
             public string Email { get; set; }
-            
-            // [Required]
-            // [Display(Name = "Given Name")]
-            // public string GivenName { get; set; }
-            //
-            // [Required]
-            // [Display(Name = "Family Name")]
-            // public string FamilyName { get; set; }
 
             [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
@@ -83,7 +82,8 @@ namespace Hive.Identity.Areas.Identity.Pages.Account
             public string ConfirmPassword { get; set; }
 
             [Required]
-            public IdentityType AccountType { get; set; }
+            [EnumDataType(typeof(InputUserType))]
+            public InputUserType AccountType { get; set; }
         }
 
         
@@ -99,7 +99,8 @@ namespace Hive.Identity.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser(new []{ Input.AccountType})
+                var accountType = (IdentityType)Enum.Parse(typeof(IdentityType), Input.AccountType.ToString());
+                var user = new ApplicationUser(new []{ accountType })
                 {
                     UserName = Input.Email, 
                     Email = Input.Email
@@ -112,7 +113,7 @@ namespace Hive.Identity.Areas.Identity.Pages.Account
                     await _userManager.AddToRoleAsync(user, Input.AccountType.ToString());
 
                     await StoreInCache(_cacheClient, user);
-                    await DispatchEvents(_dispatcher, user, new List<IdentityType>() {Input.AccountType});
+                    await DispatchEvents(_dispatcher, user, new List<IdentityType>() {accountType});
                     
                     _logger.LogInformation("User created a new account with password.");
 

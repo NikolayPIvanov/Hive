@@ -31,7 +31,7 @@ namespace Billing.Management.Controllers
         [SwaggerResponse(HttpStatusCode.Created, typeof(int), Description = "Successful operation")]
         [SwaggerResponse(HttpStatusCode.BadRequest, typeof(BadRequestObjectResult), Description = "Bad Request operation")]
         [SwaggerResponse(HttpStatusCode.NotFound, typeof(NotFoundObjectResult), Description = "Not Found operation")]
-        public async Task<IActionResult> DepositInWallet([FromRoute] int walletId, [FromBody] CreateTransactionCommand command)
+        public async Task<IActionResult> DepositInWallet([FromRoute] int accountHolderId, int walletId, [FromBody] CreateTransactionCommand command)
         {
             if (walletId != command.WalletId)
             {
@@ -39,7 +39,17 @@ namespace Billing.Management.Controllers
             }
             
             var transactionId = await Mediator.Send(command);
-            return Ok(transactionId);
+            return CreatedAtAction(nameof(GetTransactionById), new {accountHolderId, walletId, transactionNumber = transactionId},
+                new {accountHolderId, walletId, transactionId});
+        }
+        
+        [HttpGet("{accountHolderId:int}/wallets/{walletId:int}/transactions/{transactionNumber:int}")]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(TransactionDto), Description = "Successful operation")]
+        [SwaggerResponse(HttpStatusCode.NotFound, typeof(NotFoundObjectResult), Description = "Not Found operation")]
+        public async Task<IActionResult> GetTransactionById([FromRoute] int accountHolderId, int walletId, int transactionNumber)
+        {
+            var transaction = await Mediator.Send(new GetTransactionByIdQuery(transactionNumber));
+            return Ok(transaction);
         }
     }
 }

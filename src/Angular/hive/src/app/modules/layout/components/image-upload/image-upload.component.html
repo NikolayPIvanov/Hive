@@ -1,6 +1,7 @@
 <div
       fxLayout="column"
-      fxLayoutAlign="center center">
+      fxLayoutAlign="center center"
+      fxLayoutGap="1rem">
       <img 
             *ngIf="dataSource" 
             [src]="dataSource" 
@@ -16,7 +17,8 @@
         fxHide="true" 
         type='file' 
         (change)="onFileSelected($event)">
-      <button *ngIf="showUpload" fxLayoutAlign="center" type="button" mat-mini-fab (click)="uploader.click()">
-            <mat-icon>upload</mat-icon>
+
+      <button *ngIf="showUpload" fxLayoutAlign="center" (click)="uploader.click()" color="primary" type="button" mat-raised-button>
+            Upload
       </button>
 </div>

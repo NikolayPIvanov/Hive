@@ -2,8 +2,9 @@ import { Component, Inject, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { CreditCardValidators } from 'angular-cc-library';
-import { tap } from 'rxjs/operators';
+import { switchMap, tap } from 'rxjs/operators';
 import { AccountHoldersClient, CreateTransactionCommand, WalletDto } from 'src/app/clients/billing-client';
+import { BillingService } from '../../services/billing.service';
 
 @Component({
   selector: 'app-up-top',
@@ -16,6 +17,7 @@ export class UpTopDialog implements OnInit {
 
 constructor(
   private _fb: FormBuilder,
+  private billingService: BillingService,
   private billingClient: AccountHoldersClient,
   public dialogRef: MatDialogRef<UpTopDialog>,
   @Inject(MAT_DIALOG_DATA) public data: WalletDto
@@ -29,14 +31,17 @@ constructor(
   }
 
   onSubmit() {
-    this.submitted = true;
     const command = CreateTransactionCommand.fromJS(this.form.value)
-    this.billingClient.depositInWallet(command.walletId!,
-      this.data.accountHolderId?.toString()!, command)
+    this.billingClient.depositInWallet(this.data.accountHolderId!, command.walletId!, command)
       .pipe(
+        switchMap((trans: any) => {
+          return this.billingClient.getTransactionById(this.data.accountHolderId!, this.data.id!, trans.transactionId)
+        }),
         tap({
-          next: (response) => this.dialogRef.close(response),
-          complete: () => this.dialogRef.close(command.amount)
+          next: (transaction) => {
+            this.billingService.onNewTransaction(transaction);
+            this.dialogRef.close(transaction);
+          }
         }))
       .subscribe();
   }

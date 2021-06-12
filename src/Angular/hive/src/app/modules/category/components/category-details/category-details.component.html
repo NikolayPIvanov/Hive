@@ -57,7 +57,7 @@
                         <textarea matInput placeholder="Description" formControlName="description"></textarea>
                     </mat-form-field>
     
-                    <app-categories-search [init]="category.parentOverview?.title || null"></app-categories-search>
+                    <app-categories-search (onSelectedCategory)="onSelected($event)" [init]="category.parentOverview?.title || null"></app-categories-search>
                 </form>
             </mat-dialog-content>
             <mat-dialog-actions align="end">

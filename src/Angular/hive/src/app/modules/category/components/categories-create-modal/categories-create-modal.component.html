@@ -13,7 +13,7 @@
                 <mat-error></mat-error>
             </mat-form-field>
 
-            <app-categories-search *ngIf="!onlyParent" (onSelectedCategoryName)="selected($event)"></app-categories-search>
+            <app-categories-search *ngIf="!onlyParent" (onSelectedCategory)="selected($event)"></app-categories-search>
         </form>
     </mat-dialog-content>
     <mat-dialog-actions align="end">
