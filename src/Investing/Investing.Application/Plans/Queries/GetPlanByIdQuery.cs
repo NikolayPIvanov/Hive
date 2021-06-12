@@ -27,6 +27,7 @@ namespace Hive.Investing.Application.Plans.Queries
         {
             var plan = await _context.Plans
                 .Include(x => x.Investments)
+                .Include(x => x.Vendor)
                 .FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
             
             if (plan is null)

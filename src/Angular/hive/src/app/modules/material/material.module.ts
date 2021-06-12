@@ -31,6 +31,7 @@ import {MatGridListModule} from '@angular/material/grid-list';
 import {MatTreeModule} from '@angular/material/tree';
 import {MatRadioModule} from '@angular/material/radio';
 import {MatStepperModule} from '@angular/material/stepper';
+import {MatSliderModule} from '@angular/material/slider';
 
 
 import { DragDropModule } from '@angular/cdk/drag-drop';
@@ -52,7 +53,7 @@ export const MY_FORMATS = {
 @NgModule({
   imports: [
     CommonModule,
-    DragDropModule, MatSlideToggleModule,
+    DragDropModule, MatSlideToggleModule, MatSliderModule,
     MatGridListModule,
     MatSidenavModule, MatIconModule, MatToolbarModule, MatButtonModule,
     MatListModule, MatCardModule, MatProgressBarModule, MatInputModule,
@@ -67,7 +68,7 @@ export const MY_FORMATS = {
   ],
   exports: [
     CommonModule,
-    DragDropModule, MatSlideToggleModule, MatStepperModule,
+    DragDropModule, MatSlideToggleModule, MatStepperModule, MatSliderModule,
     MatGridListModule, MatTreeModule,
     MatSidenavModule, MatIconModule, MatToolbarModule, MatButtonModule,
     MatListModule, MatCardModule, MatProgressBarModule, MatInputModule,

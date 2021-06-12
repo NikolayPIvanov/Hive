@@ -20,6 +20,7 @@ import * as profileClient from './clients/profile-client';
 import * as categoriesClient from './clients/gigs-client';
 import * as billingClient from './clients/billing-client';
 import * as orderingClient from './clients/ordering-client';
+import * as investingClient from './clients/investing-client';
 
 
 @NgModule({
@@ -56,6 +57,7 @@ import * as orderingClient from './clients/ordering-client';
     { provide: categoriesClient.API_BASE_URL, useValue: 'https:localhost:5057' },
     { provide: billingClient.API_BASE_URL, useValue: 'https:localhost:5051' },
     { provide: orderingClient.API_BASE_URL, useValue: 'https:localhost:5041' },
+    { provide: investingClient.API_BASE_URL, useValue: 'https:localhost:5031' },
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

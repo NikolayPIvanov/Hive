@@ -24,6 +24,9 @@ const routes: Routes = [
   {
     path: 'chat', loadChildren: () => import('src/app/modules/chat/chat.module').then(m => m.ChatModule),
   },
+  {
+    path: 'plans', loadChildren: () => import('src/app/modules/plans/plans.module').then(m => m.PlansModule),
+  },
   { path: '', redirectTo: 'home', pathMatch: 'full' }
 ];
 

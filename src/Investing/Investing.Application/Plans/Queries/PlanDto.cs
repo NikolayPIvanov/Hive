@@ -18,10 +18,12 @@ namespace Hive.Investing.Application.Plans.Queries
         public DateTime StartDate { get; set; }
         
         public DateTime EndDate { get; set; }
-
-        public decimal StartingFunds { get; set; }
+        
+        public decimal FundingNeeded { get; set; }
         
         public int VendorId { get; set; }
+        
+        public string VendorUserId { get; set; }
 
         public ICollection<string> Tags { get; set; }
     }

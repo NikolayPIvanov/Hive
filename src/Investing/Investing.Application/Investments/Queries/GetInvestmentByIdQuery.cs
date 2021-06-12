@@ -14,6 +14,8 @@ namespace Hive.Investing.Application.Investments.Queries
 {
     public class InvestmentDto
     {
+        public int Id { get; set; }
+        
         public DateTime EffectiveDate { get; set; }
         
         public DateTime? ExpirationDate { get; set; }

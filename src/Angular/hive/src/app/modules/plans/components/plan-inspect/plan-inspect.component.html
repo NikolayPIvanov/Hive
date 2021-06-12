@@ -1,0 +1,67 @@
+<h2 mat-dialog-title>Inspecting plan</h2>
+<mat-dialog-content class="mat-typography">
+    <h3>Title:</h3>
+    <p>{{ data.title! }}</p>
+
+    <h3>Description:</h3>
+    <p>{{ data.description }}</p>
+
+    <h3>Start Date:</h3>
+    <p>{{ data.startDate | date:'short' }}</p>
+
+    <h3>End Date:</h3>
+    <p>{{ data.endDate | date:'short' }}</p>
+
+    <h3>Funding needed:</h3>
+    <p>{{ data.fundingNeeded }}</p>
+
+    <mat-divider>
+    </mat-divider>
+
+    <h2>Accepted Investments</h2>
+    <mat-selection-list *ngIf="acceptedInvestments$ | async" #investmentsList [multiple]="false">
+      <mat-list-option *ngFor="let investment of accepted" [value]="investment">
+        <div fxLayout="row">
+          <span>{{ investment.amount }}</span>
+          <span>{{ investment.roiPercentage }}</span>
+          <span>{{ investment.effectiveDate | date:'short' }}</span>
+          <span>{{ investment.expirationDate| date:'short' }}</span>
+          <span>{{ investment.investorId }}</span>
+        </div>
+      </mat-list-option>
+    </mat-selection-list>
+
+    <h2>Pending Investments</h2>
+    <button mat-button (click)="openInvestmentDialog()">Make an investment</button>
+
+    <mat-selection-list *ngIf="pendingInvestments$ | async" #investmentsList [multiple]="false">
+      <mat-list-option *ngFor="let investment of pedning" [value]="investment">
+        <div fxLayout="row">
+          <span>{{ investment.amount }}</span>
+          <span>{{ investment.roiPercentage }}</span>
+          <span>{{ investment.effectiveDate | date:'short' }}</span>
+          <span>{{ investment.expirationDate| date:'short' }}</span>
+          <span>{{ investment.investorId }}</span>
+          <div>
+            <button mat-button (click)="processInvestment(investment)">Accept</button>
+            <button mat-button (click)="processInvestment(investment, false)">Decline</button>
+          </div>
+        </div>
+      </mat-list-option>
+    </mat-selection-list>
+    
+    <!-- <p>
+      Option selected: {{investmentsList.selectedOptions.selected[0]?.value}}
+    </p> -->
+    <mat-paginator
+      (page)="handlePageEvent($event)"
+      [length]="length"
+      [pageSize]="pageSize"
+      [showFirstLastButtons]="true"
+      [pageSizeOptions]="pageSizeOptions"
+      [pageIndex]="pageNumber">
+</mat-paginator>
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Close</button>
+</mat-dialog-actions>

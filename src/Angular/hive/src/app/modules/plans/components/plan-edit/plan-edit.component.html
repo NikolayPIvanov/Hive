@@ -1,0 +1,50 @@
+<h2 mat-dialog-title>Update plan</h2>
+<mat-dialog-content class="mat-typography">
+  <form [formGroup]="form" fxLayout="column" (ngSubmit)="onSubmit()" id="planForm">
+
+    <mat-form-field appearance="fill">
+        <mat-label>Title</mat-label>
+        <input matInput placeholder="Title" formControlName="title">
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+        <mat-label>Description</mat-label>
+        <textarea matInput placeholder="Description" formControlName="description"></textarea>
+        <mat-error></mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+        <mat-label>Funding needed</mat-label>
+        <div fxLayout="row">
+            <input fxFlex matInput type="number" #modValue formControlName="fundingNeeded">
+            <mat-slider
+                fxFlex="80"
+                thumbLabel
+                [displayWith]="formatLabel"
+                tickInterval="1000"
+                step="1"
+                min="1"
+                max="10000"
+                [value]="modValue.value"
+                (input)="modValue.value = $event.value!.toString()"
+                aria-label="units"></mat-slider>
+        </div>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+        <mat-label>Enter a start and end of plan range</mat-label>
+        <mat-date-range-input [rangePicker]="picker">
+          <input matStartDate placeholder="Start date" formControlName="startDate">
+          <input matEndDate placeholder="End date" formControlName="endDate">
+        </mat-date-range-input>
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-date-range-picker #picker></mat-date-range-picker>
+    </mat-form-field>
+
+  </form>
+
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-button cdkFocusInitial type="submit" form="planForm">Update</button>
+</mat-dialog-actions>

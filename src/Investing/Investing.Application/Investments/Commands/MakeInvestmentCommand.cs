@@ -2,11 +2,13 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 using FluentValidation;
 using Hive.Common.Core.Exceptions;
 using Hive.Common.Core.Interfaces;
 using Hive.Common.Core.Security;
 using Hive.Investing.Application.Interfaces;
+using Hive.Investing.Application.Investments.Queries;
 using Hive.Investing.Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -15,7 +17,7 @@ using Microsoft.Extensions.Logging;
 namespace Hive.Investing.Application.Investments.Commands
 {
     public record MakeInvestmentCommand(DateTime EffectiveDate, DateTime? ExpirationDate,
-            decimal Amount, double RoiPercentage, int PlanId) : IRequest<int>;
+            decimal Amount, double RoiPercentage, int PlanId) : IRequest<InvestmentDto>;
 
     public class MakeInvestmentCommandValidator : AbstractValidator<MakeInvestmentCommand>
     {
@@ -47,21 +49,23 @@ namespace Hive.Investing.Application.Investments.Commands
         }
     }
 
-    public class MakeInvestmentCommandHandler : IRequestHandler<MakeInvestmentCommand, int>
+    public class MakeInvestmentCommandHandler : IRequestHandler<MakeInvestmentCommand, InvestmentDto>
     {
         private readonly IInvestingDbContext _context;
+        private readonly IMapper _mapper;
         private readonly ICurrentUserService _currentUserService;
         private readonly ILogger<MakeInvestmentCommandHandler> _logger;
 
-        public MakeInvestmentCommandHandler(IInvestingDbContext context, ICurrentUserService currentUserService, 
+        public MakeInvestmentCommandHandler(IInvestingDbContext context, IMapper mapper, ICurrentUserService currentUserService, 
             ILogger<MakeInvestmentCommandHandler> logger)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
+            _mapper = mapper;
             _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
-        public async Task<int> Handle(MakeInvestmentCommand request, CancellationToken cancellationToken)
+        public async Task<InvestmentDto> Handle(MakeInvestmentCommand request, CancellationToken cancellationToken)
         {
             var investor = await _context.Investors
                 .Select(x => new { x.Id, x.UserId })
@@ -75,7 +79,7 @@ namespace Hive.Investing.Application.Investments.Commands
             
             _logger.LogInformation("Investment for {PlanId} was created", request.PlanId);
 
-            return investment.Id;
+            return _mapper.Map<InvestmentDto>(investment);
         }
     }
 }

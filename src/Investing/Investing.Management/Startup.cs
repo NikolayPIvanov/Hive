@@ -1,19 +1,23 @@
 using System;
+using System.Linq;
 using FluentValidation.AspNetCore;
 using Hive.Common.Core.Filters;
 using Hive.Common.Core.Identity;
 using Hive.Common.Core.Interfaces;
+using Hive.Common.Core.Security.Handlers;
 using Hive.Common.Core.Security.Requirements;
 using Hive.Common.Core.Services;
 using Hive.Investing.Application;
 using Hive.Investing.Infrastructure;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi.Models;
+using NSwag;
+using NSwag.Generation.Processors.Security;
 
 namespace Investing.Management
 {
@@ -33,8 +37,8 @@ namespace Investing.Management
         {
             var authority = Configuration.GetValue<string>("Authority");
             
-            services.AddInvestingInfrastructure(Configuration);
             services.AddInvestingApplication();
+            services.AddInvestingInfrastructure(Configuration);
             
             services.AddHttpContextAccessor();
             
@@ -43,6 +47,19 @@ namespace Investing.Management
                 options.AllowEmptyInputInBodyModelBinding = true;
                 options.Filters.Add<ApiExceptionFilterAttribute>();
             }).AddFluentValidation();
+            
+            services.AddCors(options =>
+            {
+                options.AddDefaultPolicy(builder =>
+                {
+                    builder
+                        .WithOrigins("http://localhost:4200")
+                        .AllowCredentials()
+                        .AllowAnyHeader()
+                        .SetIsOriginAllowed(_ => true)
+                        .AllowAnyMethod();
+                });
+            });
             
             services.AddAuthentication(DefaultAuthenticationSchema)
                 .AddJwtBearer(DefaultAuthenticationSchema, options =>
@@ -64,9 +81,20 @@ namespace Investing.Management
             services.AddScoped<IIdentityService, IdentityService>();
             services.AddScoped<IDateTimeService, DateTimeService>();
             
-            services.AddSwaggerGen(c =>
+            services.AddSingleton<IAuthorizationHandler, EntityOwnerAuthorizationHandler>();
+
+            services.AddOpenApiDocument(configure =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo {Title = "Investing.Management", Version = "v1"});
+                configure.Title = "Investing Management API";
+                configure.AddSecurity("JWT", Enumerable.Empty<string>(), new OpenApiSecurityScheme
+                {
+                    Type = OpenApiSecuritySchemeType.ApiKey,
+                    Name = "Authorization",
+                    In = OpenApiSecurityApiKeyLocation.Header,
+                    Description = "Type into the text box: Bearer {your JWT token}."
+                });
+
+                configure.OperationProcessors.Add(new AspNetCoreOperationSecurityScopeProcessor("JWT"));
             });
         }
 
@@ -76,13 +104,16 @@ namespace Investing.Management
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "Investing.Management v1"));
             }
+            
+            app.UseSwaggerUi3();
 
             app.UseHttpsRedirection();
+            
+            app.UseCors();
 
             app.UseRouting();
+            
 
             app.UseAuthentication();
             app.UseAuthorization();

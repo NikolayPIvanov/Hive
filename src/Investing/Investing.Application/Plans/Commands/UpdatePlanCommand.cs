@@ -46,8 +46,15 @@ namespace Hive.Investing.Application.Plans.Commands
                 .NotEmpty().WithMessage("{Property} cannot be empty or missing");
 
             RuleFor(x => x.Id)
-                .MustAsync(async (id, cancellationToken) =>
-                    (await context.Plans.AnyAsync(x => x.Id == id && !x.IsFunded, cancellationToken)))
+                .MustAsync(async (command, id, token) =>
+                {
+                    var dbPlan = await context.Plans.FirstOrDefaultAsync(p => p.Id == id, token);
+                    if (!dbPlan.IsFunded) return true;
+                    var cannotUpdate = (dbPlan.StartDate != command.StartDate || dbPlan.EndDate != command.EndDate ||
+                                        dbPlan.StartingFunds != command.FundingNeeded);
+                    return !cannotUpdate;
+
+                })
                 .WithMessage("Plan that is already funded cannot be updated.");
         }
     }

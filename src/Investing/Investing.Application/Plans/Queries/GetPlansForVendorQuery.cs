@@ -8,6 +8,7 @@ using Hive.Common.Core.Mappings;
 using Hive.Common.Core.Security;
 using Hive.Investing.Application.Interfaces;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Hive.Investing.Application.Plans.Queries
 {
@@ -26,7 +27,7 @@ namespace Hive.Investing.Application.Plans.Queries
         
         public async Task<IEnumerable<PlanDto>> Handle(GetPlansForVendorQuery request, CancellationToken cancellationToken)
         {
-            return await _context.Plans
+            return await _context.Plans.Include(p => p.Vendor)
                 .Where(p => p.VendorId == request.VendorId)
                 .ProjectToListAsync<PlanDto>(_mapper.ConfigurationProvider);
         }

@@ -22,7 +22,6 @@ namespace Hive.Investing.Domain.Entities
             StartDate = startDate;
             EndDate = endDate;
             StartingFunds = startingFunds;
-            IsFunded = false;
         }
         
         public string Title { get; set; }

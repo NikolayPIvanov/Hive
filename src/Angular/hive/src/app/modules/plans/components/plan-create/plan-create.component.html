@@ -1,0 +1,51 @@
+<h2 mat-dialog-title>Create new Plan</h2>
+<mat-dialog-content class="mat-typography">
+  <h3>Develop across all platforms</h3>
+  <form [formGroup]="form" fxLayout="column" (ngSubmit)="onSubmit()" id="planForm">
+    <mat-form-field appearance="fill">
+        <mat-label>Title</mat-label>
+        <input matInput placeholder="Title" formControlName="title">
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+        <mat-label>Description</mat-label>
+        <textarea matInput placeholder="Description" formControlName="description"></textarea>
+        <mat-error></mat-error>
+    </mat-form-field>
+
+    
+    <mat-form-field appearance="fill">
+        <mat-label>Funding needed</mat-label>
+        <div fxLayout="row">
+            <mat-slider
+                fxFlex="80"
+                thumbLabel
+                [displayWith]="formatLabel"
+                tickInterval="1000"
+                step="1"
+                min="1"
+                max="10000"
+                (input)="sliderChanged($event)"
+                aria-label="units"></mat-slider>
+            <input fxFlex matInput type="number" formControlName="fundingNeeded">
+        </div>
+        
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+        <mat-label>Enter a start and end of plan range</mat-label>
+        <mat-date-range-input [rangePicker]="picker">
+          <input matStartDate placeholder="Start date" formControlName="startDate">
+          <input matEndDate placeholder="End date" formControlName="endDate">
+        </mat-date-range-input>
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-date-range-picker #picker></mat-date-range-picker>
+      </mat-form-field>
+
+</form>
+
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button mat-button mat-dialog-close>Cancel</button>
+  <button mat-button cdkFocusInitial type="submit" form="planForm">Create</button>
+</mat-dialog-actions>
