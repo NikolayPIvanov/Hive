@@ -20,7 +20,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Hive.WebUI.Controllers
 {
-    [Authorize]
     public class GigsController : ApiControllerBase
     {
         [HttpGet("{id:int}")]

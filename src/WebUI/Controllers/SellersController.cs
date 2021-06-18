@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Hive.WebUI.Controllers
 {
-    [Authorize]
     public class SellersController : ApiControllerBase
     {
         [HttpGet("{sellerId}/orders")]
