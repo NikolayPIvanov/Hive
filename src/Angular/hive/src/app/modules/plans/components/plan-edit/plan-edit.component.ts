@@ -54,7 +54,6 @@ export class PlanEditComponent implements OnInit {
         switchMap(() => this.planService.getPlan(this.data.id!)),
         tap({
           next: (plan) => {
-            debugger;
             this.dialogRef.close(plan);
           },
         complete: () => {

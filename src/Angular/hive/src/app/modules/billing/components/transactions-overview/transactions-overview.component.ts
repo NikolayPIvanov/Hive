@@ -25,7 +25,7 @@ export class TransactionsOverviewComponent implements OnInit, AfterViewInit {
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   itemsCount: number = 0;
-  pageSize = 5;
+  pageSize = 10;
   pageIndex = 0;
   
   onChange(pageEvent: PageEvent) {
