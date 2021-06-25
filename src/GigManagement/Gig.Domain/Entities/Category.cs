@@ -21,6 +21,8 @@ namespace Hive.Gig.Domain.Entities
         public string Title { get; set; }
 
         public string Description { get; set; }
+
+        public string ImageLocation { get; set; }
         
         public int? ParentId { get; set; }
 

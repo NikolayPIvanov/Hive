@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Hive.Gig.Application.Gigs.Queries
 {
-    public record GetGigImageQuery(int Id) : IRequest<FileContentResult >;
+    public record GetGigImageQuery(int Id) : IRequest<FileContentResult>;
     
     public class GetGigImageQueryHandler : IRequestHandler<GetGigImageQuery, FileContentResult>
     {

@@ -10,6 +10,7 @@ using Hive.Gig.Application.GigPackages;
 using Hive.Gig.Application.GigPackages.Commands;
 using Hive.Gig.Application.GigPackages.Queries;
 using Hive.Gig.Application.Gigs.Commands;
+using Hive.Gig.Application.Gigs.Commands.CreateGig;
 using Hive.Gig.Application.Gigs.Queries;
 using Hive.Gig.Application.Reviews.Commands;
 using Hive.Gig.Application.Reviews.Queries;

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using BuildingBlocks.Core.Interfaces;
 using Hive.Common.Core.Exceptions;
 using Hive.Common.Core.Security;
 using Hive.Gig.Application.Interfaces;
@@ -17,11 +18,13 @@ namespace Hive.Gig.Application.Categories.Commands
     public class DeleteCategoryCommandHandler : IRequestHandler<DeleteCategoryCommand>
     {
         private readonly IGigManagementDbContext _dbContext;
+        private readonly IFileService _fileService;
         private readonly ILogger<CreateCategoryCommandHandler> _logger;
 
-        public DeleteCategoryCommandHandler(IGigManagementDbContext dbContext, ILogger<CreateCategoryCommandHandler> logger)
+        public DeleteCategoryCommandHandler(IGigManagementDbContext dbContext, IFileService fileService, ILogger<CreateCategoryCommandHandler> logger)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _fileService = fileService ?? throw new ArgumentNullException(nameof(fileService));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
@@ -34,6 +37,11 @@ namespace Hive.Gig.Application.Categories.Commands
             {
                 _logger.LogError("Category with {@Id} was not found.", request.Id);
                 throw new NotFoundException(nameof(Category), request.Id);
+            }
+
+            if (!string.IsNullOrEmpty(category.ImageLocation))
+            {
+                var operationResult = await _fileService.DeleteAsync("category-thumbnails", category.ImageLocation, cancellationToken);
             }
 
             _dbContext.Categories.Remove(category);

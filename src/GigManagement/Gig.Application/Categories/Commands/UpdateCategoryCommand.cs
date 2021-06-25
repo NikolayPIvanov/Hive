@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Hive.Gig.Application.Categories.Commands
 {
-    public record UpdateCategoryCommand(int Id, string Title, int? ParentId = null) : IRequest;
+    public record UpdateCategoryCommand(int Id, string Title, string Description, int? ParentId = null) : IRequest;
     
     public class UpdateCategoryCommandValidator : AbstractValidator<UpdateCategoryCommand>
     {
@@ -56,18 +56,20 @@ namespace Hive.Gig.Application.Categories.Commands
         
         public async Task<Unit> Handle(UpdateCategoryCommand request, CancellationToken cancellationToken)
         {
-            var (id, title, parentId) = request;
-            var category = await _dbContext.Categories
-                .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
-
-            if (category == null)   
-            {
-                _logger.LogError("Category with {@Id} was not found.", request.Id);
-                throw new NotFoundException(nameof(Category), id);
+            var (id, title, description, parentId) = request;
+                               var category = await _dbContext.Categories
+                                   .FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
+                   
+                               if (category == null)   
+                               {
+                                   _logger.LogError("Category with {@Id} was not found.", request.Id);
+                                   throw new NotFoundException(nameof(Category), id);
             }
 
             category.Title = title;
+            category.Description = description;
             category.ParentId = parentId;
+            
             await _dbContext.SaveChangesAsync(cancellationToken);
             _logger.LogError("Category with {@Id} was updated.", request.Id);
             
