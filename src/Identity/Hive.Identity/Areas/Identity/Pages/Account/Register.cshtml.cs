@@ -7,6 +7,7 @@ using System.Text.Encodings.Web;
 using System.Threading.Tasks;
 using BuildingBlocks.Core.Interfaces;
 using Hive.Identity.Contracts;
+using Hive.Identity.Data;
 using Hive.Identity.Models;
 using Hive.Identity.Services;
 using Microsoft.AspNetCore.Authentication;
@@ -100,7 +101,7 @@ namespace Hive.Identity.Areas.Identity.Pages.Account
             if (ModelState.IsValid)
             {
                 var accountType = (IdentityType)Enum.Parse(typeof(IdentityType), Input.AccountType.ToString());
-                var user = new ApplicationUser(new []{ accountType })
+                var user = new ApplicationUser(accountType)
                 {
                     UserName = Input.Email, 
                     Email = Input.Email
@@ -112,8 +113,10 @@ namespace Hive.Identity.Areas.Identity.Pages.Account
                     
                     await _userManager.AddToRoleAsync(user, Input.AccountType.ToString());
 
-                    await StoreInCache(_cacheClient, user);
-                    await DispatchEvents(_dispatcher, user, new List<IdentityType>() {accountType});
+
+                    await ApplicationDbContextSeed.StoreUserNameInCache(_cacheClient, user);
+                    await ApplicationDbContextSeed.DispatchUserCreatedEvents(_dispatcher, user,
+                        new List<IdentityType>() {accountType});
                     
                     _logger.LogInformation("User created a new account with password.");
 
@@ -148,22 +151,6 @@ namespace Hive.Identity.Areas.Identity.Pages.Account
 
             // If we got this far, something failed, redisplay form
             return Page();
-        }
-        
-        private static async Task StoreInCache(IRedisCacheClient cacheClient, ApplicationUser user)
-        {
-            var key = $"username:{user.Id}";
-            _ = await cacheClient.GetDbFromConfiguration().AddAsync(key, user.UserName);
-        }
-
-        private static async Task DispatchEvents(IIdentityDispatcher dispatcher, ApplicationUser user, List<IdentityType> userTypes)
-        {
-            await dispatcher.PublishUserCreatedEventAsync(user.Id);
-
-            foreach (var type in userTypes)
-            {
-                await dispatcher.PublishUserTypeEventAsync(user.Id, type);
-            }
         }
     }
 }

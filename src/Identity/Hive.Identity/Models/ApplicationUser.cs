@@ -13,21 +13,16 @@ namespace Hive.Identity.Models
     {
         private ApplicationUser()
         {
-            AccountTypes = new HashSet<UserAccountType>();
         }
 
-        public ApplicationUser(IEnumerable<IdentityType> accountTypes) : this()
+        public ApplicationUser(IdentityType accountType) : this()
         {
-            foreach (var accountType in accountTypes)
-            {
-                AccountTypes.Add(new UserAccountType(accountType, Id));
-            }
+            AccountType = new UserAccountType(accountType, Id);
         }
         
-        public ICollection<UserAccountType> AccountTypes { get; private set; }
+        public UserAccountType AccountType { get; private set; }
+        public int AccountTypeId { get; set; }
 
-        public int? BuyerId { get; set; }
-        public int? SellerId { get; set; }
-        public int? InvestorId { get; set; }
+        public int? ExternalAccountId { get; set; }
     }
 }

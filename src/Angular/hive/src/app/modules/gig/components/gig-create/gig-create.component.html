@@ -17,7 +17,7 @@
                 <mat-error *ngIf="gigForm.controls.description.errors">{{getErrorMessage('description')}}</mat-error>
             </mat-form-field>
             
-            <app-categories-search (onSelectedCategoryName)="onCategorySelected($event)" ></app-categories-search>
+            <app-categories-search (onSelectedCategory)="onCategorySelected($event)" ></app-categories-search>
             
             <mat-form-field appearance="outline" class="full-width mt-1">
               <mat-label>Tags</mat-label>
@@ -39,14 +39,18 @@
               </mat-chip-list>
           </mat-form-field>
 
-            <mat-divider></mat-divider>
+          <button *ngIf="gigForm.controls.questions.controls.length === 0" 
+            mat-icon-button (click)="addQuestion()">
+              <span>Add Question</span>
+              <mat-icon>add</mat-icon>
+            </button>
     
             <div formArrayName="questions">
                 <div *ngFor="let question of gigForm.controls.questions.controls; let i = index; let last = last;">
                     <!-- address header, show remove button when more than one address available -->
                     <div fxLayout="row">
                         <h3> Question {{ i + 1 }}</h3>
-                        <mat-icon *ngIf="gigForm.controls.questions.controls.length > 1" fxLayoutAlign="end"
+                        <mat-icon fxLayoutAlign="end"
                             (click)="removeQuestion(i)"> remove </mat-icon>
                         <mat-icon *ngIf="last" (click)="addQuestion()" fxLayoutAlign="end"> add </mat-icon>
                     </div>
@@ -76,15 +80,15 @@
         <mat-step label="Add Image" [optional]="true">
           <app-image-upload (onUploaded)="setImage($event)"></app-image-upload>
 
-            <div>
-              <button mat-button  type="button" matStepperPrevious>Back</button>
-              <button mat-button  type="button" matStepperNext>Next</button>
-            </div>
+          <div>
+            <button mat-button  type="button" matStepperPrevious>Back</button>
+            <button mat-button  type="button" matStepperNext>Next</button>
+          </div>
         </mat-step>
 
 
         <!-- Packages tab -->
-        <mat-step label="Add Packages" [stepControl]="gigForm" fxLayout="column">
+        <mat-step label="Add Packages" fxLayout="column">
             <ng-template matStepLabel>Add Packages</ng-template>
                 
             <div formArrayName="packages">
@@ -161,8 +165,8 @@
             </div>
 
             <div>
-              <button mat-button  type="button" matStepperPrevious>Back</button>
-              <button mat-button  type="button" matStepperNext>Next</button>
+              <button mat-button type="button" matStepperPrevious>Back</button>
+              <button mat-button type="button" matStepperNext>Next</button>
             </div>
         </mat-step>
         

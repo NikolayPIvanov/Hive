@@ -6,7 +6,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { Observable, of, Subject, throwError } from 'rxjs';
 import { map, switchMap, takeUntil, tap } from 'rxjs/operators';
-import { CategoriesClient, CreateGigCommand, FileUpload, GigsClient } from 'src/app/clients/gigs-client';
+import { CategoriesClient, CategoryDto, CreateGigCommand, FileUpload, GigsClient } from 'src/app/clients/gigs-client';
 
 @Component({
   selector: 'app-gig-create',
@@ -42,7 +42,7 @@ export class GigCreateComponent implements OnInit {
     categoryId: ['', Validators.required],
     planId: [null],
     tags: [[]],
-    questions: this.fb.array([this.initQuestion()]),
+    questions: this.fb.array([]),
     image: [null],
     packages: this.fb.array([ this.initPackage() ]),
   });
@@ -115,25 +115,8 @@ export class GigCreateComponent implements OnInit {
     }
   }
 
-  public onCategorySelected(title: string) {
-    this.spinnerService.show();
-    this.categoryApiClient.getCategories(1, 1, false, title)
-      .pipe(
-        takeUntil(this.unsubscribe),
-        tap({
-          next: (categoriesList) => {
-            if (categoriesList.items) {
-              const category = categoriesList.items![0];
-              this.gigForm.patchValue({ categoryId: category.id })  
-            }
-            else {
-              throwError('cannot find category with name')
-            }
-          },
-          complete: () => this.spinnerService.hide()
-        })
-      )
-      .subscribe();
+  public onCategorySelected(category: CategoryDto) {
+    this.gigForm.patchValue({ categoryId: category.id });
   }
 
 

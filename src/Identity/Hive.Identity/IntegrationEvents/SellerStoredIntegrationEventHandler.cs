@@ -25,7 +25,7 @@ namespace Hive.Identity.IntegrationEvents
                 throw new NotFoundException(nameof(ApplicationUser), @event.UserId);
             }
 
-            user.SellerId = @event.SellerId;
+            user.ExternalAccountId = @event.SellerId;
             await _context.SaveChangesAsync();
         }
     }

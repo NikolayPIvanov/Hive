@@ -222,10 +222,11 @@ namespace IdentityServerHost.Quickstart.UI
                 filtered.Add(new Claim(JwtClaimTypes.Email, email));
             }
 
-            var user = new ApplicationUser(new []{ IdentityType.Buyer })
+            var user = new ApplicationUser(IdentityType.Buyer)
             {
                 UserName = Guid.NewGuid().ToString(),
             };
+            
             var identityResult = await _userManager.CreateAsync(user);
             if (!identityResult.Succeeded) throw new Exception(identityResult.Errors.First().Description);
 

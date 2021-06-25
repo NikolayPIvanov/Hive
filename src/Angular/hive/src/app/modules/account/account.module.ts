@@ -9,7 +9,6 @@ import { LayoutModule } from '../layout/layout.module';
 import { ChangeInformationComponent } from './components/change-information/change-information.component';
 import { AccountSellerInformationComponent } from './components/account-seller-information/account-seller-information.component';
 import { AccountAvatarComponent } from './components/account-avatar/account-avatar.component';
-import { AngularFileUploaderModule } from 'angular-file-uploader';
 import { AvatarModule } from 'ngx-avatar';
 
 @NgModule({

@@ -21,15 +21,15 @@ namespace Hive.Gig.Application.Categories.Commands
             _dbContext = dbContext;
             
             RuleFor(c => c.Title)
-                .MustAsync(BeUniqueTitleAsync).WithMessage("Category with given title already exists.")
-                .MinimumLength(3).WithMessage("Title should be at minimum 3 characters")
-                .MaximumLength(50).WithMessage("Title should be at maximum 50 characters")
-                .NotEmpty().WithMessage("Title cannot be empty");
+                .MustAsync(BeUniqueTitleAsync).WithMessage("Category with given {PropertyName} = {PropertyValue}  already exists.")
+                .MinimumLength(3).WithMessage("{PropertyName} should be at minimum 3 characters")
+                .MaximumLength(50).WithMessage("{PropertyName} should be at maximum 50 characters")
+                .NotEmpty().WithMessage("{PropertyName} cannot be empty");
             
             RuleFor(c => c.Description)
-                .MinimumLength(3).WithMessage("Description should be at minimum 3 characters")
-                .MaximumLength(500).WithMessage("Description should be at maximum 500 characters")
-                .NotEmpty().WithMessage("Description cannot be empty");
+                .MinimumLength(3).WithMessage("{PropertyName} should be at minimum {MinLength} characters")
+                .MaximumLength(500).WithMessage("{PropertyName} should be at maximum {MaxLength} characters")
+                .NotEmpty().WithMessage("{PropertyName} cannot be empty");
 
             RuleFor(c => c.ParentId)
                 .MustAsync(ParentCategoryExistsAsync).WithMessage("Parent category should be existing one.");

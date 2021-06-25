@@ -24,12 +24,12 @@ namespace Hive.Gig.Application.Categories.Commands
             _dbContext = dbContext;
             
             RuleFor(c => c.Title)
-                .MinimumLength(3).WithMessage("{Property} should be at minimum 3 characters")
-                .MaximumLength(50).WithMessage("{Property} should be at maximum 50 characters")
+                .MinimumLength(3).WithMessage("{PropertyName} should be at minimum 3 characters")
+                .MaximumLength(50).WithMessage("{PropertyName} should be at maximum 50 characters")
                 .MustAsync(async (command, title, token) => !(await _dbContext.Categories
                     .AnyAsync(r => r.Title == title && r.Id != command.Id, token)))
-                .WithMessage("{Property} is already taken by another category.")
-                .NotEmpty().WithMessage("{Property} cannot be empty");
+                .WithMessage("{PropertyName} with value {PropertyValue} is already taken by another category.")
+                .NotEmpty().WithMessage("{PropertyName} cannot be empty");
             
             RuleFor(c => c.ParentId)
                 .MustAsync(async (command, parentId, token) 

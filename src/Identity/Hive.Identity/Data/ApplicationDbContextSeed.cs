@@ -15,19 +15,19 @@ namespace Hive.Identity.Data
                                                       RoleManager<IdentityRole> roleManager,
                                                       ApplicationDbContext context, IIdentityDispatcher dispatcher, IRedisCacheClient cacheClient)
         {
-            await SeedOfType(new [] {IdentityType.Admin, IdentityType.Seller, IdentityType.Investor, IdentityType.Buyer}, "admin@gmail.com", userManager, roleManager, context, dispatcher, cacheClient);
-            await SeedOfType(new [] {IdentityType.Buyer}, "buyer@gmail.com", userManager, roleManager, context, dispatcher,cacheClient);
-            await SeedOfType(new [] {IdentityType.Seller}, "seller@gmail.com", userManager, roleManager, context, dispatcher,cacheClient);
-            await SeedOfType(new [] {IdentityType.Investor}, "investor@gmail.com", userManager, roleManager, context, dispatcher,cacheClient);
+            await SeedOfType(IdentityType.Admin, "admin@gmail.com", userManager, roleManager, context, dispatcher, cacheClient);
+            await SeedOfType(IdentityType.Buyer, "buyer@gmail.com", userManager, roleManager, context, dispatcher,cacheClient);
+            await SeedOfType(IdentityType.Seller, "seller@gmail.com", userManager, roleManager, context, dispatcher,cacheClient);
+            await SeedOfType(IdentityType.Investor, "investor@gmail.com", userManager, roleManager, context, dispatcher,cacheClient);
         }
         
-        private static async Task SeedOfType(IEnumerable<IdentityType> types, string email, UserManager<ApplicationUser> userManager,
+        private static async Task SeedOfType(IdentityType type, string email, UserManager<ApplicationUser> userManager,
             RoleManager<IdentityRole> roleManager, ApplicationDbContext context, IIdentityDispatcher dispatcher, IRedisCacheClient cacheClient)
         {
             const string defaultPassword = "YourStr0ngPassword!";
 
             var userRoles = new List<string>();
-            var userTypes = types.ToList();
+            var userTypes = new[] {type};
             foreach (var role in userTypes.Select(userType => new IdentityRole(userType.ToString())))
             {
                 userRoles.Add(role.Name);
@@ -37,27 +37,26 @@ namespace Hive.Identity.Data
                 }
             }
 
-            var user = new ApplicationUser(userTypes) { UserName = email, Email = email, EmailConfirmed = true };
+            var user = new ApplicationUser(type) { UserName = email, Email = email, EmailConfirmed = true };
             if (userManager.Users.All(u => u.UserName != user.UserName))
             {
                 await userManager.CreateAsync(user, defaultPassword);
                 await userManager.AddToRolesAsync(user, userRoles);
                 
-                await StoreInCache(cacheClient, user);
-
-                await DispatchEvents(dispatcher, user, userTypes);
+                await StoreUserNameInCache(cacheClient, user);
+                await DispatchUserCreatedEvents(dispatcher, user, userTypes.ToList());
             }
             
             await context.SaveChangesAsync();
         }
 
-        private static async Task StoreInCache(IRedisCacheClient cacheClient, ApplicationUser user)
+        public static async Task StoreUserNameInCache(IRedisCacheClient cacheClient, ApplicationUser user)
         {
-            var key = $"username:{user.Id}";
+            var key = $"usernames:{user.Id}";
             _ = await cacheClient.GetDbFromConfiguration().AddAsync(key, user.UserName);
         }
 
-        private static async Task DispatchEvents(IIdentityDispatcher dispatcher, ApplicationUser user, List<IdentityType> userTypes)
+        public static async Task DispatchUserCreatedEvents(IIdentityDispatcher dispatcher, ApplicationUser user, List<IdentityType> userTypes)
         {
             await dispatcher.PublishUserCreatedEventAsync(user.Id);
 

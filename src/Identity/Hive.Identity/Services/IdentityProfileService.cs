@@ -18,6 +18,8 @@ namespace Hive.Identity.Services
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ApplicationDbContext _context;
 
+        private const string externalAccountId = "externalAccountId";
+
         public IdentityProfileService(IUserClaimsPrincipalFactory<ApplicationUser> claimsFactory, UserManager<ApplicationUser> userManager, 
                                       RoleManager<IdentityRole> roleManager, ApplicationDbContext context)
         {
@@ -44,19 +46,9 @@ namespace Hive.Identity.Services
                 claims.Add(new Claim(ClaimsIdentity.DefaultRoleClaimType, role));
             }
 
-            if (user.BuyerId.HasValue)
+            if (user.ExternalAccountId.HasValue)
             {
-                claims.Add(new Claim(IdentityClaimsTypes.BuyerIdType, user.BuyerId.Value.ToString()));
-            }
-            
-            if (user.InvestorId.HasValue)
-            {
-                claims.Add(new Claim(IdentityClaimsTypes.InvestorIdType, user.InvestorId.Value.ToString()));
-            }
-            
-            if (user.SellerId.HasValue)
-            {
-                claims.Add(new Claim(IdentityClaimsTypes.SellerIdType, user.SellerId.Value.ToString()));
+                claims.Add(new Claim(externalAccountId, user.ExternalAccountId.Value.ToString()));
             }
             
             context.IssuedClaims = claims;

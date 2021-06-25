@@ -32,7 +32,10 @@
                                 <mat-icon>credit_card</mat-icon>
                                 <span>Billing</span>
                             </a>
-                            <button mat-button>Orders</button>
+                            <a mat-button [routerLink]="['/orders']">
+                                <mat-icon>request_quote</mat-icon>
+                                <span>Orders</span>
+                            </a>
                             <button mat-button (click)="onCreateNew()">
                                 <mat-icon>add</mat-icon>
                                 <span>Create gig</span>

@@ -19,9 +19,9 @@ namespace Hive.Identity.Data
 
             builder.Entity<ApplicationUser>(e =>
             {
-                e.HasMany(x => x.AccountTypes)
-                    .WithOne()
-                    .HasForeignKey(ac => ac.UserId);
+                e.HasOne(x => x.AccountType)
+                    .WithMany()
+                    .HasForeignKey(ac => ac.AccountTypeId);
             });
 
             builder.Entity<UserAccountType>(b =>
