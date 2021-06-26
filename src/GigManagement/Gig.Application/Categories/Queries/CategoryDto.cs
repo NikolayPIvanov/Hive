@@ -19,6 +19,7 @@ namespace Hive.Gig.Application.Categories.Queries
         public int Id { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
+        public string? ImageLocation { get; set; }
 
         public ParentOverview? ParentOverview { get; set; }
         public ICollection<CategoryDto> SubCategories { get; private set; }

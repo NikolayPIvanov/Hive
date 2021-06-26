@@ -70,6 +70,14 @@ namespace Hive.Identity.Areas.Identity.Pages.Account
             [EmailAddress]
             [Display(Name = "Email")]
             public string Email { get; set; }
+            
+            [Required]
+            [Display(Name = "Given Name")]
+            public string GivenName { get; set; }
+            
+            [Required]
+            [Display(Name = "Surname")]
+            public string Surname { get; set; }
 
             [Required]
             [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
@@ -100,39 +108,29 @@ namespace Hive.Identity.Areas.Identity.Pages.Account
             ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
             if (ModelState.IsValid)
             {
-                var accountType = (IdentityType)Enum.Parse(typeof(IdentityType), Input.AccountType.ToString());
-                var user = new ApplicationUser(accountType)
+                var user = new ApplicationUser
                 {
                     UserName = Input.Email, 
                     Email = Input.Email
                 };
                 var result = await _userManager.CreateAsync(user, Input.Password);
+                
+                
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User created a new account with password.");
-                    
-                    await _userManager.AddToRoleAsync(user, Input.AccountType.ToString());
+                    var roleOp = await _userManager.AddToRoleAsync(user, Input.AccountType.ToString());
 
+                    if (roleOp.Succeeded)
+                    {
+                        var accountType = (IdentityType)Enum.Parse(typeof(IdentityType), Input.AccountType.ToString());
+                        await ApplicationDbContextSeed.DispatchUserCreatedEvents(
+                            _dispatcher, user.Id, Input.GivenName, Input.Surname,
+                            new List<IdentityType>() {accountType});
+                        await ApplicationDbContextSeed.StoreUserNameInCache(_cacheClient, user);
+                    }
 
-                    await ApplicationDbContextSeed.StoreUserNameInCache(_cacheClient, user);
-                    await ApplicationDbContextSeed.DispatchUserCreatedEvents(_dispatcher, user,
-                        new List<IdentityType>() {accountType});
-                    
-                    _logger.LogInformation("User created a new account with password.");
-
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
-                    var callbackUrl = Url.Page(
-                        "/Account/ConfirmEmail",
-                        pageHandler: null,
-                        values: new { area = "Identity", userId = user.Id, code = code, returnUrl = returnUrl },
-                        protocol: Request.Scheme);
-
-                    await _emailService.SendAsync(
-                        new []{ Input.Email },
-                        "Confirm your email",
-                        $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
-
+                    await SendEmailVerification(user, returnUrl);
                     if (_userManager.Options.SignIn.RequireConfirmedAccount)
                     {
                         return RedirectToPage("RegisterConfirmation", new { email = Input.Email, returnUrl = returnUrl });
@@ -151,6 +149,22 @@ namespace Hive.Identity.Areas.Identity.Pages.Account
 
             // If we got this far, something failed, redisplay form
             return Page();
+        }
+
+        private async Task SendEmailVerification(ApplicationUser user, string returnUrl)
+        {
+            var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+            code = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(code));
+            var callbackUrl = Url.Page(
+                "/Account/ConfirmEmail",
+                pageHandler: null,
+                values: new { area = "Identity", userId = user.Id, code = code, returnUrl = returnUrl },
+                protocol: Request.Scheme);
+
+            await _emailService.SendAsync(
+                new []{ Input.Email },
+                "Confirm your email",
+                $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
         }
     }
 }

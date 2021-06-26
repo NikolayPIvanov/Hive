@@ -31,11 +31,11 @@ export interface ICategoriesClient {
     /**
      * @param pageNumber (optional) 
      * @param pageSize (optional) 
-     * @param includeParentCategories (optional) 
+     * @param includeParents (optional) 
      * @param searchKey (optional) 
      * @return Successful operation
      */
-    getCategories(pageNumber: number | undefined, pageSize: number | undefined, includeParentCategories: boolean | undefined, searchKey: string | null | undefined): Observable<PaginatedListOfCategoryDto>;
+    getCategories(pageNumber: number | undefined, pageSize: number | undefined, includeParents: boolean | undefined, searchKey: string | null | undefined): Observable<PaginatedListOfCategoryDto>;
     /**
      * @param command (optional) 
      * @return Successful operation
@@ -257,11 +257,11 @@ export class CategoriesClient implements ICategoriesClient {
     /**
      * @param pageNumber (optional) 
      * @param pageSize (optional) 
-     * @param includeParentCategories (optional) 
+     * @param includeParents (optional) 
      * @param searchKey (optional) 
      * @return Successful operation
      */
-    getCategories(pageNumber: number | undefined, pageSize: number | undefined, includeParentCategories: boolean | undefined, searchKey: string | null | undefined): Observable<PaginatedListOfCategoryDto> {
+    getCategories(pageNumber: number | undefined, pageSize: number | undefined, includeParents: boolean | undefined, searchKey: string | null | undefined): Observable<PaginatedListOfCategoryDto> {
         let url_ = this.baseUrl + "/api/Categories?";
         if (pageNumber === null)
             throw new Error("The parameter 'pageNumber' cannot be null.");
@@ -271,10 +271,10 @@ export class CategoriesClient implements ICategoriesClient {
             throw new Error("The parameter 'pageSize' cannot be null.");
         else if (pageSize !== undefined)
             url_ += "PageSize=" + encodeURIComponent("" + pageSize) + "&";
-        if (includeParentCategories === null)
-            throw new Error("The parameter 'includeParentCategories' cannot be null.");
-        else if (includeParentCategories !== undefined)
-            url_ += "IncludeParentCategories=" + encodeURIComponent("" + includeParentCategories) + "&";
+        if (includeParents === null)
+            throw new Error("The parameter 'includeParents' cannot be null.");
+        else if (includeParents !== undefined)
+            url_ += "IncludeParents=" + encodeURIComponent("" + includeParents) + "&";
         if (searchKey !== undefined && searchKey !== null)
             url_ += "SearchKey=" + encodeURIComponent("" + searchKey) + "&";
         url_ = url_.replace(/[?&]$/, "");
@@ -1897,6 +1897,7 @@ export class CategoryDto implements ICategoryDto {
     id?: number;
     title?: string;
     description?: string;
+    imageLocation?: string | undefined;
     parentOverview?: ParentOverview | undefined;
     subCategories?: CategoryDto[];
 
@@ -1914,6 +1915,7 @@ export class CategoryDto implements ICategoryDto {
             this.id = _data["id"];
             this.title = _data["title"];
             this.description = _data["description"];
+            this.imageLocation = _data["imageLocation"];
             this.parentOverview = _data["parentOverview"] ? ParentOverview.fromJS(_data["parentOverview"]) : <any>undefined;
             if (Array.isArray(_data["subCategories"])) {
                 this.subCategories = [] as any;
@@ -1935,6 +1937,7 @@ export class CategoryDto implements ICategoryDto {
         data["id"] = this.id;
         data["title"] = this.title;
         data["description"] = this.description;
+        data["imageLocation"] = this.imageLocation;
         data["parentOverview"] = this.parentOverview ? this.parentOverview.toJSON() : <any>undefined;
         if (Array.isArray(this.subCategories)) {
             data["subCategories"] = [];
@@ -1949,6 +1952,7 @@ export interface ICategoryDto {
     id?: number;
     title?: string;
     description?: string;
+    imageLocation?: string | undefined;
     parentOverview?: ParentOverview | undefined;
     subCategories?: CategoryDto[];
 }
@@ -2272,6 +2276,7 @@ export interface ICreateCategoryCommand {
 export class UpdateCategoryCommand implements IUpdateCategoryCommand {
     id?: number;
     title?: string;
+    description?: string;
     parentId?: number | undefined;
 
     constructor(data?: IUpdateCategoryCommand) {
@@ -2287,6 +2292,7 @@ export class UpdateCategoryCommand implements IUpdateCategoryCommand {
         if (_data) {
             this.id = _data["id"];
             this.title = _data["title"];
+            this.description = _data["description"];
             this.parentId = _data["parentId"];
         }
     }
@@ -2302,6 +2308,7 @@ export class UpdateCategoryCommand implements IUpdateCategoryCommand {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["title"] = this.title;
+        data["description"] = this.description;
         data["parentId"] = this.parentId;
         return data; 
     }
@@ -2310,6 +2317,7 @@ export class UpdateCategoryCommand implements IUpdateCategoryCommand {
 export interface IUpdateCategoryCommand {
     id?: number;
     title?: string;
+    description?: string;
     parentId?: number | undefined;
 }
 

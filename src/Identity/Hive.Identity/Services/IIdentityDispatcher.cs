@@ -12,7 +12,7 @@ namespace Hive.Identity.Services
 {
     public interface IIdentityDispatcher
     {
-        Task PublishUserCreatedEventAsync(string userId);
+        Task PublishUserCreatedEventAsync(string userId, string givenName, string surname);
 
         Task PublishUserTypeEventAsync(string userId, IdentityType accountType);
     }
@@ -26,8 +26,8 @@ namespace Hive.Identity.Services
             _publisher = publisher;
         }
 
-        public async Task PublishUserCreatedEventAsync(string userId) =>
-            await _publisher.PublishAsync(new UserCreatedIntegrationEvent(userId));
+        public async Task PublishUserCreatedEventAsync(string userId, string givenName, string surname) =>
+            await _publisher.PublishAsync(new UserCreatedIntegrationEvent(userId, givenName, surname));
         
         public async Task PublishUserTypeEventAsync(string userId, IdentityType accountType)
         {

@@ -192,7 +192,7 @@
             "x-position": 2
           },
           {
-            "name": "IncludeParentCategories",
+            "name": "IncludeParents",
             "in": "query",
             "schema": {
               "type": "boolean"
@@ -1515,6 +1515,10 @@
           "description": {
             "type": "string"
           },
+          "imageLocation": {
+            "type": "string",
+            "nullable": true
+          },
           "parentOverview": {
             "nullable": true,
             "oneOf": [
@@ -1680,6 +1684,9 @@
             "format": "int32"
           },
           "title": {
+            "type": "string"
+          },
+          "description": {
             "type": "string"
           },
           "parentId": {

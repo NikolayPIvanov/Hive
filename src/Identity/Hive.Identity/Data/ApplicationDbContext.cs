@@ -10,24 +10,10 @@ namespace Hive.Identity.Data
             : base(options)
         {
         }
-
-        public DbSet<UserAccountType> UserAccountTypes { get; set; }
-
+        
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
-
-            builder.Entity<ApplicationUser>(e =>
-            {
-                e.HasOne(x => x.AccountType)
-                    .WithMany()
-                    .HasForeignKey(ac => ac.AccountTypeId);
-            });
-
-            builder.Entity<UserAccountType>(b =>
-            {
-                b.HasIndex(x => new {x.Type, x.UserId}).IsUnique();
-            });
         }
     }
 }

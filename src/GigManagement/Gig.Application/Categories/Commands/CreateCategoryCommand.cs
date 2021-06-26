@@ -52,13 +52,11 @@ namespace Hive.Gig.Application.Categories.Commands
     public class CreateCategoryCommandHandler : IRequestHandler<CreateCategoryCommand, int>
     {
         private readonly IGigManagementDbContext _dbContext;
-        private readonly IFileService _fileService;
         private readonly ILogger<CreateCategoryCommandHandler> _logger;
 
-        public CreateCategoryCommandHandler(IGigManagementDbContext dbContext, IFileService fileService, ILogger<CreateCategoryCommandHandler> logger)
+        public CreateCategoryCommandHandler(IGigManagementDbContext dbContext, ILogger<CreateCategoryCommandHandler> logger)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
-            _fileService = fileService ?? throw new ArgumentNullException(nameof(fileService));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
