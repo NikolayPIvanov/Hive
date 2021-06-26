@@ -4,13 +4,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Hive.Common.Core;
+using FluentValidation;
 using Hive.Common.Core.Exceptions;
 using Hive.Common.Core.Interfaces;
 using Hive.Common.Core.Security.Handlers;
 using Hive.UserProfile.Application.Interfaces;
-using Hive.UserProfile.Application.UserProfiles.Queries;
-using Hive.UserProfile.Domain;
 using Hive.UserProfile.Domain.Entities;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
@@ -19,12 +17,18 @@ using Microsoft.Extensions.Logging;
 
 namespace Hive.UserProfile.Application.UserProfiles.Commands
 {
-    using Domain.Entities;
+    public record UpdateUserProfileCommand(int Id, string? Bio, string? Education, ICollection<string> Skills, ICollection<string> Languages) : IRequest;
+
+    public class UpdateUserProfileCommandValidator : AbstractValidator<UpdateUserProfileCommand>
+    {
+        public UpdateUserProfileCommandValidator()
+        {
+            RuleFor(c => c.Bio).MinimumLength(3).MaximumLength(2500);
+            RuleFor(c => c.Education).MinimumLength(3).MaximumLength(100);
+        }
+    }
     
-    public record UpdateUserProfileCommand(int Id, string? Description, string? Education,
-        NotificationSettingDto NotificationSettings, ICollection<string> Skills, ICollection<string> Languages) : IRequest;
-    
-    public class UpdateUserProfileCommandHandler : AuthorizationRequestHandler<UserProfile>, IRequestHandler<UpdateUserProfileCommand>
+    public class UpdateUserProfileCommandHandler : AuthorizationRequestHandler<Domain.Entities.UserProfile>, IRequestHandler<UpdateUserProfileCommand>
     {
         private readonly IUserProfileDbContext _dbContext;
         private readonly ILogger<UpdateUserProfileCommandHandler> _logger;
@@ -54,9 +58,8 @@ namespace Hive.UserProfile.Application.UserProfiles.Commands
                 throw new ForbiddenAccessException();
             }
 
-            userProfile.Description = request.Description;
+            userProfile.Bio = request.Bio;
             userProfile.Education = request.Education;
-            userProfile.NotificationSetting = new NotificationSetting(request.NotificationSettings.EmailNotifications);
             
             SetSkills(request, userProfile);
             SetLanguages(request, userProfile);

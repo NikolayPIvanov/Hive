@@ -435,13 +435,11 @@ export class ProfileClient implements IProfileClient {
 export class UserProfileDto implements IUserProfileDto {
     id?: number;
     userId?: string;
-    firstName?: string | undefined;
-    lastName?: string | undefined;
-    description?: string | undefined;
+    givenName?: string;
+    surname?: string;
+    bio?: string | undefined;
     education?: string | undefined;
     avatarFile?: string | undefined;
-    notificationSettings?: NotificationSettingDto;
-    isTransient?: boolean;
     skills?: string[];
     languages?: string[];
 
@@ -458,13 +456,11 @@ export class UserProfileDto implements IUserProfileDto {
         if (_data) {
             this.id = _data["id"];
             this.userId = _data["userId"];
-            this.firstName = _data["firstName"];
-            this.lastName = _data["lastName"];
-            this.description = _data["description"];
+            this.givenName = _data["givenName"];
+            this.surname = _data["surname"];
+            this.bio = _data["bio"];
             this.education = _data["education"];
             this.avatarFile = _data["avatarFile"];
-            this.notificationSettings = _data["notificationSettings"] ? NotificationSettingDto.fromJS(_data["notificationSettings"]) : <any>undefined;
-            this.isTransient = _data["isTransient"];
             if (Array.isArray(_data["skills"])) {
                 this.skills = [] as any;
                 for (let item of _data["skills"])
@@ -489,13 +485,11 @@ export class UserProfileDto implements IUserProfileDto {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
         data["userId"] = this.userId;
-        data["firstName"] = this.firstName;
-        data["lastName"] = this.lastName;
-        data["description"] = this.description;
+        data["givenName"] = this.givenName;
+        data["surname"] = this.surname;
+        data["bio"] = this.bio;
         data["education"] = this.education;
         data["avatarFile"] = this.avatarFile;
-        data["notificationSettings"] = this.notificationSettings ? this.notificationSettings.toJSON() : <any>undefined;
-        data["isTransient"] = this.isTransient;
         if (Array.isArray(this.skills)) {
             data["skills"] = [];
             for (let item of this.skills)
@@ -513,51 +507,13 @@ export class UserProfileDto implements IUserProfileDto {
 export interface IUserProfileDto {
     id?: number;
     userId?: string;
-    firstName?: string | undefined;
-    lastName?: string | undefined;
-    description?: string | undefined;
+    givenName?: string;
+    surname?: string;
+    bio?: string | undefined;
     education?: string | undefined;
     avatarFile?: string | undefined;
-    notificationSettings?: NotificationSettingDto;
-    isTransient?: boolean;
     skills?: string[];
     languages?: string[];
-}
-
-export class NotificationSettingDto implements INotificationSettingDto {
-    emailNotifications?: boolean;
-
-    constructor(data?: INotificationSettingDto) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.emailNotifications = _data["emailNotifications"];
-        }
-    }
-
-    static fromJS(data: any): NotificationSettingDto {
-        data = typeof data === 'object' ? data : {};
-        let result = new NotificationSettingDto();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["emailNotifications"] = this.emailNotifications;
-        return data; 
-    }
-}
-
-export interface INotificationSettingDto {
-    emailNotifications?: boolean;
 }
 
 /** Represents a void type, since Void is not a valid return type in C#. */
@@ -594,8 +550,8 @@ export interface IUnit {
 
 export class UpdateUserNamesCommand implements IUpdateUserNamesCommand {
     id?: number;
-    firstName?: string | undefined;
-    lastName?: string | undefined;
+    givenName?: string;
+    surname?: string;
 
     constructor(data?: IUpdateUserNamesCommand) {
         if (data) {
@@ -609,8 +565,8 @@ export class UpdateUserNamesCommand implements IUpdateUserNamesCommand {
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
-            this.firstName = _data["firstName"];
-            this.lastName = _data["lastName"];
+            this.givenName = _data["givenName"];
+            this.surname = _data["surname"];
         }
     }
 
@@ -624,23 +580,22 @@ export class UpdateUserNamesCommand implements IUpdateUserNamesCommand {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
-        data["firstName"] = this.firstName;
-        data["lastName"] = this.lastName;
+        data["givenName"] = this.givenName;
+        data["surname"] = this.surname;
         return data; 
     }
 }
 
 export interface IUpdateUserNamesCommand {
     id?: number;
-    firstName?: string | undefined;
-    lastName?: string | undefined;
+    givenName?: string;
+    surname?: string;
 }
 
 export class UpdateUserProfileCommand implements IUpdateUserProfileCommand {
     id?: number;
-    description?: string | undefined;
+    bio?: string | undefined;
     education?: string | undefined;
-    notificationSettings?: NotificationSettingDto;
     skills?: string[];
     languages?: string[];
 
@@ -656,9 +611,8 @@ export class UpdateUserProfileCommand implements IUpdateUserProfileCommand {
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
-            this.description = _data["description"];
+            this.bio = _data["bio"];
             this.education = _data["education"];
-            this.notificationSettings = _data["notificationSettings"] ? NotificationSettingDto.fromJS(_data["notificationSettings"]) : <any>undefined;
             if (Array.isArray(_data["skills"])) {
                 this.skills = [] as any;
                 for (let item of _data["skills"])
@@ -682,9 +636,8 @@ export class UpdateUserProfileCommand implements IUpdateUserProfileCommand {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
-        data["description"] = this.description;
+        data["bio"] = this.bio;
         data["education"] = this.education;
-        data["notificationSettings"] = this.notificationSettings ? this.notificationSettings.toJSON() : <any>undefined;
         if (Array.isArray(this.skills)) {
             data["skills"] = [];
             for (let item of this.skills)
@@ -701,9 +654,8 @@ export class UpdateUserProfileCommand implements IUpdateUserProfileCommand {
 
 export interface IUpdateUserProfileCommand {
     id?: number;
-    description?: string | undefined;
+    bio?: string | undefined;
     education?: string | undefined;
-    notificationSettings?: NotificationSettingDto;
     skills?: string[];
     languages?: string[];
 }

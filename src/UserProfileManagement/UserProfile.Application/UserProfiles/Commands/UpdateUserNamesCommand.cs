@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using FluentValidation;
 using Hive.Common.Core.Exceptions;
 using Hive.UserProfile.Application.Interfaces;
 using MediatR;
@@ -8,7 +9,23 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Hive.UserProfile.Application.UserProfiles.Commands
 {
-    public record UpdateUserNamesCommand(int Id, string? FirstName, string? LastName) : IRequest;
+    public record UpdateUserNamesCommand(int Id, string GivenName, string Surname) : IRequest;
+
+    public class UpdateUserNamesCommandValidator : AbstractValidator<UpdateUserNamesCommand>
+    {
+        public UpdateUserNamesCommandValidator()
+        {
+            RuleFor(x => x.GivenName)
+                .MaximumLength(3)
+                .MaximumLength(50)
+                .NotEmpty();
+            
+            RuleFor(x => x.Surname)
+                .MaximumLength(3)
+                .MaximumLength(50)
+                .NotEmpty();
+        }
+    }
 
     public class UpdateUserNamesCommandHandler : IRequestHandler<UpdateUserNamesCommand>
     {
@@ -29,8 +46,8 @@ namespace Hive.UserProfile.Application.UserProfiles.Commands
                 throw new NotFoundException(nameof(Domain.Entities.UserProfile), request.Id);
             }
 
-            profile.FirstName = request.FirstName;
-            profile.LastName = request.LastName;
+            profile.Surname = request.Surname;
+            profile.GivenName = request.GivenName;
 
             await _context.SaveChangesAsync(cancellationToken);
             

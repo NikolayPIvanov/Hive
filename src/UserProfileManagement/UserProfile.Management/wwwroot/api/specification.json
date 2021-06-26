@@ -315,15 +315,13 @@
           "userId": {
             "type": "string"
           },
-          "firstName": {
-            "type": "string",
-            "nullable": true
+          "givenName": {
+            "type": "string"
           },
-          "lastName": {
-            "type": "string",
-            "nullable": true
+          "surname": {
+            "type": "string"
           },
-          "description": {
+          "bio": {
             "type": "string",
             "nullable": true
           },
@@ -334,12 +332,6 @@
           "avatarFile": {
             "type": "string",
             "nullable": true
-          },
-          "notificationSettings": {
-            "$ref": "#/components/schemas/NotificationSettingDto"
-          },
-          "isTransient": {
-            "type": "boolean"
           },
           "skills": {
             "type": "array",
@@ -352,15 +344,6 @@
             "items": {
               "type": "string"
             }
-          }
-        }
-      },
-      "NotificationSettingDto": {
-        "type": "object",
-        "additionalProperties": false,
-        "properties": {
-          "emailNotifications": {
-            "type": "boolean"
           }
         }
       },
@@ -377,13 +360,11 @@
             "type": "integer",
             "format": "int32"
           },
-          "firstName": {
-            "type": "string",
-            "nullable": true
+          "givenName": {
+            "type": "string"
           },
-          "lastName": {
-            "type": "string",
-            "nullable": true
+          "surname": {
+            "type": "string"
           }
         }
       },
@@ -395,16 +376,13 @@
             "type": "integer",
             "format": "int32"
           },
-          "description": {
+          "bio": {
             "type": "string",
             "nullable": true
           },
           "education": {
             "type": "string",
             "nullable": true
-          },
-          "notificationSettings": {
-            "$ref": "#/components/schemas/NotificationSettingDto"
           },
           "skills": {
             "type": "array",

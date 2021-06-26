@@ -11,28 +11,28 @@ namespace Hive.UserProfile.Domain.Entities
             Skills = new HashSet<Skill>(5);
         }
         
-        public UserProfile(string userId) : this()
+        public UserProfile(string userId, string givenName, string surname) : this()
         {
             UserId = userId;
-            NotificationSetting = new NotificationSetting();
+            GivenName = givenName;
+            Surname = surname;
         }
 
         public string UserId { get; private init; }
+        
+        public string GivenName { get; set; }
 
+        public string Surname { get; set; }
+        
+        public string Bio { get; set; }
+        
         public string? AvatarFile { get; set; }
-
-        public string? FirstName { get; set; }
-
-        public string? LastName { get; set; }
-
-        public string? Description { get; set; }
         
         public string? Education { get; set; }
         
-        public NotificationSetting NotificationSetting { get; set; }
-
         public ICollection<Skill> Skills { get; private set; }
         
         public ICollection<Language> Languages { get; private set; }
+        
     }
 }

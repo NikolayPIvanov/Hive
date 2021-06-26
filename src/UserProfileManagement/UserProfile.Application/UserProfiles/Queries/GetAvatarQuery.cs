@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using BuildingBlocks.Core.Interfaces;
@@ -12,15 +13,15 @@ namespace Hive.UserProfile.Application.UserProfiles.Queries
 {
     public record GetAvatarQuery(int Id) : IRequest<FileContentResult >;
 
-    public class GetAvatarQueryHander : IRequestHandler<GetAvatarQuery, FileContentResult>
+    public class GetAvatarQueryHandler : IRequestHandler<GetAvatarQuery, FileContentResult>
     {
         private readonly IUserProfileDbContext _context;
         private readonly IFileService _fileService;
 
-        public GetAvatarQueryHander(IUserProfileDbContext context, IFileService fileService)
+        public GetAvatarQueryHandler(IUserProfileDbContext context, IFileService fileService)
         {
-            _context = context;
-            _fileService = fileService;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _fileService = fileService ?? throw new ArgumentNullException(nameof(fileService));
         }
         
         public async Task<FileContentResult> Handle(GetAvatarQuery request, CancellationToken cancellationToken)
@@ -37,12 +38,12 @@ namespace Hive.UserProfile.Application.UserProfiles.Queries
                 throw new NotFoundException("Avatar has not been found.");
             }
 
-            var file = await _fileService.DownloadAsync("avatars", user.AvatarFile, cancellationToken);
+            var (stream, contentType, fileName) = await _fileService.DownloadAsync("user-avatars", user.AvatarFile, cancellationToken);
 
-            var bytes = file.Source.ReadFully();
-            return new FileContentResult(bytes, file.ContentType)
+            var bytes = stream.ReadFully();
+            return new FileContentResult(bytes, contentType)
             {
-                FileDownloadName = file.FileName
+                FileDownloadName = fileName
             };
         }
     }

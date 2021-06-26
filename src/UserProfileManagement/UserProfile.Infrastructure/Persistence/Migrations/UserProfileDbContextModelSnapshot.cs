@@ -30,21 +30,22 @@ namespace Hive.UserProfile.Infrastructure.Persistence.Migrations
                     b.Property<string>("AvatarFile")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Bio")
+                        .HasMaxLength(2500)
+                        .HasColumnType("nvarchar(2500)");
+
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("CreatedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Description")
-                        .HasMaxLength(2500)
-                        .HasColumnType("nvarchar(2500)");
-
                     b.Property<string>("Education")
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<string>("FirstName")
+                    b.Property<string>("GivenName")
+                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
@@ -54,7 +55,8 @@ namespace Hive.UserProfile.Infrastructure.Persistence.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("LastName")
+                    b.Property<string>("Surname")
+                        .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
@@ -64,7 +66,7 @@ namespace Hive.UserProfile.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("profiles", "up");
+                    b.ToTable("Profiles", "up");
                 });
 
             modelBuilder.Entity("Hive.UserProfile.Domain.Entities.UserProfile", b =>
@@ -88,30 +90,6 @@ namespace Hive.UserProfile.Infrastructure.Persistence.Migrations
                             b1.HasIndex("ProfileId");
 
                             b1.ToTable("Language");
-
-                            b1.WithOwner()
-                                .HasForeignKey("ProfileId");
-                        });
-
-                    b.OwnsOne("Hive.UserProfile.Domain.Entities.NotificationSetting", "NotificationSetting", b1 =>
-                        {
-                            b1.Property<int>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("int")
-                                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                            b1.Property<bool>("EmailNotifications")
-                                .HasColumnType("bit");
-
-                            b1.Property<int>("ProfileId")
-                                .HasColumnType("int");
-
-                            b1.HasKey("Id");
-
-                            b1.HasIndex("ProfileId")
-                                .IsUnique();
-
-                            b1.ToTable("NotificationSettings");
 
                             b1.WithOwner()
                                 .HasForeignKey("ProfileId");
@@ -142,9 +120,6 @@ namespace Hive.UserProfile.Infrastructure.Persistence.Migrations
                         });
 
                     b.Navigation("Languages");
-
-                    b.Navigation("NotificationSetting")
-                        .IsRequired();
 
                     b.Navigation("Skills");
                 });

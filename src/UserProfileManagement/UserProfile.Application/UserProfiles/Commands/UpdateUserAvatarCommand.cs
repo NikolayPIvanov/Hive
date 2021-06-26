@@ -38,10 +38,10 @@ namespace Hive.UserProfile.Application.UserProfiles.Commands
 
             if (!string.IsNullOrEmpty(avatarFile.AvatarFile))
             {
-                var deleted = await _fileService.DeleteAsync("avatars", avatarFile.AvatarFile, cancellationToken);
+                var deleted = await _fileService.DeleteAsync("user-avatars", avatarFile.AvatarFile, cancellationToken);
             }
             
-            var avatarName = await _fileService.UploadAsync("avatars", request.FileStream, request.Extension, cancellationToken);
+            var avatarName = await _fileService.UploadAsync("user-avatars", request.FileStream, request.Extension, cancellationToken);
             if (avatarName != null)
             {
                 avatarFile.AvatarFile = avatarName;

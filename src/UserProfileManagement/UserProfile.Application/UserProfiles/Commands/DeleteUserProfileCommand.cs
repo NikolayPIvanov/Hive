@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using BuildingBlocks.Core.Interfaces;
 using Hive.Common.Core;
 using Hive.Common.Core.Exceptions;
 using Hive.Common.Core.Interfaces;
@@ -18,13 +19,16 @@ namespace Hive.UserProfile.Application.UserProfiles.Commands
     public class DeleteUserProfileCommandHandler : AuthorizationRequestHandler<Domain.Entities.UserProfile>,  IRequestHandler<DeleteUserProfileCommand>
     {
         private readonly IUserProfileDbContext _dbContext;
+        private readonly IFileService _fileService;
         private readonly ILogger<DeleteUserProfileCommandHandler> _logger;
 
         public DeleteUserProfileCommandHandler(IUserProfileDbContext dbContext,
             ICurrentUserService currentUserService, IAuthorizationService authorizationService,
+            IFileService fileService,
             ILogger<DeleteUserProfileCommandHandler> logger) : base(currentUserService, authorizationService)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _fileService = fileService ?? throw new ArgumentNullException(nameof(fileService));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
@@ -43,6 +47,11 @@ namespace Hive.UserProfile.Application.UserProfiles.Commands
             if (!result.All(s => s.Succeeded))
             {
                 throw new ForbiddenAccessException();
+            }
+
+            if (!string.IsNullOrEmpty(userProfile.AvatarFile))
+            {
+                var deleted = await _fileService.DeleteAsync("user-avatars", userProfile.AvatarFile, cancellationToken);                
             }
 
             _dbContext.UserProfiles.Remove(userProfile);

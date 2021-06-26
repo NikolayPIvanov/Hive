@@ -28,7 +28,7 @@ namespace UserProfile.Management.Controllers
         [Produces(MediaTypeNames.Application.Json)]
         [SwaggerResponse(StatusCodes.Status200OK, typeof(UserProfileDto))]
         [SwaggerResponse(StatusCodes.Status404NotFound, typeof(NotFoundObjectResult))]
-        public async Task<ActionResult<UserProfileDto>> GetProfile() => Ok(await Mediator.Send(new GetUserProfileByIdQuery()));
+        public async Task<ActionResult<UserProfileDto>> GetMyProfile() => Ok(await Mediator.Send(new GetUserProfileByIdQuery()));
         
         [HttpGet("{userId}")]
         [Produces(MediaTypeNames.Application.Json)]
@@ -70,11 +70,10 @@ namespace UserProfile.Management.Controllers
         [Consumes(MediaTypeNames.Application.Json)]
         public async Task<IActionResult> ChangeAvatar([FromRoute] int id, [FromBody] FileUpload file)
         {
-            var extension = ".png";
+            const string extension = ".png";
             var imageDataByteArray = Convert.FromBase64String(file.FileData);
-            var imageDataStream = new MemoryStream(imageDataByteArray);
-            imageDataStream.Position = 0;
-            
+            var imageDataStream = new MemoryStream(imageDataByteArray) {Position = 0};
+
             var command = new UpdateUserAvatarCommand(id, extension, imageDataStream);
             await Mediator.Send(command);
             return NoContent();
