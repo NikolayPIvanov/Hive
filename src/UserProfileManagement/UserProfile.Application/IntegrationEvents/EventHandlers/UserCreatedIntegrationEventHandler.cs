@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using DotNetCore.CAP;
 using Hive.Identity.Contracts.IntegrationEvents;
+using Hive.Identity.Contracts.IntegrationEvents.Outbound;
 using Hive.UserProfile.Application.Interfaces;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;

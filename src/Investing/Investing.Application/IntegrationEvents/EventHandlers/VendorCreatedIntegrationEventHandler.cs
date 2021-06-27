@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using DotNetCore.CAP;
 using Hive.Identity.Contracts.IntegrationEvents;
+using Hive.Identity.Contracts.IntegrationEvents.Outbound;
 using Hive.Investing.Application.Interfaces;
 using Hive.Investing.Domain.Entities;
 using Microsoft.EntityFrameworkCore;

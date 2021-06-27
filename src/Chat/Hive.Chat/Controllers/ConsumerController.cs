@@ -5,6 +5,7 @@ using Hive.Chat.Data;
 using Hive.Chat.Hubs;
 using Hive.Chat.Models;
 using Hive.Identity.Contracts.IntegrationEvents;
+using Hive.Identity.Contracts.IntegrationEvents.Outbound;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using MongoDB.Driver;

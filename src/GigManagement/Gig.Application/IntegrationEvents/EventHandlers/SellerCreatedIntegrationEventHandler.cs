@@ -5,6 +5,8 @@ using DotNetCore.CAP;
 using Hive.Gig.Application.Interfaces;
 using Hive.Gig.Domain.Entities;
 using Hive.Identity.Contracts.IntegrationEvents;
+using Hive.Identity.Contracts.IntegrationEvents.Inbound;
+using Hive.Identity.Contracts.IntegrationEvents.Outbound;
 using Microsoft.EntityFrameworkCore;
 
 namespace Hive.Gig.Application.IntegrationEvents.EventHandlers
@@ -32,7 +34,7 @@ namespace Hive.Gig.Application.IntegrationEvents.EventHandlers
 
             await _dbContext.SaveChangesAsync(default);
             
-            var message = new ConformationEvents.SellerStoredIntegrationEvent(@event.UserId, seller.Id, true);
+            var message = new ExternalAccountSetIntegrationEvent(@event.UserId, seller.Id);
             await _publisher.PublishAsync(message);
         }
     }

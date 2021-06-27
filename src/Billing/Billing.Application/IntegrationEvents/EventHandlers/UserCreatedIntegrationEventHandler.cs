@@ -4,6 +4,7 @@ using Billing.Application.Interfaces;
 using DotNetCore.CAP;
 using Hive.Billing.Domain.Entities;
 using Hive.Identity.Contracts.IntegrationEvents;
+using Hive.Identity.Contracts.IntegrationEvents.Outbound;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 

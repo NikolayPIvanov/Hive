@@ -37,7 +37,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\..\Investing\Investing.Contracts\Investing.Contracts.csproj" />
       <ProjectReference Include="..\Hive.Identity.Contracts\Hive.Identity.Contracts.csproj" />
     </ItemGroup>
 </Project>

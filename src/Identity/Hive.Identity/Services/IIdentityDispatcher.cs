@@ -6,6 +6,7 @@ using Hive.Common.Core.Interfaces;
 using Hive.Common.Core.SeedWork;
 using Hive.Identity.Contracts;
 using Hive.Identity.Contracts.IntegrationEvents;
+using Hive.Identity.Contracts.IntegrationEvents.Outbound;
 using Hive.Identity.Models;
 
 namespace Hive.Identity.Services

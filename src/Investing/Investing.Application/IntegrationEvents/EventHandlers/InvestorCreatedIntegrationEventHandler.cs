@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using BuildingBlocks.Core.Interfaces;
 using DotNetCore.CAP;
 using Hive.Identity.Contracts.IntegrationEvents;
+using Hive.Identity.Contracts.IntegrationEvents.Inbound;
+using Hive.Identity.Contracts.IntegrationEvents.Outbound;
 using Hive.Investing.Application.Interfaces;
 using Hive.Investing.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -32,7 +34,7 @@ namespace Hive.Investing.Application.IntegrationEvents.EventHandlers
             _context.Investors.Add(investor);
             await _context.SaveChangesAsync();
 
-            await _integrationEventPublisher.PublishAsync(new ConformationEvents.InvestorStoredIntegrationEvent(@event.UserId, investor.Id, true));
+            await _integrationEventPublisher.PublishAsync(new ExternalAccountSetIntegrationEvent(@event.UserId, investor.Id));
         }
     }
 }

@@ -3,6 +3,8 @@ using System.Threading.Tasks;
 using BuildingBlocks.Core.Interfaces;
 using DotNetCore.CAP;
 using Hive.Identity.Contracts.IntegrationEvents;
+using Hive.Identity.Contracts.IntegrationEvents.Inbound;
+using Hive.Identity.Contracts.IntegrationEvents.Outbound;
 using Microsoft.EntityFrameworkCore;
 using Ordering.Application.Interfaces;
 using Ordering.Domain.Entities;
@@ -33,7 +35,7 @@ namespace Ordering.Application.IntegrationEvents.EventHandlers
             await _context.SaveChangesAsync(default);
 
             await _publisher.PublishAsync(
-                new ConformationEvents.BuyerStoredIntegrationEvent(@event.UserId, buyer.Id, true));
+                new ExternalAccountSetIntegrationEvent(@event.UserId, buyer.Id));
         }
     }
 }

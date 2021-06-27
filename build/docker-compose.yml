@@ -10,11 +10,15 @@ services:
     ports:
       - 5672:5672
       - 15672:15672
+    networks:
+      - dev
 
   redis:
     image: "redis:alpine"
     ports:
       - "6379:6379"
+    networks:
+      - dev
 
   mongo:
     image: "mongo"
@@ -27,14 +31,6 @@ services:
       - "10000:10000"
       - "10001:10001"
 
-  sqlserver:
-    image: "mcr.microsoft.com/mssql/server:2019-CU8-ubuntu-16.04"
-    environment:
-        SA_PASSWORD: "yourStrong(!)Password"
-        ACCEPT_EULA: "Y"
-    ports:
-      - "1433:1433"
-  
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.12.1
     container_name: elasticsearch
@@ -49,19 +45,21 @@ services:
     ports:
       - "9200:9200"
     networks:
-      - esnet
-  
+      - dev
+
   kibana:
     image: docker.elastic.co/kibana/kibana:7.12.1
     container_name: kibana
     ports:
       - "5601:5601"
     networks:
-      - esnet
+      - dev
 
 volumes:
   esdata:
     driver: local
+    
 
 networks:
-  esnet: 
+  dev:
+    external: true

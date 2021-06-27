@@ -2,21 +2,22 @@
 using DotNetCore.CAP;
 using Hive.Common.Core.Exceptions;
 using Hive.Identity.Contracts.IntegrationEvents;
+using Hive.Identity.Contracts.IntegrationEvents.Inbound;
 using Hive.Identity.Data;
 
 namespace Hive.Identity.IntegrationEvents
 {
-    public class InvestorStoredIntegrationEventHandler : ICapSubscribe
+    public class ExternalAccountSetIntegrationEventHandler : ICapSubscribe
     {
         private readonly ApplicationDbContext _context;
 
-        public InvestorStoredIntegrationEventHandler(ApplicationDbContext context)
+        public ExternalAccountSetIntegrationEventHandler(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        [CapSubscribe(nameof(ConformationEvents.InvestorStoredIntegrationEvent))]
-        public async Task Handle(ConformationEvents.InvestorStoredIntegrationEvent @event)
+        [CapSubscribe(nameof(ExternalAccountSetIntegrationEvent))]
+        public async Task Handle(ExternalAccountSetIntegrationEvent @event)
         {
             var user = await _context.Users.FindAsync(@event.UserId);
             if (user == null)
@@ -24,7 +25,7 @@ namespace Hive.Identity.IntegrationEvents
                 throw new NotFoundException(nameof(ApplicationDbContext), @event.UserId);
             }
 
-            user.ExternalAccountId = @event.InvestorId;
+            user.ExternalAccountId = @event.ExternalAccountId;
             await _context.SaveChangesAsync();
         }
     }
