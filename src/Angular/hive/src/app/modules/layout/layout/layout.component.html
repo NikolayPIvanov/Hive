@@ -7,32 +7,17 @@
         <mat-icon>menu</mat-icon>
       </button>
   
-      <a class="navbar-brand" (click)="navigate()" matTooltip="Home">
-        <h1>
-          Hive
-        </h1>
+      <a fxLayout="row" fxLayoutGap="1rem" class="navbar-brand" (click)="navigate()" matTooltip="Home">
+        <img src="../../../../assets/logo.png" alt="" srcset="">
+        <span>Hive</span>
       </a>
   
       <span class="navbar-spacer"></span>
   
-      <!-- <button mat-icon-button [matMenuTriggerFor]="notificationMenu">
-        <mat-icon matBadge="2" matBadgeColor="accent">notifications</mat-icon>
-      </button> -->
-      <!-- <mat-menu #notificationMenu="matMenu" xPosition="before" yPosition="above" [overlapTrigger]="false">
-  
-        <a mat-menu-item>
-          <span>You have new tasks</span>
-        </a>
-        <a mat-menu-item>
-          <span>You have a new message</span>
-        </a>
-  
-      </mat-menu> -->
-  
       <button mat-button [matMenuTriggerFor]="userMenu">
         <mat-icon>person</mat-icon>
-        <span fxShow fxHide.xs>
-          {{userName}}
+        <span fxShow fxHide.xs *ngIf="profile$ | async; let profile">
+          {{profile.givenName}} {{profile.surname}}
         </span>
       </button>
       <mat-menu #userMenu="matMenu" xPosition="before" yPosition="above" [overlapTrigger]="false">
@@ -57,37 +42,44 @@
         [fixedInViewport]="mobileQuery.matches" fixedTopGap="56" class="sidenav">
   
         <mat-nav-list>
-          <h3 mat-subheader>Home</h3>
+          <h3 mat-subheader>Menu</h3>
+
+          <a mat-list-item [routerLink]="['/home']" routerLinkActive="active">
+            <mat-icon mat-list-icon>
+              home
+            </mat-icon>
+            <p mat-line> Dashboard </p>
+          </a>
   
-          <a mat-list-item [routerLink]="['/categories/dashboard']" routerLinkActive="active">
+          <a *ngIf="isAdmin" mat-list-item [routerLink]="['/categories/dashboard']" routerLinkActive="active">
             <mat-icon mat-list-icon>
               category
             </mat-icon>
             <p mat-line> Categories </p>
           </a>
 
-          <a mat-list-item [routerLink]="['/gigs/control']" routerLinkActive="active">
+          <a *ngIf="isSeller" mat-list-item [routerLink]="['/gigs/control']" routerLinkActive="active">
             <mat-icon mat-list-icon>
               receipt_long
             </mat-icon>
             <p mat-line> Gigs Control </p>
           </a>
 
-          <a mat-list-item [routerLink]="['/gigs/dashboard']" routerLinkActive="active">
+          <a *ngIf="isSeller || isBuyer" mat-list-item [routerLink]="['/gigs/dashboard']" routerLinkActive="active">
             <mat-icon mat-list-icon>
               receipt_long
             </mat-icon>
             <p mat-line> Gigs </p>
           </a>
   
-          <a mat-list-item [routerLink]="['/billing/overview']" routerLinkActive="active">
+          <a *ngIf="isSeller || isBuyer || isInvestor" mat-list-item [routerLink]="['/billing/overview']" routerLinkActive="active">
             <mat-icon mat-list-icon>
               credit_card
             </mat-icon>
             <p mat-line> Billing Account </p>
           </a>
 
-          <a mat-list-item [routerLink]="['/orders']" routerLinkActive="active">
+          <a *ngIf="isSeller || isBuyer" mat-list-item [routerLink]="['/orders']" routerLinkActive="active">
             <mat-icon mat-list-icon>
               request_quote
             </mat-icon>
@@ -101,42 +93,11 @@
             <p mat-line> Chat </p>
           </a>
 
-          <a mat-list-item [routerLink]="['/plans']" routerLinkActive="active">
+          <a *ngIf="isSeller || isInvestor" mat-list-item [routerLink]="['/plans']" routerLinkActive="active">
             <mat-icon mat-list-icon>
               note_alt
             </mat-icon>
             <p mat-line> Plans </p>
-          </a>
-  
-          <mat-divider></mat-divider>
-  
-          <h3 mat-subheader>Resources</h3>
-  
-          <a mat-list-item [routerLink]="['/icons']" routerLinkActive="active">
-            <mat-icon mat-list-icon>
-              toll
-            </mat-icon>
-            <p mat-line> Icons </p>
-          </a>
-          <a mat-list-item [routerLink]="['/typography']" routerLinkActive="active">
-            <mat-icon mat-list-icon>
-              font_download
-            </mat-icon>
-            <p mat-line> Typography </p>
-          </a>
-  
-          <a mat-list-item href="https://material.angular.io/components/categories" target="_blank">
-            <mat-icon mat-list-icon>
-              link
-            </mat-icon>
-            <p mat-line> Material Components </p>
-          </a>
-  
-          <a id="push-bottom" mat-list-item [routerLink]="['/about']" routerLinkActive="active">
-            <mat-icon mat-list-icon>
-              info_outline
-            </mat-icon>
-            <p mat-line> About </p>
           </a>
         </mat-nav-list>
   

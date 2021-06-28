@@ -15,7 +15,7 @@ import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angula
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 export interface IProfileClient {
-    getProfiles(): Observable<UserProfileDto[]>;
+    getProfiles(pageIndex: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfUserProfileDto>;
     getMyProfile(): Observable<UserProfileDto>;
     getProfileById(userId: string | null): Observable<UserProfileDto>;
     updateProfileNames(id: number, command: UpdateUserNamesCommand | null | undefined): Observable<Unit>;
@@ -37,8 +37,16 @@ export class ProfileClient implements IProfileClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    getProfiles(): Observable<UserProfileDto[]> {
-        let url_ = this.baseUrl + "/api/Profile/all";
+    getProfiles(pageIndex: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfUserProfileDto> {
+        let url_ = this.baseUrl + "/api/Profile/all?";
+        if (pageIndex === null)
+            throw new Error("The parameter 'pageIndex' cannot be null.");
+        else if (pageIndex !== undefined)
+            url_ += "pageIndex=" + encodeURIComponent("" + pageIndex) + "&";
+        if (pageSize === null)
+            throw new Error("The parameter 'pageSize' cannot be null.");
+        else if (pageSize !== undefined)
+            url_ += "pageSize=" + encodeURIComponent("" + pageSize) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -56,14 +64,14 @@ export class ProfileClient implements IProfileClient {
                 try {
                     return this.processGetProfiles(<any>response_);
                 } catch (e) {
-                    return <Observable<UserProfileDto[]>><any>_observableThrow(e);
+                    return <Observable<PaginatedListOfUserProfileDto>><any>_observableThrow(e);
                 }
             } else
-                return <Observable<UserProfileDto[]>><any>_observableThrow(response_);
+                return <Observable<PaginatedListOfUserProfileDto>><any>_observableThrow(response_);
         }));
     }
 
-    protected processGetProfiles(response: HttpResponseBase): Observable<UserProfileDto[]> {
+    protected processGetProfiles(response: HttpResponseBase): Observable<PaginatedListOfUserProfileDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
@@ -74,14 +82,7 @@ export class ProfileClient implements IProfileClient {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result200: any = null;
             let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            if (Array.isArray(resultData200)) {
-                result200 = [] as any;
-                for (let item of resultData200)
-                    result200!.push(UserProfileDto.fromJS(item));
-            }
-            else {
-                result200 = <any>null;
-            }
+            result200 = PaginatedListOfUserProfileDto.fromJS(resultData200);
             return _observableOf(result200);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -89,7 +90,7 @@ export class ProfileClient implements IProfileClient {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
             }));
         }
-        return _observableOf<UserProfileDto[]>(<any>null);
+        return _observableOf<PaginatedListOfUserProfileDto>(<any>null);
     }
 
     getMyProfile(): Observable<UserProfileDto> {
@@ -430,6 +431,70 @@ export class ProfileClient implements IProfileClient {
         }
         return _observableOf<FileResponse>(<any>null);
     }
+}
+
+export class PaginatedListOfUserProfileDto implements IPaginatedListOfUserProfileDto {
+    items?: UserProfileDto[] | undefined;
+    pageIndex?: number;
+    totalPages?: number;
+    totalCount?: number;
+    hasPreviousPage?: boolean;
+    hasNextPage?: boolean;
+
+    constructor(data?: IPaginatedListOfUserProfileDto) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            if (Array.isArray(_data["items"])) {
+                this.items = [] as any;
+                for (let item of _data["items"])
+                    this.items!.push(UserProfileDto.fromJS(item));
+            }
+            this.pageIndex = _data["pageIndex"];
+            this.totalPages = _data["totalPages"];
+            this.totalCount = _data["totalCount"];
+            this.hasPreviousPage = _data["hasPreviousPage"];
+            this.hasNextPage = _data["hasNextPage"];
+        }
+    }
+
+    static fromJS(data: any): PaginatedListOfUserProfileDto {
+        data = typeof data === 'object' ? data : {};
+        let result = new PaginatedListOfUserProfileDto();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        if (Array.isArray(this.items)) {
+            data["items"] = [];
+            for (let item of this.items)
+                data["items"].push(item.toJSON());
+        }
+        data["pageIndex"] = this.pageIndex;
+        data["totalPages"] = this.totalPages;
+        data["totalCount"] = this.totalCount;
+        data["hasPreviousPage"] = this.hasPreviousPage;
+        data["hasNextPage"] = this.hasNextPage;
+        return data; 
+    }
+}
+
+export interface IPaginatedListOfUserProfileDto {
+    items?: UserProfileDto[] | undefined;
+    pageIndex?: number;
+    totalPages?: number;
+    totalCount?: number;
+    hasPreviousPage?: boolean;
+    hasNextPage?: boolean;
 }
 
 export class UserProfileDto implements IUserProfileDto {

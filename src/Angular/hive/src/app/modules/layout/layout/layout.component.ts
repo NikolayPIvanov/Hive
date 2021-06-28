@@ -1,7 +1,9 @@
 import { MediaMatcher } from '@angular/cdk/layout';
 import { AfterViewInit, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subscription, timer } from 'rxjs';
+import { Observable, Subscription, timer } from 'rxjs';
+import { UserProfileDto } from 'src/app/clients/profile-client';
+import { ProfileService } from '../../account/services/profile.service';
 import { AuthGuard } from '../../core/guards/auth.guard';
 import { AuthService } from '../services/auth.service';
 
@@ -17,27 +19,38 @@ export class LayoutComponent implements OnInit, OnDestroy, AfterViewInit {
   showSpinner!: boolean;
   userName!: string | undefined;
   isAdmin!: boolean;
+  isSeller!: boolean;
+  isBuyer!: boolean;
+  isInvestor!: boolean;
+
 
   private autoLogoutSubscription!: Subscription;
 
-    constructor(private changeDetectorRef: ChangeDetectorRef,
-      private router: Router,
-      private media: MediaMatcher,
-      private authService: AuthService,
-      private authGuard: AuthGuard) {
+  constructor(private changeDetectorRef: ChangeDetectorRef,
+    private router: Router,
+    private media: MediaMatcher,
+    private authService: AuthService,
+    private profileService: ProfileService,
+    private authGuard: AuthGuard) {
 
-      this.mobileQuery = this.media.matchMedia('(max-width: 1000px)');
-      this._mobileQueryListener = () => changeDetectorRef.detectChanges();
-      // tslint:disable-next-line: deprecation
-      this.mobileQuery.addListener(this._mobileQueryListener);
+    this.mobileQuery = this.media.matchMedia('(max-width: 1000px)');
+    this._mobileQueryListener = () => changeDetectorRef.detectChanges();
+    // tslint:disable-next-line: deprecation
+    this.mobileQuery.addListener(this._mobileQueryListener);
   }
 
+  public profile$: Observable<UserProfileDto | undefined> | undefined;
+
   ngOnInit(): void {
-      const user = this.authService.user
+    const user = this.authService.user
 
-      this.isAdmin = user?.profile.role.indexOf('Admin') > -1;
-      this.userName = user?.profile.name;
+    this.isAdmin = user?.profile.role.indexOf('Admin') > -1;
+    this.isSeller = user?.profile.role.indexOf('Seller') > -1;
+    this.isBuyer = user?.profile.role.indexOf('Buyer') > -1;
+    this.isInvestor = user?.profile.role.indexOf('Investor') > -1;
 
+    this.userName = user?.profile.name;
+    this.profile$ = this.profileService.getProfile()
       // // Auto log-out subscription
       // const watch = timer(2000, 5000);
       // this.autoLogoutSubscription = watch.subscribe(t => {

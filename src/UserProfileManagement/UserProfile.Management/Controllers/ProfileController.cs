@@ -4,6 +4,7 @@ using System.IO;
 using System.Net;
 using System.Net.Mime;
 using System.Threading.Tasks;
+using Hive.Common.Core.Models;
 using Hive.Common.Core.Security;
 using Hive.UserProfile.Application.UserProfiles.Commands;
 using Hive.UserProfile.Application.UserProfiles.Queries;
@@ -22,8 +23,13 @@ namespace UserProfile.Management.Controllers
     {
         [HttpGet("all")]
         [Produces(MediaTypeNames.Application.Json)]
-        [SwaggerResponse(StatusCodes.Status200OK, typeof(ICollection<UserProfileDto>))]
-        public async Task<ActionResult<ICollection<UserProfileDto>>> GetProfiles() => Ok(await Mediator.Send(new GetUserProfilesQuery()));
+        [SwaggerResponse(StatusCodes.Status200OK, typeof(PaginatedList<UserProfileDto>))]
+        public async Task<ActionResult<PaginatedList<UserProfileDto>>> GetProfiles([FromQuery] int pageIndex = 1, int pageSize = 10) 
+            => Ok(await Mediator.Send(new GetUserProfilesQuery()
+                {
+                    PageIndex = pageIndex,
+                    PageSize = pageSize
+                }));
         
         [HttpGet]
         [Produces(MediaTypeNames.Application.Json)]

@@ -15,6 +15,9 @@ import { AuthInterceptorService } from './services/auth-interceptor.service';
 import { NgxSpinnerModule } from "ngx-spinner";
 import { ImageUploadComponent } from './components/image-upload/image-upload.component';
 
+import { ChartsModule } from 'ng2-charts';
+
+
 @NgModule({
   declarations: [
     LayoutComponent,
@@ -35,7 +38,9 @@ import { ImageUploadComponent } from './components/image-upload/image-upload.com
     CreditCardDirectivesModule,
     NgxSpinnerModule,
 
-    MaterialModule
+    MaterialModule,
+
+    ChartsModule
   ],
   exports: [
     FormsModule,
@@ -47,7 +52,8 @@ import { ImageUploadComponent } from './components/image-upload/image-upload.com
     LimitToPipe,
 
     CategoriesSearchComponent,
-    ImageUploadComponent
+    ImageUploadComponent,
+    ChartsModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true }

@@ -41,11 +41,11 @@ export class AccountDetailsComponent implements OnInit {
   }
 
   setFullName(profile: UserProfileDto) {
-    if (!profile.firstName && !profile.lastName) {
+    if (!profile.givenName && !profile.surname) {
       this.fullName = undefined;
     }
     else {
-      this.fullName = `${profile.firstName} ${profile.lastName}`;
+      this.fullName = `${profile.givenName} ${profile.surname}`;
     }
   }
 
