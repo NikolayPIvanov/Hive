@@ -34,7 +34,7 @@
         "tags": [
           "Profile"
         ],
-        "operationId": "Profile_GetProfile",
+        "operationId": "Profile_GetMyProfile",
         "responses": {
           "200": {
             "description": "",

@@ -16,7 +16,7 @@ export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 export interface IProfileClient {
     getProfiles(): Observable<UserProfileDto[]>;
-    getProfile(): Observable<UserProfileDto>;
+    getMyProfile(): Observable<UserProfileDto>;
     getProfileById(userId: string | null): Observable<UserProfileDto>;
     updateProfileNames(id: number, command: UpdateUserNamesCommand | null | undefined): Observable<Unit>;
     updateProfile(id: number, command: UpdateUserProfileCommand | null | undefined): Observable<Unit>;
@@ -92,7 +92,7 @@ export class ProfileClient implements IProfileClient {
         return _observableOf<UserProfileDto[]>(<any>null);
     }
 
-    getProfile(): Observable<UserProfileDto> {
+    getMyProfile(): Observable<UserProfileDto> {
         let url_ = this.baseUrl + "/api/Profile";
         url_ = url_.replace(/[?&]$/, "");
 
@@ -105,11 +105,11 @@ export class ProfileClient implements IProfileClient {
         };
 
         return this.http.request("get", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processGetProfile(response_);
+            return this.processGetMyProfile(response_);
         })).pipe(_observableCatch((response_: any) => {
             if (response_ instanceof HttpResponseBase) {
                 try {
-                    return this.processGetProfile(<any>response_);
+                    return this.processGetMyProfile(<any>response_);
                 } catch (e) {
                     return <Observable<UserProfileDto>><any>_observableThrow(e);
                 }
@@ -118,7 +118,7 @@ export class ProfileClient implements IProfileClient {
         }));
     }
 
-    protected processGetProfile(response: HttpResponseBase): Observable<UserProfileDto> {
+    protected processGetMyProfile(response: HttpResponseBase): Observable<UserProfileDto> {
         const status = response.status;
         const responseBlob =
             response instanceof HttpResponse ? response.body :
