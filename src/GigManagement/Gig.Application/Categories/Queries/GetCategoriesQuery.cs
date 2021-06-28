@@ -15,7 +15,13 @@ using Microsoft.Extensions.Logging;
 
 namespace Hive.Gig.Application.Categories.Queries
 {
-    public record ParametersQuery(int PageNumber = 1, int PageSize = 10, bool IncludeParents = false, string? SearchKey = null);
+    public enum CategoriesType
+    {
+        All = 0,
+        Parents = 1,
+        Children = 2
+    }
+    public record ParametersQuery(int PageNumber = 1, int PageSize = 10, CategoriesType IncludeParents = CategoriesType.All, string? SearchKey = null);
 
     public record GetCategoriesQuery(ParametersQuery Query) : IRequest<PaginatedList<CategoryDto>>;
 
@@ -42,8 +48,14 @@ namespace Hive.Gig.Application.Categories.Queries
                 .AsNoTracking()
                 .AsQueryable();
 
-            var (pageNumber, pageSize, includeParentCategories, searchKey) = request.Query;
-            query = includeParentCategories ? query.Where(c => c.ParentId.HasValue) : query.Where(c => !c.ParentId.HasValue);
+            var (pageNumber, pageSize, categoriesType, searchKey) = request.Query;
+
+            query = categoriesType switch
+            {
+                CategoriesType.Children => query.Where(c => c.ParentId.HasValue),
+                CategoriesType.Parents => query.Where(c => !c.ParentId.HasValue),
+                _ => query
+            };
 
             if (searchKey != null)
             {
@@ -54,8 +66,8 @@ namespace Hive.Gig.Application.Categories.Queries
                 .PaginatedListAsync(request.Query.PageNumber, request.Query.PageSize);
 
             _logger.LogInformation(
-                "Successfully executed query for categories - {@PageNumber} {@PageSize} {@OnlyParents}", pageNumber,
-                pageSize, includeParentCategories);
+                "Successfully executed query for categories - {@PageNumber} {@PageSize}", pageNumber,
+                pageSize);
             
             return list;
         }

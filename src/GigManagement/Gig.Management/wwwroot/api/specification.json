@@ -195,7 +195,7 @@
             "name": "IncludeParents",
             "in": "query",
             "schema": {
-              "type": "boolean"
+              "$ref": "#/components/schemas/CategoriesType"
             },
             "x-position": 3
           },
@@ -1581,6 +1581,20 @@
             "type": "boolean"
           }
         }
+      },
+      "CategoriesType": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "All",
+          "Parents",
+          "Children"
+        ],
+        "enum": [
+          0,
+          1,
+          2
+        ]
       },
       "PaginatedListOfGigOverviewDto": {
         "type": "object",

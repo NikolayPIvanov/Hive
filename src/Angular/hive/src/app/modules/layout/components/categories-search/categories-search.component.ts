@@ -3,7 +3,7 @@ import { FormControl } from '@angular/forms';
 import { MatAutocompleteSelectedEvent } from '@angular/material/autocomplete';
 import { Observable } from 'rxjs';
 import { startWith, map, distinctUntilChanged, debounceTime, switchMap } from 'rxjs/operators';
-import { CategoriesClient, CategoryDto } from 'src/app/clients/gigs-client';
+import { CategoriesClient, CategoriesType, CategoryDto } from 'src/app/clients/gigs-client';
 
 @Component({
   selector: 'app-categories-search',
@@ -12,7 +12,8 @@ import { CategoriesClient, CategoryDto } from 'src/app/clients/gigs-client';
 })
 export class CategoriesSearchComponent implements OnInit {
   @Input() init: string | null = null;
-  @Input() includeParents: boolean = true;
+  @Input() defaultSearchType: CategoriesType = CategoriesType.Parents;
+
   @Output() onSelectedCategory = new EventEmitter<CategoryDto>();
 
   autocompleteControl = new FormControl('');
@@ -22,7 +23,7 @@ export class CategoriesSearchComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.init) {
-      this.categoriesApiClient.getCategories(1, 1, true, this.init)
+      this.categoriesApiClient.getCategories(1, 1, this.defaultSearchType, this.init)
         .subscribe(list => {
           if (list && list.items) {
             this.autocompleteControl.setValue(list.items![0]);
@@ -43,7 +44,7 @@ export class CategoriesSearchComponent implements OnInit {
   }
 
   filter(val: string): Observable<any[]> {
-    return this.categoriesApiClient.getCategories(1, 5, true, val)
+    return this.categoriesApiClient.getCategories(1, 5, this.defaultSearchType, val)
      .pipe(
        map(response => {
          if (response && response.items) {

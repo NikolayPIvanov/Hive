@@ -4,7 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { map, switchMap, takeUntil, tap } from 'rxjs/operators';
-import { CategoriesClient, CategoryDto, PaginatedListOfCategoryDto } from 'src/app/clients/gigs-client';
+import { CategoriesClient, CategoriesType, CategoryDto, PaginatedListOfCategoryDto } from 'src/app/clients/gigs-client';
 import { CategoryDetailsComponent } from '../category-details/category-details.component';
 
 @Component({
@@ -55,7 +55,7 @@ export class CategoriesDashboardComponent implements OnInit {
   openDialog(category: CategoryDto) {
     const dialogRef = this.dialog.open(CategoryDetailsComponent,
     {
-      width: "50%",
+      width: "30%",
       data: category
     });
 
@@ -81,7 +81,7 @@ export class CategoriesDashboardComponent implements OnInit {
     this.spinner.show();
 
     this.categoriesApiClient
-      .getCategories(this.pageNumber + 1, this.pageSize, true, this.searchKey)
+      .getCategories(this.pageNumber + 1, this.pageSize, CategoriesType.All, this.searchKey)
       .pipe(tap(
         {
           next: (list) => {

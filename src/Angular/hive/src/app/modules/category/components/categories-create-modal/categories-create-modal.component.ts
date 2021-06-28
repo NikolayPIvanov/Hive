@@ -3,7 +3,7 @@ import { FormBuilder, Validators } from '@angular/forms';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { Subject } from 'rxjs';
 import { switchMap, takeUntil, tap } from 'rxjs/operators';
-import { CategoriesClient, CategoryDto, CreateCategoryCommand } from 'src/app/clients/gigs-client';
+import { CategoriesClient, CategoriesType, CategoryDto, CreateCategoryCommand } from 'src/app/clients/gigs-client';
 import { NotificationService } from 'src/app/modules/core/services/notification.service';
 
 @Component({
@@ -36,7 +36,7 @@ export class CategoriesCreateModalComponent implements OnInit {
   }
 
   selected(category: CategoryDto) {
-    this.categoriesClient.getCategories(1, 1, true, category.title)
+    this.categoriesClient.getCategories(1, 1, CategoriesType.Parents, category.title)
       .pipe(tap({
         next: (categoriesList) => {
           if (categoriesList && categoriesList.items && categoriesList.items.length > 0) {

@@ -16,7 +16,7 @@
         <div 
           fxLayout.gt-lg="row"
           fxLayoutAlign.gt-lg="space-between">
-          <app-categories-search (onSelectedCategory)="selected($event)"></app-categories-search>
+          <app-categories-search [defaultSearchType]="0" (onSelectedCategory)="selected($event)"></app-categories-search>
           <app-categories-create (onClosedDialog)="onClosedDialog($event)"></app-categories-create>
         </div>
 

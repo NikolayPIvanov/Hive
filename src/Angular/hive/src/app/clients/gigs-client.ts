@@ -35,7 +35,7 @@ export interface ICategoriesClient {
      * @param searchKey (optional) 
      * @return Successful operation
      */
-    getCategories(pageNumber: number | undefined, pageSize: number | undefined, includeParents: boolean | undefined, searchKey: string | null | undefined): Observable<PaginatedListOfCategoryDto>;
+    getCategories(pageNumber: number | undefined, pageSize: number | undefined, includeParents: CategoriesType | undefined, searchKey: string | null | undefined): Observable<PaginatedListOfCategoryDto>;
     /**
      * @param command (optional) 
      * @return Successful operation
@@ -261,7 +261,7 @@ export class CategoriesClient implements ICategoriesClient {
      * @param searchKey (optional) 
      * @return Successful operation
      */
-    getCategories(pageNumber: number | undefined, pageSize: number | undefined, includeParents: boolean | undefined, searchKey: string | null | undefined): Observable<PaginatedListOfCategoryDto> {
+    getCategories(pageNumber: number | undefined, pageSize: number | undefined, includeParents: CategoriesType | undefined, searchKey: string | null | undefined): Observable<PaginatedListOfCategoryDto> {
         let url_ = this.baseUrl + "/api/Categories?";
         if (pageNumber === null)
             throw new Error("The parameter 'pageNumber' cannot be null.");
@@ -2063,6 +2063,12 @@ export interface IPaginatedListOfCategoryDto {
     totalCount?: number;
     hasPreviousPage?: boolean;
     hasNextPage?: boolean;
+}
+
+export enum CategoriesType {
+    All = 0,
+    Parents = 1,
+    Children = 2,
 }
 
 export class PaginatedListOfGigOverviewDto implements IPaginatedListOfGigOverviewDto {

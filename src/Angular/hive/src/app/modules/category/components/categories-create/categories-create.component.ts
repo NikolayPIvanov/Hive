@@ -14,7 +14,7 @@ export class CategoriesCreateComponent implements OnInit {
   constructor(public dialog: MatDialog) {}
 
   openDialog(onlyParent: boolean = false) {
-    const dialog = this.dialog.open(CategoriesCreateModalComponent, { data: onlyParent });
+    const dialog = this.dialog.open(CategoriesCreateModalComponent, { data: onlyParent, width: '30%' });
     dialog.afterClosed()
       .subscribe(newCategory => {
         if (newCategory) {
