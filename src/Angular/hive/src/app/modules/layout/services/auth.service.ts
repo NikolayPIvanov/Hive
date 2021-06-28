@@ -3,6 +3,15 @@ import { UserManager, User, UserManagerSettings } from 'oidc-client';
 import { Subject } from 'rxjs';
 import { Constants } from './auth.constants';
 
+
+export enum UserRole {
+  Admin = "Admin",
+  Buyer = "Buyer",
+  Seller = "Seller",
+  Investor = "Investor"
+}
+
+
 @Injectable({
   providedIn: 'root'
 })
@@ -11,6 +20,8 @@ export class AuthService {
 
   private _userManager: UserManager;
   private _user: User | null = null;
+
+  public role: UserRole | undefined;
 
   public loginChanged = this._loginChangedSubject.asObservable();
   public get token() {
@@ -39,6 +50,7 @@ export class AuthService {
     return this._userManager.signinRedirectCallback()
     .then(user => {
       this._user = user;
+      this.role = UserRole[user?.profile.role as keyof typeof UserRole];
       this._loginChangedSubject.next(this.checkUser(user));
       return user;
     })
@@ -60,6 +72,9 @@ export class AuthService {
           this._loginChangedSubject.next(this.checkUser(user));
         }
         this._user = user;
+        if (this._user) {
+          this.role = UserRole[this._user?.profile.role as keyof typeof UserRole];
+        }
         return this.checkUser(user);
       })
   }

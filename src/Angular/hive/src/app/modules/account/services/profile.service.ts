@@ -17,7 +17,7 @@ export class ProfileService {
   ) { }
 
   getProfile() {
-    return this.profileApiClient.getProfile()
+    return this.profileApiClient.getMyProfile()
       .pipe(
         switchMap(profile => {
           this.currentProfile.next(profile!);

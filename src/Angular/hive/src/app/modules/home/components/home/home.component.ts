@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthService, UserRole } from 'src/app/modules/layout/services/auth.service';
 
 @Component({
   selector: 'app-home',
@@ -6,10 +7,12 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./home.component.scss']
 })
 export class HomeComponent implements OnInit {
-
-  constructor() { }
+  public role: UserRole | undefined;
+  constructor(private authService: AuthService) { }
 
   ngOnInit(): void {
+    debugger;
+    this.role = this.authService.role;
   }
 
 }

@@ -1,1 +1,8 @@
-<p>Based on role see stuff</p>
+<div *ngIf="role" [ngSwitch]="role">
+    <div *ngSwitchCase="'Admin'">
+        <app-admin-dashboard></app-admin-dashboard>
+    </div>
+    <div *ngSwitchCase="'Buyer'">output 2</div>
+    <div *ngSwitchCase="'Seller'">output 3</div>
+    <div *ngSwitchCase="'Investor'">output 4</div>
+</div>
