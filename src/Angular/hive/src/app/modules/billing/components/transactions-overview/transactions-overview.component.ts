@@ -6,6 +6,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { AccountHoldersClient, PaginatedListOfTransactionDto, TransactionDto, TransactionType, WalletDto } from 'src/app/clients/billing-client';
+import { NotificationService } from 'src/app/modules/core/services/notification.service';
 import { BillingService } from '../../services/billing.service';
 
 @Component({
@@ -21,7 +22,7 @@ import { BillingService } from '../../services/billing.service';
   ],
 })
 export class TransactionsOverviewComponent implements OnInit, AfterViewInit {
-  @Input() wallet!: WalletDto;
+  @Input() wallet: WalletDto | undefined;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
 
   itemsCount: number = 0;
@@ -31,7 +32,7 @@ export class TransactionsOverviewComponent implements OnInit, AfterViewInit {
   onChange(pageEvent: PageEvent) {
     this.pageSize = pageEvent.pageSize;
     this.pageIndex = pageEvent.pageIndex
-    this.getList();
+    this.getList()?.subscribe();
   }
 
   private transactionsSubject = new BehaviorSubject<PaginatedListOfTransactionDto | undefined>(undefined)
@@ -41,17 +42,22 @@ export class TransactionsOverviewComponent implements OnInit, AfterViewInit {
   dataSource = new MatTableDataSource<TransactionDto>([]);
 
   constructor(
+    private notificationService: NotificationService,
     private billingService: BillingService,
     private billingClient: AccountHoldersClient, private spinner: NgxSpinnerService) { }
 
   ngOnInit(): void {
-    this.getList().subscribe()
+    const source = this.getList();
+
+    if (source) {
+      source.subscribe();
+    }
 
     this.billingService.newTransaction$
       .subscribe(transaction => {
         if (transaction) {
           const copy = this.dataSource.data;
-          copy.shift()
+          // copy.shift()
           copy.unshift(transaction);
           this.dataSource.data = copy;
           this.itemsCount += 1;
@@ -68,13 +74,19 @@ export class TransactionsOverviewComponent implements OnInit, AfterViewInit {
   }
 
   private getList() {
+    debugger;
+    if (!this.wallet) {
+      this.notificationService.openSnackBar('Wallet could not be found');
+      return;
+    }
+
     this.spinner.show('inner')
     
     return this.billingClient.getWalletTransactions(
-      this.wallet.id!,
+      this.wallet!.id!,
       this.pageIndex + 1,
       this.pageSize,
-      this.wallet.accountHolderId?.toString()!)
+      this.wallet!.accountHolderId?.toString()!)
       .pipe(tap({
         next: (paginatedList) => {
           this.transactionsSubject.next(paginatedList);

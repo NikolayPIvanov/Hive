@@ -35,7 +35,7 @@ export class BalanceOverviewComponent implements OnInit {
   }
 
   get displayName() {
-    const fullName = `${this.owner.firstName} ${this.owner.lastName}`;
+    const fullName = `${this.owner.givenName} ${this.owner.surname}`;
     if (fullName.trim() === '') {
       return this.authService.user?.profile.email;
     }
