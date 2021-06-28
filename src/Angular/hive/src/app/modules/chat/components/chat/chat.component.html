@@ -1,4 +1,4 @@
-<div fxLayout="row" fxLayoutGap="2rem" *ngIf="source | async; let messages" class="container full-height">
+<div fxLayout="row" fxLayoutGap="2rem" *ngIf="(messages$ | async)?.length! >= 0 || (messages$ | async); let messages" class="container full-height">
   <div  fxLayout="column">
     <div fxLayout="column">
       <!-- new chat -->
@@ -6,19 +6,19 @@
       <mat-form-field appearance="fill">
         <mat-label>New chat</mat-label>
         <mat-select (selectionChange)="selected($event)">
-          <mat-option *ngFor="let uuid of unifiers" [value]="uuid">
-            {{getNameByUUID(uuid.uuid)}}
+          <mat-option *ngFor="let uuid of uuids" [value]="uuid">
+            {{ uuid.givenName }} {{ uuid.surname }}
           </mat-option>
         </mat-select>
       </mat-form-field>
     </div>
 
     <h3>Already started chatted with:</h3>
-    <div *ngIf="unifiers" fxLayout="column">
+    <div *ngIf="rooms$ | async; let rooms" fxLayout="column">
       <mat-selection-list #roomsList [multiple]="false" (selectionChange)="onRoomSelected($event)">
-        <mat-list-option *ngFor="let room of chatService.rooms$ | async" [value]="room">
+        <mat-list-option *ngFor="let room of rooms" [value]="room">
           <mat-icon mat-list-icon>account_circle</mat-icon>
-          {{ getName(room.participantOne, room.participantTwo )}}
+          {{ getChattingWithName(room)}}
         </mat-list-option>
       </mat-selection-list>
       
@@ -30,7 +30,7 @@
 
   <mat-card fxLayout="column" fxFlex class="chat-window scrollable-content">
     <mat-card-header fxFlex="10">
-      <mat-card-title *ngIf="chatService.selectedRoom"> {{ otherParticipantName }} </mat-card-title>
+      <mat-card-title> {{ otherParticipantName }} </mat-card-title>
       <mat-card-subtitle>Chat</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content fxLayout="column reverse" fxFlex="85">

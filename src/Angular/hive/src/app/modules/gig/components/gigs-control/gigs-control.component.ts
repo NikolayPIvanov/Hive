@@ -61,7 +61,7 @@ export class GigsControlComponent implements OnInit {
   }
 
   displayName(profile: UserProfileDto) {
-    const display = `${profile.firstName} ${profile.lastName}`;
+    const display = `${profile.givenName} ${profile.surname}`;
     return display.trim() != '' ? display : this.authService.user?.profile.email;
   }
 

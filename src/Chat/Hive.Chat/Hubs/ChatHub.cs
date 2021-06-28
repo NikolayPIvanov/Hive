@@ -5,6 +5,13 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Hive.Chat.Hubs
 {
+    public interface IChatHub
+    {
+        Task MessageReceivedFromHub(Message message);
+
+        Task NewUserConnected(string message);
+    }
+    
     public class ChatHub : Hub<IChatHub>
     {
         public async Task BroadcastAsync(Message message)

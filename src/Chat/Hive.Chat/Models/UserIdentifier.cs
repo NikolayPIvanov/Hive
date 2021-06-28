@@ -12,6 +12,10 @@ namespace Hive.Chat.Models
 
         public string UserId { get; set; }
 
-        public Guid UniqueIdentifier { get; set; }
+        public string UniqueIdentifier { get; set; }
+
+        public string GivenName { get; set; }
+
+        public string Surname { get; set; }
     }
 }

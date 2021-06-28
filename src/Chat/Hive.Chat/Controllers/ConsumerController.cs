@@ -30,10 +30,14 @@ namespace Hive.Chat.Controllers
 
             if (identifier == null)
             {
-                var id = new UserIdentifier {UserId =  @event.UserId, UniqueIdentifier = Guid.NewGuid()};
+                var id = new UserIdentifier {
+                    UserId = @event.UserId, 
+                    UniqueIdentifier = Guid.NewGuid().ToString(), 
+                    GivenName = @event.GivenName, 
+                    Surname = @event.Surname
+                };
                 await _context.UserIdentifiers.InsertOneAsync(id);
             }
         }
-
     }
 }

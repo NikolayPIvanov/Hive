@@ -47,7 +47,7 @@ namespace Gig.Management
             services.AddControllers(options =>
             {
                 options.AllowEmptyInputInBodyModelBinding = true;
-                // options.Filters.Add<ApiExceptionFilterAttribute>();
+                options.Filters.Add<ApiExceptionFilterAttribute>();
             }).AddFluentValidation();
             
             services.AddAuthentication(DefaultAuthenticationSchema)
@@ -106,6 +106,8 @@ namespace Gig.Management
                 app.UseDeveloperExceptionPage();
             }
             
+            app.UseStaticFiles();
+
             app.UseSwaggerUi3(settings =>
             {
                 settings.Path = "/api";

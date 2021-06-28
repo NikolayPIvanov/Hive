@@ -24,7 +24,15 @@ services:
     image: "mongo"
     ports:
       - "27017:27017"
-    
+      
+  sqlserver:
+    image: "mcr.microsoft.com/mssql/server:2019-CU8-ubuntu-16.04"
+    environment:
+      SA_PASSWORD: "yourStrong(!)Password"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
+  
   azurite:
     image: "mcr.microsoft.com/azure-storage/azurite"
     ports:

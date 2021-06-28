@@ -25,11 +25,9 @@ namespace Hive.Chat.Models
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }
         
-        [BsonRepresentation(BsonType.String)]
-        public string ParticipantOne { get; set; }
+        public UserIdentifier ParticipantOne { get; set; }
         
-        [BsonRepresentation(BsonType.String)]
-        public string ParticipantTwo { get; set; }
+        public UserIdentifier ParticipantTwo { get; set; }
         
         public List<Message> Messages { get; set; }
     }

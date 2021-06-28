@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
-import { BehaviorSubject, from, of } from 'rxjs';
+import { BehaviorSubject, from, Observable, of } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { AuthService } from '../../layout/services/auth.service';
 
@@ -13,14 +13,16 @@ export interface ChatMessage {
 
 export interface Room {
   id: string;
-  participantOne: string;
-  participantTwo: string;
+  participantOne: UniqueIdentifier;
+  participantTwo: UniqueIdentifier;
   messages: ChatMessage[]
 }
 
 export class UniqueIdentifier {
   userId: string = '';
   uniqueIdentifier: string = '';
+  givenName: string = '';
+  surname: string = '';
 }
 
 export interface RoomCreateModel {
@@ -38,6 +40,7 @@ const httpOptions = {
   providedIn: 'root'
 })
 export class ChatService {
+  
   private hubConnection!: HubConnection
   private connectionUrl = 'https://localhost:6001/chat';
   private apiUrl = 'https://localhost:6001/api/chat';
@@ -48,9 +51,7 @@ export class ChatService {
   public get identifier(): UniqueIdentifier {
     return this._identifier;
   }
-
   public setIdentifier(value: UniqueIdentifier) {
-    
     this._identifier = value;
   }
 
@@ -69,7 +70,7 @@ export class ChatService {
   }
 
   getOtherChatParticipantUUID() {
-    return this.selectedRoom.participantOne === this.identifier.uniqueIdentifier ?
+    return this.selectedRoom.participantOne.uniqueIdentifier === this.identifier.uniqueIdentifier ?
       this.selectedRoom.participantTwo : this.selectedRoom.participantOne
   }
 
@@ -79,16 +80,19 @@ export class ChatService {
     return this.http.get<UniqueIdentifier>(this.apiUrl, { params: params })
       .pipe(tap({
         next: (uuid) => {
-          
           if (uuid && isCurrentUser) {
             this.setIdentifier(uuid!)
           }
       } }))
   }
 
+  getUuids(userId: string): Observable<UniqueIdentifier[]> {
+    let params = new HttpParams().set("userId", userId);
+    return this.http.get<UniqueIdentifier[]>(`${this.apiUrl}/uuids`, { params: params });
+  }
+
   generateUUID(userId: string) {
     return this.http.post<string>(this.apiUrl, { userId: userId })
-      // .pipe(switchMap(uuid => this.fetchUUID(userId, true)))
   }
 
   fetchRooms() {

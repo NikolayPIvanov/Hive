@@ -134,6 +134,7 @@ namespace Gig.Management.Controllers
         //     return CreatedAtAction(nameof(GetPackageById), new {id, packageId}, new {id, packageId});
         // }
         //
+        
         [HttpPut("{id:int}/packages/{packageId:int}")]
         [Authorize(Roles = "Seller, Admin")]
         [SwaggerResponse(HttpStatusCode.NoContent, typeof(IActionResult), Description = "Successful operation")]

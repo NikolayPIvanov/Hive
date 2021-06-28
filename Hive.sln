@@ -10,8 +10,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "build", "build", "{6BB6A724-D5C8-4E94-ACB4-042BEB8D0F05}"
 ProjectSection(SolutionItems) = preProject
 	build\docker-compose.yml = build\docker-compose.yml
-	build\docker-compose-identity.yml = build\docker-compose-identity.yml
-	build\docker-compose-userprofile.yml = build\docker-compose-userprofile.yml
 EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GigManagement", "GigManagement", "{FF3F27FA-F99E-4ED5-84E6-FB5FD3EB9A84}"

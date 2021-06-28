@@ -14,12 +14,7 @@ using NSwag.Annotations;
 
 namespace UserProfile.Management.Controllers
 {
-    // public record FileUpload(string FileData);
-
-    public class FileUpload
-    {
-        public string FileData { get; set; }
-    }
+    public record FileUpload(string FileData);
     
     [Authorize]
     [Consumes("application/json")]

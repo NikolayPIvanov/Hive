@@ -25,7 +25,7 @@ export class BillingOverviewComponent implements OnInit {
       .pipe(tap({
         next: (wallet) => this.wallet = wallet
       }));
-    this.owner$ = this.profileClient.getProfile();
+    this.owner$ = this.profileClient.getMyProfile();
   }
 
 }
