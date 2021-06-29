@@ -6,6 +6,7 @@ import { FileResponse, GigDto, GigsClient } from 'src/app/clients/gigs-client';
 import { OrderDto, OrdersClient, OrderState } from 'src/app/clients/ordering-client';
 import { AuthService } from 'src/app/modules/layout/services/auth.service';
 import { saveAs } from 'file-saver';
+import { ProfileClient, UserProfileDto } from 'src/app/clients/profile-client';
 
 @Component({
   selector: 'app-order-details',
@@ -19,11 +20,13 @@ export class OrderDetailsComponent implements OnInit {
   public order!: OrderDto;
   public isSeller!: boolean;
 
+  public profile$!: Observable<UserProfileDto | undefined>;
 
   constructor(
     private authService: AuthService,
     private gigsClient: GigsClient,
     private ordersClient: OrdersClient,
+    private profileClient: ProfileClient,
     public dialogRef: MatDialogRef<OrderDetailsComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any
   ) { }
@@ -31,10 +34,13 @@ export class OrderDetailsComponent implements OnInit {
   ngOnInit(): void {
     this.order = this.data.order;
     this.isSeller = this.data.isSeller;
-    
+
+    this.profile$ = this.profileClient.getProfileById(this.order.buyerUserId!)
+
     this.gig$ = this.gigsClient.getGigByPackageId(this.order.packageId!)
       .pipe(
         map(gig => {
+          debugger;
           this.download = this.gigsClient.getAvatar(gig.id!)
           return gig;
         })
@@ -69,7 +75,7 @@ export class OrderDetailsComponent implements OnInit {
   }
   
   public isBuyer() {
-    return true;
+    return !this.isSeller;
   }
 
 }

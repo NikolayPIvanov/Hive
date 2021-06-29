@@ -1,43 +1,47 @@
 <h1 mat-dialog-title>Order Details</h1>
 <div mat-dialog-content>
-  <div fxLayout="row">
+  <div fxLayout="column">
     <!-- left -->
-    <div fxLayout="row" fxFlex fxLayoutGap="3rem">
-      <!-- maininfo -->
-      
-      <div fxLayout="column">
-        <h2>Main information</h2>
-        <mat-divider>
-        </mat-divider>
-        <h3><strong>Order number</strong> {{ order.orderNumber }}</h3>
-        <h3><strong>Ordered at</strong> {{ order.orderedAt | date:'short' }}</h3>
-        <h3><strong>Buyer Id</strong> {{ order.buyerUserId }}</h3>
-      </div>
-
-      <!-- price -->
-      <div fxLayout="column">
-        <h2>Price</h2>
-        <mat-divider>
-        </mat-divider>
-        <h3><strong>Unit Price</strong> {{ order.unitPrice }}$</h3>
-        <h3><strong>Quantity</strong> {{ order.quantity }}</h3>
-        <h3><strong>Total</strong> {{ order.totalPrice }}$</h3>
-      </div>
+    <div fxLayout="row" fxFlex fxLayoutGap="1rem">
 
       <div *ngIf="gig$ | async; let gig" fxLayout="column">
         <h2>Package</h2>
-        <div >
-          <app-image-upload 
+        <mat-divider></mat-divider>
+        <h3 style="margin-bottom: 0;"><strong>{{ gig.title! }}</strong> </h3>
+
+        <app-image-upload 
+            style="margin-top: 1rem;"
             [source]="gig.imagePath!.path"
             [download]="download"
             [showUpload]="false"></app-image-upload>
-        </div>
-        <span>Gig title: {{ gig.title! }} </span>
-        <span>Package title: {{ orderedPackage(gig)!.title }} </span>
+        
+        <!-- <span>Package title: {{ orderedPackage(gig)?.title }} </span> -->
+      </div>
+
+      <div fxLayout="column" fxFlex="30">
+        <h2>Main information</h2>
+        <mat-divider>
+        </mat-divider>
+        <h3><strong>Order number: </strong> {{ order.orderNumber }}</h3>
+        <h3><strong>Ordered at: </strong> {{ order.orderedAt | date:'short' }}</h3>
+        <h3 *ngIf="profile$ | async; let profile">
+          <strong>Buyer:</strong> {{ profile.givenName }} {{ profile.surname }}
+        </h3>
+      </div>
+
+      <!-- price -->
+      <div fxLayout="column" fxFlex="30" >
+        <h2>Price</h2>
+        <mat-divider>
+        </mat-divider>
+        <h3><strong>Unit Price:</strong> {{ order.unitPrice }}$</h3>
+        <h3><strong>Quantity:</strong> {{ order.quantity }}</h3>
+        <h3><strong>Total:</strong> {{ order.totalPrice }}$</h3>
       </div>
     </div>
   </div>
 
+  <mat-divider style="margin-top: 1rem;"></mat-divider>
   <!-- right -->
   <div fxLayout="column">
     <div fxLayout="column">
@@ -86,7 +90,7 @@
           <mat-icon matListIcon>article</mat-icon>
           
           <p matLine>
-            <span>Accepted: {{ res.isApproved }} </span>
+            <span>Resolution</span>
             <span> -- Version: {{ res.version }} </span>
             <button mat-icon-button (click)="downloadResolution(res.version!)"><mat-icon>download</mat-icon></button>
             <ng-container *ngIf="isBuyer()">

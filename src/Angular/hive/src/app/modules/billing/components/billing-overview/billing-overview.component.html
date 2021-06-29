@@ -8,9 +8,7 @@
         *ngIf="owner$ | async; let owner" 
         [owner]="owner" 
         [wallet]="wallet!"></app-balance-overview>
-    
-    <mat-divider fxFlexOffset="2" fxFill></mat-divider>
-    
+        
     <app-transactions-overview [wallet]="wallet!" fxFlexOffset="2">
     </app-transactions-overview>
     

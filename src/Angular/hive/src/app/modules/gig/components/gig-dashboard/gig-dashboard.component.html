@@ -1,9 +1,11 @@
+    <!-- fxLayoutGap="2rem" -->
+
 <div
     fxLayout="column"
-    fxLayoutGap="2rem"
-    class="container">
+    class="container"
+    fxLayoutGap="1rem">
 
-    <mat-accordion>
+    <mat-accordion fxFlex>
         <mat-expansion-panel>
           <mat-expansion-panel-header>
             <mat-panel-title>
@@ -18,13 +20,13 @@
           <div 
             fxLayout.gt-lg="row"
             fxLayoutAlign.gt-lg="space-between">
-            <!-- <button mat-raised-button (click)="toggleFilterByCategories">Filter by Categories</button> -->
+            <!-- <button mat-raised-button>Filter</button> -->
           </div>
 
         </mat-expansion-panel>
-      </mat-accordion>
+    </mat-accordion>
 
-      <ng-container *ngIf="(gigs$ | async)?.length! > 0; else elseTemplate">
+    <mat-card fxFlex="90" *ngIf="(gigs$ | async)?.length! > 0; else elseTemplate">
         <div
             class="list-view"
             *ngIf="gigs$ | async; let gigs"
@@ -33,22 +35,23 @@
             fxLayoutGap="3%">
 
             <app-gig-card 
-                fxFlex="22"
+                fxFlex="20"
                 *ngFor="let gig of gigs" 
                 [gig]="gig"
                 [profile]="undefined"
             ></app-gig-card>
         </div>
+    </mat-card>
 
-        <!-- TODO -->
-        <mat-paginator
-            style="margin-top: 1rem;"
-            class="mat-elevation-z8"
-            [length]="100"
-            [pageSize]="10"
-            [pageSizeOptions]="[5, 10, 25, 100]">
-        </mat-paginator>
-    </ng-container>
+    <!-- TODO -->
+    <mat-paginator
+        style="margin-top: 1rem;"
+        class="mat-elevation-z8"
+        [length]="100"
+        [pageSize]="10"
+        [pageSizeOptions]="[5, 10, 25, 100]">
+    </mat-paginator>
+    
     <ng-template #elseTemplate>
         <mat-card fxFlexOffset="2rem" class="mat-elevation-z8">
             <mat-card-header>

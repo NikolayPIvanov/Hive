@@ -1,11 +1,11 @@
-<ng-container *ngIf="orders$ | async; let list" >
+<div *ngIf="orders$ | async; let list" style="height: 95% !important;">
     <mat-card class="mat-elevation-z8" fxLayout="column" class="container">
         <mat-card-header>
             <mat-card-title>Your orders</mat-card-title>
             <mat-card-subtitle>Manage your orders</mat-card-subtitle>
         </mat-card-header>
 
-        <mat-card-content>
+        <mat-card-content fxFlex>
             <table mat-table [dataSource]="dataSource" multiTemplateDataRows fxFlex>
             
                 <!-- Order Number Column -->
@@ -96,7 +96,7 @@
                         <ng-template #buyer>
                             <button mat-icon-button 
                                 [disabled]="!canProcess(element.orderStates)"
-                                (click)="updateStatusAsSeller(element.orderNumber)"><mat-icon>cancel</mat-icon></button>
+                                (click)="cancelOrder(element.orderNumber)"><mat-icon>cancel</mat-icon></button>
                             </ng-template>
                         
                         <button mat-icon-button (click)="openDialog(element)"><mat-icon>info</mat-icon></button>
@@ -109,6 +109,13 @@
             </table>
         </mat-card-content>
         
-        <mat-paginator  [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons></mat-paginator>
+        <mat-paginator 
+            fxFlexAlign="end"
+            [length]="length"
+            [pageSizeOptions]="pageSizeOptions" 
+            [pageSize]="pageSize"
+            [pageIndex]="pageNumber"
+            (page)="pageChange($event)"
+            showFirstLastButtons></mat-paginator>
     </mat-card>
-</ng-container>
+</div>

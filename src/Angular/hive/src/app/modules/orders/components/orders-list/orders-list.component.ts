@@ -1,10 +1,8 @@
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { HttpClient, HttpEventType } from '@angular/common/http';
-import { ThrowStmt } from '@angular/compiler';
-import { NgZone } from '@angular/core';
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import { MatPaginator } from '@angular/material/paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { Observable, Subject } from 'rxjs';
 import { takeUntil, tap } from 'rxjs/operators';
@@ -30,9 +28,21 @@ export class OrdersListComponent implements OnInit, AfterViewInit {
   private orders!: PaginatedListOfOrderDto;
 
   // Pagination
-  pageSize = 20;
-  pageIndex = 1;
+  // MatPaginator Inputs
+  length = 100;
+  pageSize = 10;
+  pageNumber = 0;
+  pageSizeOptions: number[] = [5, 10, 25, 100];
+
+  // MatPaginator Output
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+
+  pageChange(pageEvent: PageEvent) {
+    this.pageSize = pageEvent.pageSize;
+    this.pageNumber = pageEvent.pageIndex;
+
+    this.getOrders();
+  }
 
   // Table
   displayedColumns: string[] = [
@@ -49,16 +59,16 @@ export class OrdersListComponent implements OnInit, AfterViewInit {
     private authService: AuthService,
     private notificationService: NotificationService,
     public dialog: MatDialog,
-    private zone:NgZone,
     private http: HttpClient) { }
 
   ngOnInit(): void {
     this.determineIfSeller();
     this.orders$ =
-      this.ordersClient.getMyOrders(this.pageIndex, this.pageSize, this.isSeller)
+      this.ordersClient.getMyOrders(this.pageNumber + 1, this.pageSize, this.isSeller)
         .pipe(tap({
           next: (orders) => {
             this.dataSource = new MatTableDataSource<OrderDto>(orders.items);
+            this.length = orders.totalCount!;
             this.orders = orders;
           }
         }));
@@ -81,7 +91,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit {
     });
 
     dialogRef.afterClosed().subscribe(result => {
-      this.setData();
+      this.getOrders();
     });
   }
 
@@ -89,7 +99,23 @@ export class OrdersListComponent implements OnInit, AfterViewInit {
     if (this.orders) {
       const state = accept ? OrderState.Accepted : OrderState.Declined;
       const message = accept ? 'Accepted by seller' : 'Declined by seller'
-      debugger;
+
+      this.updateOrderStatusLocally(orderNumber, state);
+      this.dataSource.data = this.orders.items!
+
+      const command = ReviewOrderCommand.fromJS({
+        orderNumber: orderNumber, 
+        orderState: state,
+        reason: message
+      });
+      this.ordersClient.reviewOrder(orderNumber, command).subscribe()
+    }
+  }
+
+  cancelOrder(orderNumber: string) {
+    if (this.orders) {
+      const state = OrderState.Canceled;
+      const message = 'Canceled by buyer'
 
       this.updateOrderStatusLocally(orderNumber, state);
       this.dataSource.data = this.orders.items!
@@ -127,23 +153,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit {
         takeUntil(this.unsubscribe),
         tap({ next: (x) => this.notificationService.openSnackBar('Successfully uploaded resolution to the order') })
       )
-      .subscribe(x => this.setData());
-  }
-
-  
-
-  private isOrderValid(states: StateDto[]) {
-    const data = states.map(s => s.orderState!);
-    const dataIsValid = data.includes(OrderState.OrderDataValid) && data.includes(OrderState.UserBalanceValid);
-    const statesAreValid = dataIsValid && !data.includes(OrderState.Invalid)
-    return statesAreValid;
-  }
-
-  public _reload = true;
-
-  private reload() {
-      setTimeout(() => this._reload = false);
-      setTimeout(() => this._reload = true);
+      .subscribe(x => this.getOrders());
   }
 
   private updateOrderStatusLocally(orderNumber : string, state: OrderState) {
@@ -158,15 +168,16 @@ export class OrdersListComponent implements OnInit, AfterViewInit {
       order.isClosed = true;
     }
     
-    this.orders.items?.splice(index!, 1);
-    this.orders.items?.push(order);
+    this.orders.items?.splice(index!, 1, order);
   }
 
-  private setData() {
-    this.ordersClient.getMyOrders(this.pageIndex, this.pageSize, this.isSeller)
+  private getOrders() {
+    this.ordersClient.getMyOrders(this.pageNumber + 1, this.pageSize, this.isSeller)
         .pipe(tap({
           next: (orders) => {
+            this.orders = orders;
             this.dataSource.data = orders.items!;
+            this.length = orders.totalCount!;
           }
       })).subscribe();
   }
