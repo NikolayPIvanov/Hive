@@ -1,6 +1,7 @@
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { HttpClient, HttpEventType } from '@angular/common/http';
 import { ThrowStmt } from '@angular/compiler';
+import { NgZone } from '@angular/core';
 import { AfterViewInit, Component, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
@@ -37,7 +38,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit {
   displayedColumns: string[] = [
     'orderNumber', 'orderedAt',  'orderStates',
     'unitPrice', 'quantity', 'totalPrice', 'actions'];
-  dataSource: MatTableDataSource<OrderDto> = new MatTableDataSource<OrderDto>([]);;
+  dataSource: MatTableDataSource<OrderDto> = new MatTableDataSource<OrderDto>([]);
 
   // Data
   orders$!: Observable<PaginatedListOfOrderDto>
@@ -48,18 +49,22 @@ export class OrdersListComponent implements OnInit, AfterViewInit {
     private authService: AuthService,
     private notificationService: NotificationService,
     public dialog: MatDialog,
+    private zone:NgZone,
     private http: HttpClient) { }
 
   ngOnInit(): void {
+    this.determineIfSeller();
     this.orders$ =
-      this.ordersClient.getMyOrders(this.pageIndex, this.pageSize)
+      this.ordersClient.getMyOrders(this.pageIndex, this.pageSize, this.isSeller)
         .pipe(tap({
           next: (orders) => {
             this.dataSource = new MatTableDataSource<OrderDto>(orders.items);
             this.orders = orders;
           }
         }));
-    
+  }
+
+  private determineIfSeller() {
     const user = this.authService.user;
     const roles = user?.profile.role;
     this.isSeller = (roles as string[]).includes('Seller');
@@ -72,7 +77,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit {
   openDialog(order: OrderDto): void {
     const dialogRef = this.dialog.open(OrderDetailsComponent, {
       width: '50%',
-      data: order
+      data: { order: order, isSeller: this.isSeller }
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -84,7 +89,8 @@ export class OrdersListComponent implements OnInit, AfterViewInit {
     if (this.orders) {
       const state = accept ? OrderState.Accepted : OrderState.Declined;
       const message = accept ? 'Accepted by seller' : 'Declined by seller'
-      
+      debugger;
+
       this.updateOrderStatusLocally(orderNumber, state);
       this.dataSource.data = this.orders.items!
 
@@ -124,38 +130,20 @@ export class OrdersListComponent implements OnInit, AfterViewInit {
       .subscribe(x => this.setData());
   }
 
-  latestState(states: StateDto[]) {
-    const values = states.map(x => x.orderState);
-    const invalidStateIndex = values.indexOf(OrderState.Invalid);
-    if (invalidStateIndex > -1) {
-      return values[invalidStateIndex];
-    }
+  
 
-    const latest = states.sort((a, b) => b.created!.getTime() - a.created!.getTime())[0]
-    return latest.orderState;
-  }
-
-  canProcess(states: StateDto[]) {
-    return this.canChangeStateTo(states, OrderState.Accepted)
-  }
-
-  canSetInProgress(states: StateDto[]) {
-    const validState = OrderState.InProgress
-    return this.canChangeStateTo(states, validState) && !this.canProcess(states);
-  }
-
-  canUpload(states: StateDto[]) {
-    const validState = OrderState.Completed
-    return this.canChangeStateTo(states, validState) && !this.canSetInProgress(states);
-  }
-
-  private canChangeStateTo(states: StateDto[], s: OrderState) {
-    const validState = s;
-    const state = this.latestState(states)!;
+  private isOrderValid(states: StateDto[]) {
     const data = states.map(s => s.orderState!);
-    const inProcessableState = state < validState;
+    const dataIsValid = data.includes(OrderState.OrderDataValid) && data.includes(OrderState.UserBalanceValid);
+    const statesAreValid = dataIsValid && !data.includes(OrderState.Invalid)
+    return statesAreValid;
+  }
 
-    return data.includes(OrderState.OrderDataValid) && data.includes(OrderState.UserBalanceValid) && inProcessableState;
+  public _reload = true;
+
+  private reload() {
+      setTimeout(() => this._reload = false);
+      setTimeout(() => this._reload = true);
   }
 
   private updateOrderStatusLocally(orderNumber : string, state: OrderState) {
@@ -175,11 +163,52 @@ export class OrdersListComponent implements OnInit, AfterViewInit {
   }
 
   private setData() {
-    this.ordersClient.getMyOrders(this.pageIndex, this.pageSize)
+    this.ordersClient.getMyOrders(this.pageIndex, this.pageSize, this.isSeller)
         .pipe(tap({
           next: (orders) => {
             this.dataSource.data = orders.items!;
           }
       })).subscribe();
+  }
+
+  // States Management
+  canProcess(states: StateDto[]) {
+    return this.canChangeStateTo(states, OrderState.Accepted)
+  }
+
+  canSetInProgress(states: StateDto[]) {
+    const data = states.map(x => x.orderState!)
+    const inProgress = data.includes(OrderState.InProgress);
+    const accepted = data.includes(OrderState.Accepted);
+
+    return !inProgress && accepted;
+  }
+
+  canUpload(states: StateDto[]) {
+    const data = states.map(x => x.orderState!)
+    const inProgress = data.includes(OrderState.InProgress);
+    const completed = data.includes(OrderState.Completed);
+    return inProgress && !completed
+  }
+
+  private canChangeStateTo(states: StateDto[], s: OrderState) {
+    const validState = s;
+    const state = this.latestState(states)!;
+    const data = states.map(s => s.orderState!);
+    const inProcessableState = state < validState;
+    const dataIsValid = data.includes(OrderState.OrderDataValid) && data.includes(OrderState.UserBalanceValid);
+
+    return dataIsValid && inProcessableState;
+  }
+
+  latestState(states: StateDto[]) {
+    const values = states.map(x => x.orderState);
+    const invalidStateIndex = values.indexOf(OrderState.Invalid);
+    if (invalidStateIndex > -1) {
+      return values[invalidStateIndex];
+    }
+
+    const latest = states.sort((a, b) => b.created!.getTime() - a.created!.getTime())[0]
+    return latest.orderState;
   }
 }

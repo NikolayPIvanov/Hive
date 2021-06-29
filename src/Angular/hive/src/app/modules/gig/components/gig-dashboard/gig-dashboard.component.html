@@ -7,7 +7,7 @@
         <mat-expansion-panel>
           <mat-expansion-panel-header>
             <mat-panel-title>
-                Gigs Control Dashboard
+                Explore Gigs
             </mat-panel-title>
             <mat-panel-description>
               Expand to explore filter options
@@ -18,42 +18,48 @@
           <div 
             fxLayout.gt-lg="row"
             fxLayoutAlign.gt-lg="space-between">
-            
+            <!-- <button mat-raised-button (click)="toggleFilterByCategories">Filter by Categories</button> -->
           </div>
 
         </mat-expansion-panel>
       </mat-accordion>
 
-    <div
-        fxLayout="row wrap"
-        fxLayoutAlign="start center"
-        fxLayoutGap="3%"
-        >
+      <ng-container *ngIf="(gigs$ | async)?.length! > 0; else elseTemplate">
+        <div
+            class="list-view"
+            *ngIf="gigs$ | async; let gigs"
+            fxLayout="row wrap"
+            fxLayoutAlign="start center"
+            fxLayoutGap="3%">
+
+            <app-gig-card 
+                fxFlex="22"
+                *ngFor="let gig of gigs" 
+                [gig]="gig"
+                [profile]="undefined"
+            ></app-gig-card>
+        </div>
+
+        <!-- TODO -->
+        <mat-paginator
+            style="margin-top: 1rem;"
+            class="mat-elevation-z8"
+            [length]="100"
+            [pageSize]="10"
+            [pageSizeOptions]="[5, 10, 25, 100]">
+        </mat-paginator>
+    </ng-container>
+    <ng-template #elseTemplate>
+        <mat-card fxFlexOffset="2rem" class="mat-elevation-z8">
+            <mat-card-header>
+                <mat-card-title>Explore Gigs</mat-card-title>
+                <mat-card-subtitle>Gigs</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content fxLayout="column" fxLayoutAlign="start center" fxFill class="container">
+                <mat-icon fxFlex="50">work_outline</mat-icon>
         
-        <mat-card *ngFor="let item of elements" fxFlex="22" (click)="onInspect()" class="gig-card">
-          <mat-card-header>
-            <div mat-card-avatar class="example-header-image"></div>
-            <mat-card-title>Shiba Inu</mat-card-title>
-            <mat-card-subtitle>Dog Breed ( By seller )</mat-card-subtitle>
-          </mat-card-header>
-          <img mat-card-image src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu">
-          <mat-card-content>
-            <p>
-             {{ 'The Shiba Inu is the smallest of the six original and distinct spitz breeds of dog from Japan.
-              A small, agile dog that copes very well with mountainous terrain, the Shiba Inu was originally
-              bred for hunting.' | limitTo:'100'
-            }}
-            </p>
-          </mat-card-content>
-          <mat-card-actions fxLayout="row">
-            <h3 fxFlexAlign="end">Starts at 33$</h3>
-          </mat-card-actions>
+                <h1>No gigs found</h1>
+            </mat-card-content>
         </mat-card>
-
-    </div>
-
-    <mat-paginator [length]="100"
-              [pageSize]="10"
-              [pageSizeOptions]="[5, 10, 25, 100]">
-    </mat-paginator>
+    </ng-template>
 </div>

@@ -31,7 +31,12 @@
 
                         <div fxLayout="row" fxLayoutGap="3rem">
                             <h3><strong>Delivery Time:</strong></h3>
-                            <h3><strong>{{ package.deliveryTime || 3 }} {{ package.deliveryFrequency || 'days' }}</strong></h3>
+                            <h3>
+                                <strong>
+                                    {{ package.deliveryTime }} 
+                                    {{ displayDeliveryType(package.deliveryFrequency!) || 'days' }}
+                                </strong>
+                            </h3>
                         </div>
                     </div>
                 </div>
@@ -41,8 +46,11 @@
                 </mat-form-field>
             </mat-card-content>
             <mat-card-actions>
-                <div fxLayout="row">
-                    <button (click)="completeOrder(quantity, package)" fxFlexAlign="end" mat-button>Checkout</button>
+                <div fxLayout="row" fxLayoutAlign="end">
+                    <button 
+                        (click)="completeOrder(quantity, package)" 
+                        mat-raised-button
+                        color="primary">Checkout</button>
                 </div>
             </mat-card-actions>
         </ng-container>

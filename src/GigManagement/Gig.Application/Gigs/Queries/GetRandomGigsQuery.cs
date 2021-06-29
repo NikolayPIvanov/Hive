@@ -9,6 +9,7 @@ using Hive.Common.Core.Mappings;
 using Hive.Common.Core.Models;
 using Hive.Gig.Application.Interfaces;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Hive.Gig.Application.Gigs.Queries
 {
@@ -27,10 +28,17 @@ namespace Hive.Gig.Application.Gigs.Queries
         
         public async Task<PaginatedList<GigOverviewDto>> Handle(GetRandomGigsQuery request, CancellationToken cancellationToken)
         {
-            return await _context.Gigs
-                .OrderByDescending(g => g.Created)
-                .ProjectTo<GigOverviewDto>(_mapper.ConfigurationProvider)
-                .PaginatedListAsync(1, request.Quantity);
+            var list = await
+                _context.Gigs
+                    .AsNoTracking()
+                    .Include(g => g.Seller)
+                    .Include(g => g.Packages)
+                    .OrderByDescending(g => g.Created)
+                    .ToListAsync(cancellationToken);
+
+            var dtos = _mapper.Map<ICollection<GigOverviewDto>>(list);
+
+            return new PaginatedList<GigOverviewDto>(dtos.ToList(), dtos.Count, 1, request.Quantity);
         }
     }
 }

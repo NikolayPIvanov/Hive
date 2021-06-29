@@ -19,9 +19,10 @@ export interface IOrdersClient {
     /**
      * @param pageNumber (optional) 
      * @param pageSize (optional) 
+     * @param isSeller (optional) 
      * @return Successful operation
      */
-    getMyOrders(pageNumber: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfOrderDto>;
+    getMyOrders(pageNumber: number | undefined, pageSize: number | undefined, isSeller: boolean | undefined): Observable<PaginatedListOfOrderDto>;
     /**
      * @param command (optional) 
      * @return Successful operation
@@ -114,9 +115,10 @@ export class OrdersClient implements IOrdersClient {
     /**
      * @param pageNumber (optional) 
      * @param pageSize (optional) 
+     * @param isSeller (optional) 
      * @return Successful operation
      */
-    getMyOrders(pageNumber: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfOrderDto> {
+    getMyOrders(pageNumber: number | undefined, pageSize: number | undefined, isSeller: boolean | undefined): Observable<PaginatedListOfOrderDto> {
         let url_ = this.baseUrl + "/api/Orders/my?";
         if (pageNumber === null)
             throw new Error("The parameter 'pageNumber' cannot be null.");
@@ -126,6 +128,10 @@ export class OrdersClient implements IOrdersClient {
             throw new Error("The parameter 'pageSize' cannot be null.");
         else if (pageSize !== undefined)
             url_ += "pageSize=" + encodeURIComponent("" + pageSize) + "&";
+        if (isSeller === null)
+            throw new Error("The parameter 'isSeller' cannot be null.");
+        else if (isSeller !== undefined)
+            url_ += "isSeller=" + encodeURIComponent("" + isSeller) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {

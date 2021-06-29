@@ -4,7 +4,7 @@ import { Router } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { Observable } from 'rxjs';
 import { map, tap } from 'rxjs/operators';
-import { GigDto, PackageDto } from 'src/app/clients/gigs-client';
+import { DeliveryFrequency, GigDto, PackageDto } from 'src/app/clients/gigs-client';
 import { OrdersClient, PlaceOrderCommand } from 'src/app/clients/ordering-client';
 import { CheckoutService } from '../../services/checkout.service';
 
@@ -42,6 +42,7 @@ export class CheckoutSummaryComponent implements OnInit {
         sellerUserId: this.gig.sellerUserId!,
         packageId: p.id!
       });
+    
     this.spinner.show(this.spinnerName);
     this.ordersApiClient.placeOrder(command)
       .pipe(tap({
@@ -51,6 +52,10 @@ export class CheckoutSummaryComponent implements OnInit {
         complete: () => this.spinner.hide(this.spinnerName)
       }))
       .subscribe();
+  }
+
+  displayDeliveryType(type: DeliveryFrequency) {
+    return DeliveryFrequency[type];
   }
 
 }

@@ -9,9 +9,9 @@
         <h2>Main information</h2>
         <mat-divider>
         </mat-divider>
-        <h3><strong>Order number</strong> {{ data.orderNumber }}</h3>
-        <h3><strong>Ordered at</strong> {{ data.orderedAt | date:'short' }}</h3>
-        <h3><strong>Buyer Id</strong> {{ data.buyerUserId }}</h3>
+        <h3><strong>Order number</strong> {{ order.orderNumber }}</h3>
+        <h3><strong>Ordered at</strong> {{ order.orderedAt | date:'short' }}</h3>
+        <h3><strong>Buyer Id</strong> {{ order.buyerUserId }}</h3>
       </div>
 
       <!-- price -->
@@ -19,9 +19,9 @@
         <h2>Price</h2>
         <mat-divider>
         </mat-divider>
-        <h3><strong>Unit Price</strong> {{ data.unitPrice }}$</h3>
-        <h3><strong>Quantity</strong> {{ data.quantity }}</h3>
-        <h3><strong>Total</strong> {{ data.totalPrice }}$</h3>
+        <h3><strong>Unit Price</strong> {{ order.unitPrice }}$</h3>
+        <h3><strong>Quantity</strong> {{ order.quantity }}</h3>
+        <h3><strong>Total</strong> {{ order.totalPrice }}$</h3>
       </div>
 
       <div *ngIf="gig$ | async; let gig" fxLayout="column">
@@ -45,7 +45,7 @@
       <mat-divider>
       </mat-divider>
       <textarea [disabled]="true" name="requrements" id="requrements" class="full-width" rows="10">
-        {{ data.requirements }}
+        {{ order.requirements }}
       </textarea>
     </div>
 
@@ -55,7 +55,7 @@
     <div fxLayout="column">
       <h2>States History</h2>
       <mat-list>
-        <mat-list-item *ngFor="let state of data.orderStates">
+        <mat-list-item *ngFor="let state of order.orderStates">
           <mat-icon matListIcon>radio_button_checked</mat-icon>
           
           <span matLine [ngSwitch]="state.orderState">
@@ -82,7 +82,7 @@
     <div fxLayout="column">
       <h2>Resolutions</h2>
       <mat-list>
-        <mat-list-item *ngFor="let res of data.resolution">
+        <mat-list-item *ngFor="let res of order.resolution">
           <mat-icon matListIcon>article</mat-icon>
           
           <p matLine>
@@ -105,6 +105,5 @@
   </div>
 </div>
 <div mat-dialog-actions>
-  <button mat-button (click)="onNoClick()">No Thanks</button>
-  <button mat-button [mat-dialog-close]="data.orderNumber" cdkFocusInitial>Ok</button>
+  <button mat-button [mat-dialog-close]="order.orderNumber" cdkFocusInitial>Close</button>
 </div>

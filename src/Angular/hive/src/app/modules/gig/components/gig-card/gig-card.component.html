@@ -1,7 +1,7 @@
 <mat-card fxLayout="column">
     <mat-card-header>
         <mat-card-title> {{ gig.title! | limitTo:'20' }} </mat-card-title>
-        <mat-card-subtitle> By {{ profile.givenName }} {{ profile.surname }} </mat-card-subtitle>
+        <mat-card-subtitle *ngIf="profile$ | async; let prof"> By {{ prof.givenName }} {{ prof.surname }} </mat-card-subtitle>
     </mat-card-header>
     <app-image-upload
         fxFlex="10"
@@ -14,10 +14,9 @@
         <div fxLayout="row">
             <h3>Starts at <strong>{{ gig.prices![0] || '--' }} $</strong> </h3>
         </div>
-        <div *ngIf="isOwner" fxLayout="row">
-            <button mat-flat-button (click)="onDetails()">Inspect</button>
-            <button mat-flat-button>Edit</button>
-            <button mat-flat-button (click)="deleteGig(gig.id!)">Delete</button>
+        <div fxLayout="row" fxLayoutGap="1rem">
+            <button [fxFlex]="!isOwner" mat-flat-button color="primary" (click)="onDetails()">Inspect</button>
+            <button *ngIf="isOwner" color="warn" mat-flat-button (click)="deleteGig(gig.id!)">Delete</button>
         </div>
     </mat-card-content>
 </mat-card>

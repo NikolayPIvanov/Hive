@@ -16,17 +16,23 @@ export class OrderDetailsComponent implements OnInit {
   public gig$!: Observable<GigDto>;
   public download!: Observable<FileResponse>;
 
+  public order!: OrderDto;
+  public isSeller!: boolean;
+
 
   constructor(
     private authService: AuthService,
     private gigsClient: GigsClient,
     private ordersClient: OrdersClient,
     public dialogRef: MatDialogRef<OrderDetailsComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: OrderDto
+    @Inject(MAT_DIALOG_DATA) public data: any
   ) { }
 
   ngOnInit(): void {
-    this.gig$ = this.gigsClient.getGigByPackageId(this.data.packageId!)
+    this.order = this.data.order;
+    this.isSeller = this.data.isSeller;
+    
+    this.gig$ = this.gigsClient.getGigByPackageId(this.order.packageId!)
       .pipe(
         map(gig => {
           this.download = this.gigsClient.getAvatar(gig.id!)

@@ -74,7 +74,6 @@ export class TransactionsOverviewComponent implements OnInit, AfterViewInit {
   }
 
   private getList() {
-    debugger;
     if (!this.wallet) {
       this.notificationService.openSnackBar('Wallet could not be found');
       return;

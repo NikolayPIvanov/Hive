@@ -72,6 +72,15 @@
               "default": 20
             },
             "x-position": 2
+          },
+          {
+            "name": "isSeller",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "default": true
+            },
+            "x-position": 3
           }
         ],
         "responses": {
@@ -148,7 +157,8 @@
           {
             "JWT": [
               "Seller",
-              " Buyer"
+              " Buyer",
+              "Buyer"
             ]
           }
         ]

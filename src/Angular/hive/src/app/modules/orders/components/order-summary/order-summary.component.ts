@@ -3,7 +3,7 @@ import { ActivatedRoute } from '@angular/router';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { Observable, throwError } from 'rxjs';
 import { delay, map, switchMap, tap } from 'rxjs/operators';
-import { FileResponse, GigDto, GigsClient, PackageDto } from 'src/app/clients/gigs-client';
+import { DeliveryFrequency, FileResponse, GigDto, GigsClient, PackageDto, PackageTier, RevisionType } from 'src/app/clients/gigs-client';
 import { CheckoutService } from '../../services/checkout.service';
 
 @Component({
@@ -18,7 +18,6 @@ export class OrderSummaryComponent implements OnInit {
   public download!: Observable<FileResponse>;
   public default = '/assets/no_image.png'
 
-
   selectedQuantity: number = 1;
   quantity!: number[];
 
@@ -27,7 +26,19 @@ export class OrderSummaryComponent implements OnInit {
     private gigsClient: GigsClient
   ) {
     this.quantity = Array.from({ length: 10 }, (_, i) => i + 1).filter(value => !!value);
-   }
+  }
+  
+  displayPackageTier(tier: PackageTier) {
+    return PackageTier[tier];
+  }
+
+  displayDeliveryType(type: DeliveryFrequency) {
+    return DeliveryFrequency[type];
+  }
+
+  displayRevisionType(type: RevisionType) {
+    return RevisionType[type];
+  }
 
   ngOnInit(): void {
     this.currentPackage = this.gig.packages![0];

@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Observer, of, throwError } from 'rxjs';
-import { tap } from 'rxjs/operators';
-import { DeliveryFrequency, FileResponse, GigDto, GigsClient } from 'src/app/clients/gigs-client';
-import { UserProfileDto } from 'src/app/clients/profile-client';
+import { switchMap, tap } from 'rxjs/operators';
+import { DeliveryFrequency, FileResponse, GigDto, GigsClient, PackageTier } from 'src/app/clients/gigs-client';
+import { ProfileClient, UserProfileDto } from 'src/app/clients/profile-client';
 import { ProfileService } from 'src/app/modules/account/services/profile.service';
 import { AuthService } from 'src/app/modules/layout/services/auth.service';
 import { GigsService } from '../../services/gigs.service';
@@ -36,8 +36,13 @@ export class GigDetailsComponent implements OnInit {
     private gigsService: GigsService,
     private gigsClient: GigsClient,
     private userProfileService: ProfileService,
+    private userProfileClient: ProfileClient,
     public dialog: MatDialog
   ) {
+  }
+
+  displayPackageTier(tier: PackageTier) {
+    return PackageTier[tier];
   }
 
   ngOnInit(): void {
@@ -45,16 +50,20 @@ export class GigDetailsComponent implements OnInit {
     if (idParam == null)
       throwError('Empty id parameter');
     const id = +idParam!;
-
-
+    
     this.profile$ =
-      this.userProfileService.getProfile()
-      .pipe(tap({
-        next: (profile) => {
-          this.canModify = profile?.userId! === this.authService.user?.profile.sub
-        }
-      }))
-    this.gig$ = this.gigsService.getGigDetailsById(id)
+      this.gigsService.getGigDetailsById(id)
+      .pipe(
+        switchMap(gig => {
+          this.gig$ = of(gig);
+          return this.userProfileClient.getProfileById(gig.sellerUserId!)
+        }),
+        tap({
+          next: (profile) => {
+            this.canModify = profile?.userId! === this.authService.user?.profile.sub
+          }
+        })
+      )
     this.download = this.gigsClient.getAvatar(id);
   }
 

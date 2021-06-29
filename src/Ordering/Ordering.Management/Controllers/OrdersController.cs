@@ -26,11 +26,11 @@ namespace Ordering.Management.Controllers
         [Authorize(Roles = "Buyer, Seller")]
         [HttpGet("my")]
         [SwaggerResponse(HttpStatusCode.OK, typeof(PaginatedList<OrderDto>), Description = "Successful operation")]
-        public async Task<ActionResult<PaginatedList<OrderDto>>> GetMyOrders([FromQuery] int pageNumber = 1, int pageSize = 20) =>
-            Ok(await Mediator.Send(new GetMyOrdersQuery(pageNumber, pageSize)));
+        public async Task<ActionResult<PaginatedList<OrderDto>>> GetMyOrders([FromQuery] int pageNumber = 1, int pageSize = 20, bool isSeller = true) =>
+            Ok(await Mediator.Send(new GetMyOrdersQuery(pageNumber, pageSize, isSeller)));
         
         [HttpPost]
-        [Authorize(Roles = "Seller")]
+        [Authorize(Roles = "Buyer")]
         [Produces(MediaTypeNames.Application.Json)]
         [Consumes(MediaTypeNames.Application.Json)]
         [SwaggerResponse(HttpStatusCode.Created, typeof(ActionResult<Guid>), Description = "Successful operation")]

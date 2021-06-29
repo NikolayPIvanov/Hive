@@ -1,8 +1,9 @@
 <!-- main -->
-<div *ngIf="gig$ | async; let gig" fxLayout="row" class="container">
-    <!-- left : title, name, etc -->
+<div *ngIf="profile$ | async; let profile" fxLayout="row" class="container">
+  <div *ngIf="gig$ | async; let gig">
+     <!-- left : title, name, etc -->
     
-    <div fxLayout="column" fxLayoutGap="1rem" fxFlex="60">
+     <div fxLayout="column" fxLayoutGap="1rem" fxFlex="60">
       <mat-card fxFlex="60" fxLayout="column" class="full-height">
         <mat-card-header>
           <mat-card-title>{{ gig.title! }}</mat-card-title>
@@ -62,7 +63,7 @@
             <mat-card-content>
               <mat-tab-group mat-align-tabs="center">
                 <mat-tab *ngFor="let package of gig.packages"> 
-                  <ng-template mat-tab-label>{{package.title}}</ng-template>
+                  <ng-template mat-tab-label>{{ displayPackageTier(package.packageTier!) }}</ng-template>
                   <div fxLayout="column" fxLayoutGap="3">
                     <div fxLayout="row" fxLayoutAlign="space-between center">
                         <h2>{{package.title}}</h2>
@@ -101,4 +102,6 @@
             (click)="edit(gig)">Edit</button>
         </div>
 
+
+  </div>  
 </div>
