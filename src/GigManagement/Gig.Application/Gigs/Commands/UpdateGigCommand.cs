@@ -8,9 +8,11 @@ using FluentValidation;
 using Hive.Common.Core.Exceptions;
 using Hive.Common.Core.Interfaces;
 using Hive.Common.Core.Security.Handlers;
+using Hive.Gig.Application.GigPackages;
 using Hive.Gig.Application.Interfaces;
 using MediatR;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Hive.Gig.Application.Gigs.Commands
@@ -26,6 +28,7 @@ namespace Hive.Gig.Application.Gigs.Commands
         int? PlanId,
         ICollection<string> Tags, 
         ICollection<QuestionModel> Questions,
+        ICollection<PackageModel> Packages,
         string Image) : IRequest;
 
     public class UpdateGigCommandValidator : AbstractValidator<UpdateGigCommand>
@@ -33,7 +36,7 @@ namespace Hive.Gig.Application.Gigs.Commands
         public UpdateGigCommandValidator()
         {
             RuleFor(x => x.Title)
-                .MaximumLength(50).WithMessage("Title length must not be above 50 characters.")
+                .MaximumLength(100).WithMessage("Title length must not be above 50 characters.")
                 .MinimumLength(3).WithMessage("Title length must not be below 3 characters.")
                 .NotEmpty().WithMessage("Title should be provided.");
             
@@ -71,7 +74,9 @@ namespace Hive.Gig.Application.Gigs.Commands
         
         public async Task<Unit> Handle(UpdateGigCommand request, CancellationToken cancellationToken)
         {
-            var entity = await _dbContext.Gigs.FindAsync(request.Id);
+            var entity = await _dbContext.Gigs
+                .Include(g => g.Packages)
+                .FirstOrDefaultAsync(x => x.Id == request.Id, cancellationToken);
             
             if (entity is null)
             {
@@ -85,7 +90,8 @@ namespace Hive.Gig.Application.Gigs.Commands
             {
                 throw new ForbiddenAccessException();
             }
-
+            
+            
             _mapper.Map(request, entity);
             await _dbContext.SaveChangesAsync(cancellationToken);
             

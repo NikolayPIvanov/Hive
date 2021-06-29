@@ -3,7 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Observer, of, throwError } from 'rxjs';
 import { tap } from 'rxjs/operators';
-import { FileResponse, GigDto, GigsClient } from 'src/app/clients/gigs-client';
+import { DeliveryFrequency, FileResponse, GigDto, GigsClient } from 'src/app/clients/gigs-client';
 import { UserProfileDto } from 'src/app/clients/profile-client';
 import { ProfileService } from 'src/app/modules/account/services/profile.service';
 import { AuthService } from 'src/app/modules/layout/services/auth.service';
@@ -67,6 +67,10 @@ export class GigDetailsComponent implements OnInit {
       width: '50%',
       data: gig
     });
+  }
+
+  displayFrequency(f: DeliveryFrequency) {
+    return DeliveryFrequency[f];
   }
 
 }

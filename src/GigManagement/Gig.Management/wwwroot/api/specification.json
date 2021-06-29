@@ -441,9 +441,10 @@
           "400": {
             "description": "Invalid ID supplied",
             "content": {
-              "application/json": {
+              "application/octet-stream": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "type": "string",
+                  "format": "binary"
                 }
               }
             }
@@ -451,9 +452,10 @@
           "404": {
             "description": "Anomaly not found",
             "content": {
-              "application/json": {
+              "application/octet-stream": {
                 "schema": {
-                  "$ref": "#/components/schemas/ProblemDetails"
+                  "type": "string",
+                  "format": "binary"
                 }
               }
             }
@@ -1781,9 +1783,6 @@
             "type": "integer",
             "format": "int32"
           },
-          "packageTier": {
-            "type": "string"
-          },
           "title": {
             "type": "string"
           },
@@ -1794,21 +1793,67 @@
             "type": "number",
             "format": "decimal"
           },
+          "packageTier": {
+            "$ref": "#/components/schemas/PackageTier"
+          },
           "deliveryTime": {
             "type": "number",
             "format": "double"
           },
           "deliveryFrequency": {
-            "type": "string"
+            "$ref": "#/components/schemas/DeliveryFrequency"
           },
           "revisions": {
             "type": "string"
+          },
+          "revisionType": {
+            "$ref": "#/components/schemas/RevisionType"
           },
           "gigId": {
             "type": "integer",
             "format": "int32"
           }
         }
+      },
+      "PackageTier": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "Basic",
+          "Standard",
+          "Premium"
+        ],
+        "enum": [
+          0,
+          1,
+          2
+        ]
+      },
+      "DeliveryFrequency": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "Hours",
+          "Days",
+          "Weeks"
+        ],
+        "enum": [
+          0,
+          1,
+          2
+        ]
+      },
+      "RevisionType": {
+        "type": "integer",
+        "description": "",
+        "x-enumNames": [
+          "Unlimited",
+          "Numeric"
+        ],
+        "enum": [
+          0,
+          1
+        ]
       },
       "QuestionDto": {
         "type": "object",
@@ -1942,46 +1987,6 @@
           }
         }
       },
-      "PackageTier": {
-        "type": "integer",
-        "description": "",
-        "x-enumNames": [
-          "Basic",
-          "Standard",
-          "Premium"
-        ],
-        "enum": [
-          0,
-          1,
-          2
-        ]
-      },
-      "DeliveryFrequency": {
-        "type": "integer",
-        "description": "",
-        "x-enumNames": [
-          "Hours",
-          "Days",
-          "Weeks"
-        ],
-        "enum": [
-          0,
-          1,
-          2
-        ]
-      },
-      "RevisionType": {
-        "type": "integer",
-        "description": "",
-        "x-enumNames": [
-          "Unlimited",
-          "Numeric"
-        ],
-        "enum": [
-          0,
-          1
-        ]
-      },
       "FileUpload": {
         "type": "object",
         "additionalProperties": false,
@@ -1989,40 +1994,6 @@
           "fileData": {
             "type": "string",
             "nullable": true
-          }
-        }
-      },
-      "ProblemDetails": {
-        "type": "object",
-        "additionalProperties": {
-          "nullable": true
-        },
-        "properties": {
-          "type": {
-            "type": "string",
-            "nullable": true
-          },
-          "title": {
-            "type": "string",
-            "nullable": true
-          },
-          "status": {
-            "type": "integer",
-            "format": "int32",
-            "nullable": true
-          },
-          "detail": {
-            "type": "string",
-            "nullable": true
-          },
-          "instance": {
-            "type": "string",
-            "nullable": true
-          },
-          "extensions": {
-            "type": "object",
-            "nullable": true,
-            "additionalProperties": {}
           }
         }
       },
@@ -2064,8 +2035,48 @@
               "$ref": "#/components/schemas/QuestionModel"
             }
           },
+          "packages": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PackageModel"
+            }
+          },
           "image": {
             "type": "string"
+          }
+        }
+      },
+      "ProblemDetails": {
+        "type": "object",
+        "additionalProperties": {
+          "nullable": true
+        },
+        "properties": {
+          "type": {
+            "type": "string",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
+            "nullable": true
+          },
+          "status": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "detail": {
+            "type": "string",
+            "nullable": true
+          },
+          "instance": {
+            "type": "string",
+            "nullable": true
+          },
+          "extensions": {
+            "type": "object",
+            "nullable": true,
+            "additionalProperties": {}
           }
         }
       },

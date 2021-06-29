@@ -674,14 +674,14 @@ export class GigsClient implements IGigsClient {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result400: any = null;
             let resultData400 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result400 = ProblemDetails.fromJS(resultData400);
+            result400 = resultData400 !== undefined ? resultData400 : <any>null;
             return throwException("Invalid ID supplied", status, _responseText, _headers, result400);
             }));
         } else if (status === 404) {
             return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
             let result404: any = null;
             let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result404 = ProblemDetails.fromJS(resultData404);
+            result404 = resultData404 !== undefined ? resultData404 : <any>null;
             return throwException("Anomaly not found", status, _responseText, _headers, result404);
             }));
         } else if (status !== 200 && status !== 204) {
@@ -2437,13 +2437,14 @@ export interface IGigDto {
 
 export class PackageDto implements IPackageDto {
     id?: number;
-    packageTier?: string;
     title?: string;
     description?: string;
     price?: number;
+    packageTier?: PackageTier;
     deliveryTime?: number;
-    deliveryFrequency?: string;
+    deliveryFrequency?: DeliveryFrequency;
     revisions?: string;
+    revisionType?: RevisionType;
     gigId?: number;
 
     constructor(data?: IPackageDto) {
@@ -2458,13 +2459,14 @@ export class PackageDto implements IPackageDto {
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
-            this.packageTier = _data["packageTier"];
             this.title = _data["title"];
             this.description = _data["description"];
             this.price = _data["price"];
+            this.packageTier = _data["packageTier"];
             this.deliveryTime = _data["deliveryTime"];
             this.deliveryFrequency = _data["deliveryFrequency"];
             this.revisions = _data["revisions"];
+            this.revisionType = _data["revisionType"];
             this.gigId = _data["gigId"];
         }
     }
@@ -2479,13 +2481,14 @@ export class PackageDto implements IPackageDto {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
-        data["packageTier"] = this.packageTier;
         data["title"] = this.title;
         data["description"] = this.description;
         data["price"] = this.price;
+        data["packageTier"] = this.packageTier;
         data["deliveryTime"] = this.deliveryTime;
         data["deliveryFrequency"] = this.deliveryFrequency;
         data["revisions"] = this.revisions;
+        data["revisionType"] = this.revisionType;
         data["gigId"] = this.gigId;
         return data; 
     }
@@ -2493,14 +2496,32 @@ export class PackageDto implements IPackageDto {
 
 export interface IPackageDto {
     id?: number;
-    packageTier?: string;
     title?: string;
     description?: string;
     price?: number;
+    packageTier?: PackageTier;
     deliveryTime?: number;
-    deliveryFrequency?: string;
+    deliveryFrequency?: DeliveryFrequency;
     revisions?: string;
+    revisionType?: RevisionType;
     gigId?: number;
+}
+
+export enum PackageTier {
+    Basic = 0,
+    Standard = 1,
+    Premium = 2,
+}
+
+export enum DeliveryFrequency {
+    Hours = 0,
+    Days = 1,
+    Weeks = 2,
+}
+
+export enum RevisionType {
+    Unlimited = 0,
+    Numeric = 1,
 }
 
 export class QuestionDto implements IQuestionDto {
@@ -2799,23 +2820,6 @@ export interface IPackageModel {
     gigId?: number;
 }
 
-export enum PackageTier {
-    Basic = 0,
-    Standard = 1,
-    Premium = 2,
-}
-
-export enum DeliveryFrequency {
-    Hours = 0,
-    Days = 1,
-    Weeks = 2,
-}
-
-export enum RevisionType {
-    Unlimited = 0,
-    Numeric = 1,
-}
-
 export class FileUpload implements IFileUpload {
     fileData?: string | undefined;
 
@@ -2850,6 +2854,102 @@ export class FileUpload implements IFileUpload {
 
 export interface IFileUpload {
     fileData?: string | undefined;
+}
+
+export class UpdateGigCommand implements IUpdateGigCommand {
+    id?: number;
+    title?: string;
+    description?: string;
+    categoryId?: number;
+    isDraft?: boolean;
+    planId?: number | undefined;
+    tags?: string[];
+    questions?: QuestionModel[];
+    packages?: PackageModel[];
+    image?: string;
+
+    constructor(data?: IUpdateGigCommand) {
+        if (data) {
+            for (var property in data) {
+                if (data.hasOwnProperty(property))
+                    (<any>this)[property] = (<any>data)[property];
+            }
+        }
+    }
+
+    init(_data?: any) {
+        if (_data) {
+            this.id = _data["id"];
+            this.title = _data["title"];
+            this.description = _data["description"];
+            this.categoryId = _data["categoryId"];
+            this.isDraft = _data["isDraft"];
+            this.planId = _data["planId"];
+            if (Array.isArray(_data["tags"])) {
+                this.tags = [] as any;
+                for (let item of _data["tags"])
+                    this.tags!.push(item);
+            }
+            if (Array.isArray(_data["questions"])) {
+                this.questions = [] as any;
+                for (let item of _data["questions"])
+                    this.questions!.push(QuestionModel.fromJS(item));
+            }
+            if (Array.isArray(_data["packages"])) {
+                this.packages = [] as any;
+                for (let item of _data["packages"])
+                    this.packages!.push(PackageModel.fromJS(item));
+            }
+            this.image = _data["image"];
+        }
+    }
+
+    static fromJS(data: any): UpdateGigCommand {
+        data = typeof data === 'object' ? data : {};
+        let result = new UpdateGigCommand();
+        result.init(data);
+        return result;
+    }
+
+    toJSON(data?: any) {
+        data = typeof data === 'object' ? data : {};
+        data["id"] = this.id;
+        data["title"] = this.title;
+        data["description"] = this.description;
+        data["categoryId"] = this.categoryId;
+        data["isDraft"] = this.isDraft;
+        data["planId"] = this.planId;
+        if (Array.isArray(this.tags)) {
+            data["tags"] = [];
+            for (let item of this.tags)
+                data["tags"].push(item);
+        }
+        if (Array.isArray(this.questions)) {
+            data["questions"] = [];
+            for (let item of this.questions)
+                data["questions"].push(item.toJSON());
+        }
+        if (Array.isArray(this.packages)) {
+            data["packages"] = [];
+            for (let item of this.packages)
+                data["packages"].push(item.toJSON());
+        }
+        data["image"] = this.image;
+        return data; 
+    }
+}
+
+export interface IUpdateGigCommand {
+    id?: number;
+    title?: string;
+    description?: string;
+    categoryId?: number;
+    isDraft?: boolean;
+    planId?: number | undefined;
+    tags?: string[];
+    questions?: QuestionModel[];
+    packages?: PackageModel[];
+    image?: string;
 }
 
 export class ProblemDetails implements IProblemDetails {
@@ -2918,90 +3018,6 @@ export interface IProblemDetails {
     detail?: string | undefined;
     instance?: string | undefined;
     extensions?: { [key: string]: any; } | undefined;
-}
-
-export class UpdateGigCommand implements IUpdateGigCommand {
-    id?: number;
-    title?: string;
-    description?: string;
-    categoryId?: number;
-    isDraft?: boolean;
-    planId?: number | undefined;
-    tags?: string[];
-    questions?: QuestionModel[];
-    image?: string;
-
-    constructor(data?: IUpdateGigCommand) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.title = _data["title"];
-            this.description = _data["description"];
-            this.categoryId = _data["categoryId"];
-            this.isDraft = _data["isDraft"];
-            this.planId = _data["planId"];
-            if (Array.isArray(_data["tags"])) {
-                this.tags = [] as any;
-                for (let item of _data["tags"])
-                    this.tags!.push(item);
-            }
-            if (Array.isArray(_data["questions"])) {
-                this.questions = [] as any;
-                for (let item of _data["questions"])
-                    this.questions!.push(QuestionModel.fromJS(item));
-            }
-            this.image = _data["image"];
-        }
-    }
-
-    static fromJS(data: any): UpdateGigCommand {
-        data = typeof data === 'object' ? data : {};
-        let result = new UpdateGigCommand();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["title"] = this.title;
-        data["description"] = this.description;
-        data["categoryId"] = this.categoryId;
-        data["isDraft"] = this.isDraft;
-        data["planId"] = this.planId;
-        if (Array.isArray(this.tags)) {
-            data["tags"] = [];
-            for (let item of this.tags)
-                data["tags"].push(item);
-        }
-        if (Array.isArray(this.questions)) {
-            data["questions"] = [];
-            for (let item of this.questions)
-                data["questions"].push(item.toJSON());
-        }
-        data["image"] = this.image;
-        return data; 
-    }
-}
-
-export interface IUpdateGigCommand {
-    id?: number;
-    title?: string;
-    description?: string;
-    categoryId?: number;
-    isDraft?: boolean;
-    planId?: number | undefined;
-    tags?: string[];
-    questions?: QuestionModel[];
-    image?: string;
 }
 
 export class UpdatePackageCommand implements IUpdatePackageCommand {

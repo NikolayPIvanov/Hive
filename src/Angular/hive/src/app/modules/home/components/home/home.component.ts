@@ -11,7 +11,6 @@ export class HomeComponent implements OnInit {
   constructor(private authService: AuthService) { }
 
   ngOnInit(): void {
-    debugger;
     this.role = this.authService.role;
   }
 

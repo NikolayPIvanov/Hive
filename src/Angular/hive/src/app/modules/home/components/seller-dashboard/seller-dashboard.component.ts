@@ -11,12 +11,16 @@ import { GigsClient, PaginatedListOfGigOverviewDto, SellersClient } from 'src/ap
 export class SellerDashboardComponent implements OnInit {
   gigs$: Observable<PaginatedListOfGigOverviewDto> | undefined
 
-  constructor(private sellersClient: SellersClient) { }
+  constructor(private sellersClient: SellersClient, private gigsClient: GigsClient) { }
 
   ngOnInit(): void {
     this.gigs$ = this.sellersClient.getUserSellerId()
       .pipe(switchMap(id => this.sellersClient.getMyGigs(3, 1, id)));
     
+  }
+
+  constructDownload(gigId: number) {
+    return this.gigsClient.getAvatar(gigId);
   }
 
 }

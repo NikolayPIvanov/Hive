@@ -2,7 +2,7 @@
 <div *ngIf="gig$ | async; let gig" fxLayout="row" class="container">
     <!-- left : title, name, etc -->
     
-    <div fxLayout="column" fxLayoutGap="1rem">
+    <div fxLayout="column" fxLayoutGap="1rem" fxFlex="60">
       <mat-card fxFlex="60" fxLayout="column" class="full-height">
         <mat-card-header>
           <mat-card-title>{{ gig.title! }}</mat-card-title>
@@ -55,7 +55,7 @@
     </div>
 
     <!-- right: packages and price -->
-    <div fxLayout="column" fxFlexOffset="5" fxFlex="35" class="packages-overview">
+    <div fxLayout="column" fxFlexOffset="5" fxFlex="40" class="packages-overview">
       <app-seller-overview *ngIf="profile$ | async; let profile" [profile]="profile"></app-seller-overview>
 
         <mat-card style="margin-top: 1rem;"> 
@@ -74,13 +74,13 @@
                     <div fxLayout="row" fxLayoutAlign="space-between center">
                         <section fxLayout="row" fxLayoutGap="1rem" fxFlexAlign="start center">
                             <mat-icon>schedule</mat-icon>
-                            <span>Delivery Time: <strong>{{ package.deliveryTime}} {{ package.deliveryFrequency}}</strong></span>
+                            <span> <strong> Delivery Time: {{ package.deliveryTime}} {{displayFrequency(package.deliveryFrequency!)}}</strong></span>
                         </section>
 
                         <section fxLayout="row" fxLayoutGap="1rem"  fxFlexAlign="start center">
                             <mat-icon>remove_red_eye</mat-icon>
-                            <span>Revision: {{package.revisions}}
-                            </span>
+                            <span *ngIf="package.revisionType === 0"><strong>Revisions: Unlimited</strong></span>
+                            <span *ngIf="package.revisionType! > 0"><strong>Revisions: {{package.revisions}}</strong></span>
                         </section>
                     </div>
 

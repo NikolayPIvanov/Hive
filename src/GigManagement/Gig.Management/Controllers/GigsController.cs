@@ -86,8 +86,8 @@ namespace Gig.Management.Controllers
         [HttpPut("{id:int}")]
         [Authorize(Roles = "Seller, Admin")]
         [SwaggerResponse(HttpStatusCode.NoContent, typeof(IActionResult), Description = "Successful operation")]
-        [SwaggerResponse(HttpStatusCode.BadRequest, typeof(ProblemDetails), Description = "Invalid ID supplied")]
-        [SwaggerResponse(HttpStatusCode.NotFound, typeof(ProblemDetails), Description = "Anomaly not found")]
+        [SwaggerResponse(HttpStatusCode.BadRequest, typeof(BadRequestObjectResult), Description = "Invalid ID supplied")]
+        [SwaggerResponse(HttpStatusCode.NotFound, typeof(NotFoundObjectResult), Description = "Anomaly not found")]
         public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateGigCommand command, CancellationToken cancellationToken)
         { 
             if (id != command.Id)
