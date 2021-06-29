@@ -1,38 +1,21 @@
 <mat-card>
     <mat-card-header>
-        <mat-card-title>About the seller</mat-card-title>
+        <mat-card-title>About the Seller</mat-card-title>
         <mat-card-subtitle>Public information</mat-card-subtitle>
     </mat-card-header>
     <mat-card-content fxLayout="column" fxLayoutGap="1rem">
-        
-        <div fxLayout="row" fxLayoutAlign="start" fxLayoutGap.gt-lg="3rem">
-            <div fxLayout.gt-lg="column">
-                <app-image-upload 
-                    [source]="profile.avatarFile"
-                    [download]="download"
-                    [showUpload]="false"
-                    ></app-image-upload>
-            </div>
-            <div fxLayout.gt-lg="column">
-                <h3>Name: {{ profile.firstName }} {{ profile.lastName }}</h3>
-                <h3>Education: {{ profile.education }}</h3>
-            </div>
+        <div fxLayout="row" fxLayoutGap="1rem" fxLayoutAlign="start center">
+            <app-image-upload 
+                fxFlex="20"
+                [source]="profile.avatarFile"
+                [download]="download"
+                [showUpload]="false"
+            ></app-image-upload>
+            <h2>{{ profile.givenName }} {{ profile.surname }}</h2>
         </div>
-        <div fxLayout.gt-lg="column" fxLayoutGap="1rem" fxLayoutAlign="space-between">
-            <div fxLayout="column">
-                <h4 style="margin: 0;">Languages:</h4>
-                <mat-chip-list>
-                    <mat-chip *ngFor="let language of profile.languages">{{ language }}</mat-chip>
-                </mat-chip-list>
-            </div>
-
-            <div fxLayout="column">
-                <h4 style="margin: 0;">Skills:</h4>
-                <mat-chip-list>
-                    <mat-chip *ngFor="let skill of profile.skills">{{ skill }}</mat-chip>
-                </mat-chip-list>
-            </div>
-        </div>
+        <h3><strong>Education:</strong> {{ profile.education || 'Not provided' }}</h3>
+        <h3><strong>Languages:</strong> {{ profile.languages ? profile.languages!.join(',') : 'Not provided' }}</h3>
+        <h3><strong>Skills:</strong> {{ (profile.skills) ? profile.skills!.join(',') : 'Not provided' }}</h3>
     </mat-card-content>
 </mat-card>
 

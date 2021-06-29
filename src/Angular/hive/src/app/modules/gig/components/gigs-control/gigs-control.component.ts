@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { mergeAll, switchMap, tap } from 'rxjs/operators';
-import { GigDto, GigsClient, PaginatedListOfGigDto, PaginatedListOfGigOverviewDto, SellersClient } from 'src/app/clients/gigs-client';
+import { GigDto, GigOverviewDto, GigsClient, PaginatedListOfGigDto, PaginatedListOfGigOverviewDto, SellersClient } from 'src/app/clients/gigs-client';
 import { UserProfileDto } from 'src/app/clients/profile-client';
 import { ProfileService } from 'src/app/modules/account/services/profile.service';
 import { AuthService } from 'src/app/modules/layout/services/auth.service';
@@ -27,8 +27,11 @@ export class GigProfileData
   styleUrls: ['./gigs-control.component.scss']
 })
 export class GigsControlComponent implements OnInit {
+  private gigs: GigOverviewDto[] = [];
+  private gigsSubject = new BehaviorSubject<GigOverviewDto[]>(this.gigs);
+  public gigs$ = this.gigsSubject.asObservable();
+
   public profile$!: Observable<UserProfileDto | undefined>;
-  public gigs$!: Observable<PaginatedListOfGigOverviewDto>;
   sellerId!: string;
 
   constructor(
@@ -40,24 +43,44 @@ export class GigsControlComponent implements OnInit {
   ) { }
 
   reload(id: number) {
-    this.gigs$ = this.gigsClient.delete(id)
-      .pipe(switchMap(() => this.sellerClient.getMyGigs(10, 1, this.sellerId)))
+    this.gigsClient.delete(id)
+      .pipe(tap({
+        next: () => {
+          const index = this.gigs.findIndex(g => g.id! === id)
+          if (index > -1) {
+            this.gigs.splice(index, 1);
+            this.gigsSubject.next(this.gigs);
+          }
+        }
+      }))
+    .subscribe()
   }
 
   ngOnInit(): void {
     this.profile$ = this.profileService.getProfile()
-    this.gigs$ = this.sellerClient.getUserSellerId()
+    this.sellerClient.getUserSellerId()
       .pipe(
         tap({
           next: (id) => this.sellerId = id
         }),
         switchMap(id => this.sellerClient.getMyGigs(10, 1, id)))
+      .subscribe(gigs => {
+        this.gigs = gigs.items!;
+        this.gigsSubject.next(this.gigs);
+      })
   }
 
   onCreateNew() {
-    this.dialog.open(GigCreateComponent, {
+    const ref = this.dialog.open(GigCreateComponent, {
       width: '50%'
     });
+
+    ref.afterClosed().subscribe(id => {
+      this.gigsClient.getGigById(id).subscribe(gig => {
+        this.gigs.push(gig);
+        this.gigsSubject.next(this.gigs)
+      })
+    })
   }
 
   displayName(profile: UserProfileDto) {

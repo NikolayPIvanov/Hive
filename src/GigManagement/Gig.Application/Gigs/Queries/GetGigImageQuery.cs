@@ -40,7 +40,7 @@ namespace Hive.Gig.Application.Gigs.Queries
 
             var path = user.Images.First().Path;
 
-            var file = await _fileService.DownloadAsync("gig_images", path, cancellationToken);
+            var file = await _fileService.DownloadAsync("gig-images", path, cancellationToken);
 
             var bytes = file.Source.ReadFully();
             return new FileContentResult(bytes, file.ContentType)

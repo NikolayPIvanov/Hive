@@ -15,14 +15,12 @@ export class SellerOverviewComponent implements OnInit {
 
   public download!: Observable<FileResponse>;
 
-
   url = '/assets/user.png';
 
   constructor(private profileClient: ProfileClient) { }
 
   ngOnInit(): void {
     this.download = this.profileClient.getAvatar(this.profile.id!);
-
   }
 
 }

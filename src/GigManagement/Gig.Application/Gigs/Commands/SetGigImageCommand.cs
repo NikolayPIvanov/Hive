@@ -35,12 +35,12 @@ namespace Hive.Gig.Application.Gigs.Commands
             // Clear previous images
             foreach (var imagePath in gig.Images)
             {
-                await _fileService.DeleteAsync("gig_images", imagePath.Path, cancellationToken);
+                await _fileService.DeleteAsync("gig-images", imagePath.Path, cancellationToken);
             }
             
             gig.Images.Clear();
 
-            var result = await _fileService.UploadAsync("gig_images", request.FileStream, request.Extension,
+            var result = await _fileService.UploadAsync("gig-images", request.FileStream, request.Extension,
                 cancellationToken);
 
             if (string.IsNullOrEmpty(result))

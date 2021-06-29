@@ -6,7 +6,7 @@ import { MatDialogRef } from '@angular/material/dialog';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { Observable, of, Subject, throwError } from 'rxjs';
 import { map, switchMap, takeUntil, tap } from 'rxjs/operators';
-import { CategoriesClient, CategoryDto, CreateGigCommand, FileUpload, GigsClient } from 'src/app/clients/gigs-client';
+import { CategoriesClient, CategoryDto, CreateGigCommand, DeliveryFrequency, FileUpload, GigsClient, PackageTier, RevisionType } from 'src/app/clients/gigs-client';
 
 @Component({
   selector: 'app-gig-create',
@@ -14,6 +14,21 @@ import { CategoriesClient, CategoryDto, CreateGigCommand, FileUpload, GigsClient
   styleUrls: ['./gig-create.component.scss']
 })
 export class GigCreateComponent implements OnInit {
+  public packageTiers = [PackageTier.Basic, PackageTier.Standard, PackageTier.Premium]
+  displayTier(tier: PackageTier) {
+    return PackageTier[tier];
+  }
+
+  public deliveryFrequencies = [DeliveryFrequency.Hours, DeliveryFrequency.Days, DeliveryFrequency.Weeks]
+  displayFrequency(f: DeliveryFrequency) {
+    return DeliveryFrequency[f];
+  }
+
+  public revisionsTypes = [RevisionType.Unlimited, RevisionType.Numeric]
+  displayRevision(f: RevisionType) {
+    return RevisionType[f];
+  }
+
   // Shared
   private unsubscribe = new Subject();
   isLinear = true;
@@ -22,23 +37,22 @@ export class GigCreateComponent implements OnInit {
   constructor(
     public dialogRef: MatDialogRef<GigCreateComponent>,
     private fb: FormBuilder,
-    private spinnerService: NgxSpinnerService,
-    private gigsApiClient: GigsClient,
-    private categoryApiClient: CategoriesClient) { }
+    private gigsApiClient: GigsClient) { }
 
   ngOnInit(): void { }
 
   onNoClick(): void {
     this.dialogRef.close();
   }
+
   setImage(base64: string) {
     this.gigForm.patchValue({ image: base64 });
   }
 
   // Gig Main Information
   gigForm = this.fb.group({
-    title: ['', Validators.required],
-    description: ['', Validators.required],
+    title: ['', Validators.compose([Validators.required, Validators.minLength(3), Validators.maxLength(100)])],
+    description: ['', Validators.compose([Validators.required, Validators.minLength(10), Validators.maxLength(2500)])],
     categoryId: ['', Validators.required],
     planId: [null],
     tags: [[]],
@@ -47,13 +61,8 @@ export class GigCreateComponent implements OnInit {
     packages: this.fb.array([ this.initPackage() ]),
   });
 
-  getErrorMessage(key: string, error: string = 'required') {
-    const control = this.gigForm.get(key)!;
-    if (control.hasError('required')) {
-      return 'You must enter a value';
-    }
-
-    return control.hasError('email') ? 'Not a valid email' : '';
+  public get packagesForm() {
+    return (this.gigForm.get('packages') as FormArray)?.controls;
   }
 
   onSubmit() {
@@ -63,16 +72,15 @@ export class GigCreateComponent implements OnInit {
           takeUntil(this.unsubscribe),
           switchMap((id) => {
             const imageData = this.gigForm.get('image');
-            if (imageData) {
+            if (imageData?.value) {
               return this.gigsApiClient.updateImage(id, FileUpload.fromJS({ fileData: imageData.value }))
             }
 
             return of(id);
-          }),
-          tap({
-            complete: () => this.onNoClick()
           }))
-        .subscribe();
+        .subscribe(id => {
+          this.dialogRef.close(id)
+        });
   }
 
   addQuestion() {
@@ -116,14 +124,16 @@ export class GigCreateComponent implements OnInit {
   }
 
   public onCategorySelected(category: CategoryDto) {
-    this.gigForm.patchValue({ categoryId: category.id });
+    if (category) {
+      this.gigForm.patchValue({ categoryId: category.id });
+    }
   }
 
 
   public initPackage() {
     return this.fb.group({
-      title: ['', Validators.required],
-      description: ['', Validators.required],
+      title: ['', Validators.compose([Validators.required, Validators.minLength(3), Validators.maxLength(50)])],
+      description: ['', Validators.compose([Validators.required, Validators.minLength(10), Validators.maxLength(200)])],
       price: ['', Validators.required],
       packageTier: [0, Validators.required],
       deliveryTime: ['', Validators.required],

@@ -6,6 +6,7 @@ import { tap } from 'rxjs/operators';
 import { FileResponse, GigDto, GigsClient } from 'src/app/clients/gigs-client';
 import { UserProfileDto } from 'src/app/clients/profile-client';
 import { ProfileService } from 'src/app/modules/account/services/profile.service';
+import { AuthService } from 'src/app/modules/layout/services/auth.service';
 import { GigsService } from '../../services/gigs.service';
 import { GigEditComponent } from '../gig-edit/gig-edit.component';
 
@@ -26,11 +27,12 @@ export class GigDetailsComponent implements OnInit {
   public gig$!: Observable<GigDto>;
   public profile$!: Observable<UserProfileDto | undefined>;
 
-  public canModify: boolean = true;
+  public canModify: boolean = false;
 
   constructor(
     private activatedRoute: ActivatedRoute,
     private router: Router,
+    private authService: AuthService,
     private gigsService: GigsService,
     private gigsClient: GigsClient,
     private userProfileService: ProfileService,
@@ -45,7 +47,13 @@ export class GigDetailsComponent implements OnInit {
     const id = +idParam!;
 
 
-    this.profile$ = this.userProfileService.getProfile();
+    this.profile$ =
+      this.userProfileService.getProfile()
+      .pipe(tap({
+        next: (profile) => {
+          this.canModify = profile?.userId! === this.authService.user?.profile.sub
+        }
+      }))
     this.gig$ = this.gigsService.getGigDetailsById(id)
     this.download = this.gigsClient.getAvatar(id);
   }

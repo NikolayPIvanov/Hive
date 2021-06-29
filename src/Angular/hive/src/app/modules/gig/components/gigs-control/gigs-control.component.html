@@ -1,6 +1,6 @@
 <div fxLayout="column">
     <div fxLayout="column" class="container" *ngIf="profile$ | async; let profile">
-        <mat-card>
+        <mat-card class="mat-elevation-z8">
             <mat-card-header>
                 <mat-card-title>{{ displayName(profile) }}</mat-card-title>
                 <mat-card-subtitle>Personal Information</mat-card-subtitle>
@@ -44,41 +44,47 @@
                     </div>
                 </section>
             </mat-card-content>
-        </mat-card>
-    
-        <mat-divider fxFlexOffset="1%">
-        </mat-divider>
+        </mat-card> 
 
-        <h2>My Gigs</h2>
 
-        <ng-container *ngIf="(gigs$ | async) && (gigs$ | async)?.items && (gigs$ | async)?.items?.length; else elseTemplate">
+        <ng-container *ngIf="(gigs$ | async)?.length! > 0; else elseTemplate">
             <div
-                *ngIf="gigs$ | async; let list"
+                class="list-view"
+                *ngIf="gigs$ | async; let gigs"
                 fxLayout="row wrap"
                 fxLayoutAlign="start center"
                 fxLayoutGap="3%">
 
                 <app-gig-card 
-                    *ngFor="let gig of list.items" 
+                    fxFlex="22"
+                    *ngFor="let gig of gigs" 
                     [gig]="gig" 
                     [profile]="profile"
                     (onDeleted)="reload($event)"
-                    fxFlex="22"></app-gig-card>
-            
+                ></app-gig-card>
             </div>
 
-            <mat-paginator [length]="100"
+            <!-- TODO -->
+            <mat-paginator
+                style="margin-top: 1rem;"
+                class="mat-elevation-z8"
+                [length]="100"
                 [pageSize]="10"
                 [pageSizeOptions]="[5, 10, 25, 100]">
             </mat-paginator>
         </ng-container>
         <ng-template #elseTemplate>
-            <div fxLayout="column" fxFill fxLayoutAlign="start center" class="container">
-                <mat-icon fxFlex="50">work_outline</mat-icon>
+            <mat-card fxFlexOffset="2rem" class="mat-elevation-z8">
+                <mat-card-header>
+                    <mat-card-title>My Gigs</mat-card-title>
+                    <mat-card-subtitle>Review your gigs</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content fxLayout="column" fxLayoutAlign="start center" fxFill class="container">
+                    <mat-icon fxFlex="50">work_outline</mat-icon>
             
-                <h1>No gigs found</h1>
-            
-            </div>
+                    <h1>No gigs found</h1>
+                </mat-card-content>
+            </mat-card>
         </ng-template>
         
     </div>
