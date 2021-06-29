@@ -95,9 +95,9 @@
                         </ng-container>
                         <ng-template #buyer>
                             <button mat-icon-button 
-                                [disabled]="!canProcess(element.orderStates)"
+                                [disabled]="!canCancel(element.orderStates)"
                                 (click)="cancelOrder(element.orderNumber)"><mat-icon>cancel</mat-icon></button>
-                            </ng-template>
+                        </ng-template>
                         
                         <button mat-icon-button (click)="openDialog(element)"><mat-icon>info</mat-icon></button>
                     </td>

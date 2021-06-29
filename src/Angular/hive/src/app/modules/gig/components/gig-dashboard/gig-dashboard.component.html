@@ -44,13 +44,16 @@
     </mat-card>
 
     <!-- TODO -->
-    <mat-paginator
+
+    <mat-paginator 
         style="margin-top: 1rem;"
         class="mat-elevation-z8"
-        [length]="100"
-        [pageSize]="10"
-        [pageSizeOptions]="[5, 10, 25, 100]">
-    </mat-paginator>
+        [length]="length"
+        [pageSizeOptions]="pageSizeOptions" 
+        [pageSize]="pageSize"
+        [pageIndex]="pageNumber"
+        (page)="pageChange($event)"
+        showFirstLastButtons></mat-paginator>
     
     <ng-template #elseTemplate>
         <mat-card fxFlexOffset="2rem" class="mat-elevation-z8">

@@ -119,13 +119,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit {
 
       this.updateOrderStatusLocally(orderNumber, state);
       this.dataSource.data = this.orders.items!
-
-      const command = ReviewOrderCommand.fromJS({
-        orderNumber: orderNumber, 
-        orderState: state,
-        reason: message
-      });
-      this.ordersClient.reviewOrder(orderNumber, command).subscribe()
+      this.ordersClient.cancelOrder(orderNumber).subscribe()
     }
   }
 
@@ -185,6 +179,17 @@ export class OrdersListComponent implements OnInit, AfterViewInit {
   // States Management
   canProcess(states: StateDto[]) {
     return this.canChangeStateTo(states, OrderState.Accepted)
+  }
+
+  canCancel(states: StateDto[]) {
+    const data = states.map(s => s.orderState!);
+    const dataIsValid = data.includes(OrderState.OrderDataValid) &&
+                        data.includes(OrderState.UserBalanceValid);
+    const isCanceled = data.includes(OrderState.Canceled);
+
+    const state = this.latestState(states)!;
+
+    return dataIsValid && !isCanceled && state <= OrderState.Accepted;
   }
 
   canSetInProgress(states: StateDto[]) {

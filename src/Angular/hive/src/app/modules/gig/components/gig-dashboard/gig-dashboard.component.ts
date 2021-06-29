@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
@@ -14,6 +15,27 @@ export class GigDashboardComponent implements OnInit {
   private gigsSubject = new BehaviorSubject<GigOverviewDto[]>(this.gigs);
   public gigs$ = this.gigsSubject.asObservable();
 
+  // Pagination
+  // MatPaginator Inputs
+  length = 100;
+  pageSize = 10;
+  pageNumber = 0;
+  pageSizeOptions: number[] = [5, 10, 25, 100];
+
+  pageChange(pageEvent: PageEvent) {
+    this.pageSize = pageEvent.pageSize;
+    this.pageNumber = pageEvent.pageIndex;
+
+    this.gigsClient.getRandom(10)
+      .pipe(tap({
+        next: (gigs) => {
+          this.gigs = gigs.items!;
+          this.gigsSubject.next(this.gigs);
+        }
+      }))
+      .subscribe();
+  }
+
   constructor(
     private router: Router,
     private gigsClient: GigsClient
@@ -24,6 +46,7 @@ export class GigDashboardComponent implements OnInit {
       .pipe(tap({
         next: (gigs) => {
           this.gigs = gigs.items!;
+          this.length = gigs.totalCount!
           this.gigsSubject.next(this.gigs);
         }
       }))
