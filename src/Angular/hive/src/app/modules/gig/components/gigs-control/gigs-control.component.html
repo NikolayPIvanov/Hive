@@ -1,92 +1,94 @@
-<div fxLayout="column">
-    <div fxLayout="column" class="container" *ngIf="profile$ | async; let profile">
-        <mat-card class="mat-elevation-z8">
-            <mat-card-header>
-                <mat-card-title>{{ displayName(profile) }}</mat-card-title>
-                <mat-card-subtitle>Personal Information</mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-content fxLayout="column" class="full-heigth">
-                <section fxLayout="row">
-                    <div fxFlex="30" fxLayout="column">
-                        <p>
-                            <strong> Contact Email: </strong> {{ email }} 
-                        </p>
+<div
+    fxLayout="column"
+    class="container"
+    fxLayoutGap="1rem"
+    *ngIf="profile$ | async; let profile">
 
-                        <p>
-                            <strong> Education: </strong> {{ profile.education }} 
-                        </p>
+    <mat-card fxFlex class="mat-elevation-z8"  >
+        <mat-card-header>
+            <mat-card-title>{{ displayName(profile) }}</mat-card-title>
+            <mat-card-subtitle>Personal Information</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content fxLayout="column" class="full-heigth">
+            <section fxLayout="row">
+                <div fxFlex="30" fxLayout="column">
+                    <p>
+                        <strong> Contact Email: </strong> {{ email }} 
+                    </p>
+
+                    <p>
+                        <strong> Education: </strong> {{ profile.education }} 
+                    </p>
+                </div>
+                <div fxFlex="30" fxLayout="column">
+                    <p>
+                        <strong> Languages: </strong> {{ profile.languages?.join(',') }} 
+                    </p>
+
+                    <p>
+                        <strong> Skills: </strong> {{ profile.skills?.join(',') }} 
+                    </p>
+                </div>
+                
+                <div fxFlex="30" fxLayout="column" fxLayoutAlign="end end">
+                    <div fxLayout="row">
+                        <a mat-button [routerLink]="['/billing/overview']">
+                            <mat-icon>credit_card</mat-icon>
+                            <span>Billing</span>
+                        </a>
+                        <a mat-button [routerLink]="['/orders']">
+                            <mat-icon>request_quote</mat-icon>
+                            <span>Orders</span>
+                        </a>
+                        <button mat-button (click)="onCreateNew()">
+                            <mat-icon>add</mat-icon>
+                            <span>Create gig</span>
+                        </button>
                     </div>
-                    <div fxFlex="30" fxLayout="column">
-                        <p>
-                            <strong> Languages: </strong> {{ profile.languages?.join(',') }} 
-                        </p>
+                </div>
+            </section>
+        </mat-card-content>
+    </mat-card>
 
-                        <p>
-                            <strong> Skills: </strong> {{ profile.skills?.join(',') }} 
-                        </p>
-                    </div>
-                    
-                    <div fxFlex="30" fxLayout="column" fxLayoutAlign="end end">
-                        <div fxLayout="row">
-                            <a mat-button [routerLink]="['/billing/overview']">
-                                <mat-icon>credit_card</mat-icon>
-                                <span>Billing</span>
-                            </a>
-                            <a mat-button [routerLink]="['/orders']">
-                                <mat-icon>request_quote</mat-icon>
-                                <span>Orders</span>
-                            </a>
-                            <button mat-button (click)="onCreateNew()">
-                                <mat-icon>add</mat-icon>
-                                <span>Create gig</span>
-                            </button>
-                        </div>
-                    </div>
-                </section>
-            </mat-card-content>
-        </mat-card> 
+    <mat-card fxFlex="90" *ngIf="(gigs$ | async)?.length! > 0; else elseTemplate">
+        <div
+            class="list-view"
+            *ngIf="gigs$ | async; let gigs"
+            fxLayout="row wrap"
+            fxLayoutAlign="start center"
+            fxLayoutGap="3%">
 
+            <app-gig-card 
+                fxFlex="20"
+                *ngFor="let gig of gigs" 
+                [gig]="gig"
+                [profile]="profile"
+                (onDeleted)="reload($event)"
+            ></app-gig-card>
+        </div>
+    </mat-card>
 
-        <ng-container *ngIf="(gigs$ | async)?.length! > 0; else elseTemplate">
-            <div
-                class="list-view"
-                *ngIf="gigs$ | async; let gigs"
-                fxLayout="row wrap"
-                fxLayoutAlign="start center"
-                fxLayoutGap="3%">
-
-                <app-gig-card 
-                    fxFlex="22"
-                    *ngFor="let gig of gigs" 
-                    [gig]="gig" 
-                    [profile]="profile"
-                    (onDeleted)="reload($event)"
-                ></app-gig-card>
-            </div>
-
-            <!-- TODO -->
-            <mat-paginator
-                style="margin-top: 1rem;"
-                class="mat-elevation-z8"
-                [length]="100"
-                [pageSize]="10"
-                [pageSizeOptions]="[5, 10, 25, 100]">
-            </mat-paginator>
-        </ng-container>
-        <ng-template #elseTemplate>
-            <mat-card fxFlexOffset="2rem" class="mat-elevation-z8">
-                <mat-card-header>
-                    <mat-card-title>My Gigs</mat-card-title>
-                    <mat-card-subtitle>Review your gigs</mat-card-subtitle>
-                </mat-card-header>
-                <mat-card-content fxLayout="column" fxLayoutAlign="start center" fxFill class="container">
-                    <mat-icon fxFlex="50">work_outline</mat-icon>
-            
-                    <h1>No gigs found</h1>
-                </mat-card-content>
-            </mat-card>
-        </ng-template>
-        
-    </div>
+    <mat-paginator 
+        style="margin-top: 1rem;"
+        class="mat-elevation-z8"
+        [length]="length"
+        [pageSizeOptions]="pageSizeOptions" 
+        [pageSize]="pageSize"
+        [pageIndex]="pageNumber"
+        (page)="pageChange($event)"
+        showFirstLastButtons></mat-paginator>
     
+    <ng-template #elseTemplate>
+        <mat-card fxFlexOffset="2rem" class="mat-elevation-z8">
+            <mat-card-header>
+                <mat-card-title>Explore Gigs</mat-card-title>
+                <mat-card-subtitle>Gigs</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content fxLayout="column" fxLayoutAlign="start center" fxFill class="container">
+                <mat-icon fxFlex="50">work_outline</mat-icon>
+        
+                <h1>No gigs found</h1>
+            </mat-card-content>
+        </mat-card>
+    </ng-template>
 </div>

@@ -15,7 +15,6 @@
             [download]="download"
             [showUpload]="false"></app-image-upload>
         
-        <!-- <span>Package title: {{ orderedPackage(gig)?.title }} </span> -->
       </div>
 
       <div fxLayout="column" fxFlex="30">
@@ -94,12 +93,9 @@
             <span> -- Version: {{ res.version }} </span>
             <button mat-icon-button (click)="downloadResolution(res.version!)"><mat-icon>download</mat-icon></button>
             <ng-container *ngIf="isBuyer()">
-              <ng-container *ngIf="res.isApproved; else approval">
-                <button mat-icon-button><mat-icon>not_interested</mat-icon></button>
-              </ng-container>
-              <ng-template #approval>
-                <button mat-icon-button (click)="accept(res.version!)"><mat-icon>check</mat-icon></button>
-              </ng-template>
+              <button mat-icon-button
+                *ngIf="!isAccepted"
+                (click)="accept(res.version!)"><mat-icon>check</mat-icon></button>
             </ng-container>
           </p>
         </mat-list-item>

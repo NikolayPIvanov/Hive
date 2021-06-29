@@ -1,4 +1,4 @@
-<form [formGroup]="form" fxLayout="column" fxFlex>
+<form *ngIf="profile" [formGroup]="form" fxLayout="column" fxFlex>
     <p fxFlexOffset="1">Use the form below to change profile information.</p>
   
     <div fxLayout="row" class="full-width">
@@ -6,16 +6,16 @@
       <div>
   
         <mat-form-field class="full-width">
-          <input matInput class="full-width" placeholder="First name" formControlName="firstName" type="text">
-          <mat-error *ngIf="form.controls['firstName'].hasError('required')">
-            Please enter a your first name
+          <input matInput class="full-width" placeholder="First name" formControlName="givenName" type="text">
+          <mat-error *ngIf="form.controls['givenName'].hasError('required')">
+            Please enter a your given name
           </mat-error>
         </mat-form-field>
 
         <mat-form-field class="full-width">
-            <input matInput class="full-width" placeholder="Last name" formControlName="lastName" type="text">
-            <mat-error *ngIf="form.controls['lastName'].hasError('required')">
-              Please enter a your last name
+            <input matInput class="full-width" placeholder="Last name" formControlName="surname" type="text">
+            <mat-error *ngIf="form.controls['surname'].hasError('required')">
+              Please enter a your surname
             </mat-error>
           </mat-form-field>
   

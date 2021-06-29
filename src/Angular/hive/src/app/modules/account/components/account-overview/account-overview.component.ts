@@ -28,9 +28,7 @@ export class AccountOverviewComponent implements OnInit {
     this.isSeller = (this.authService.user?.profile.role as string[]).includes('Seller')
     
     this.profile$! = this.profileService.getProfile()
-      .pipe(tap({
-        complete: () => this.spinnerService.hide()
-      }));
+      .pipe(tap({ complete: () => this.spinnerService.hide() }));
   }
 
 }

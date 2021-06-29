@@ -16,9 +16,9 @@ export class ChangeInformationComponent implements OnInit, OnDestroy {
   @Input() profile!: UserProfileDto;
 
   form: FormGroup = this.fb.group({
-    id: ['', Validators.required],
-    firstName: [''],
-    lastName: ['']
+    id: [this.profile?.id, Validators.required],
+    givenName: [this.profile?.givenName, Validators.required],
+    surname: [this.profile?.surname, Validators.required]
   });
   
   constructor(

@@ -20,6 +20,8 @@ export class OrderDetailsComponent implements OnInit {
   public order!: OrderDto;
   public isSeller!: boolean;
 
+  public isAccepted = false;
+
   public profile$!: Observable<UserProfileDto | undefined>;
 
   constructor(
@@ -35,35 +37,39 @@ export class OrderDetailsComponent implements OnInit {
     this.order = this.data.order;
     this.isSeller = this.data.isSeller;
 
+    this.isAccepted = this.order.orderStates?.map(x => x.orderState!).includes(OrderState.Completed)!
+
     this.profile$ = this.profileClient.getProfileById(this.order.buyerUserId!)
 
     this.gig$ = this.gigsClient.getGigByPackageId(this.order.packageId!)
       .pipe(
         map(gig => {
-          debugger;
           this.download = this.gigsClient.getAvatar(gig.id!)
           return gig;
         })
     )
-    
-    this.authService.user?.profile;
   }
 
+
   accept(version: string) {
-    this.ordersClient.acceptResolution(version, this.data.orderNumber!)
-      .pipe(tap({ next: (x) => this.onNoClick() }))
+    this.ordersClient.acceptResolution(version, this.order.orderNumber!)
+      .pipe(tap({
+        next: (x) => {
+          this.isAccepted = true;
+          this.onNoClick()
+      } }))
       .subscribe();
   }
 
   downloadResolution(version: string) {
-    this.ordersClient.downloadResolutionFile(version, this.data.orderNumber!)
+    this.ordersClient.downloadResolutionFile(version, this.order.orderNumber!)
       .pipe(
         tap({ next: (response) => saveAs(response.data!, version)}))
       .subscribe();
   }
 
   onNoClick(): void {
-    this.dialogRef.close();
+    this.dialogRef.close(this.isAccepted);
   }
 
   stateAsString(state: OrderState) {

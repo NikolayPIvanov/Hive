@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { mergeAll, switchMap, tap } from 'rxjs/operators';
@@ -42,6 +43,28 @@ export class GigsControlComponent implements OnInit {
     public dialog: MatDialog
   ) { }
 
+  // Pagination
+  // MatPaginator Inputs
+  length = 100;
+  pageSize = 10;
+  pageNumber = 0;
+  pageSizeOptions: number[] = [5, 10, 25, 100];
+
+  pageChange(pageEvent: PageEvent) {
+    this.pageSize = pageEvent.pageSize;
+    this.pageNumber = pageEvent.pageIndex;
+
+    this.sellerClient.getMyGigs(this.pageSize, this.pageNumber + 1, this.sellerId)
+      .pipe(tap({
+        next: (gigs) => {
+          this.gigs = gigs.items!;
+          this.length = gigs.totalCount!;
+          this.gigsSubject.next(this.gigs);
+        }
+      }))
+      .subscribe();
+  }
+
   reload(id: number) {
     this.gigsClient.delete(id)
       .pipe(tap({
@@ -49,6 +72,7 @@ export class GigsControlComponent implements OnInit {
           const index = this.gigs.findIndex(g => g.id! === id)
           if (index > -1) {
             this.gigs.splice(index, 1);
+            this.length -= 1;
             this.gigsSubject.next(this.gigs);
           }
         }
@@ -66,6 +90,7 @@ export class GigsControlComponent implements OnInit {
         switchMap(id => this.sellerClient.getMyGigs(10, 1, id)))
       .subscribe(gigs => {
         this.gigs = gigs.items!;
+        this.length = gigs.totalCount!;
         this.gigsSubject.next(this.gigs);
       })
   }
@@ -78,6 +103,7 @@ export class GigsControlComponent implements OnInit {
     ref.afterClosed().subscribe(id => {
       this.gigsClient.getGigById(id).subscribe(gig => {
         this.gigs.push(gig);
+        this.length += 1;
         this.gigsSubject.next(this.gigs)
       })
     })

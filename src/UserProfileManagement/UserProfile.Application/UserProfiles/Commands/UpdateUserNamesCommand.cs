@@ -16,12 +16,12 @@ namespace Hive.UserProfile.Application.UserProfiles.Commands
         public UpdateUserNamesCommandValidator()
         {
             RuleFor(x => x.GivenName)
-                .MaximumLength(3)
+                .MinimumLength(3)
                 .MaximumLength(50)
                 .NotEmpty();
             
             RuleFor(x => x.Surname)
-                .MaximumLength(3)
+                .MinimumLength(3)
                 .MaximumLength(50)
                 .NotEmpty();
         }

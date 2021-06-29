@@ -178,7 +178,8 @@ export class OrdersListComponent implements OnInit, AfterViewInit {
 
   // States Management
   canProcess(states: StateDto[]) {
-    return this.canChangeStateTo(states, OrderState.Accepted)
+    const cancelled = states.map(x => x.orderState!).includes(OrderState.Canceled)
+    return this.canChangeStateTo(states, OrderState.Accepted) && !cancelled;
   }
 
   canCancel(states: StateDto[]) {

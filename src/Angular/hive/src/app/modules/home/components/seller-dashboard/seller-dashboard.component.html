@@ -1,7 +1,7 @@
 <div fxLayout="column" class="container" fxFlex>
     <h1>Seller Dashboard</h1>
     <div fxLayout="row" fxLayoutGap="1%" fxFlex>
-        <mat-card fxFlex="45%">
+        <mat-card fxFlex="30%">
             <mat-card-header>
                 <mat-card-title>My Gigs</mat-card-title>
                 <mat-card-subtitle>Manage Gigs</mat-card-subtitle>
@@ -18,11 +18,11 @@
             <mat-divider>
             </mat-divider>
             <mat-card-actions>
-                <button mat-button>Manage</button>
+                <button mat-button>Manage Gigs</button>
             </mat-card-actions>
         </mat-card>
 
-        <mat-card fxFlex="45%">
+        <mat-card fxFlex="30%" fxLayout="column">
             <mat-card-header>
                 <mat-card-title>My Orders</mat-card-title>
                 <mat-card-subtitle>Manage Orders</mat-card-subtitle>
@@ -31,8 +31,11 @@
             </mat-divider>
             <mat-card-content>
                 <mat-list fxLayout="column">
-                    <mat-list-item *ngFor="let gig of (gigs$ | async)?.items" fxFlex="2rem">
-                        <div mat-line><strong>{{gig.title! | limitTo:'100'}}</strong> </div>
+                    <mat-list-item *ngFor="let order of (orders$ | async)?.items" fxFlex="2rem">
+                        <div mat-line>
+                            <strong>Order Num. ({{order.orderNumber! | limitTo: '5'}}) - {{ order.totalPrice }}$</strong>
+                            
+                        </div>
                     </mat-list-item>
                 </mat-list>
             </mat-card-content>
@@ -42,29 +45,51 @@
                 <button mat-button>Manage</button>
             </mat-card-actions>
         </mat-card>
-    </div>
-    <div fxLayout="row" style="margin-top: 3rem;" fxLayoutGap="1%" fxFlex>
-        <mat-card fxFlex="45%">
-            <mat-card-header>
-                <mat-card-title>Balance over time</mat-card-title>
-                <mat-card-subtitle>Chart</mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-content>                
-            </mat-card-content>
-            <mat-card-actions>
-                <button mat-button>Ok</button>
-            </mat-card-actions>
-        </mat-card>
 
-        <mat-card fxFlex="45%">
+        
+        <mat-card fxFlex>
             <mat-card-header>
                 <mat-card-title>My Plans</mat-card-title>
                 <mat-card-subtitle>Manage Plans</mat-card-subtitle>
             </mat-card-header>
-            <mat-card-content>                
+            <mat-card-content> 
+                <div *ngIf="plans$ | async; let plansList">
+                    <ng-container *ngIf="plansList && plansList?.items && plansList?.items?.length! > 0; else noPlans">
+                        <mat-list *ngIf="plans$ | async; let plansList" fxLayout="column">
+                            <mat-list-item *ngFor="let plans of plansList?.items" fxFlex="2rem">
+                                <div mat-line><strong>{{plans.title}}</strong> </div>
+                            </mat-list-item>
+                        </mat-list>  
+                    </ng-container>
+                    <ng-template #noPlans>
+                        <h3>No plans yet</h3>
+                    </ng-template>
+                </div>
+                            
+            </mat-card-content>
+        </mat-card>
+    </div>
+    <div fxLayout="row" style="margin-top: 3rem;" fxLayoutGap="1%" fxFlex>
+        <mat-card fxFlex="95">
+            <mat-card-header>
+                <mat-card-title>Revenue over time</mat-card-title>
+                <mat-card-subtitle>Manage Balance</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+                <div style="display: block;">
+                    <canvas baseChart width="300" height="50"
+                      [datasets]="lineChartData"
+                      [labels]="lineChartLabels"
+                      [options]="lineChartOptions"
+                      [colors]="lineChartColors"
+                      [legend]="lineChartLegend"
+                      [chartType]="lineChartType"
+                      [plugins]="lineChartPlugins">
+                    </canvas>
+                  </div>                  
             </mat-card-content>
             <mat-card-actions>
-                <button mat-button>Ok</button>
+                <button mat-button>Check Balance Account</button>
             </mat-card-actions>
         </mat-card>
 
