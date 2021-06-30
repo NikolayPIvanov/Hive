@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using BuildingBlocks.Core.Interfaces;
 using Hive.Common.Core;
 using Hive.Common.Core.Exceptions;
 using Hive.Common.Core.Interfaces;
 using Hive.Investing.Application.Interfaces;
 using Hive.Investing.Domain.Entities;
+using Investing.Contracts.IntegrationEvents;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -17,13 +19,15 @@ namespace Hive.Investing.Application.Investments.Commands
     public class ProcessInvestmentCommandHandler : IRequestHandler<ProcessInvestmentCommand>
     {
         private readonly IInvestingDbContext _context;
+        private readonly IIntegrationEventPublisher _publisher;
         private readonly ICurrentUserService _currentUserService;
         private readonly ILogger<ProcessInvestmentCommandHandler> _logger;
 
-        public ProcessInvestmentCommandHandler(IInvestingDbContext context,
+        public ProcessInvestmentCommandHandler(IInvestingDbContext context, IIntegrationEventPublisher publisher,
             ICurrentUserService currentUserService, ILogger<ProcessInvestmentCommandHandler> logger)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
+            _publisher = publisher ?? throw new ArgumentNullException(nameof(publisher));
             _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
@@ -33,6 +37,7 @@ namespace Hive.Investing.Application.Investments.Commands
             var investment = await _context.Investments
                 .Include(i => i.Plan)
                 .ThenInclude(p => p.Vendor)
+                .Include(x => x.Investor)
                 .FirstOrDefaultAsync(x => x.Id == request.InvestmentId, cancellationToken: cancellationToken);
 
             if (investment?.Plan == null)
@@ -54,8 +59,18 @@ namespace Hive.Investing.Application.Investments.Commands
                 throw new ForbiddenAccessException();
             }
 
-            investment.IsAccepted = request.Accept;
-            await _context.SaveChangesAsync(cancellationToken);
+            if (request.Accept)
+            {
+                await _publisher.PublishAsync(
+                    new InvestmentAcceptedIntegrationEvent(investment.Investor.UserId, investment.Plan.Vendor.UserId,
+                        investment.Id,
+                        investment.Amount), cancellationToken);
+            }
+            else
+            {
+                investment.IsAccepted = false;
+                await _context.SaveChangesAsync(cancellationToken);
+            }
             
             _logger.LogInformation("Investment {Id} was successfully updated", request.InvestmentId);
 

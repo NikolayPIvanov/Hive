@@ -1,0 +1,66 @@
+<div fxLayout="column" class="container" fxFlex>
+    <h1>Investor Dashboard</h1>
+
+    <div fxLayout="row" fxLayoutGap="1%" fxFlex>
+        <mat-card fxFlex="95">
+            <mat-card-header>
+                <mat-card-title>Revenue over time from investments</mat-card-title>
+                <mat-card-subtitle>ROI</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+                <app-line-chart
+                    [label]="label"
+                    [data]="data"
+                    [labels]="labels"
+                    [color]="color"
+                ></app-line-chart>                  
+            </mat-card-content>
+            <mat-card-actions>
+                <a mat-button [routerLink]="['/billing/overview']">
+                    <mat-icon>credit_card</mat-icon>
+                    <span>Check Balance Account</span>
+                </a>
+            </mat-card-actions>
+        </mat-card>
+
+    </div>
+
+    <div fxLayout="row" style="margin-top: 2rem;" fxLayoutGap="1%" fxFlex>
+        <mat-card fxFlex="50">
+            <mat-card-header>
+                <mat-card-title>Revenue over time from investments</mat-card-title>
+                <mat-card-subtitle>ROI</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+                <app-line-chart
+                    [label]="label"
+                    [data]="data"
+                    [labels]="labels"
+                    [color]="color"
+
+                    [type]="'horizontalBar'"
+                    [height]="100"
+                ></app-line-chart>                  
+            </mat-card-content>
+        </mat-card>
+
+        <mat-card fxFlex="40" fxLayout="column">
+            <mat-card-header>
+                <mat-card-title>Revenue over time from investments</mat-card-title>
+                <mat-card-subtitle>ROI</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content fxFlex>
+                <app-line-chart
+                    [label]="label"
+                    [data]="data"
+                    [labels]="labels"
+                    [color]="color"
+                    [type]="'bar'"
+
+                    [height]="120"
+                ></app-line-chart>                  
+            </mat-card-content>
+        </mat-card>
+
+    </div>
+</div>

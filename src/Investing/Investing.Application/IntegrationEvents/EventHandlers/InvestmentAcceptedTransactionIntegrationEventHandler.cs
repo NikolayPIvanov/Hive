@@ -7,12 +7,12 @@ using Investing.Contracts.IntegrationEvents;
 
 namespace Hive.Investing.Application.IntegrationEvents.EventHandlers
 {
-    public class InvestmentTransactionStatusIntegrationEventHandler : ICapSubscribe
+    public class InvestmentAcceptedTransactionIntegrationEventHandler : ICapSubscribe
     {
         private readonly IInvestingDbContext _context;
         private readonly IIntegrationEventPublisher _integrationEventPublisher;
 
-        public InvestmentTransactionStatusIntegrationEventHandler(IInvestingDbContext context, IIntegrationEventPublisher integrationEventPublisher)
+        public InvestmentAcceptedTransactionIntegrationEventHandler(IInvestingDbContext context, IIntegrationEventPublisher integrationEventPublisher)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
             _integrationEventPublisher = integrationEventPublisher ?? throw new ArgumentNullException(nameof(integrationEventPublisher));
@@ -21,10 +21,10 @@ namespace Hive.Investing.Application.IntegrationEvents.EventHandlers
         [CapSubscribe(nameof(InvestmentAcceptedTransactionIntegrationEvent), Group = "hive.investing.transactions.status")]
         public async Task Handle(InvestmentAcceptedTransactionIntegrationEvent @event)
         {
-            var transaction = await _context.Investments.FindAsync(@event.InvestmentId);
-            if (transaction == null) return;
-            
-            transaction.
+            var investment = await _context.Investments.FindAsync(@event.InvestmentId);
+            if (investment == null) return;
+            investment.IsAccepted = true;
+            await _context.SaveChangesAsync(default);
         }
     }
 }

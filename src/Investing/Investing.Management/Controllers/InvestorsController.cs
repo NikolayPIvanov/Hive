@@ -11,7 +11,7 @@ namespace Investing.Management.Controllers
     {
         [HttpGet("{id:int}/investments")]
         [Authorize(Roles = "Investor")]
-        public async Task<ActionResult<IEnumerable<InvestmentDto>>> GetInvestments(int id) 
-            => Ok(await Mediator.Send(new GetInvestmentsByInvestorQuery(id)));
+        public async Task<ActionResult<IEnumerable<InvestmentDto>>> GetInvestments() 
+            => Ok(await Mediator.Send(new GetInvestmentsByInvestorQuery()));
     }
 }

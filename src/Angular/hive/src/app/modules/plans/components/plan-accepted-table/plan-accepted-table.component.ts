@@ -15,7 +15,7 @@ export class PlanAcceptedTableComponent implements OnInit {
   @Input() plan: PlanDto | undefined;
 
   displayedColumns: string[] = [
-    'amount', 'roiPercentage', 'effectiveDate', 'expirationDate', 'investorId'];
+    'amount', 'roiPercentage', 'effectiveDate', 'expirationDate'];
 
   // Accepted
   public acceptedDataSource!: MatTableDataSource<InvestmentDto>;

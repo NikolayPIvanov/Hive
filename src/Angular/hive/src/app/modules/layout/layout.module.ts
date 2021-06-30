@@ -16,6 +16,7 @@ import { NgxSpinnerModule } from "ngx-spinner";
 import { ImageUploadComponent } from './components/image-upload/image-upload.component';
 
 import { ChartsModule } from 'ng2-charts';
+import { LineChartComponent } from './components/line-chart/line-chart.component';
 
 
 @NgModule({
@@ -26,7 +27,8 @@ import { ChartsModule } from 'ng2-charts';
     LimitToPipe,
 
     CategoriesSearchComponent,
-     ImageUploadComponent
+     ImageUploadComponent,
+     LineChartComponent
   ],
   imports: [
     CommonModule,
@@ -53,7 +55,8 @@ import { ChartsModule } from 'ng2-charts';
 
     CategoriesSearchComponent,
     ImageUploadComponent,
-    ChartsModule
+    ChartsModule,
+    LineChartComponent
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptorService, multi: true }

@@ -16,7 +16,7 @@ export class PlanPendingTableComponent implements OnInit {
   @Input() isOwner!: boolean;
 
   displayedColumns: string[] = ['amount',
-    'roiPercentage', 'effectiveDate', 'expirationDate', 'investorUserId'];
+    'roiPercentage', 'effectiveDate', 'expirationDate'];
   
   public investments$!: Observable<PaginatedListOfInvestmentDto>;
   public dataSource!: MatTableDataSource<InvestmentDto>;

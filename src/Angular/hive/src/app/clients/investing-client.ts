@@ -15,7 +15,7 @@ import { HttpClient, HttpHeaders, HttpResponse, HttpResponseBase } from '@angula
 export const API_BASE_URL = new InjectionToken<string>('API_BASE_URL');
 
 export interface IInvestorsClient {
-    getInvestments(id: number): Observable<InvestmentDto[]>;
+    getInvestments(id: string): Observable<InvestmentDto[]>;
 }
 
 @Injectable({
@@ -31,7 +31,7 @@ export class InvestorsClient implements IInvestorsClient {
         this.baseUrl = baseUrl !== undefined && baseUrl !== null ? baseUrl : "";
     }
 
-    getInvestments(id: number): Observable<InvestmentDto[]> {
+    getInvestments(id: string): Observable<InvestmentDto[]> {
         let url_ = this.baseUrl + "/api/Investors/{id}/investments";
         if (id === undefined || id === null)
             throw new Error("The parameter 'id' must be defined.");

@@ -49,7 +49,6 @@
             </mat-card-actions>
         </mat-card>
 
-        
         <mat-card fxFlex fxLayout="column">
             <mat-card-header fxFlex="20">
                 <mat-card-title>My Plans</mat-card-title>
@@ -86,17 +85,13 @@
                 <mat-card-subtitle>Manage Balance</mat-card-subtitle>
             </mat-card-header>
             <mat-card-content>
-                <div style="display: block;">
-                    <canvas baseChart width="300" height="50"
-                      [datasets]="lineChartData"
-                      [labels]="lineChartLabels"
-                      [options]="lineChartOptions"
-                      [colors]="lineChartColors"
-                      [legend]="lineChartLegend"
-                      [chartType]="lineChartType"
-                      [plugins]="lineChartPlugins">
-                    </canvas>
-                  </div>                  
+                <app-line-chart
+                    [label]="label"
+                    [data]="data"
+                    [labels]="labels"
+                    [color]="color"
+                >
+                </app-line-chart>             
             </mat-card-content>
             <mat-card-actions>
                 <a mat-button [routerLink]="['/billing/overview']">

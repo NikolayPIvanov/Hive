@@ -29,32 +29,15 @@ export class SellerDashboardComponent implements OnInit {
       .pipe(switchMap(id => this.sellersClient.getMyGigs(3, 1, id)));
     
     this.orders$ = this.ordersClient.getMyOrders(1, 3, true)
-    this.plans$ = this.plansClient.getPlans(1, 3, undefined);
+    this.plans$ = this.plansClient.getPlans(1, 3, undefined, false);
   }
 
   constructDownload(gigId: number) {
     return this.gigsClient.getAvatar(gigId);
   }
 
-  public lineChartData: ChartDataSets[] = [
-    {
-      data:
-        [0, 200, 350, 450, 467, 980, 1200, 2300, 2800, 2942, 3200, 3600],
-      label: 'Revenue'
-    },
-  ];
-  public lineChartLabels: Label[] = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-  public lineChartOptions: (ChartOptions) = {
-    responsive: true,
-  };
-  public lineChartColors: Color[] = [
-    {
-      borderColor: 'black',
-      backgroundColor: 'rgba(255,0,0,0.3)',
-    },
-  ];
-  public lineChartLegend = true;
-  public lineChartType: ChartType = 'line';
-  public lineChartPlugins = [];
-
+  public label: string = 'Revenue'
+  public data: number[] = [0, 200, 350, 450, 467, 980, 1200, 2300, 2800, 2942, 3200, 3600]
+  public labels: Label[] = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+  public color: string = 'rgba(255,0,0,0.3)'
 }
