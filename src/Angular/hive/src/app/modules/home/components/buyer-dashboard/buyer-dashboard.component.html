@@ -1,0 +1,116 @@
+<div fxLayout="column" class="container" fxFlex>
+    <h1>Buyer Dashboard</h1>
+    <div fxLayout="row" fxLayoutGap="1%" fxFlex>
+
+        <mat-card fxFlex="30%" fxLayout="column">
+            <mat-card-header fxFlex="20">
+                <mat-card-title>My Orders</mat-card-title>
+                <mat-card-subtitle>Manage Orders</mat-card-subtitle>
+            </mat-card-header>
+            <mat-divider inset="true" fxFlexOffset="2"></mat-divider>
+            <mat-card-content fxFlex="70">
+                <mat-list fxLayout="column">
+                    <mat-list-item *ngFor="let order of (orders$ | async)?.items; let i = index" fxFlex="2rem">
+                        <div mat-line>
+                            <strong>{{i + 1}}. Order Number. ({{order.orderNumber! | limitTo: '10'}}) - {{ order.totalPrice }}$</strong>
+                        </div>
+                    </mat-list-item>
+                </mat-list>
+            </mat-card-content>
+            <mat-divider inset="true" fxFlexOffset="2"></mat-divider>
+            <mat-card-actions>
+                <a mat-button [routerLink]="['/orders']">
+                    <mat-icon>request_quote</mat-icon>
+                    <span>See All</span>
+                </a>
+            </mat-card-actions>
+        </mat-card>
+
+        <mat-card fxFlex="60%">
+            <mat-card-header>
+                <mat-card-title>Orders by month</mat-card-title>
+                <mat-card-subtitle>Timeline</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+                <div style="display: block;">
+                    <canvas baseChart width="300" height="50"
+                      [datasets]="lineChartData"
+                      [labels]="lineChartLabels"
+                      [options]="lineChartOptions"
+                      [colors]="lineChartColors"
+                      [legend]="lineChartLegend"
+                      [chartType]="lineChartType"
+                      [plugins]="lineChartPlugins">
+                    </canvas>
+                  </div>                  
+            </mat-card-content>
+        </mat-card>
+
+
+    </div>
+    <div fxLayout="row" style="margin-top: 3rem;" fxLayoutGap="1%" fxFlex>
+        <mat-card fxFlex="30%" fxLayout="column">
+            <mat-card-header fxFlex="10">
+                <mat-card-title>Balance</mat-card-title>
+                <mat-card-subtitle *ngIf="wallet$ | async; let wallet">Your current balance: {{ wallet.balance }}$</mat-card-subtitle>
+            </mat-card-header>
+            <mat-divider inset="true" fxFlexOffset="2"></mat-divider>
+            <mat-card-content fxFlex="70" fxLayout="column">
+                <mat-table [dataSource]="dataSource">
+
+                    <!-- Position Column -->
+                    <ng-container matColumnDef="transactionNumber">
+                      <mat-header-cell mat-header-cell *matHeaderCellDef> No. </mat-header-cell>
+                      <mat-cell mat-cell *matCellDef="let element"> {{element.transactionNumber}} </mat-cell>
+                    </ng-container>
+              
+                    <!-- Name Column -->
+                    <ng-container matColumnDef="amount">
+                      <mat-header-cell mat-header-cell *matHeaderCellDef> Amount </mat-header-cell>
+                      <mat-cell mat-cell *matCellDef="let element"> {{element.amount}} </mat-cell>
+                    </ng-container>
+              
+                    <!-- Weight Column -->
+                    <ng-container matColumnDef="transactionType">
+                      <mat-header-cell mat-header-cell *matHeaderCellDef> Type </mat-header-cell>
+                      <mat-cell mat-cell *matCellDef="let element"> {{getTransactionType(element.transactionType)}} </mat-cell>
+                    </ng-container>
+              
+                    <!-- Symbol Column -->
+                    <ng-container matColumnDef="orderNumber">
+                      <mat-header-cell mat-header-cell *matHeaderCellDef> Order Number </mat-header-cell>
+                      <mat-cell mat-cell *matCellDef="let element"> {{element.orderNumber}} </mat-cell>
+                    </ng-container>
+              
+                    <mat-header-row *matHeaderRowDef="columnsToDisplay"></mat-header-row>
+                    <mat-row matRipple *matRowDef="let row; columns: columnsToDisplay;"></mat-row>
+                  </mat-table>
+            </mat-card-content>
+            <mat-divider inset="true" fxFlexOffset="2"></mat-divider>
+            <mat-card-actions>
+                <a mat-button [routerLink]="['/billing/overview']">
+                    <span>See More</span>
+                </a>
+            </mat-card-actions>
+        </mat-card>
+        
+        <mat-card fxFlex="50%">
+            <mat-card-header>
+                <mat-card-title>Orders Category Distribution</mat-card-title>
+                <mat-card-subtitle>Each area represents % of all orders</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+                <div style="display: block;">
+                    <canvas baseChart 
+                    [data]="pieChartData" 
+                    [labels]="pieChartLabels" 
+                    [chartType]="pieChartType"
+                    [options]="pieChartOptions"
+                    [plugins]="pieChartPlugins"
+                    [legend]="pieChartLegend">
+                  </canvas>
+                </div>
+            </mat-card-content>
+        </mat-card>
+    </div>
+</div>
