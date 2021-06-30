@@ -1,8 +1,10 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+import { Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { PlanDto } from 'src/app/clients/investing-client';
-import { ProfileClient } from 'src/app/clients/profile-client';
+import { ProfileClient, UserProfileDto } from 'src/app/clients/profile-client';
+import { AuthService } from 'src/app/modules/layout/services/auth.service';
 import { PlansService } from '../../services/plans.service';
 import { PlanEditComponent } from '../plan-edit/plan-edit.component';
 import { PlanInspectComponent } from '../plan-inspect/plan-inspect.component';
@@ -25,12 +27,16 @@ export class PlanCardComponent implements OnInit {
   @Input() plan!: PlanDto;
   @Output() change = new EventEmitter<PlanListChangeEvent>();
 
+  public profile$: Observable<UserProfileDto> | undefined;
+  public isOwner!: boolean;
+
   constructor(
     private plansService: PlansService,
     private dialog: MatDialog,
-    private profileClient: ProfileClient) { }
+    private authService: AuthService) { }
 
   ngOnInit(): void {
+    this.isOwner = this.plan.vendorUserId == this.authService.user?.profile.sub!
   }
 
   openInspectDialog(plan: PlanDto) {
@@ -46,6 +52,7 @@ export class PlanCardComponent implements OnInit {
     const dialogRef = this.dialog.open(PlanEditComponent, { data: plan });
     dialogRef.afterClosed().subscribe((result: PlanDto | undefined) => {
       if (result) {
+        debugger;
         this.change.emit({ type: ChangeType.Update, item: result })
       }
     });

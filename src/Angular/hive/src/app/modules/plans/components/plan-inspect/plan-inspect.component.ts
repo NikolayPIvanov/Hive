@@ -4,6 +4,7 @@ import { PageEvent } from '@angular/material/paginator';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { repeatWhen, tap } from 'rxjs/operators';
 import { InvestmentDto, PaginatedListOfInvestmentDto, PlanDto, PlansClient, ProcessInvestmentCommand } from 'src/app/clients/investing-client';
+import { AuthService } from 'src/app/modules/layout/services/auth.service';
 import { MakeInvestmentComponent } from '../make-investment/make-investment.component';
 
 @Component({
@@ -21,16 +22,21 @@ export class PlanInspectComponent implements OnInit {
 
   public pendingInvestments$: Observable<PaginatedListOfInvestmentDto> | undefined;
   public acceptedInvestments$: Observable<PaginatedListOfInvestmentDto> | undefined;
-  public pedning: InvestmentDto[] = []
+  public pending: InvestmentDto[] = []
   public accepted: InvestmentDto[] = []
+  
+  public isInvestor = false;
+  public isOwner = false;
 
   constructor(
     private dialog: MatDialog,
     private planClient: PlansClient,
+    private authService: AuthService,
     @Inject(MAT_DIALOG_DATA) public data: PlanDto) { }
 
   ngOnInit(): void {
-    
+    this.isInvestor = this.authService.user?.profile.role?.includes('Investor')!
+    this.isOwner = this.authService.user?.profile.sub! == this.data.vendorUserId!;
     this.pendingInvestments$ = this.planClient.getPlanInvestments(
       this.data.id!, this.pageSize, this.pageNumber + 1, false)
       .pipe(
@@ -38,7 +44,7 @@ export class PlanInspectComponent implements OnInit {
         tap({
           next: (data) => {
             if (data && data.items) {
-              this.pedning = data.items;
+              this.pending = data.items;
               this.length = data.totalCount!;
             }
           }
@@ -63,8 +69,8 @@ export class PlanInspectComponent implements OnInit {
         next: (result) => {
           if (accept) {
             
-            const index = this.pedning.indexOf(investment);
-            this.pedning.splice(index, 1);
+            const index = this.pending.indexOf(investment);
+            this.pending.splice(index, 1);
             this.length -= 1;
 
             this.accepted.push(investment);
@@ -85,11 +91,11 @@ export class PlanInspectComponent implements OnInit {
           return;
         }
 
-        if (this.pedning.length === 5) {
-          this.pedning.splice(0, 1, data);
+        if (this.pending.length === 5) {
+          this.pending.splice(0, 1, data);
         }
         else {
-          this.pedning.push(data);
+          this.pending.push(data);
         }
 
         this.length += 1;

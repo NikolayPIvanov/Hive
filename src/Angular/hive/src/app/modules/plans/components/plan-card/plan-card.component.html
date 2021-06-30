@@ -1,5 +1,5 @@
 <div fxLayout="row">
     <button mat-button (click)="openInspectDialog(plan)">Inspect</button>
-    <button mat-button (click)="openEditDialog(plan)">Edit</button>
-    <button mat-button (click)="delete(plan)">Delete</button>
+    <button mat-button *ngIf="isOwner" (click)="openEditDialog(plan)">Edit</button>
+    <button mat-button *ngIf="isOwner" (click)="delete(plan)">Delete</button>
 </div>

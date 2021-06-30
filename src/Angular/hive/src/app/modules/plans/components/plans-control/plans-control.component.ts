@@ -3,8 +3,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { map, repeatWhen, shareReplay, tap } from 'rxjs/operators';
+import { BehaviorSubject, config } from 'rxjs';
+import { map } from 'rxjs/operators';
 import { PaginatedListOfPlanDto, PlanDto } from 'src/app/clients/investing-client';
 import { PlansService } from '../../services/plans.service';
 import { ChangeType, PlanListChangeEvent } from '../plan-card/plan-card.component';
@@ -16,12 +16,14 @@ import { PlanCreateComponent } from '../plan-create/plan-create.component';
   styleUrls: ['./plans-control.component.scss']
 })
 export class PlansControlComponent implements OnInit, AfterViewInit  {
-  private plansSubject = new BehaviorSubject<PaginatedListOfPlanDto | undefined>(undefined);
-  plans$ = this.plansSubject.asObservable();
+  private plansListSubject = new BehaviorSubject<PaginatedListOfPlanDto | undefined>(undefined);
+  public plans$ = this.plansListSubject.asObservable();
+
   searchKey: string | undefined = undefined;
 
   displayedColumns: string[] = [
     'title', 'description', 'startDate', 'endDate', 'fundingNeeded', 'isFunded', 'isPublic', 'actions'];
+  
   dataSource!: MatTableDataSource<PlanDto>;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -63,10 +65,12 @@ export class PlansControlComponent implements OnInit, AfterViewInit  {
   }
 
   openCreateDialog() {
-    const dialogRef = this.dialog.open(PlanCreateComponent);
+    const dialogRef = this.dialog.open(PlanCreateComponent, { width: '50%' });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.dataSource.data.push(result);
+        let x = this.dataSource.data;
+        x.push(result);
+        this.dataSource.data = x;
       }
     });
   }
@@ -78,7 +82,7 @@ export class PlansControlComponent implements OnInit, AfterViewInit  {
           if (list) {
             this.dataSource.data = list.items || [];
           }
-          this.plansSubject.next(list);
+          this.plansListSubject.next(list);
           return list;
         })
       )

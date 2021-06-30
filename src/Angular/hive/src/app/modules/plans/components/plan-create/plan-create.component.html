@@ -1,6 +1,6 @@
 <h2 mat-dialog-title>Create new Plan</h2>
 <mat-dialog-content class="mat-typography">
-  <h3>Develop across all platforms</h3>
+  <h3>Create Plan</h3>
   <form [formGroup]="form" fxLayout="column" (ngSubmit)="onSubmit()" id="planForm">
     <mat-form-field appearance="fill">
         <mat-label>Title</mat-label>
@@ -12,7 +12,6 @@
         <textarea matInput placeholder="Description" formControlName="description"></textarea>
         <mat-error></mat-error>
     </mat-form-field>
-
     
     <mat-form-field appearance="fill">
         <mat-label>Funding needed</mat-label>

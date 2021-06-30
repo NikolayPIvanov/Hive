@@ -1,98 +1,97 @@
-<div fxLayout="column" class="container">
-    <h2>Plans</h2>
-    <mat-divider>
-    </mat-divider>
-    <ng-container *ngIf="plans$ | async; else noplans">
-        <div fxLayout="column">
-            <mat-accordion fxFlex="10">
-                <mat-expansion-panel>
-                  <mat-expansion-panel-header>
-                    <mat-panel-title>
-                        Plans Control
-                    </mat-panel-title>
-                    <mat-panel-description>
-                      Expand to explore filter options
-                    </mat-panel-description>
-                  </mat-expansion-panel-header>
-                
-                  <!-- filter -->
-                  <div 
-                    fxLayout.gt-lg="row"
-                    fxLayoutAlign.gt-lg="space-between">
-                    <app-plans-search-field [selfOnly]="true" (onSelected)="onPlanSelected($event)"></app-plans-search-field>
-                    <button mat-button (click)="openCreateDialog()">Create</button>
-                  </div>
-        
-                </mat-expansion-panel>
-              </mat-accordion>
+<mat-card class="full-height mat-elevation-z8" fxLayout="column">
+  <mat-card-header>
+    <mat-card-title>Plans Control</mat-card-title>
+    <mat-card-subtitle>Manage your gigs plans</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content fxLayout="column" fxFlex="75%">
 
-              <div class="mat-elevation-z8" fxFill>
-                <table mat-table [dataSource]="dataSource" matSort fxFill>
-              
-                  <!-- Title Column -->
-                  <ng-container matColumnDef="title">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Title </th>
-                    <td mat-cell *matCellDef="let row"> {{row.title}} </td>
-                  </ng-container>
-              
-                  <!-- Description Column -->
-                  <ng-container matColumnDef="description">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header> Description </th>
-                    <td mat-cell *matCellDef="let row"> {{row.description | limitTo:'20'}}</td>
-                  </ng-container>
-              
-                  <!-- startDate Column -->
-                  <ng-container matColumnDef="startDate">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header> startDate </th>
-                    <td mat-cell *matCellDef="let row"> {{row.startDate | date:'short'}} </td>
-                  </ng-container>
-              
-                  <!-- endDate Column -->
-                  <ng-container matColumnDef="endDate">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header> endDate </th>
-                    <td mat-cell *matCellDef="let row"> {{row.endDate | date:'short'}} </td>
-                  </ng-container>
-
-                  <!-- fundingNeeded Column -->
-                  <ng-container matColumnDef="fundingNeeded">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header> fundingNeeded </th>
-                    <td mat-cell *matCellDef="let row"> {{row.fundingNeeded}} </td>
-                  </ng-container>
-
-                  <!-- isFunded Column -->
-                  <ng-container matColumnDef="isFunded">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header> isFunded </th>
-                    <td mat-cell *matCellDef="let row"> {{row.isFunded}} </td>
-                  </ng-container>
-                  
-                  <!-- isPublic Column -->
-                  <ng-container matColumnDef="isPublic">
-                    <th mat-header-cell *matHeaderCellDef mat-sort-header> isPublic </th>
-                    <td mat-cell *matCellDef="let row"> {{row.isPublic}} </td>
-                  </ng-container>
-
-                  <!-- isPublic Column -->
-                  <ng-container matColumnDef="actions">
-                    <th mat-header-cell *matHeaderCellDef> actions </th>
-                    <td mat-cell *matCellDef="let row"> 
-                      <app-plan-card [plan]="row" (change)="onChange($event)"></app-plan-card>
-                    </td>
-                  </ng-container>
-              
-                  <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-                  <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-              
-                  <!-- Row shown when there is no matching data. -->
-                  <tr class="mat-row" *matNoDataRow>
-                    <td class="mat-cell" colspan="4">No data matching the filter</td>
-                  </tr>
-                </table>
-              
-                <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
-              </div>
+    <!-- Header -->
+    <mat-accordion>
+      <mat-expansion-panel>
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            Plans Control
+          </mat-panel-title>
+          <mat-panel-description>
+            Expand to explore filter options
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+      
+        <!-- filter -->
+        <div 
+          fxLayout="row" fxLayoutAlign="space-between">
+          <app-plans-search-field [selfOnly]="true" (onSelected)="onPlanSelected($event)"></app-plans-search-field>
+          <button style="height: 80%;" mat-raised-button (click)="openCreateDialog()">Create Plan</button>
         </div>
+  
+      </mat-expansion-panel>
+    </mat-accordion>
+    
+    <ng-container *ngIf="plans$ | async; let plansList">
+      <div class="mat-elevation-z8" fxFill fxLayout="column">
+        <table mat-table [dataSource]="dataSource" matSort>
+          <!-- Title Column -->
+          <ng-container matColumnDef="title">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Title </th>
+            <td mat-cell *matCellDef="let row"> {{row.title | limitTo:'20'}} </td>
+          </ng-container>
+      
+          <!-- Description Column -->
+          <ng-container matColumnDef="description">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Description </th>
+            <td mat-cell *matCellDef="let row"> {{row.description | limitTo:'20'}}</td>
+          </ng-container>
+      
+          <!-- startDate Column -->
+          <ng-container matColumnDef="startDate">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Start Date </th>
+            <td mat-cell *matCellDef="let row"> {{row.startDate | date:'short'}} </td>
+          </ng-container>
+      
+          <!-- endDate Column -->
+          <ng-container matColumnDef="endDate">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> End Date </th>
+            <td mat-cell *matCellDef="let row"> {{row.endDate | date:'short'}} </td>
+          </ng-container>
+
+          <!-- fundingNeeded Column -->
+          <ng-container matColumnDef="fundingNeeded">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Needed Funding </th>
+            <td mat-cell *matCellDef="let row"> {{row.fundingNeeded}} </td>
+          </ng-container>
+
+          <!-- isFunded Column -->
+          <ng-container matColumnDef="isFunded">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> Is Funded? </th>
+            <td mat-cell *matCellDef="let row"> {{row.isFunded}} </td>
+          </ng-container>
+          
+          <!-- isPublic Column -->
+          <ng-container matColumnDef="isPublic">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header> isPublic </th>
+            <td mat-cell *matCellDef="let row"> {{row.isPublic}} </td>
+          </ng-container>
+
+          <!-- isPublic Column -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef> actions </th>
+            <td mat-cell *matCellDef="let row"> 
+              <app-plan-card [plan]="row" (change)="onChange($event)"></app-plan-card>
+            </td>
+          </ng-container>
+      
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      
+          <!-- Row shown when there is no matching data. -->
+          <tr class="mat-row" *matNoDataRow>
+            <td class="mat-cell" colspan="4">No data matching the filter</td>
+          </tr>
+        </table>
+      
+        <mat-paginator class="mat-elevation-z8" [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
+      </div>
     </ng-container>
-    <ng-template #noplans >
-        <h1>No plans yet</h1>
-    </ng-template>
-</div>
+  </mat-card-content>
+</mat-card>
+

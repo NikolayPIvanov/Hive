@@ -27,6 +27,7 @@
                 max="10000"
                 [value]="modValue.value"
                 (input)="modValue.value = $event.value!.toString()"
+                (change)="form.patchValue({ 'fundingNeeded': $event.value})"
                 aria-label="units"></mat-slider>
         </div>
     </mat-form-field>
