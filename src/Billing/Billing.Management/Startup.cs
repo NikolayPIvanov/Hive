@@ -103,6 +103,8 @@ namespace Billing.Management
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            app.UseStaticFiles();
             
             app.UseSwaggerUi3(settings =>
             {

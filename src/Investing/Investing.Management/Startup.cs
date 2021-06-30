@@ -106,7 +106,13 @@ namespace Investing.Management
                 app.UseDeveloperExceptionPage();
             }
             
-            app.UseSwaggerUi3();
+            app.UseStaticFiles();
+
+            app.UseSwaggerUi3(settings =>
+            {
+                settings.Path = "/api";
+                settings.DocumentPath = "/api/specification.json";
+            });
 
             app.UseHttpsRedirection();
             

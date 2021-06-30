@@ -104,6 +104,8 @@ namespace Ordering.Management
                 app.UseDeveloperExceptionPage();
             }
 
+            app.UseStaticFiles();
+
             app.UseSwaggerUi3(settings =>
             {
                 settings.Path = "/api";
