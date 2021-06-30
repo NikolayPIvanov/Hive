@@ -28,9 +28,13 @@ namespace Hive.Investing.Application.Investments.Queries
         
         public async Task<PaginatedList<InvestmentDto>> Handle(GetInvestmentsByPlanQuery request, CancellationToken cancellationToken)
         {
-            var query = _context.Investments
+            var query = 
+                _context.Investments
+                    .Include(x => x.Investor)
                 .AsNoTracking()
                 .Where(i => i.PlanId == request.PlanId);
+
+            var debu = await query.ToListAsync();
             
             query = request.OnlyAccepted ? query.Where(x => x.IsAccepted) : query.Where(x => !x.IsAccepted);
             

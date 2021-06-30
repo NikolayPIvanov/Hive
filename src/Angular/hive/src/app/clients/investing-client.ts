@@ -105,9 +105,10 @@ export interface IPlansClient {
      * @param pageNumber (optional) 
      * @param pageSize (optional) 
      * @param key (optional) 
+     * @param isInvestor (optional) 
      * @return Successful operation
      */
-    getPlans(pageNumber: number | undefined, pageSize: number | undefined, key: string | null | undefined): Observable<PaginatedListOfPlanDto>;
+    getPlans(pageNumber: number | undefined, pageSize: number | undefined, key: string | null | undefined, isInvestor: boolean | undefined): Observable<PaginatedListOfPlanDto>;
     /**
      * @param command (optional) 
      * @return Successful operation
@@ -364,9 +365,10 @@ export class PlansClient implements IPlansClient {
      * @param pageNumber (optional) 
      * @param pageSize (optional) 
      * @param key (optional) 
+     * @param isInvestor (optional) 
      * @return Successful operation
      */
-    getPlans(pageNumber: number | undefined, pageSize: number | undefined, key: string | null | undefined): Observable<PaginatedListOfPlanDto> {
+    getPlans(pageNumber: number | undefined, pageSize: number | undefined, key: string | null | undefined, isInvestor: boolean | undefined): Observable<PaginatedListOfPlanDto> {
         let url_ = this.baseUrl + "/api/Plans?";
         if (pageNumber === null)
             throw new Error("The parameter 'pageNumber' cannot be null.");
@@ -378,6 +380,10 @@ export class PlansClient implements IPlansClient {
             url_ += "pageSize=" + encodeURIComponent("" + pageSize) + "&";
         if (key !== undefined && key !== null)
             url_ += "key=" + encodeURIComponent("" + key) + "&";
+        if (isInvestor === null)
+            throw new Error("The parameter 'isInvestor' cannot be null.");
+        else if (isInvestor !== undefined)
+            url_ += "isInvestor=" + encodeURIComponent("" + isInvestor) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
         let options_ : any = {
@@ -988,6 +994,7 @@ export class InvestmentDto implements IInvestmentDto {
     amount?: number;
     roiPercentage?: number;
     investorId?: number;
+    investorUserId?: string;
     planId?: number;
     isAccepted?: boolean;
 
@@ -1008,6 +1015,7 @@ export class InvestmentDto implements IInvestmentDto {
             this.amount = _data["amount"];
             this.roiPercentage = _data["roiPercentage"];
             this.investorId = _data["investorId"];
+            this.investorUserId = _data["investorUserId"];
             this.planId = _data["planId"];
             this.isAccepted = _data["isAccepted"];
         }
@@ -1028,6 +1036,7 @@ export class InvestmentDto implements IInvestmentDto {
         data["amount"] = this.amount;
         data["roiPercentage"] = this.roiPercentage;
         data["investorId"] = this.investorId;
+        data["investorUserId"] = this.investorUserId;
         data["planId"] = this.planId;
         data["isAccepted"] = this.isAccepted;
         return data; 
@@ -1041,6 +1050,7 @@ export interface IInvestmentDto {
     amount?: number;
     roiPercentage?: number;
     investorId?: number;
+    investorUserId?: string;
     planId?: number;
     isAccepted?: boolean;
 }

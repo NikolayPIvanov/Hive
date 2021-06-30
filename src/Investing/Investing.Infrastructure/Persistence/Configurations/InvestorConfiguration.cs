@@ -12,7 +12,7 @@ namespace Hive.Investing.Infrastructure.Persistence.Configurations
             builder.Ignore(x => x.DomainEvents);
 
             builder.HasMany(x => x.Investments)
-                .WithOne()
+                .WithOne(x => x.Investor)
                 .HasForeignKey(x => x.InvestorId);
         }
     }

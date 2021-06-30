@@ -3,9 +3,10 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
-import { BehaviorSubject, config } from 'rxjs';
+import { BehaviorSubject, config, Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { PaginatedListOfPlanDto, PlanDto } from 'src/app/clients/investing-client';
+import { AuthService } from 'src/app/modules/layout/services/auth.service';
 import { PlansService } from '../../services/plans.service';
 import { ChangeType, PlanListChangeEvent } from '../plan-card/plan-card.component';
 import { PlanCreateComponent } from '../plan-create/plan-create.component';
@@ -24,12 +25,15 @@ export class PlansControlComponent implements OnInit, AfterViewInit  {
   displayedColumns: string[] = [
     'title', 'description', 'startDate', 'endDate', 'fundingNeeded', 'isFunded', 'isPublic', 'actions'];
   
+  private isSeller = false;
+  
   dataSource!: MatTableDataSource<PlanDto>;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
   constructor(
     private plansService: PlansService,
+    private authService: AuthService,
     private dialog: MatDialog) { }
   
   ngAfterViewInit(): void {
@@ -38,6 +42,7 @@ export class PlansControlComponent implements OnInit, AfterViewInit  {
   }
 
   ngOnInit(): void {
+    this.isSeller = this.authService.user?.profile.role.includes('Seller')!;
     this.dataSource = new MatTableDataSource<PlanDto>([])
     this.fetchPlans();
   }
@@ -76,7 +81,14 @@ export class PlansControlComponent implements OnInit, AfterViewInit  {
   }
 
   private fetchPlans() {
-    this.plansService.getPlansAsVendor(this.searchKey)
+    let source: Observable<PaginatedListOfPlanDto>
+    if (this.isSeller) {
+      source = this.plansService.getPlansAsVendor(this.searchKey)
+    }
+    else {
+      source = this.plansService.getPlansAsInvestor(this.searchKey)
+    }
+    source
       .pipe(
         map(list => {
           if (list) {

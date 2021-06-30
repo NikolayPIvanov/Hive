@@ -25,6 +25,8 @@ namespace Hive.Investing.Application.Investments.Queries
         public double RoiPercentage { get; set; }
 
         public int InvestorId { get; set; }
+        
+        public string InvestorUserId { get; set; }
 
         public int PlanId { get; set; }
 
@@ -50,6 +52,7 @@ namespace Hive.Investing.Application.Investments.Queries
         {
             var plan = await _context.Plans
                 .Include(x => x.Investments.Where(i => i.PlanId == request.PlanId))
+                .ThenInclude(x => x.Investor)
                 .FirstOrDefaultAsync(p => p.Id == request.PlanId, cancellationToken);
 
             if (plan == null)

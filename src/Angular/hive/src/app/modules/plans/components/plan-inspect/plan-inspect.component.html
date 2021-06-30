@@ -1,75 +1,37 @@
-<h2 mat-dialog-title>Inspecting plan</h2>
+<div fxLayout="row" fxLayoutGap="1rem">
+  <h2 mat-dialog-title>Inspecting plan</h2>
+
+</div>
 <mat-dialog-content class="mat-typography">
-    <h3><strong>Title:</strong> {{ data.title! }}</h3>
 
-    <h3><strong>Description:</strong> {{ data.description }}</h3>
+    <!-- info -->
+    <div fxLayout="row" fxLayoutGap="3rem">
+      <!-- left -->
+      <div fxLayout="column">
+        <h3><strong>Title:</strong> {{ data.title! }}</h3>
+        <h3><strong>Description:</strong> {{ data.description }}</h3>
+        <h3><strong>Total Funding needed:</strong> {{ data.fundingNeeded }}$</h3>
+      </div>
 
-    <h3><strong>Start Date:</strong> {{ data.startDate | date:'short' }}</h3>
+      <!-- right -->
+      <div fxLayout="column">
+        <h3><strong>Start Date:</strong> {{ data.startDate | date:'short' }}</h3>
+        <h3><strong>End Date:</strong> {{ data.endDate | date:'short' }}</h3>
+        <h3><strong>Funding needed:</strong> {{ data.fundingNeeded }}$</h3>
+      </div>
+    </div>
 
-    <h3><strong>End Date:</strong> {{ data.endDate | date:'short' }}</h3>
+    <mat-divider ></mat-divider>
 
-    <h3><strong>Funding needed:</strong> {{ data.fundingNeeded }}$</h3>
+    <app-plan-accepted-table [plan]="data"></app-plan-accepted-table>
 
-    <mat-divider></mat-divider>
+    <mat-divider ></mat-divider>
 
-    <h2>Accepted Investments</h2>
-    <mat-selection-list *ngIf="acceptedInvestments$ | async" #investmentsList [multiple]="false">
-      <ng-container *ngIf="accepted && accepted.length; else elseTemplate">
-        <mat-list-option *ngFor="let investment of accepted" [value]="investment">
-          <div fxLayout="row">
-            <span>{{ investment.amount }}</span>
-            <span>{{ investment.roiPercentage }}</span>
-            <span>{{ investment.effectiveDate | date:'short' }}</span>
-            <span>{{ investment.expirationDate| date:'short' }}</span>
-            <span>{{ investment.investorId }}</span>
-          </div>
-        </mat-list-option>
-      </ng-container>
-      <ng-template #elseTemplate>
-        <h3>No accepted investments</h3>
-      </ng-template>
-    </mat-selection-list>
+    <app-plan-pending-table [plan]="data" [isOwner]="isOwner"></app-plan-pending-table>
 
-    <mat-divider></mat-divider>
-
-
-    <h2>Pending Investments</h2>
-    <button mat-raised-button color="primary" 
-       *ngIf="isInvestor"
-       (click)="openInvestmentDialog()">Make an investment</button>
-
-    <mat-selection-list *ngIf="isOwner && (pendingInvestments$ | async)" #investmentsList [multiple]="false">
-      <ng-container *ngIf="pending && pending.length; else elseTemplate">
-        <mat-list-option *ngFor="let investment of pending" [value]="investment">
-          <div fxLayout="row">
-            <span>{{ investment.amount }}</span>
-            <span>{{ investment.roiPercentage }}</span>
-            <span>{{ investment.effectiveDate | date:'short' }}</span>
-            <span>{{ investment.expirationDate| date:'short' }}</span>
-            <span>{{ investment.investorId }}</span>
-            <div>
-              <button mat-button (click)="processInvestment(investment)">Accept</button>
-              <button mat-button (click)="processInvestment(investment, false)">Decline</button>
-            </div>
-          </div>
-        </mat-list-option>
-        <mat-paginator
-          (page)="handlePageEvent($event)"
-          [length]="length"
-          [pageSize]="pageSize"
-          [showFirstLastButtons]="true"
-          [pageSizeOptions]="pageSizeOptions"
-          [pageIndex]="pageNumber"></mat-paginator>
-
-      </ng-container>
-      <ng-template #elseTemplate>
-        <h3>No accepted investments</h3>
-      </ng-template>
-      
-    </mat-selection-list>
-    
     
 </mat-dialog-content>
 <mat-dialog-actions align="end">
+  <button *ngIf="isInvestor" mat-raised-button color="primary" (click)="openInvestmentDialog()">Make an investment</button>
   <button mat-button mat-dialog-close>Close</button>
 </mat-dialog-actions>

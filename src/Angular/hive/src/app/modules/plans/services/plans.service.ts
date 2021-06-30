@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
-import { CreatePlanCommand, InvestorsClient, PlansClient, UpdatePlanCommand } from 'src/app/clients/investing-client';
+import { BehaviorSubject } from 'rxjs';
+import { CreatePlanCommand, InvestmentDto, InvestorsClient, PlansClient, UpdatePlanCommand } from 'src/app/clients/investing-client';
 
 export class PaginationControl {
   pageSize: number = 20;
@@ -11,6 +12,19 @@ export class PaginationControl {
   providedIn: 'root'
 })
 export class PlansService {
+  private newInvestmentsSubject = new BehaviorSubject<InvestmentDto | undefined>(undefined);
+  public newInvestments$ = this.newInvestmentsSubject.asObservable();
+  public addNewInvestmentToPending(investment: InvestmentDto) {
+    this.newInvestmentsSubject.next(investment);
+  }
+
+  private acceptedInvestmentSubject = new BehaviorSubject<InvestmentDto | undefined>(undefined);
+  public acceptedInvestment$ = this.acceptedInvestmentSubject.asObservable();
+  public onAcceptedInvestment(investment: InvestmentDto) {
+    this.acceptedInvestmentSubject.next(investment);
+  }
+
+
   private paginatorSettings = new PaginationControl();
 
   constructor(private investingClient: PlansClient) { }
@@ -23,7 +37,14 @@ export class PlansService {
     return this.investingClient.getPlans(
       this.paginatorSettings.pageNumber,
       this.paginatorSettings.pageSize,
-      searchKey)
+      searchKey, false)
+  }
+
+  getPlansAsInvestor(searchKey: string | undefined) {
+    return this.investingClient.getPlans(
+      this.paginatorSettings.pageNumber,
+      this.paginatorSettings.pageSize,
+      searchKey, true)
   }
 
   createPlan(value: any) {

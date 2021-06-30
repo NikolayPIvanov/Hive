@@ -8,7 +8,9 @@ namespace Hive.Investing.Application.Investments
     {
         public InvestmentProfile()
         {
-            CreateMap<Investment, InvestmentDto>();
+            CreateMap<Investment, InvestmentDto>()
+                .ForMember(d => d.InvestorUserId, 
+                    x => x.MapFrom(s => s.Investor.UserId));
         }
     }
 }

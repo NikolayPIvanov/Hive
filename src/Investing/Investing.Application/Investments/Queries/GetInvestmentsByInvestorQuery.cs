@@ -26,7 +26,7 @@ namespace Hive.Investing.Application.Investments.Queries
         
         public async Task<IEnumerable<InvestmentDto>> Handle(GetInvestmentsByInvestorQuery request, CancellationToken cancellationToken)
         {
-            return await _context.Investments
+            return await _context.Investments.Include(x => x.Investor)
                 .AsNoTracking()
                 .Where(i => i.InvestorId == request.InvestorId)
                 .ProjectToListAsync<InvestmentDto>(_mapper.ConfigurationProvider);

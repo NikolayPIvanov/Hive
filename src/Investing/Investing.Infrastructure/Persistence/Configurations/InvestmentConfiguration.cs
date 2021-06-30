@@ -14,8 +14,6 @@ namespace Hive.Investing.Infrastructure.Persistence.Configurations
             builder.Property(x => x.EffectiveDate).IsRequired();
             builder.Property(x => x.IsAccepted).IsRequired();
 
-
-
             builder.HasOne(x => x.Investor)
                 .WithMany(x => x.Investments)
                 .HasForeignKey(x => x.InvestorId);

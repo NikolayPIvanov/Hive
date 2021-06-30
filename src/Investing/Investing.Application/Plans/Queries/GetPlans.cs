@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Hive.Investing.Application.Plans.Queries
 {
-    public record GetPlansQuery(int PageNumber, int PageSize, string Key) : IRequest<PaginatedList<PlanDto>>;
+    public record GetPlansQuery(int PageNumber, int PageSize, string Key, bool IsInvestor = true) : IRequest<PaginatedList<PlanDto>>;
 
     public class GetPlansQueryHandler : IRequestHandler<GetPlansQuery, PaginatedList<PlanDto>>
     {
@@ -29,11 +29,16 @@ namespace Hive.Investing.Application.Plans.Queries
         
         public async Task<PaginatedList<PlanDto>> Handle(GetPlansQuery request, CancellationToken cancellationToken)
         {
-            var query = 
+            var query =
                 _context.Plans
                     .AsNoTracking()
                     .Include(p => p.Vendor)
-                    .Where(x => x.Vendor.UserId == _currentUserService.UserId);
+                    .AsQueryable();
+
+            if (!request.IsInvestor)
+            {
+                query = query.Where(x => x.Vendor.UserId == _currentUserService.UserId);
+            }
             
             if (!string.IsNullOrEmpty(request.Key))
             {

@@ -9,6 +9,8 @@ import { PlanEditComponent } from './components/plan-edit/plan-edit.component';
 import { PlanCardComponent } from './components/plan-card/plan-card.component';
 import { PlanInspectComponent } from './components/plan-inspect/plan-inspect.component';
 import { MakeInvestmentComponent } from './components/make-investment/make-investment.component';
+import { PlanAcceptedTableComponent } from './components/plan-accepted-table/plan-accepted-table.component';
+import { PlanPendingTableComponent } from './components/plan-pending-table/plan-pending-table.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +20,9 @@ import { MakeInvestmentComponent } from './components/make-investment/make-inves
     PlanEditComponent,
     PlanCardComponent,
     PlanInspectComponent,
-    MakeInvestmentComponent
+    MakeInvestmentComponent,
+    PlanAcceptedTableComponent,
+    PlanPendingTableComponent
   ],
   imports: [
     CommonModule,
