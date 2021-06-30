@@ -17,7 +17,8 @@ using Microsoft.Extensions.Logging;
 
 namespace Hive.UserProfile.Application.UserProfiles.Commands
 {
-    public record UpdateUserProfileCommand(int Id, string? Bio, string? Education, ICollection<string> Skills, ICollection<string> Languages) : IRequest;
+    public record UpdateUserProfileCommand(int Id, string GivenName, string Surname,
+        string? Bio, string? Education, ICollection<string> Skills, ICollection<string> Languages) : IRequest;
 
     public class UpdateUserProfileCommandValidator : AbstractValidator<UpdateUserProfileCommand>
     {
@@ -31,6 +32,7 @@ namespace Hive.UserProfile.Application.UserProfiles.Commands
     public class UpdateUserProfileCommandHandler : AuthorizationRequestHandler<Domain.Entities.UserProfile>, IRequestHandler<UpdateUserProfileCommand>
     {
         private readonly IUserProfileDbContext _dbContext;
+        private readonly ICurrentUserService _currentUserService;
         private readonly ILogger<UpdateUserProfileCommandHandler> _logger;
 
         public UpdateUserProfileCommandHandler(IUserProfileDbContext dbContext,
@@ -38,6 +40,7 @@ namespace Hive.UserProfile.Application.UserProfiles.Commands
             ILogger<UpdateUserProfileCommandHandler> logger) : base(currentUserService, authorizationService)
         {
             _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _currentUserService = currentUserService;
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
@@ -50,15 +53,15 @@ namespace Hive.UserProfile.Application.UserProfiles.Commands
                 _logger.LogWarning("User Profile with id: {@Id} was not found.", request.Id);
                 throw new NotFoundException(nameof(Domain.Entities.UserProfile), request.Id);
             }
-            
-            var result = await base.AuthorizeAsync(userProfile,  new [] {"OnlyOwnerPolicy"});
-            
-            if (!result.All(s => s.Succeeded))
+
+            if (_currentUserService.UserId != userProfile.UserId)
             {
                 throw new ForbiddenAccessException();
             }
 
             userProfile.Bio = request.Bio;
+            userProfile.GivenName = request.GivenName;
+            userProfile.Surname = request.Surname;
             userProfile.Education = request.Education;
             
             SetSkills(request, userProfile);

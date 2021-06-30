@@ -36,15 +36,15 @@ namespace Hive.UserProfile.Application.UserProfiles.Commands
                 throw new NotFoundException(nameof(UserProfile), request.ProfileId);
             }
 
-            if (!string.IsNullOrEmpty(avatarFile.AvatarFile))
+            if (!string.IsNullOrEmpty(avatarFile.AvatarUri))
             {
-                var deleted = await _fileService.DeleteAsync("user-avatars", avatarFile.AvatarFile, cancellationToken);
+                var deleted = await _fileService.DeleteAsync("user-avatars", avatarFile.AvatarUri, cancellationToken);
             }
             
-            var avatarName = await _fileService.UploadAsync("user-avatars", request.FileStream, request.Extension, cancellationToken);
-            if (avatarName != null)
+            var uri = await _fileService.UploadAsync("user-avatars", request.FileStream, request.Extension, cancellationToken);
+            if (uri != null)
             {
-                avatarFile.AvatarFile = avatarName;
+                avatarFile.AvatarUri = uri;
                 await _context.SaveChangesAsync(cancellationToken);
             }
             

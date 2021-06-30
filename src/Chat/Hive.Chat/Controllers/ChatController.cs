@@ -103,7 +103,8 @@ namespace Hive.Chat.Controllers
             var two = model.ParticipantTwoUI.ToString();
             
             var filter = Builders<Room>.Filter.Where(x => x.ParticipantOne.UniqueIdentifier == one && x.ParticipantTwo.UniqueIdentifier == two);
-            filter |= Builders<Room>.Filter.Where(x => x.ParticipantTwo.UniqueIdentifier == two && x.ParticipantTwo.UniqueIdentifier == one)
+            filter |= Builders<Room>.Filter.Where(x =>
+                x.ParticipantTwo.UniqueIdentifier == two && x.ParticipantTwo.UniqueIdentifier == one);
 
             var dbRoom = await (await _context.Rooms.FindAsync(filter)).FirstOrDefaultAsync();
 

@@ -43,20 +43,20 @@ namespace UserProfile.Management.Controllers
         [SwaggerResponse(StatusCodes.Status404NotFound, typeof(NotFoundObjectResult))]
         public async Task<ActionResult<UserProfileDto>> GetProfileById(string userId) => Ok(await Mediator.Send(new GetUserProfileByUserIdQuery(userId)));
 
-        [HttpPut("{id:int}/names")]
-        [Produces(MediaTypeNames.Application.Json)]
-        [Consumes(MediaTypeNames.Application.Json)]
-        [SwaggerResponse(StatusCodes.Status204NoContent, typeof(Unit))]
-        [SwaggerResponse(StatusCodes.Status404NotFound, typeof(NotFoundObjectResult))]
-        public async Task<ActionResult<Unit>> UpdateProfileNames([FromRoute] int id,
-            [FromBody] UpdateUserNamesCommand command)
-        {
-            if (id != command.Id)
-                return BadRequest();
-
-            await Mediator.Send(command);
-            return NoContent();
-        }
+        // [HttpPut("{id:int}/names")]
+        // [Produces(MediaTypeNames.Application.Json)]
+        // [Consumes(MediaTypeNames.Application.Json)]
+        // [SwaggerResponse(StatusCodes.Status204NoContent, typeof(Unit))]
+        // [SwaggerResponse(StatusCodes.Status404NotFound, typeof(NotFoundObjectResult))]
+        // public async Task<ActionResult<Unit>> UpdateProfileNames([FromRoute] int id,
+        //     [FromBody] UpdateUserNamesCommand command)
+        // {
+        //     if (id != command.Id)
+        //         return BadRequest();
+        //
+        //     await Mediator.Send(command);
+        //     return NoContent();
+        // }
         
         [HttpPut("{id:int}")]
         [Produces(MediaTypeNames.Application.Json)]

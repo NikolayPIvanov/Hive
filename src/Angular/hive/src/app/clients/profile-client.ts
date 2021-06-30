@@ -18,7 +18,6 @@ export interface IProfileClient {
     getProfiles(pageIndex: number | undefined, pageSize: number | undefined): Observable<PaginatedListOfUserProfileDto>;
     getMyProfile(): Observable<UserProfileDto>;
     getProfileById(userId: string | null): Observable<UserProfileDto>;
-    updateProfileNames(id: number, command: UpdateUserNamesCommand | null | undefined): Observable<Unit>;
     updateProfile(id: number, command: UpdateUserProfileCommand | null | undefined): Observable<Unit>;
     changeAvatar(id: number, file: FileUpload | null | undefined): Observable<FileResponse>;
     getAvatar(id: number): Observable<FileResponse>;
@@ -204,68 +203,6 @@ export class ProfileClient implements IProfileClient {
             }));
         }
         return _observableOf<UserProfileDto>(<any>null);
-    }
-
-    updateProfileNames(id: number, command: UpdateUserNamesCommand | null | undefined): Observable<Unit> {
-        let url_ = this.baseUrl + "/api/Profile/{id}/names";
-        if (id === undefined || id === null)
-            throw new Error("The parameter 'id' must be defined.");
-        url_ = url_.replace("{id}", encodeURIComponent("" + id));
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(command);
-
-        let options_ : any = {
-            body: content_,
-            observe: "response",
-            responseType: "blob",
-            headers: new HttpHeaders({
-                "Content-Type": "application/json",
-                "Accept": "application/json"
-            })
-        };
-
-        return this.http.request("put", url_, options_).pipe(_observableMergeMap((response_ : any) => {
-            return this.processUpdateProfileNames(response_);
-        })).pipe(_observableCatch((response_: any) => {
-            if (response_ instanceof HttpResponseBase) {
-                try {
-                    return this.processUpdateProfileNames(<any>response_);
-                } catch (e) {
-                    return <Observable<Unit>><any>_observableThrow(e);
-                }
-            } else
-                return <Observable<Unit>><any>_observableThrow(response_);
-        }));
-    }
-
-    protected processUpdateProfileNames(response: HttpResponseBase): Observable<Unit> {
-        const status = response.status;
-        const responseBlob =
-            response instanceof HttpResponse ? response.body :
-            (<any>response).error instanceof Blob ? (<any>response).error : undefined;
-
-        let _headers: any = {}; if (response.headers) { for (let key of response.headers.keys()) { _headers[key] = response.headers.get(key); }}
-        if (status === 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result204: any = null;
-            let resultData204 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result204 = Unit.fromJS(resultData204);
-            return _observableOf(result204);
-            }));
-        } else if (status === 404) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            let result404: any = null;
-            let resultData404 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
-            result404 = resultData404 !== undefined ? resultData404 : <any>null;
-            return throwException("A server side error occurred.", status, _responseText, _headers, result404);
-            }));
-        } else if (status !== 200 && status !== 204) {
-            return blobToText(responseBlob).pipe(_observableMergeMap(_responseText => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            }));
-        }
-        return _observableOf<Unit>(<any>null);
     }
 
     updateProfile(id: number, command: UpdateUserProfileCommand | null | undefined): Observable<Unit> {
@@ -504,7 +441,7 @@ export class UserProfileDto implements IUserProfileDto {
     surname?: string;
     bio?: string | undefined;
     education?: string | undefined;
-    avatarFile?: string | undefined;
+    avatarUri?: string | undefined;
     skills?: string[];
     languages?: string[];
 
@@ -525,7 +462,7 @@ export class UserProfileDto implements IUserProfileDto {
             this.surname = _data["surname"];
             this.bio = _data["bio"];
             this.education = _data["education"];
-            this.avatarFile = _data["avatarFile"];
+            this.avatarUri = _data["avatarUri"];
             if (Array.isArray(_data["skills"])) {
                 this.skills = [] as any;
                 for (let item of _data["skills"])
@@ -554,7 +491,7 @@ export class UserProfileDto implements IUserProfileDto {
         data["surname"] = this.surname;
         data["bio"] = this.bio;
         data["education"] = this.education;
-        data["avatarFile"] = this.avatarFile;
+        data["avatarUri"] = this.avatarUri;
         if (Array.isArray(this.skills)) {
             data["skills"] = [];
             for (let item of this.skills)
@@ -576,7 +513,7 @@ export interface IUserProfileDto {
     surname?: string;
     bio?: string | undefined;
     education?: string | undefined;
-    avatarFile?: string | undefined;
+    avatarUri?: string | undefined;
     skills?: string[];
     languages?: string[];
 }
@@ -613,52 +550,10 @@ export class Unit implements IUnit {
 export interface IUnit {
 }
 
-export class UpdateUserNamesCommand implements IUpdateUserNamesCommand {
-    id?: number;
-    givenName?: string;
-    surname?: string;
-
-    constructor(data?: IUpdateUserNamesCommand) {
-        if (data) {
-            for (var property in data) {
-                if (data.hasOwnProperty(property))
-                    (<any>this)[property] = (<any>data)[property];
-            }
-        }
-    }
-
-    init(_data?: any) {
-        if (_data) {
-            this.id = _data["id"];
-            this.givenName = _data["givenName"];
-            this.surname = _data["surname"];
-        }
-    }
-
-    static fromJS(data: any): UpdateUserNamesCommand {
-        data = typeof data === 'object' ? data : {};
-        let result = new UpdateUserNamesCommand();
-        result.init(data);
-        return result;
-    }
-
-    toJSON(data?: any) {
-        data = typeof data === 'object' ? data : {};
-        data["id"] = this.id;
-        data["givenName"] = this.givenName;
-        data["surname"] = this.surname;
-        return data; 
-    }
-}
-
-export interface IUpdateUserNamesCommand {
-    id?: number;
-    givenName?: string;
-    surname?: string;
-}
-
 export class UpdateUserProfileCommand implements IUpdateUserProfileCommand {
     id?: number;
+    givenName?: string;
+    surname?: string;
     bio?: string | undefined;
     education?: string | undefined;
     skills?: string[];
@@ -676,6 +571,8 @@ export class UpdateUserProfileCommand implements IUpdateUserProfileCommand {
     init(_data?: any) {
         if (_data) {
             this.id = _data["id"];
+            this.givenName = _data["givenName"];
+            this.surname = _data["surname"];
             this.bio = _data["bio"];
             this.education = _data["education"];
             if (Array.isArray(_data["skills"])) {
@@ -701,6 +598,8 @@ export class UpdateUserProfileCommand implements IUpdateUserProfileCommand {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["id"] = this.id;
+        data["givenName"] = this.givenName;
+        data["surname"] = this.surname;
         data["bio"] = this.bio;
         data["education"] = this.education;
         if (Array.isArray(this.skills)) {
@@ -719,6 +618,8 @@ export class UpdateUserProfileCommand implements IUpdateUserProfileCommand {
 
 export interface IUpdateUserProfileCommand {
     id?: number;
+    givenName?: string;
+    surname?: string;
     bio?: string | undefined;
     education?: string | undefined;
     skills?: string[];

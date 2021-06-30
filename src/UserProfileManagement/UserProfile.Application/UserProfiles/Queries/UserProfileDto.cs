@@ -18,7 +18,7 @@ namespace Hive.UserProfile.Application.UserProfiles.Queries
         
         public string? Education { get; init; }
         
-        public string? AvatarFile { get; init; }
+        public string? AvatarUri { get; init; }
         
         public ICollection<string> Skills { get;  init; }
         

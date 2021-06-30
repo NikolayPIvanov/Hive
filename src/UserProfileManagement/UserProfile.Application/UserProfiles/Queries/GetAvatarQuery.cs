@@ -33,12 +33,13 @@ namespace Hive.UserProfile.Application.UserProfiles.Queries
                 throw new NotFoundException(nameof(UserProfile), request.Id);
             }
 
-            if (string.IsNullOrEmpty(user.AvatarFile))
+            if (string.IsNullOrEmpty(user.AvatarUri))
             {
                 throw new NotFoundException("Avatar has not been found.");
             }
 
-            var (stream, contentType, fileName) = await _fileService.DownloadAsync("user-avatars", user.AvatarFile, cancellationToken);
+            var (stream, contentType, fileName) = 
+                await _fileService.DownloadAsync("user-avatars", user.AvatarUri, cancellationToken);
 
             var bytes = stream.ReadFully();
             return new FileContentResult(bytes, contentType)

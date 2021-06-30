@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Azure.Storage.Blobs;
+using Azure.Storage.Blobs.Models;
 using BuildingBlocks.Core.Interfaces;
 using Microsoft.Extensions.Options;
 
@@ -23,14 +24,18 @@ namespace BuildingBlocks.Core.FileStorage
         {
             var blobContainerClient =
                 new BlobContainerClient(_settings.BlobConnectionString, blobContainerName);
-            await blobContainerClient.CreateIfNotExistsAsync(cancellationToken: cancellationToken);
+            
+            var creationResponse =
+                await blobContainerClient.CreateIfNotExistsAsync(cancellationToken: cancellationToken);
+            
+            await blobContainerClient.SetAccessPolicyAsync(PublicAccessType.BlobContainer, cancellationToken: cancellationToken);
             extension = extension.StartsWith(".") ? extension : $".{extension}";
             var blobName = $"{Randomize()}{extension}";
             var blob = blobContainerClient.GetBlobClient(blobName);
             
-            await blob.UploadAsync(fileStream, cancellationToken);
+            var response = await blob.UploadAsync(fileStream, cancellationToken);
 
-            return blobName;
+            return blob.Uri.ToString();
         }
 
         public async Task<bool> DeleteAsync(string blobContainerName, string blobName, CancellationToken cancellationToken)

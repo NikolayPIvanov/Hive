@@ -49,9 +49,9 @@ namespace Hive.UserProfile.Application.UserProfiles.Commands
                 throw new ForbiddenAccessException();
             }
 
-            if (!string.IsNullOrEmpty(userProfile.AvatarFile))
+            if (!string.IsNullOrEmpty(userProfile.AvatarUri))
             {
-                var deleted = await _fileService.DeleteAsync("user-avatars", userProfile.AvatarFile, cancellationToken);                
+                var deleted = await _fileService.DeleteAsync("user-avatars", userProfile.AvatarUri, cancellationToken);                
             }
 
             _dbContext.UserProfiles.Remove(userProfile);
