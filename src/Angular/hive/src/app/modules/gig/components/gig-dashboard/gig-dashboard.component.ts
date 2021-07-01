@@ -18,9 +18,9 @@ export class GigDashboardComponent implements OnInit {
   // Pagination
   // MatPaginator Inputs
   length = 100;
-  pageSize = 10;
+  pageSize = 8;
   pageNumber = 0;
-  pageSizeOptions: number[] = [5, 10, 25, 100];
+  pageSizeOptions: number[] = [4, 8, 16, 64];
 
   pageChange(pageEvent: PageEvent) {
     this.pageSize = pageEvent.pageSize;

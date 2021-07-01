@@ -16,7 +16,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Hive.Gig.Application.Gigs.Queries
 {
-    public record GetMyGigsQuery(int PageSize = 10, int PageNumber = 1) : IRequest<PaginatedList<GigOverviewDto>>;
+    public record GetMyGigsQuery(int PageSize = 8, int PageNumber = 1) : IRequest<PaginatedList<GigOverviewDto>>;
 
     public class GetMyGigsQueryHandler : IRequestHandler<GetMyGigsQuery, PaginatedList<GigOverviewDto>>
     {
@@ -45,17 +45,20 @@ namespace Hive.Gig.Application.Gigs.Queries
                 throw new NotFoundException($"Seller Account does not exist for {_currentUserService.UserId}");
             }
 
-            var list = await
-                _context.Gigs
-                    .AsNoTracking()
-                    .Include(g => g.Seller)
+            var skip = (request.PageNumber - 1) * request.PageSize;
+            var take = request.PageSize;
+
+            var query = _context.Gigs.AsNoTracking().Where(g => g.SellerId == seller.Id);
+            var count = await query.CountAsync(cancellationToken);
+            var gigs = await 
+                query.Include(g => g.Seller)
                     .Include(g => g.Packages)
-                    .Where(g => g.SellerId == seller.Id)
+                    .Skip(skip)
+                    .Take(take)
                     .ToListAsync(cancellationToken);
 
-            var dtos = _mapper.Map<ICollection<GigOverviewDto>>(list);
-
-            return new PaginatedList<GigOverviewDto>(dtos.ToList(), dtos.Count, request.PageNumber, request.PageSize);
+            var mappedGigs = _mapper.Map<ICollection<GigOverviewDto>>(gigs);
+            return new PaginatedList<GigOverviewDto>(mappedGigs.ToList(), count, request.PageNumber, request.PageSize);
         }
     }
 }

@@ -1,25 +1,15 @@
-<!-- main -->
-<div *ngIf="profile$ | async; let profile" fxLayout="row" class="container">
-  <div *ngIf="gig$ | async; let gig">
-     <!-- left : title, name, etc -->
-    
-     <div fxLayout="column" fxLayoutGap="1rem" fxFlex="60">
-      <mat-card fxFlex="60" fxLayout="column" class="full-height">
+<div fxLayout="column" class="container" fxLayoutGap="3rem">
+  <div fxLayout="row" fxLayoutGap="3rem">
+    <!-- left -->
+    <div *ngIf="gig$ | async; let gig" fxLayout.gt-lg="column" fxLayoutGap="3" fxFlex="50">
+      <mat-card class="mat-elevation-z8">
         <mat-card-header>
-          <mat-card-title>{{ gig.title! }}</mat-card-title>
+          <mat-card-title>{{ gig.title }}</mat-card-title>
+          <mat-card-subtitle>Title</mat-card-subtitle>
         </mat-card-header>
-        <mat-card-content>
-          <div>
-            <app-image-upload
-              [showUpload]="false"
-              [defaultImage]="default"
-              [source]="gig.imagePath?.path"
-              [download]="download">
-            </app-image-upload>
-          </div>
-        </mat-card-content>
+        <img mat-card-image [src]="gig.imagePath?.path || default">
       </mat-card>
-
+  
       <mat-card>
         <mat-card-header>
           <mat-card-title>About this Gig</mat-card-title>
@@ -31,8 +21,8 @@
           </p>
         </mat-card-content>
       </mat-card>
-          
-      <mat-card *ngIf="gig.questions?.length! > 0">
+  
+      <mat-card>
         <mat-card-header>
           <mat-card-title>FAQ</mat-card-title>
           <mat-card-subtitle>Find more information below</mat-card-subtitle>
@@ -42,11 +32,8 @@
             <mat-expansion-panel>
               <mat-expansion-panel-header>
                 <mat-panel-title>
-                  {{ question.title }}
+                  {{ question.title }} 
                 </mat-panel-title>
-                <mat-panel-description>
-                  Expand to see answer
-                </mat-panel-description>
               </mat-expansion-panel-header>
               <p>{{ question.answer }}</p>
             </mat-expansion-panel>
@@ -54,54 +41,59 @@
         </mat-card-content>
       </mat-card>
     </div>
+  
+    <!-- right -->
+    <div *ngIf="profile$ | async; let profile" fxLayout.gt-lg="column">
+      <app-seller-overview [profile]="profile"></app-seller-overview>
+    </div>
+  </div>
 
-    <!-- right: packages and price -->
-    <div fxLayout="column" fxFlexOffset="5" fxFlex="40" class="packages-overview">
-      <app-seller-overview *ngIf="profile$ | async; let profile" [profile]="profile"></app-seller-overview>
-
-        <mat-card style="margin-top: 1rem;"> 
-            <mat-card-content>
-              <mat-tab-group mat-align-tabs="center">
-                <mat-tab *ngFor="let package of gig.packages"> 
-                  <ng-template mat-tab-label>{{ displayPackageTier(package.packageTier!) }}</ng-template>
-                  <div fxLayout="column" fxLayoutGap="3">
-                    <div fxLayout="row" fxLayoutAlign="space-between center">
-                        <h2>{{package.title}}</h2>
-                        <h3><strong>{{ package.price }}$</strong></h3>
-                    </div>
-                  
-                    <p> {{ package.description }} </p>
-
-                    <div fxLayout="row" fxLayoutAlign="space-between center">
-                        <section fxLayout="row" fxLayoutGap="1rem" fxFlexAlign="start center">
-                            <mat-icon>schedule</mat-icon>
-                            <span> <strong> Delivery Time: {{ package.deliveryTime}} {{displayFrequency(package.deliveryFrequency!)}}</strong></span>
-                        </section>
-
-                        <section fxLayout="row" fxLayoutGap="1rem"  fxFlexAlign="start center">
-                            <mat-icon>remove_red_eye</mat-icon>
-                            <span *ngIf="package.revisionType === 0"><strong>Revisions: Unlimited</strong></span>
-                            <span *ngIf="package.revisionType! > 0"><strong>Revisions: {{package.revisions}}</strong></span>
-                        </section>
-                    </div>
-
-                    <a mat-raised-button mat-button 
-                      class="mt-1"
-                      color="primary"
-                      [routerLink]="['/gigs', gig.id, 'packages', package.id, 'checkout']">
-                      Order
-                    </a>
-
-                </div>
-                </mat-tab>
-              </mat-tab-group>
-            </mat-card-content>
-          </mat-card>
-        <div *ngIf="canModify" fxFlexOffset.gt-lg="1rem" fxLayout.gt-lg="column" fxLayoutGap.gt-lg="1rem">
-          <button mat-raised-button color="accent"
-            (click)="edit(gig)">Edit</button>
-        </div>
-
-
-  </div>  
+  <div *ngIf="gig$ | async; let gig" fxLayout="row">
+    <mat-card fxFlex class="mat-elevation-z8">
+      <mat-card-header>
+        <mat-card-title>Packages</mat-card-title>
+        <mat-card-subtitle>Available options</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-tab-group mat-align-tabs="center">
+          <mat-tab *ngFor="let package of gig.packages"> 
+            <ng-template mat-tab-label>{{ displayPackageTier(package.packageTier!) }}</ng-template>
+            <div fxLayout="column" fxLayoutGap="3">
+              <div fxLayout="row" fxLayoutAlign="space-between center">
+                  <h2>{{package.title}}</h2>
+                  <h3><strong>{{ package.price }}$</strong></h3>
+              </div>
+            
+              <p> {{ package.description }} </p>
+  
+              <div fxLayout="row" fxLayoutAlign="space-between center">
+                  <section fxLayout="row" fxLayoutGap="1rem" fxFlexAlign="start center">
+                      <mat-icon>schedule</mat-icon>
+                      <span> <strong> Delivery Time: {{ package.deliveryTime}} {{displayFrequency(package.deliveryFrequency!)}}</strong></span>
+                  </section>
+  
+                  <section fxLayout="row" fxLayoutGap="1rem"  fxFlexAlign="start center">
+                      <mat-icon>remove_red_eye</mat-icon>
+                      <span *ngIf="package.revisionType === 0"><strong>Revisions: Unlimited</strong></span>
+                      <span *ngIf="package.revisionType! > 0"><strong>Revisions: {{package.revisions}}</strong></span>
+                  </section>
+              </div>
+  
+              <a mat-raised-button mat-button 
+                class="mt-1"
+                color="primary"
+                [routerLink]="['/gigs', gig.id, 'packages', package.id, 'checkout']">
+                Order
+              </a>
+  
+          </div>
+          </mat-tab>
+        </mat-tab-group>
+      </mat-card-content>
+      <mat-card-actions *ngIf="canModify">
+        <button mat-raised-button color="accent" (click)="edit(gig)">Edit</button>
+      </mat-card-actions>
+    </mat-card>
+  </div>
 </div>
+

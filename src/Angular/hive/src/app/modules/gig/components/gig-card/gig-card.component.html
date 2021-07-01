@@ -1,22 +1,21 @@
-
-<mat-card fxLayout="column" class="mat-elevation-z8">
+<div style="position: relative">
+    <ngx-spinner [fullScreen]="false" name="card"></ngx-spinner>
+</div>
+<mat-card fxLayout="column">
     <mat-card-header>
-        <img mat-card-avatar src="../../../../../assets/user.png">	
-        <mat-card-title> {{ gig.title! | limitTo:'20' }} </mat-card-title>
+        <img *ngIf="profile$ | async; let profile" mat-card-avatar 
+            [src]="profile.avatarUri || '../../../../../assets/user.png'">	
+        <mat-card-title> {{ gig.title! | limitTo:'12' }} </mat-card-title>
         <mat-card-subtitle *ngIf="profile$ | async; let profile"> 
             By {{ profile.givenName }} {{ profile.surname }} 
         </mat-card-subtitle>
     </mat-card-header>
 
-    <!-- <img  src="https://material.angular.io/assets/img/examples/shiba2.jpg" alt="Photo of a Shiba Inu"> -->
-    <app-image-upload
-        fxFlex="5"
-        [showUpload]="false"
-        [defaultImage]="default"
-        [source]="gig.imagePath?.path"
-        [download]="download">
-    </app-image-upload>
-    <mat-card-content  fxLayout="row" fxFlexAlign="center center">
+    <img mat-card-image 
+        [src]="gig.imagePath?.path || '../../../../assets/no_image.png'"
+        style="max-height: 12rem;"
+        alt="Photo of a Gig">
+    <mat-card-content  fxLayout="row" fxFlexAlign="center center" style="margin-bottom: 1rem;">
         <mat-divider>
         </mat-divider>
         <h2>Starts at <strong>{{ gig.prices![0] || '--' }} $</strong> </h2>

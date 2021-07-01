@@ -1,5 +1,6 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Router } from '@angular/router';
+import { NgxSpinnerService } from 'ngx-spinner';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { FileResponse, GigDto, GigOverviewDto, GigsClient } from 'src/app/clients/gigs-client';
@@ -12,9 +13,7 @@ import { AuthService } from 'src/app/modules/layout/services/auth.service';
   styleUrls: ['./gig-card.component.scss']
 })
 export class GigCardComponent implements OnInit {
-
   @Input() gig!: GigOverviewDto;
-  @Input() profile: UserProfileDto | undefined;
 
   private profileSubject = new BehaviorSubject<UserProfileDto | undefined>(undefined);
   public profile$ = this.profileSubject.asObservable();
@@ -26,24 +25,14 @@ export class GigCardComponent implements OnInit {
   constructor(
     private router: Router,
     private authService: AuthService,
-    private profileClient: ProfileClient,
-    private gigsClient: GigsClient) { }
+    private spinnerService: NgxSpinnerService,
+    private profileClient: ProfileClient) { }
   
-  public download!: Observable<FileResponse>;
-
   ngOnInit(): void {
-    this.download = this.gigsClient.getAvatar(this.gig.id!);
-    if (this.profile) {
-      this.profileSubject.next(this.profile);
-    } else {
+    this.spinnerService.show('card')
+    this.profile$ =
       this.profileClient.getProfileById(this.gig!.sellerUserId!)
-        .pipe(tap({
-          next: (profile) => {
-            this.profileSubject.next(profile);
-          }
-        }))
-        .subscribe();
-    }
+        .pipe(tap({ complete: () => this.spinnerService.hide('card')}))
   }
   
   onDetails() {

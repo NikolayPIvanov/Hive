@@ -73,7 +73,8 @@ export class GigCreateComponent implements OnInit {
           switchMap((id) => {
             const imageData = this.gigForm.get('image');
             if (imageData?.value) {
-              return this.gigsApiClient.updateImage(id, FileUpload.fromJS({ fileData: imageData.value }))
+              return this.gigsApiClient.updateImage(
+                id, FileUpload.fromJS({ fileData: imageData.value }))
             }
 
             return of(id);

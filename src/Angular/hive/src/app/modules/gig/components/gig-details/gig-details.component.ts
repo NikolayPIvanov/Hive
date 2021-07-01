@@ -22,7 +22,6 @@ export interface ExampleTab {
 })
 export class GigDetailsComponent implements OnInit {
   public default = '/assets/no_image.png'
-  public download!: Observable<FileResponse>;
 
   public gig$!: Observable<GigDto>;
   public profile$!: Observable<UserProfileDto | undefined>;
@@ -39,10 +38,6 @@ export class GigDetailsComponent implements OnInit {
     private userProfileClient: ProfileClient,
     public dialog: MatDialog
   ) {
-  }
-
-  displayPackageTier(tier: PackageTier) {
-    return PackageTier[tier];
   }
 
   ngOnInit(): void {
@@ -64,8 +59,13 @@ export class GigDetailsComponent implements OnInit {
           }
         })
       )
-    this.download = this.gigsClient.getAvatar(id);
   }
+
+  displayPackageTier(tier: PackageTier) {
+    return PackageTier[tier];
+  }
+
+  
 
   checkout() {
     this.router.navigate(['orders/checkout/2'])

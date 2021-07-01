@@ -2,16 +2,11 @@
     
 <mat-card>
     <mat-card-content fxLayout="column" fxLayoutGap="3rem">
+
         <div fxLayout="row" fxFlexFill fxLayoutAlign="start">
-          <app-image-upload
-              fxFlex="25"
-              [showUpload]="false"
-              [defaultImage]="default"
-              [source]="gig.imagePath?.path"
-              [download]="download">
-          </app-image-upload>
+          <img fxFlex [src]="gig.imagePath?.path"/>
           
-            <div fxFlex="40" fxFlexOffset="10" fxLayout="space-between" fxLayout="column wrap">
+            <div fxFlex="40" fxFlexOffset="5" fxLayout="space-between" fxLayout="column wrap">
                 <h3> <strong>Gig title:</strong> {{ gig.title }} </h3>
                 <h3> <strong>Gig description:</strong> {{ gig.description }} </h3>
             </div>

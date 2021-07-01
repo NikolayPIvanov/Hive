@@ -1,9 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { PageEvent } from '@angular/material/paginator';
 import { Router } from '@angular/router';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { mergeAll, switchMap, tap } from 'rxjs/operators';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { mergeAll, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { GigDto, GigOverviewDto, GigsClient, PaginatedListOfGigDto, PaginatedListOfGigOverviewDto, SellersClient } from 'src/app/clients/gigs-client';
 import { UserProfileDto } from 'src/app/clients/profile-client';
 import { ProfileService } from 'src/app/modules/account/services/profile.service';
@@ -27,13 +27,19 @@ export class GigProfileData
   templateUrl: './gigs-control.component.html',
   styleUrls: ['./gigs-control.component.scss']
 })
-export class GigsControlComponent implements OnInit {
+export class GigsControlComponent implements OnInit, OnDestroy {
+  private subject = new Subject();
   private gigs: GigOverviewDto[] = [];
   private gigsSubject = new BehaviorSubject<GigOverviewDto[]>(this.gigs);
   public gigs$ = this.gigsSubject.asObservable();
 
+  public sellerId!: string;
   public profile$!: Observable<UserProfileDto | undefined>;
-  sellerId!: string;
+
+  length = 100;
+  pageSize = 8;
+  pageNumber = 0;
+  pageSizeOptions: number[] = [4, 8, 16, 64];
 
   constructor(
     private profileService: ProfileService,
@@ -43,56 +49,56 @@ export class GigsControlComponent implements OnInit {
     public dialog: MatDialog
   ) { }
 
-  // Pagination
-  // MatPaginator Inputs
-  length = 100;
-  pageSize = 10;
-  pageNumber = 0;
-  pageSizeOptions: number[] = [5, 10, 25, 100];
-
-  pageChange(pageEvent: PageEvent) {
-    this.pageSize = pageEvent.pageSize;
-    this.pageNumber = pageEvent.pageIndex;
-
-    this.sellerClient.getMyGigs(this.pageSize, this.pageNumber + 1, this.sellerId)
-      .pipe(tap({
-        next: (gigs) => {
-          this.gigs = gigs.items!;
-          this.length = gigs.totalCount!;
-          this.gigsSubject.next(this.gigs);
-        }
-      }))
-      .subscribe();
-  }
-
-  reload(id: number) {
-    this.gigsClient.delete(id)
-      .pipe(tap({
-        next: () => {
-          const index = this.gigs.findIndex(g => g.id! === id)
-          if (index > -1) {
-            this.gigs.splice(index, 1);
-            this.length -= 1;
-            this.gigsSubject.next(this.gigs);
-          }
-        }
-      }))
-    .subscribe()
-  }
-
   ngOnInit(): void {
     this.profile$ = this.profileService.getProfile()
     this.sellerClient.getUserSellerId()
       .pipe(
+        takeUntil(this.subject),
+        tap({ next: (id) => this.sellerId = id }),
+        switchMap(id => this.sellerClient.getMyGigs(this.pageSize, this.pageNumber + 1, id)),
+        tap({ next: (gigs) => this.pushNewGigs(gigs) }))
+      .subscribe()
+  }
+
+  ngOnDestroy(): void {
+    this.subject.next();
+    this.subject.complete();
+  }
+
+  get email() {
+    return this.authService.user?.profile.email;
+  }
+  
+  pageChange(pageEvent: PageEvent) {
+    debugger;
+    this.pageSize = pageEvent.pageSize;
+    this.pageNumber = pageEvent.pageIndex;
+
+    this.sellerClient.getMyGigs(this.pageSize, this.pageNumber + 1, this.sellerId)
+      .pipe(
+        takeUntil(this.subject),
         tap({
-          next: (id) => this.sellerId = id
-        }),
-        switchMap(id => this.sellerClient.getMyGigs(10, 1, id)))
-      .subscribe(gigs => {
-        this.gigs = gigs.items!;
-        this.length = gigs.totalCount!;
-        this.gigsSubject.next(this.gigs);
-      })
+          next: (gigs) => {
+            debugger;this.pushNewGigs(gigs)
+        } }))
+      .subscribe();
+  }
+
+  deleteAndRemoveGig(id: number) {
+    this.gigsClient.delete(id)
+      .pipe(
+        takeUntil(this.subject),
+        tap({
+          next: () => {
+            const index = this.gigs.findIndex(g => g.id! === id)
+            if (index > -1) {
+              this.gigs.splice(index, 1);
+              this.length -= 1;
+              this.gigsSubject.next(this.gigs);
+            }
+          }
+      }))
+    .subscribe()
   }
 
   onCreateNew() {
@@ -100,22 +106,25 @@ export class GigsControlComponent implements OnInit {
       width: '50%'
     });
 
-    ref.afterClosed().subscribe(id => {
-      this.gigsClient.getGigById(id).subscribe(gig => {
-        this.gigs.push(gig);
-        this.length += 1;
-        this.gigsSubject.next(this.gigs)
-      })
-    })
+    ref.afterClosed()
+      .pipe(
+        takeUntil(this.subject),
+        switchMap(id => this.gigsClient.getGigById(id)),
+        tap({
+          next: (gig) => {
+            this.gigs.push(gig);
+            this.length += 1;
+            this.gigsSubject.next(this.gigs)
+          }
+        })
+      )
+      .subscribe();
   }
 
-  displayName(profile: UserProfileDto) {
-    const display = `${profile.givenName} ${profile.surname}`;
-    return display.trim() != '' ? display : this.authService.user?.profile.email;
-  }
-
-  get email() {
-    return this.authService.user?.profile.email;
+  private pushNewGigs(gigs: PaginatedListOfGigOverviewDto) {
+    this.gigs = gigs.items!;
+    this.length = gigs.totalCount!;
+    this.gigsSubject.next(this.gigs);
   }
 
 }

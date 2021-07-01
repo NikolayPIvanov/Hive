@@ -1,9 +1,9 @@
-<mat-card *ngIf="gig$ | async; let gig">
+<mat-card *ngIf="gig$ | async; let gig" class="container" style="height: auto;">
     <mat-card-header>
-        <mat-card-title>Review your order</mat-card-title>
+        <mat-card-title>Review your Order</mat-card-title>
         <mat-card-subtitle>Order</mat-card-subtitle>
     </mat-card-header>
-    <mat-card-content fxLayout="column" fxLayoutGap="3%">
+    <mat-card-content fxLayout="column" fxLayoutGap="3rem">
         <app-order-summary [gig]="gig"></app-order-summary>
         <app-checkout-summary [gig]="gig"></app-checkout-summary>
     </mat-card-content>

@@ -1,9 +1,12 @@
 <ng-container>
-    <mat-card *ngIf="profile$ | async; let profile"  fxLayout="column" class="container mat-elevation-z8">
-        <mat-card-header fxFlex="8">
-            <mat-card-title>{{ displayName(profile) }}</mat-card-title>
+    <mat-card *ngIf="profile$ | async; let profile" 
+        style="height: auto !important;" 
+        fxLayout="column" 
+        class="container mat-elevation-z8">
+        <mat-card-header fxFlex="10%">
+            <img mat-card-avatar [src]="profile.avatarUri || '../../../../../assets/user.png'">	
+            <mat-card-title>{{ profile.givenName }} {{ profile.surname }}</mat-card-title>
             <mat-card-subtitle>Personal Information</mat-card-subtitle>
-            <img mat-card-avatar src="../../../../../assets/user.png">	
         </mat-card-header>
         <mat-card-content fxFlex fxLayout="column" fxLayoutGap="2rem">
             <mat-card>
@@ -32,13 +35,12 @@
             </mat-card>
 
             <ng-container *ngIf="gigs$ | async; else noGigs">
-                <div fxLayout="row wrap" fxLayoutGap="2">
+                <div fxLayout="row wrap" fxLayoutGap="3rem grid">
                     <app-gig-card
-                        fxFlex="20"
                         *ngFor="let gig of gigs$ | async" 
+                        fxFlex="22"
                         [gig]="gig" 
-                        [profile]="profile" 
-                        (onDeleted)="reload($event)"
+                        (onDeleted)="deleteAndRemoveGig($event)"
                     ></app-gig-card>
                 </div>
             </ng-container>
@@ -48,14 +50,14 @@
             
 
         </mat-card-content>
-        <mat-card-footer fxFlex="8">
+        <mat-card-footer fxFlex>
             <mat-paginator fxFlex
-            [length]="length"
-            [pageSizeOptions]="pageSizeOptions" 
-            [pageSize]="pageSize"
-            [pageIndex]="pageNumber"
-            (page)="pageChange($event)"
-            showFirstLastButtons></mat-paginator>
+                [length]="length"
+                [pageSizeOptions]="pageSizeOptions" 
+                [pageSize]="pageSize"
+                [pageIndex]="pageNumber"
+                (page)="pageChange($event)"
+                showFirstLastButtons></mat-paginator>
         </mat-card-footer>
     </mat-card>
 </ng-container>

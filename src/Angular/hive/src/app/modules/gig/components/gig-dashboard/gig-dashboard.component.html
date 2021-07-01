@@ -24,32 +24,29 @@
         </mat-expansion-panel>
     </mat-accordion>
 
-    <mat-card fxFlex="90" *ngIf="(gigs$ | async)?.length! > 0; else elseTemplate">
-        <div
-            class="list-view"
+    <mat-card fxFlex="90" fxLayout="column" class="mat-elevation-z8"
+         *ngIf="(gigs$ | async)?.length! > 0; else elseTemplate">
+        <mat-card-content fxFlex
             *ngIf="gigs$ | async; let gigs"
             fxLayout="row wrap"
-            fxLayoutAlign="start center"
-            fxLayoutGap="3%">
+            fxLayoutAlign="start start"
+            fxLayoutGap="3% grid">
 
-            <app-gig-card 
-                fxFlex="20"
-                *ngFor="let gig of gigs" 
-                [gig]="gig"
-                [profile]="undefined"
-            ></app-gig-card>
-        </div>
+            <app-gig-card *ngFor="let gig of gigs" [gig]="gig" fxFlex="22"></app-gig-card>
+        </mat-card-content>
+
+        <mat-card-footer>
+            <mat-paginator 
+                [length]="length"
+                [pageSizeOptions]="pageSizeOptions" 
+                [pageSize]="pageSize"
+                [pageIndex]="pageNumber"
+                (page)="pageChange($event)"
+                showFirstLastButtons></mat-paginator>
+        </mat-card-footer>
     </mat-card>
 
-    <mat-paginator 
-        style="margin-top: 1rem;"
-        class="mat-elevation-z8"
-        [length]="length"
-        [pageSizeOptions]="pageSizeOptions" 
-        [pageSize]="pageSize"
-        [pageIndex]="pageNumber"
-        (page)="pageChange($event)"
-        showFirstLastButtons></mat-paginator>
+    
     
     <ng-template #elseTemplate>
         <mat-card fxFlexOffset="2rem" class="mat-elevation-z8">
