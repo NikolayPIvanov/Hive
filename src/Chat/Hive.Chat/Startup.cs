@@ -101,8 +101,6 @@ namespace Hive.Chat
                 }
             };
             
-            // services.AddSingleton<IUserIdProvider, NameUserIdProvider>();
-
         });
 
         services.AddTransient<IChatContext, ChatContext>();

@@ -1,5 +1,6 @@
 ﻿using Billing.Application.Interfaces;
 using Billing.Infrastructure.Persistence;
+using BuildingBlocks.Core.Caching;
 using BuildingBlocks.Core.Email;
 using BuildingBlocks.Core.MessageBus;
 using Microsoft.EntityFrameworkCore;
@@ -26,7 +27,8 @@ namespace Billing.Infrastructure
                         sqlServerConnectionString,
                         b => b.MigrationsAssembly(typeof(BillingDbContext).Assembly.FullName)));
             }
-            
+
+            services.AddRedis(configuration);
             services.AddSendGrid(configuration);
             services.AddRabbitMqBroker<BillingDbContext>(useInMemory, sqlServerConnectionString, configuration);
             services.AddScoped<IBillingDbContext>(provider => provider.GetService<BillingDbContext>());

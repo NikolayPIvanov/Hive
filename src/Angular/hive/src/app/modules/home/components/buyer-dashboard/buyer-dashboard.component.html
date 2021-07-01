@@ -73,7 +73,11 @@
                     <!-- Weight Column -->
                     <ng-container matColumnDef="transactionType">
                       <mat-header-cell mat-header-cell *matHeaderCellDef> Type </mat-header-cell>
-                      <mat-cell mat-cell *matCellDef="let element"> {{getTransactionType(element.transactionType)}} </mat-cell>
+                      <mat-cell mat-cell *matCellDef="let element" > 
+                            <span>
+                                {{getTransactionType(element.transactionType)}}
+                            </span>   
+                        </mat-cell>
                     </ng-container>
               
                     <!-- Symbol Column -->
