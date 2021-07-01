@@ -55,9 +55,9 @@ namespace Hive.Identity
                     AllowedGrantTypes = GrantTypes.Code,
                     AccessTokenLifetime = 365 * 24 * 60,
 
-                    RedirectUris = { "https://localhost:44300/signin-oidc" },
-                    FrontChannelLogoutUri = "https://localhost:44300/signout-oidc",
-                    PostLogoutRedirectUris = {"https://localhost:44300/signout-callback-oidc"},
+                    RedirectUris = { "http://localhost:44300/signin-oidc" },
+                    FrontChannelLogoutUri = "http://localhost:44300/signout-oidc",
+                    PostLogoutRedirectUris = {"http://localhost:44300/signout-callback-oidc"},
 
                     AllowOfflineAccess = true,
                     AllowedScopes =

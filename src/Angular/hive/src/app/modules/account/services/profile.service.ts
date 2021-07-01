@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { finalize, map, startWith, switchMap, tap } from 'rxjs/operators';
-import { ProfileClient, UpdateUserNamesCommand, UpdateUserProfileCommand, UserProfileDto } from 'src/app/clients/profile-client';
+import { ProfileClient, UpdateUserProfileCommand, UserProfileDto } from 'src/app/clients/profile-client';
 
 @Injectable({
   providedIn: 'root'
@@ -30,9 +30,5 @@ export class ProfileService {
   updateProfile(profileId: number, command: UpdateUserProfileCommand) {
     return this.profileApiClient.updateProfile(profileId, command)
       .pipe(switchMap(() => this.getProfile()))
-  }
-
-  updateProfileNames(profileId: number, command: UpdateUserNamesCommand) {
-    return this.profileApiClient.updateProfileNames(profileId, command);
   }
 }

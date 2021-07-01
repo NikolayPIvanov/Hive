@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 using Hive.Gig.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.Elasticsearch;
@@ -17,25 +17,29 @@ namespace Gig.Management
     {
         public static async Task Main(string[] args)
         {
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-                .Enrich.FromLogContext()
-                .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://localhost:9200") ){
-                    AutoRegisterTemplate = true,
-                    AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv6
-                })
-                .WriteTo.Console(
-                    outputTemplate:
-                    "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message:lj}{NewLine}{Exception}{NewLine}",
-                    theme: AnsiConsoleTheme.Code)
-                .CreateLogger();
-
             
             var host = CreateHostBuilder(args).Build();
 
             using (var scope = host.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
+                
+                var configuration = services.GetService<IConfiguration>();
+
+                var elasticUri = configuration.GetValue<string>("ElasticUrl");
+            
+                Log.Logger = new LoggerConfiguration()
+                    .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
+                    .Enrich.FromLogContext()
+                    .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(elasticUri) ){
+                        AutoRegisterTemplate = true,
+                        AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv6
+                    })
+                    .WriteTo.Console(
+                        outputTemplate:
+                        "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message:lj}{NewLine}{Exception}{NewLine}",
+                        theme: AnsiConsoleTheme.Code)
+                    .CreateLogger();
 
                 try
                 {

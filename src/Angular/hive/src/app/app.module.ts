@@ -53,11 +53,11 @@ import * as investingClient from './clients/investing-client';
     NgxSpinnerModule
   ],
   providers: [
-    { provide: profileClient.API_BASE_URL, useValue: 'https:localhost:5001' },
-    { provide: categoriesClient.API_BASE_URL, useValue: 'https:localhost:5057' },
-    { provide: billingClient.API_BASE_URL, useValue: 'https:localhost:5051' },
-    { provide: orderingClient.API_BASE_URL, useValue: 'https:localhost:5041' },
-    { provide: investingClient.API_BASE_URL, useValue: 'https:localhost:5031' },
+    { provide: profileClient.API_BASE_URL, useValue: 'http:localhost:5001' },
+    { provide: categoriesClient.API_BASE_URL, useValue: 'http:localhost:5057' },
+    { provide: billingClient.API_BASE_URL, useValue: 'http:localhost:5051' },
+    { provide: orderingClient.API_BASE_URL, useValue: 'http:localhost:5041' },
+    { provide: investingClient.API_BASE_URL, useValue: 'http:localhost:5031' },
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

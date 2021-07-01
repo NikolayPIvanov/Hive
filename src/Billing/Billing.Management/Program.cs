@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Billing.Infrastructure.Persistence;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
@@ -15,10 +16,19 @@ namespace Billing.Management
     {
         public static async Task Main(string[] args)
         {
+            var host = CreateHostBuilder(args).Build();
+
+            using var scope = host.Services.CreateScope();
+            var services = scope.ServiceProvider;
+
+            var configuration = services.GetService<IConfiguration>();
+
+            var elasticUri = configuration.GetValue<string>("ElasticUrl");
+            
             Log.Logger = new LoggerConfiguration()
                 .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
                 .Enrich.FromLogContext()
-                .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri("http://localhost:9200") ){
+                .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(elasticUri) ){
                     AutoRegisterTemplate = true,
                     AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv6
                 })
@@ -28,11 +38,6 @@ namespace Billing.Management
                     theme: AnsiConsoleTheme.Code)
                 .CreateLogger();
             
-            var host = CreateHostBuilder(args).Build();
-
-            using var scope = host.Services.CreateScope();
-            var services = scope.ServiceProvider;
-
             try
             {
                 await services.MigrateAsync();

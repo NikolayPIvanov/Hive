@@ -1,7 +1,6 @@
 ﻿# https://hub.docker.com/_/microsoft-dotnet
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build-env
 WORKDIR /app
-EXPOSE 7001
 
 # copy and publish app and libraries
 COPY ["src/Identity/Hive.Identity/", "./Identity/Hive.Identity/"]
@@ -14,5 +13,9 @@ RUN dotnet publish "./Identity/Hive.Identity/Hive.Identity.csproj" -c release -o
 # final stage/image
 FROM mcr.microsoft.com/dotnet/aspnet:5.0
 WORKDIR /app
+
+ENV ASPNETCORE_URLS=http://*:7001
+EXPOSE 7001
+
 COPY --from=build-env /app/out .
 ENTRYPOINT ["dotnet", "Hive.Identity.dll"]

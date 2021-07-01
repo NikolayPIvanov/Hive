@@ -42,8 +42,8 @@ const httpOptions = {
 export class ChatService {
   
   private hubConnection!: HubConnection
-  private connectionUrl = 'https://localhost:6001/chat';
-  private apiUrl = 'https://localhost:6001/api/chat';
+  private connectionUrl = 'http://localhost:6001/chat';
+  private apiUrl = 'http://localhost:6001/api/chat';
 
   constructor(private http: HttpClient, private authService: AuthService) { }
 
