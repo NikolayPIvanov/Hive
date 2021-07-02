@@ -5,7 +5,6 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { LoggerModule } from 'ngx-logger';
-import { environment } from 'src/environments/environment';
 import { CoreModule } from './modules/core/core.module';
 import { LayoutModule } from '@angular/cdk/layout';
 import { MaterialModule } from './modules/material/material.module';
@@ -22,6 +21,7 @@ import * as billingClient from './clients/billing-client';
 import * as orderingClient from './clients/ordering-client';
 import * as investingClient from './clients/investing-client';
 
+import { environment } from 'src/environments/environment';
 
 @NgModule({
   declarations: [
@@ -53,11 +53,11 @@ import * as investingClient from './clients/investing-client';
     NgxSpinnerModule
   ],
   providers: [
-    { provide: profileClient.API_BASE_URL, useValue: 'http:localhost:5001' },
-    { provide: categoriesClient.API_BASE_URL, useValue: 'http:localhost:5057' },
-    { provide: billingClient.API_BASE_URL, useValue: 'http:localhost:5051' },
-    { provide: orderingClient.API_BASE_URL, useValue: 'http:localhost:5041' },
-    { provide: investingClient.API_BASE_URL, useValue: 'http:localhost:5031' },
+    { provide: profileClient.API_BASE_URL, useValue: environment.userManagementUrl },
+    { provide: categoriesClient.API_BASE_URL, useValue: environment.gigsManagementUrl },
+    { provide: billingClient.API_BASE_URL, useValue: environment.billingManagementUrl },
+    { provide: orderingClient.API_BASE_URL, useValue: environment.orderingManagementUrl },
+    { provide: investingClient.API_BASE_URL, useValue: environment.investingManagement },
   ],
   bootstrap: [AppComponent],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]

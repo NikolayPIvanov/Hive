@@ -107,6 +107,38 @@ namespace Hive.Identity
                     RequireClientSecret = false,
                     RequireConsent = false,
                     AccessTokenLifetime = 600 * 600
+                },
+                
+                new Client
+                {
+                    ClientName = "Angular-Prod",
+                    ClientId = "angular-prod",
+                    AllowedGrantTypes = GrantTypes.Code,
+                    RedirectUris = new List<string>
+                    {
+                        "http://localhost/auth/signin-callback"
+                    },
+                    PostLogoutRedirectUris = { "http://localhost/auth/signout-callback" },
+                    RequirePkce = true,
+                    AllowAccessTokensViaBrowser = true,
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        
+                        "gigs.read",
+                        "gigs.write",
+                        "gigs.delete",
+                        
+                        "ordering.read",
+                        "ordering.write",
+                        "ordering.delete"
+                    },
+                    
+                    AllowedCorsOrigins = { "http://localhost:80", "http://localhost" },
+                    RequireClientSecret = false,
+                    RequireConsent = false,
+                    AccessTokenLifetime = 600 * 600
                 }
             };
     }

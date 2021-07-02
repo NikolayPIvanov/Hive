@@ -9,6 +9,7 @@ import { takeUntil, tap } from 'rxjs/operators';
 import { OrderDto, OrdersClient, OrderState, PaginatedListOfOrderDto, ReviewOrderCommand, SetInProgressOrderCommand, StateDto } from 'src/app/clients/ordering-client';
 import { NotificationService } from 'src/app/modules/core/services/notification.service';
 import { AuthService } from 'src/app/modules/layout/services/auth.service';
+import { environment } from 'src/environments/environment';
 import { OrderDetailsComponent } from '../order-details/order-details.component';
 
 @Component({
@@ -59,6 +60,7 @@ export class OrdersListComponent implements OnInit, AfterViewInit {
     private authService: AuthService,
     private notificationService: NotificationService,
     public dialog: MatDialog,
+    private orderingClient: OrdersClient,
     private http: HttpClient) { }
 
   ngOnInit(): void {
@@ -141,8 +143,8 @@ export class OrdersListComponent implements OnInit, AfterViewInit {
     let fileToUpload = <File>files[0];
     const formData = new FormData();
     formData.append('file', fileToUpload, fileToUpload.name);
- 
-    this.http.post(`https://localhost:5041/api/orders/${orderNumber}/resolutions`, formData)
+
+    this.http.post(`${environment.orderingManagementUrl}/api/orders/${orderNumber}/resolutions`, formData)
       .pipe(
         takeUntil(this.unsubscribe),
         tap({ next: (x) => this.notificationService.openSnackBar('Successfully uploaded resolution to the order') })

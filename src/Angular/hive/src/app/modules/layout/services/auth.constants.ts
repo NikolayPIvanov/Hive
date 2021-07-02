@@ -1,6 +1,7 @@
+import { environment } from "src/environments/environment";
+
 export class Constants {
-    // public static apiRoot = "https://localhost:7001/api";
-    public static clientRoot = "http://localhost:4200";
-    public static idpAuthority = "http://localhost:7001"
-    public static clientId = "angular-client";
+    public static clientRoot = environment.clientRoot;
+    public static idpAuthority = environment.idpAuthority
+    public static clientId = environment.clientId;
 }

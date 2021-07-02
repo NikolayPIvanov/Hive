@@ -2,6 +2,12 @@
 FROM mcr.microsoft.com/dotnet/sdk:5.0 AS build-env
 WORKDIR /app
 
+COPY ["src/Chat/Hive.Chat/Hive.Chat.csproj", "./Chat/Hive.Chat/Hive.Chat.csproj"]
+COPY ["src/Identity/Hive.Identity/Hive.Identity.csproj", "./Identity/Hive.Identity/Hive.Identity.csproj"]
+COPY ["src/Common/Common.Core/Common.Core.csproj", "./Common/Common.Core/Common.Core.csproj"]
+COPY ["src/BuildingBlocks/BuildingBlocks.Core/BuildingBlocks.Core.csproj", "./BuildingBlocks/BuildingBlocks.Core/BuildingBlocks.Core.csproj"]
+RUN dotnet restore "./Chat/Hive.Chat/Hive.Chat.csproj"
+
 # copy and publish app and libraries
 COPY ["src/Chat/Hive.Chat/", "./Chat/Hive.Chat/"]
 COPY ["src/Identity/Hive.Identity.Contracts/", "./Identity/Hive.Identity.Contracts/"]

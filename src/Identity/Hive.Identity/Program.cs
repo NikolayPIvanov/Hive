@@ -68,7 +68,6 @@ namespace Hive.Identity
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>();
-                    webBuilder.UseUrls("http://localhost:7001");
                 });
         
         private static void InitializeDatabase(IServiceProvider app)

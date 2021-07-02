@@ -5,6 +5,8 @@ import { BehaviorSubject, from, Observable, of } from 'rxjs';
 import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { AuthService } from '../../layout/services/auth.service';
 
+import { environment } from 'src/environments/environment';
+
 export interface ChatMessage {
   text: string;
   senderIdentifier: string;
@@ -42,8 +44,8 @@ const httpOptions = {
 export class ChatService {
   
   private hubConnection!: HubConnection
-  private connectionUrl = 'http://localhost:6001/chat';
-  private apiUrl = 'http://localhost:6001/api/chat';
+  private connectionUrl = environment.chatUrl;
+  private apiUrl = environment.chatApiUrl;
 
   constructor(private http: HttpClient, private authService: AuthService) { }
 

@@ -14,7 +14,6 @@ export class AdminDashboardComponent implements OnInit {
   public categories$: Observable<PaginatedListOfCategoryDto> | undefined;
   public users$: Observable<PaginatedListOfUserProfileDto> | undefined;
 
-
   constructor(
     private categoriesClient: CategoriesClient,
     private profilesClient: ProfileClient) { }
