@@ -5,6 +5,7 @@ using Hive.Identity.Contracts;
 using Hive.Identity.Models;
 using Hive.Identity.Services;
 using Microsoft.AspNetCore.Identity;
+using Serilog;
 using StackExchange.Redis.Extensions.Core.Abstractions;
 
 namespace Hive.Identity.Data
@@ -63,6 +64,7 @@ namespace Hive.Identity.Data
         public static async Task DispatchUserCreatedEvents(IIdentityDispatcher dispatcher, 
             string userId, string givenName, string surname, List<IdentityType> userTypes)
         {
+            Log.Logger.Warning($"Before publishing for {userId}");
             await dispatcher.PublishUserCreatedEventAsync(userId, givenName, surname);
 
             foreach (var type in userTypes)

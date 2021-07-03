@@ -51,16 +51,16 @@ namespace Hive.Chat.Controllers
         }
         
         [HttpPost]
-        public async Task<ActionResult<Guid>> SetIdentifierForUser([FromBody] IdentifierModel model)
+        public async Task<ActionResult<UserIdentifier>> SetIdentifierForUser([FromBody] IdentifierModel model)
         {
             var filter = Builders<UserIdentifier>.Filter.Eq(x => x.UserId, model.UserId);
             var identifier = await (await _context.UserIdentifiers.FindAsync(filter)).FirstOrDefaultAsync();
 
             if (identifier == null)
             {
-                var id = new UserIdentifier {UserId = model.UserId, UniqueIdentifier = Guid.NewGuid().ToString()};
-                await _context.UserIdentifiers.InsertOneAsync(id);
-                return CreatedAtAction(nameof(GetUserUniqueIdentifier), new {userId = id.UserId}, id.UniqueIdentifier);
+                var uuid = new UserIdentifier {UserId = model.UserId, UniqueIdentifier = Guid.NewGuid().ToString()};
+                await _context.UserIdentifiers.InsertOneAsync(uuid);
+                return CreatedAtAction(nameof(GetUserUniqueIdentifier), new {userId = uuid.UserId}, uuid);
             }
 
             return BadRequest();

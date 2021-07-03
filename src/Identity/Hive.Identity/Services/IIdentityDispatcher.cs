@@ -8,6 +8,7 @@ using Hive.Identity.Contracts;
 using Hive.Identity.Contracts.IntegrationEvents;
 using Hive.Identity.Contracts.IntegrationEvents.Outbound;
 using Hive.Identity.Models;
+using Microsoft.Extensions.Logging;
 
 namespace Hive.Identity.Services
 {
@@ -21,17 +22,24 @@ namespace Hive.Identity.Services
     public class IdentityDispatcher : IIdentityDispatcher
     {
         private readonly IIntegrationEventPublisher _publisher;
+        private readonly ILogger<IdentityDispatcher> _logger;
 
-        public IdentityDispatcher(IIntegrationEventPublisher publisher)
+        public IdentityDispatcher(IIntegrationEventPublisher publisher, ILogger<IdentityDispatcher> logger)
         {
             _publisher = publisher;
+            _logger = logger;
         }
 
-        public async Task PublishUserCreatedEventAsync(string userId, string givenName, string surname) =>
+        public async Task PublishUserCreatedEventAsync(string userId, string givenName, string surname)
+        {
+            _logger.LogInformation($"Event User for {userId}");
             await _publisher.PublishAsync(new UserCreatedIntegrationEvent(userId, givenName, surname));
+        }
         
         public async Task PublishUserTypeEventAsync(string userId, IdentityType accountType)
         {
+            _logger.LogInformation($"Event for user type for {userId}");
+
             IntegrationEvent userTypeEvent =
                 accountType switch
                 {

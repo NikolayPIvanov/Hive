@@ -13,9 +13,11 @@ export class AuthInterceptorService {
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     request = request.clone({
       setHeaders: {
-        Authorization: `Bearer ${this.authService.token}`
+        Authorization: `Bearer ${this.authService.token}`,
+        'Access-Control-Allow-Origin': 'http://localhost'
       }
     });
+    
     return next.handle(request);
   }
 }

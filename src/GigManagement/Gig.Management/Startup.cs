@@ -54,6 +54,8 @@ namespace Gig.Management
                 .AddJwtBearer(DefaultAuthenticationSchema, options =>
                 {
                     options.Authority = authority;
+                    options.RequireHttpsMetadata = false;
+
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateAudience = false
@@ -68,12 +70,16 @@ namespace Gig.Management
 
             services.AddCors(options =>
             {
-                options.AddPolicy(name: "Angular",
+                var origins = Configuration.GetSection("CorsOrigins").Get<string[]>();
+                options.AddDefaultPolicy(
                     builder =>
                     {
-                        builder.WithOrigins("http://localhost:4200")
-                                .AllowAnyHeader()
-                                .AllowAnyMethod();
+                        builder
+                            .WithOrigins(origins)
+                            .AllowCredentials()
+                            .AllowAnyHeader()
+                            .SetIsOriginAllowed(_ => true)
+                            .AllowAnyMethod();
                     });
             });
             
@@ -118,7 +124,7 @@ namespace Gig.Management
 
             app.UseRouting();
 
-            app.UseCors("Angular");
+            app.UseCors();
 
             app.UseAuthentication();
             app.UseAuthorization();

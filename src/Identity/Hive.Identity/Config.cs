@@ -116,9 +116,9 @@ namespace Hive.Identity
                     AllowedGrantTypes = GrantTypes.Code,
                     RedirectUris = new List<string>
                     {
-                        "http://localhost/auth/signin-callback"
+                        "http://localhost/#/auth/signin-callback"
                     },
-                    PostLogoutRedirectUris = { "http://localhost/auth/signout-callback" },
+                    PostLogoutRedirectUris = { "http://localhost/#/auth/signout-callback" },
                     RequirePkce = true,
                     AllowAccessTokensViaBrowser = true,
                     AllowedScopes =
@@ -135,7 +135,7 @@ namespace Hive.Identity
                         "ordering.delete"
                     },
                     
-                    AllowedCorsOrigins = { "http://localhost:80", "http://localhost" },
+                    AllowedCorsOrigins = { "http://localhost" },
                     RequireClientSecret = false,
                     RequireConsent = false,
                     AccessTokenLifetime = 600 * 600

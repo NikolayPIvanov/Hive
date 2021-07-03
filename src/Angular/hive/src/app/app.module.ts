@@ -22,6 +22,8 @@ import * as orderingClient from './clients/ordering-client';
 import * as investingClient from './clients/investing-client';
 
 import { environment } from 'src/environments/environment';
+import { HashLocationStrategy, LocationStrategy, PathLocationStrategy } from '@angular/common';
+
 
 @NgModule({
   declarations: [
@@ -53,6 +55,7 @@ import { environment } from 'src/environments/environment';
     NgxSpinnerModule
   ],
   providers: [
+    {provide: LocationStrategy, useClass: HashLocationStrategy},
     { provide: profileClient.API_BASE_URL, useValue: environment.userManagementUrl },
     { provide: categoriesClient.API_BASE_URL, useValue: environment.gigsManagementUrl },
     { provide: billingClient.API_BASE_URL, useValue: environment.billingManagementUrl },

@@ -93,7 +93,6 @@ export class ProfileClient implements IProfileClient {
     }
 
     getMyProfile(): Observable<UserProfileDto> {
-        debugger;
         let url_ = this.baseUrl + "/api/Profile";
         url_ = url_.replace(/[?&]$/, "");
 

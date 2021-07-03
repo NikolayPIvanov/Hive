@@ -50,21 +50,27 @@ namespace Investing.Management
             
             services.AddCors(options =>
             {
-                options.AddDefaultPolicy(builder =>
-                {
-                    builder
-                        .WithOrigins("http://localhost:4200")
-                        .AllowCredentials()
-                        .AllowAnyHeader()
-                        .SetIsOriginAllowed(_ => true)
-                        .AllowAnyMethod();
-                });
+                var origins = Configuration.GetSection("CorsOrigins").Get<string[]>();
+                options.AddDefaultPolicy(
+                    builder =>
+                    {
+                        builder
+                            .WithOrigins(origins)
+                            .AllowCredentials()
+                            .AllowAnyHeader()
+                            .SetIsOriginAllowed(_ => true)
+                            .AllowAnyMethod();
+                    });
             });
+
+            
+            
             
             services.AddAuthentication(DefaultAuthenticationSchema)
                 .AddJwtBearer(DefaultAuthenticationSchema, options =>
                 {
                     options.Authority = authority;
+                    options.RequireHttpsMetadata = false;
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateAudience = false

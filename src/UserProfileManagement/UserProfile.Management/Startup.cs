@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Net.Http;
 using FluentValidation.AspNetCore;
 using Hive.Common.Core;
 using Hive.Common.Core.Filters;
@@ -13,9 +14,11 @@ using Hive.UserProfile.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Logging;
 using Microsoft.IdentityModel.Tokens;
 using NSwag;
 using NSwag.Generation.Processors.Security;
@@ -36,8 +39,8 @@ namespace UserProfile.Management
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            IdentityModelEventSource.ShowPII = true;
             var authority = Configuration.GetValue<string>("Authority");
-            
             services.AddUserProfileCore();
             services.AddUserProfileInfrastructure(Configuration);
             
@@ -48,11 +51,18 @@ namespace UserProfile.Management
                 options.AllowEmptyInputInBodyModelBinding = true;
                 options.Filters.Add<ApiExceptionFilterAttribute>();
             }).AddFluentValidation();
+
+            services.Configure<ForwardedHeadersOptions>(options =>
+            {
+                options.ForwardedHeaders =
+                    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+            });
             
             services.AddAuthentication(DefaultAuthenticationSchema)
                 .AddJwtBearer(DefaultAuthenticationSchema, options =>
                 {
                     options.Authority = authority;
+                    options.RequireHttpsMetadata = false;
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateAudience = false
@@ -67,14 +77,19 @@ namespace UserProfile.Management
 
             services.AddCors(options =>
             {
-                options.AddPolicy(name: "Angular",
+                var origins = Configuration.GetSection("CorsOrigins").Get<string[]>();
+                options.AddPolicy("Main",
                     builder =>
                     {
-                        builder.WithOrigins("http://localhost:4200")
+                        builder
+                            .WithOrigins(origins)
+                            .AllowCredentials()
                             .AllowAnyHeader()
+                            .SetIsOriginAllowed((host) => true)
                             .AllowAnyMethod();
                     });
             });
+
             
             services.AddScoped<ICurrentUserService, CurrentUserService>();
             services.AddScoped<IIdentityService, IdentityService>();
@@ -103,7 +118,9 @@ namespace UserProfile.Management
             {
                 app.UseDeveloperExceptionPage();
             }
-            
+
+            app.UseForwardedHeaders();
+
             app.UseStaticFiles();
 
             app.UseSwaggerUi3(settings =>
@@ -116,7 +133,7 @@ namespace UserProfile.Management
             
             app.UseRouting();
             
-            app.UseCors("Angular");
+            app.UseCors("Main");
 
             app.UseAuthentication();
             app.UseAuthorization();

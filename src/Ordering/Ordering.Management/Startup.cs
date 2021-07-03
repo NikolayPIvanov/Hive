@@ -53,6 +53,7 @@ namespace Ordering.Management
                 .AddJwtBearer(DefaultAuthenticationSchema, options =>
                 {
                     options.Authority = authority;
+                    options.RequireHttpsMetadata = false;
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateAudience = false
@@ -67,14 +68,19 @@ namespace Ordering.Management
             
             services.AddCors(options =>
             {
-                options.AddPolicy(name: "Angular",
+                var origins = Configuration.GetSection("CorsOrigins").Get<string[]>();
+                options.AddDefaultPolicy(
                     builder =>
                     {
-                        builder.WithOrigins("http://localhost:4200")
+                        builder
+                            .WithOrigins(origins)
+                            .AllowCredentials()
                             .AllowAnyHeader()
+                            .SetIsOriginAllowed(_ => true)
                             .AllowAnyMethod();
                     });
             });
+
             
             services.AddScoped<ICurrentUserService, CurrentUserService>();
             services.AddScoped<IIdentityService, IdentityService>();
@@ -116,7 +122,7 @@ namespace Ordering.Management
             
             app.UseRouting();
             
-            app.UseCors("Angular");
+            app.UseCors();
 
             app.UseAuthentication();
             app.UseAuthorization();

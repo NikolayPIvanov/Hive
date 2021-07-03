@@ -42,7 +42,7 @@ namespace Hive.Identity.Areas.Identity.Pages.Account
             var result = await _userManager.ConfirmEmailAsync(user, code);
             StatusMessage = result.Succeeded ? "Thank you for confirming your email." : "Error confirming your email.";
 
-            return Redirect("http://localhost:4200/login");
+            return Redirect("http://localhost/login");
             return Page();
         }
     }

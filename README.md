@@ -16,7 +16,6 @@ https://dbdiagram.io/d/60559287ecb54e10c33c5cdd
 * [MediatR](https://github.com/jbogard/MediatR)
 * [AutoMapper](https://automapper.org/)
 * [FluentValidation](https://fluentvalidation.net/)
-* [NUnit](https://nunit.org/), [FluentAssertions](https://fluentassertions.com/), [Moq](https://github.com/moq) & [Respawn](https://github.com/jbogard/Respawn)
 * [Docker](https://www.docker.com/)
 
 ## Getting Started

@@ -44,15 +44,31 @@ namespace Hive.Chat
 
             services.AddCors(options =>
             {
+                var origins = Configuration.GetSection("CorsOrigins").Get<string[]>();
                 options.AddDefaultPolicy(builder =>
                 {
                     builder
-                        .WithOrigins("http://localhost:4200", "http://localhost:4200")
+                        .WithOrigins(origins)
                         .AllowCredentials()
                         .AllowAnyHeader()
                         .SetIsOriginAllowed(_ => true)
                         .AllowAnyMethod();
                 });
+            });
+            
+            services.AddCors(options =>
+            {
+                var origins = Configuration.GetSection("CorsOrigins").Get<string[]>();
+                options.AddDefaultPolicy(
+                    builder =>
+                    {
+                        builder
+                            .WithOrigins(origins)
+                            .AllowCredentials()
+                            .AllowAnyHeader()
+                            .SetIsOriginAllowed(_ => true)
+                            .AllowAnyMethod();
+                    });
             });
             
         services.AddAuthentication(options =>
@@ -67,6 +83,7 @@ namespace Hive.Chat
             // Configure the Authority to the expected value for your authentication provider
             // This ensures the token is appropriately validated
             options.Authority = authority;
+            options.RequireHttpsMetadata = false;
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateAudience = false

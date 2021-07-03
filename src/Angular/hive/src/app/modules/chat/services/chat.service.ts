@@ -85,7 +85,23 @@ export class ChatService {
           if (uuid && isCurrentUser) {
             this.setIdentifier(uuid!)
           }
-      } }))
+        }
+      }),
+      catchError((err) => {
+        if (err.status == 404) {
+          return this.generateUUID(userId)
+            .pipe(tap({
+              next: (uuid) => {
+                if (uuid && isCurrentUser) {
+                  this.setIdentifier(uuid!)
+                }
+            }}))
+        }
+        else {
+          return (err);
+        }
+      })  
+    )
   }
 
   getUuids(userId: string): Observable<UniqueIdentifier[]> {
@@ -94,7 +110,7 @@ export class ChatService {
   }
 
   generateUUID(userId: string) {
-    return this.http.post<string>(this.apiUrl, { userId: userId })
+    return this.http.post<UniqueIdentifier>(this.apiUrl, { userId: userId })
   }
 
   fetchRooms() {

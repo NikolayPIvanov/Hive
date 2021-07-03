@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using Billing.Application;
 using Billing.Infrastructure;
@@ -53,6 +54,7 @@ namespace Billing.Management
                 .AddJwtBearer(DefaultAuthenticationSchema, options =>
                 {
                     options.Authority = authority;
+                    options.RequireHttpsMetadata = false;
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
                         ValidateAudience = false
@@ -67,10 +69,12 @@ namespace Billing.Management
 
             services.AddCors(options =>
             {
-                options.AddPolicy(name: "Angular",
+                var origins = Configuration.GetSection("CorsOrigins").Get<string[]>();
+                options.AddDefaultPolicy(
                     builder =>
                     {
-                        builder.WithOrigins("http://localhost:4200")
+                        builder
+                            .WithOrigins(origins)
                             .AllowAnyHeader()
                             .AllowAnyMethod();
                     });
@@ -116,7 +120,7 @@ namespace Billing.Management
             
             app.UseRouting();
             
-            app.UseCors("Angular");
+            app.UseCors();
 
             app.UseAuthentication();
             app.UseAuthorization();

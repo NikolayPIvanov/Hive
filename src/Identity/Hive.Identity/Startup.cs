@@ -60,8 +60,10 @@ namespace Hive.Identity
                 .AddDefaultTokenProviders()
                 .AddDefaultUI();
 
+            var issuerUri = Configuration.GetValue<string>("IssuerUri");
             services.AddIdentityServer(options =>
                 {
+                    options.IssuerUri = issuerUri;
                     options.Events.RaiseErrorEvents = true;
                     options.Events.RaiseInformationEvents = true;
                     options.Events.RaiseFailureEvents = true;
