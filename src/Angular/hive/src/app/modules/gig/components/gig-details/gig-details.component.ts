@@ -3,7 +3,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Observable, Observer, of, throwError } from 'rxjs';
 import { switchMap, tap } from 'rxjs/operators';
-import { DeliveryFrequency, FileResponse, GigDto, GigsClient, PackageTier } from 'src/app/clients/gigs-client';
+import { DeliveryFrequency, GigDto, GigsClient, PackageTier } from 'src/app/clients/gigs-client';
 import { ProfileClient, UserProfileDto } from 'src/app/clients/profile-client';
 import { ProfileService } from 'src/app/modules/account/services/profile.service';
 import { AuthService } from 'src/app/modules/layout/services/auth.service';
@@ -23,7 +23,7 @@ export interface ExampleTab {
 export class GigDetailsComponent implements OnInit {
   public default = '/assets/no_image.png'
 
-  public gig$!: Observable<GigDto>;
+  public gig: GigDto | undefined;
   public profile$!: Observable<UserProfileDto | undefined>;
 
   public canModify: boolean = false;
@@ -33,8 +33,6 @@ export class GigDetailsComponent implements OnInit {
     private router: Router,
     private authService: AuthService,
     private gigsService: GigsService,
-    private gigsClient: GigsClient,
-    private userProfileService: ProfileService,
     private userProfileClient: ProfileClient,
     public dialog: MatDialog
   ) {
@@ -50,7 +48,7 @@ export class GigDetailsComponent implements OnInit {
       this.gigsService.getGigDetailsById(id)
       .pipe(
         switchMap(gig => {
-          this.gig$ = of(gig);
+          this.gig = gig;
           return this.userProfileClient.getProfileById(gig.sellerUserId!)
         }),
         tap({

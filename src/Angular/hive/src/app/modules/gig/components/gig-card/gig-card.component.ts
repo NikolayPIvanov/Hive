@@ -22,6 +22,10 @@ export class GigCardComponent implements OnInit {
 
   public default = '/assets/no_image.png'
 
+  public getName(givenName: string, lastName: string) {
+    return `${givenName} ${lastName}`;
+  }
+
   constructor(
     private router: Router,
     private authService: AuthService,

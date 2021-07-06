@@ -1,64 +1,53 @@
-<div
-    fxLayout="column"
-    class="container"
-    fxLayoutGap="1rem">
-
-    <mat-accordion fxFlex>
+<div fxLayout="column" class="container">
+  <mat-card class="mat-elevation-z8" fxLayout="column" fxFlex>
+    <mat-card-header>
+      <mat-card-title>Explore Gigs</mat-card-title>
+      <mat-card-subtitle>Network</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content fxFlex fxLayoutGap="1%">
+      
+      <mat-accordion>
         <mat-expansion-panel>
           <mat-expansion-panel-header>
             <mat-panel-title>
-                Explore Gigs
+                Filtering
             </mat-panel-title>
             <mat-panel-description>
               Expand to explore filter options
             </mat-panel-description>
           </mat-expansion-panel-header>
-        
-            <!-- filter -->
-          <div 
-            fxLayout.gt-lg="row"
-            fxLayoutAlign.gt-lg="space-between">
-            <!-- <button mat-raised-button>Filter</button> -->
+
+          <div fxLayout="row">
+            <mat-form-field appearance="standard" fxFlex>
+              <mat-label>Search by name</mat-label>
+              <input matInput placeholder="Ex. My gig" #input> 
+              <!-- (keyup)="applyFilter($event)"  -->
+            </mat-form-field>
+
           </div>
 
         </mat-expansion-panel>
-    </mat-accordion>
+      </mat-accordion>
 
-    <mat-card fxFlex="90" fxLayout="column" class="mat-elevation-z8"
-         *ngIf="(gigs$ | async)?.length! > 0; else elseTemplate">
-        <mat-card-content fxFlex
-            *ngIf="gigs$ | async; let gigs"
-            fxLayout="row wrap"
-            fxLayoutAlign="start start"
-            fxLayoutGap="3% grid">
+      <div *ngIf="gigs$ | async; let gigs" fxLayout="row" fxLayoutGap="3% grid">
+        <app-gig-card 
+          *ngFor="let gig of gigs"
+          fxFlex="22"
+          [gig]="gig"></app-gig-card>
+      </div>
 
-            <app-gig-card *ngFor="let gig of gigs" [gig]="gig" fxFlex="22"></app-gig-card>
-        </mat-card-content>
-
-        <mat-card-footer>
-            <mat-paginator 
-                [length]="length"
-                [pageSizeOptions]="pageSizeOptions" 
-                [pageSize]="pageSize"
-                [pageIndex]="pageNumber"
-                (page)="pageChange($event)"
-                showFirstLastButtons></mat-paginator>
-        </mat-card-footer>
-    </mat-card>
-
-    
-    
-    <ng-template #elseTemplate>
-        <mat-card fxFlexOffset="2rem" class="mat-elevation-z8">
-            <mat-card-header>
-                <mat-card-title>Explore Gigs</mat-card-title>
-                <mat-card-subtitle>Gigs</mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-content fxLayout="column" fxLayoutAlign="start center" fxFill class="container">
-                <mat-icon fxFlex="50">work_outline</mat-icon>
-        
-                <h1>No gigs found</h1>
-            </mat-card-content>
-        </mat-card>
-    </ng-template>
+    </mat-card-content>
+    <mat-card-footer>
+      <mat-divider
+        [inset]="true">
+      </mat-divider>
+      <mat-paginator 
+          [length]="length"
+          [pageSizeOptions]="pageSizeOptions" 
+          [pageSize]="pageSize"
+          [pageIndex]="pageNumber"
+          (page)="pageChange($event)"
+          showFirstLastButtons></mat-paginator>
+    </mat-card-footer>
+  </mat-card>
 </div>

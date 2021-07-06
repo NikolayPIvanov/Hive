@@ -1,13 +1,13 @@
 <div style="position: relative">
     <ngx-spinner [fullScreen]="false" name="card"></ngx-spinner>
 </div>
-<mat-card fxLayout="column">
-    <mat-card-header>
+<mat-card fxLayout="column" class="mat-elevation-z8">
+    <mat-card-header fxFlex="10%">
         <img *ngIf="profile$ | async; let profile" mat-card-avatar 
             [src]="profile.avatarUri || '../../../../../assets/user.png'">	
         <mat-card-title> {{ gig.title! | limitTo:'12' }} </mat-card-title>
-        <mat-card-subtitle *ngIf="profile$ | async; let profile"> 
-            By {{ profile.givenName }} {{ profile.surname }} 
+        <mat-card-subtitle *ngIf="profile$ | async; let profile" style="word-break: break-all;"> 
+            By {{ getName(profile.givenName!, profile.surname!) | limitTo: '20' }}
         </mat-card-subtitle>
     </mat-card-header>
 
@@ -15,14 +15,11 @@
         [src]="gig.imagePath?.path || '../../../../assets/no_image.png'"
         style="max-height: 12rem;"
         alt="Photo of a Gig">
-    <mat-card-content  fxLayout="row" fxFlexAlign="center center" style="margin-bottom: 1rem;">
-        <mat-divider>
-        </mat-divider>
-        <h2>Starts at <strong>{{ gig.prices![0] || '--' }} $</strong> </h2>
-    </mat-card-content>
 
-    <mat-card-actions fxLayout="row" fxLayoutGap="3rem" fxLayoutAlign="space-around">
-        <button mat-flat-button color="primary" [fxFlex]="!isOwner" fxFlex="40" (click)="onDetails()">Inspect</button>
+    <mat-card-actions fxLayout="row" fxLayoutAlign="space-around">
+        <button 
+            mat-flat-button color="primary" [fxFlex]="!isOwner" fxFlex="40" 
+            (click)="onDetails()">Starts at {{ gig.prices![0] || '--' }}$ </button>
         <button *ngIf="isOwner" color="warn" mat-flat-button fxFlex="40" (click)="deleteGig(gig.id!)">Delete</button>
     </mat-card-actions>
 </mat-card>
