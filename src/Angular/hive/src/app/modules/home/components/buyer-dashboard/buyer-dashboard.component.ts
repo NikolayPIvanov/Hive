@@ -32,7 +32,7 @@ export class BuyerDashboardComponent implements OnInit {
   dataSource = new MatTableDataSource<TransactionDto>([]);
 
   ngOnInit(): void {
-    this.orders$ = this.ordersClient.getMyOrders(1, 3, false)
+    this.orders$ = this.ordersClient.getMyOrders(1, 5, false)
     this.wallet$ =
       this.billingClient.getWallet(undefined)
       .pipe(

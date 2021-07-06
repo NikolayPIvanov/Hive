@@ -1,19 +1,14 @@
 <h1 mat-dialog-title>Order Details</h1>
 <div mat-dialog-content>
   <div fxLayout="column">
-    <!-- left -->
     <div fxLayout="row" fxFlex fxLayoutGap="1rem">
 
       <div *ngIf="gig$ | async; let gig" fxLayout="column">
-        <h2>Package</h2>
         <mat-divider></mat-divider>
         <h3 style="margin-bottom: 0;"><strong>{{ gig.title! }}</strong> </h3>
-
-        
       </div>
 
       <div fxLayout="column" fxFlex="30">
-        <h2>Main information</h2>
         <mat-divider>
         </mat-divider>
         <h3><strong>Order number: </strong> {{ order.orderNumber }}</h3>
@@ -25,7 +20,6 @@
 
       <!-- price -->
       <div fxLayout="column" fxFlex="30" >
-        <h2>Price</h2>
         <mat-divider>
         </mat-divider>
         <h3><strong>Unit Price:</strong> {{ order.unitPrice }}$</h3>
@@ -36,7 +30,7 @@
   </div>
 
   <mat-divider style="margin-top: 1rem;"></mat-divider>
-  <!-- right -->
+  
   <div fxLayout="column">
     <div fxLayout="column">
       <h2>Requirements</h2>
@@ -76,8 +70,7 @@
       </mat-list>
     </div>
 
-
-    <div fxLayout="column">
+    <div fxLayout="column" *ngIf="order.resolution && order.resolution.length">
       <h2>Resolutions</h2>
       <mat-list>
         <mat-list-item *ngFor="let res of order.resolution">

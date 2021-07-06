@@ -2,16 +2,18 @@
     <h1>Buyer Dashboard</h1>
     <div fxLayout="row" fxLayoutGap="1%" fxFlex>
 
-        <mat-card fxFlex="30%" fxLayout="column">
+        <mat-card fxFlex="30%" fxLayout="column" class="mat-elevation-z8">
             <mat-card-header fxFlex="20">
-                <mat-card-title>My Orders</mat-card-title>
+                <mat-card-title>My Recent Orders</mat-card-title>
                 <mat-card-subtitle>Manage Orders</mat-card-subtitle>
             </mat-card-header>
             <mat-divider inset="true" fxFlexOffset="2"></mat-divider>
             <mat-card-content fxFlex="70">
                 <mat-list fxLayout="column">
-                    <mat-list-item *ngFor="let order of (orders$ | async)?.items; let i = index" fxFlex="2rem">
-                        <div mat-line>
+                    <mat-list-item
+                         *ngFor="let order of (orders$ | async)?.items; let i = index" 
+                         fxFlex="2rem">
+                        <div mat-line >
                             <strong>{{i + 1}}. Order Number. ({{order.orderNumber! | limitTo: '10'}}) - {{ order.totalPrice }}$</strong>
                         </div>
                     </mat-list-item>
@@ -20,13 +22,12 @@
             <mat-divider inset="true" fxFlexOffset="2"></mat-divider>
             <mat-card-actions>
                 <a mat-button [routerLink]="['/orders']">
-                    <mat-icon>request_quote</mat-icon>
                     <span>See All</span>
                 </a>
             </mat-card-actions>
         </mat-card>
 
-        <mat-card fxFlex="60%">
+        <mat-card fxFlex="60%" class="mat-elevation-z8">
             <mat-card-header>
                 <mat-card-title>Orders by month</mat-card-title>
                 <mat-card-subtitle>Timeline</mat-card-subtitle>
@@ -49,7 +50,7 @@
 
     </div>
     <div fxLayout="row" style="margin-top: 3rem;" fxLayoutGap="1%" fxFlex>
-        <mat-card fxFlex="30%" fxLayout="column">
+        <mat-card fxFlex="30%" fxLayout="column" class="mat-elevation-z8"> 
             <mat-card-header fxFlex="10">
                 <mat-card-title>Balance</mat-card-title>
                 <mat-card-subtitle *ngIf="wallet$ | async; let wallet">Your current balance: {{ wallet.balance }}$</mat-card-subtitle>
@@ -98,7 +99,7 @@
             </mat-card-actions>
         </mat-card>
         
-        <mat-card fxFlex="50%">
+        <mat-card fxFlex="50%" class="mat-elevation-z8">
             <mat-card-header>
                 <mat-card-title>Orders Category Distribution</mat-card-title>
                 <mat-card-subtitle>Each area represents % of all orders</mat-card-subtitle>
