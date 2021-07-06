@@ -4,6 +4,7 @@ import { CategoriesClient, CategoriesType, PaginatedListOfCategoryDto } from 'sr
 import { FileResponse, PaginatedListOfUserProfileDto, ProfileClient, UserProfileDto } from 'src/app/clients/profile-client';
 import { ChartDataSets, ChartOptions, ChartType } from 'chart.js';
 import { Color, Label } from 'ng2-charts';
+import { NgxSpinnerService } from 'ngx-spinner';
 
 @Component({
   selector: 'app-admin-dashboard',
@@ -16,7 +17,8 @@ export class AdminDashboardComponent implements OnInit {
 
   constructor(
     private categoriesClient: CategoriesClient,
-    private profilesClient: ProfileClient) { }
+    private profilesClient: ProfileClient,
+    private spinner: NgxSpinnerService) { }
 
   ngOnInit(): void {
     this.categories$ = this.categoriesClient.getCategories(1, 3, CategoriesType.All, null)

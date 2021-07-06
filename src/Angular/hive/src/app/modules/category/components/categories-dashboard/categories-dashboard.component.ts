@@ -33,7 +33,7 @@ export class CategoriesDashboardComponent implements OnInit, OnDestroy {
   constructor(
     public dialog: MatDialog,
     private spinner: NgxSpinnerService,
-    private categoriesApiClient: CategoriesClient) { }
+    private categoriesApiClient: CategoriesClient,) { }
 
   ngOnInit(): void {
     this.dataSource = new MatTableDataSource<CategoryDto>([])
