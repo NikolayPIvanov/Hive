@@ -24,27 +24,25 @@ export class PlansService {
     this.acceptedInvestmentSubject.next(investment);
   }
 
-
-  private paginatorSettings = new PaginationControl();
-
   constructor(private investingClient: PlansClient) { }
 
   getPlan(planId: number) {
     return this.investingClient.getPlan(planId);
   }
 
-  getPlansAsVendor(searchKey: string | undefined) {
+  getPlansAsVendor(pageNumber: number, pageSize: number,  searchKey: string | undefined) {
     return this.investingClient.getPlans(
-      this.paginatorSettings.pageNumber,
-      this.paginatorSettings.pageSize,
+      pageNumber,
+      pageSize,
       searchKey, false)
   }
 
-  getPlansAsInvestor(searchKey: string | undefined) {
+  getPlansAsInvestor(pageNumber: number, pageSize: number, searchKey: string | undefined) {
     return this.investingClient.getPlans(
-      this.paginatorSettings.pageNumber,
-      this.paginatorSettings.pageSize,
-      searchKey, true)
+      pageNumber,
+      pageSize,
+      searchKey,
+      true)
   }
 
   createPlan(value: any) {

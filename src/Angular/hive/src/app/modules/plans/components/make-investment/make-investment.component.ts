@@ -27,15 +27,6 @@ export class MakeInvestmentComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  myFilter = (d: Date | null): boolean => {
-    const day = (d || new Date()).getTime()
-    return !(day < this.data.startDate?.getTime()!
-      || day > this.data.endDate?.getTime()!)
-
-    // Prevent Saturday and Sunday from being selected.
-    // return day !== 0 && day !== 6;
-  }
-
   formatLabel(value: number) {
     if (value >= 1000) {
       return Math.round(value / 1000) + 'k';

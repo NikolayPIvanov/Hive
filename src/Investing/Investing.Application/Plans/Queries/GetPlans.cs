@@ -32,6 +32,7 @@ namespace Hive.Investing.Application.Plans.Queries
             var query =
                 _context.Plans
                     .AsNoTracking()
+                    .Include(p => p.Investments)
                     .Include(p => p.Vendor)
                     .AsQueryable();
 

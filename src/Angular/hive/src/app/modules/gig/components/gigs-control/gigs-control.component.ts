@@ -70,7 +70,6 @@ export class GigsControlComponent implements OnInit, OnDestroy {
   }
   
   pageChange(pageEvent: PageEvent) {
-    debugger;
     this.pageSize = pageEvent.pageSize;
     this.pageNumber = pageEvent.pageIndex;
 
@@ -79,7 +78,7 @@ export class GigsControlComponent implements OnInit, OnDestroy {
         takeUntil(this.subject),
         tap({
           next: (gigs) => {
-            debugger;this.pushNewGigs(gigs)
+            this.pushNewGigs(gigs)
         } }))
       .subscribe();
   }

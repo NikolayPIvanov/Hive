@@ -1,12 +1,14 @@
-<mat-card style="flex-flow: row wrap; display: inline-flex;" class="container" fxLayout="column">
+<!-- <mat-card 
+  class="container" 
+  fxLayout="column">
   <mat-card-header>
     <mat-card-title>Plans Control</mat-card-title>
     <mat-card-subtitle>Manage your gigs plans</mat-card-subtitle>
   </mat-card-header>
-  <mat-card-content fxLayout="column" fxFlex="80%">
+  <mat-card-content fxLayout="column" fxLayoutGap="3%"> -->
 
     <!-- Header -->
-    <mat-accordion>
+    <!-- <mat-accordion>
       <mat-expansion-panel>
         <mat-expansion-panel-header>
           <mat-panel-title>
@@ -17,7 +19,6 @@
           </mat-panel-description>
         </mat-expansion-panel-header>
       
-        <!-- filter -->
         <div 
           fxLayout="row" fxLayoutAlign="space-between">
           <app-plans-search-field [selfOnly]="true" (onSelected)="onPlanSelected($event)"></app-plans-search-field>
@@ -26,72 +27,109 @@
   
       </mat-expansion-panel>
     </mat-accordion>
+     -->
+     
+    <!-- <div *ngIf="plans$ | async; let plansList" 
+      class="mat-elevation-z2"  fxLayout="column" >
+      
     
-    <ng-container *ngIf="plans$ | async; let plansList">
-      <div class="mat-elevation-z2" fxFill fxLayout="column">
-        <table mat-table [dataSource]="dataSource" matSort fxFlex>
-          <!-- Title Column -->
-          <ng-container matColumnDef="title">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Title </th>
-            <td mat-cell *matCellDef="let row"> {{row.title | limitTo:'20'}} </td>
-          </ng-container>
       
-          <!-- Description Column -->
-          <ng-container matColumnDef="description">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Description </th>
-            <td mat-cell *matCellDef="let row"> {{row.description | limitTo:'20'}}</td>
-          </ng-container>
-      
-          <!-- startDate Column -->
-          <ng-container matColumnDef="startDate">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Start Date </th>
-            <td mat-cell *matCellDef="let row"> {{row.startDate | date:'short'}} </td>
-          </ng-container>
-      
-          <!-- endDate Column -->
-          <ng-container matColumnDef="endDate">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> End Date </th>
-            <td mat-cell *matCellDef="let row"> {{row.endDate | date:'short'}} </td>
-          </ng-container>
-
-          <!-- fundingNeeded Column -->
-          <ng-container matColumnDef="fundingNeeded">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Needed Funding </th>
-            <td mat-cell *matCellDef="let row"> {{row.fundingNeeded}} </td>
-          </ng-container>
-
-          <!-- isFunded Column -->
-          <ng-container matColumnDef="isFunded">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> Is Funded? </th>
-            <td mat-cell *matCellDef="let row"> {{row.isFunded}} </td>
-          </ng-container>
-          
-          <!-- isPublic Column -->
-          <ng-container matColumnDef="isPublic">
-            <th mat-header-cell *matHeaderCellDef mat-sort-header> isPublic </th>
-            <td mat-cell *matCellDef="let row"> {{row.isPublic}} </td>
-          </ng-container>
-
-          <!-- isPublic Column -->
-          <ng-container matColumnDef="actions">
-            <th mat-header-cell *matHeaderCellDef> actions </th>
-            <td mat-cell *matCellDef="let row"> 
-              <app-plan-card [plan]="row" (change)="onChange($event)"></app-plan-card>
-            </td>
-          </ng-container>
-      
-          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
-          <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
-      
-          <!-- Row shown when there is no matching data. -->
-          <tr class="mat-row" *matNoDataRow>
-            <td class="mat-cell" colspan="4">No data matching the filter</td>
-          </tr>
-        </table>
-      
-        <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]"></mat-paginator>
-      </div>
-    </ng-container>
+    </div>
   </mat-card-content>
-</mat-card>
+</mat-card> -->
 
+<div *ngIf="plans$ | async; let plansList" class="container">
+  <mat-card class="mat-elevation-z8" fxLayout="column" fxFlex>
+    <mat-card-header>
+      <mat-card-title>Plans Control</mat-card-title>
+      <mat-card-subtitle>Manage your gigs plans</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content fxFlex fxLayout="column">
+      <div fxLayout="row">
+        <mat-form-field appearance="standard" fxFlex>
+          <mat-label>Filter</mat-label>
+          <input matInput (keyup)="applyFilter($event)" placeholder="Ex. My plan" #input>
+        </mat-form-field>
+
+        <button *ngIf="isSeller" mat-raised-button color="primary" (click)="openCreateDialog()">Create Plan</button>
+      </div>
+
+      <table mat-table [dataSource]="dataSource" fxFlex matSort multiTemplateDataRows>
+        <!-- Title Column -->
+        <ng-container matColumnDef="title">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Title </th>
+          <td mat-cell *matCellDef="let row"> {{row.title | limitTo:'20'}} </td>
+        </ng-container>
+    
+        <!-- Description Column -->
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Description </th>
+          <td mat-cell *matCellDef="let row"> {{row.description | limitTo:'20'}}</td>
+        </ng-container>
+    
+        <!-- startDate Column -->
+        <ng-container matColumnDef="startDate">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Start Date </th>
+          <td mat-cell *matCellDef="let row"> {{row.startDate | date:'short'}} </td>
+        </ng-container>
+    
+        <!-- endDate Column -->
+        <ng-container matColumnDef="endDate">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> End Date </th>
+          <td mat-cell *matCellDef="let row"> {{row.endDate | date:'short'}} </td>
+        </ng-container>
+
+        <!-- fundingNeeded Column -->
+        <ng-container matColumnDef="fundingNeeded">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Needed Funding </th>
+          <td mat-cell *matCellDef="let row"> {{row.fundingNeeded}}$ </td>
+        </ng-container>
+
+        <!-- fundingNeeded Column -->
+        <ng-container matColumnDef="totalFundsNeeded">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Total Funds Needed </th>
+          <td mat-cell *matCellDef="let row"> {{row.totalFundingNeeded}}$ </td>
+        </ng-container>
+
+        <!-- isFunded Column -->
+        <ng-container matColumnDef="isFunded">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Is Funded? </th>
+          <td mat-cell *matCellDef="let row"> {{row.isFunded}} </td>
+        </ng-container>
+        
+        <!-- isPublic Column -->
+        <ng-container matColumnDef="isPublic">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Is Public? </th>
+          <td mat-cell *matCellDef="let row"> {{row.isPublic}} </td>
+        </ng-container>
+
+        <!-- isPublic Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef> Actions </th>
+          <td mat-cell *matCellDef="let row"> 
+            <app-plan-card [plan]="row" (change)="onChange($event)"></app-plan-card>
+          </td>
+        </ng-container>
+    
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    
+        <!-- Row shown when there is no matching data. -->
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell" colspan="4">No data matching the filter</td>
+        </tr>
+      </table>
+    </mat-card-content>
+
+    <mat-paginator 
+        fxFlexAlign="end"
+        [pageSizeOptions]="pageSizeOptions"
+        [length]="length"
+        [pageIndex]="pageIndex"
+        [pageSize]="pageSize"
+        (page)="setPage($event)"
+        showFirstLastButtons
+        ></mat-paginator>
+  </mat-card>
+</div>

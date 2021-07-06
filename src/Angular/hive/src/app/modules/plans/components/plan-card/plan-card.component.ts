@@ -52,7 +52,6 @@ export class PlanCardComponent implements OnInit {
     const dialogRef = this.dialog.open(PlanEditComponent, { data: plan });
     dialogRef.afterClosed().subscribe((result: PlanDto | undefined) => {
       if (result) {
-        debugger;
         this.change.emit({ type: ChangeType.Update, item: result })
       }
     });
