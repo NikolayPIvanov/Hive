@@ -1,13 +1,11 @@
-<img align="left" width="300" height="150" style="background-color:white;" src="https://user-images.githubusercontent.com/30214973/110762307-5124d280-8259-11eb-81d8-2b401e13dbad.png" />
+<img align="left" width="200" height="200" style="background-color:white;" src="https://user-images.githubusercontent.com/30214973/124624173-54d20a00-de85-11eb-90ca-1e18a5d9eb6f.png" />
 
 # Hive
 [![.NET](https://github.com/NikolayPIvanov/Hive/actions/workflows/dotnet.yml/badge.svg?branch=main)](https://github.com/NikolayPIvanov/Hive/actions/workflows/dotnet.yml)
 <br/>
 <br/>
 <br/>
-
-## Schema
-https://dbdiagram.io/d/60559287ecb54e10c33c5cdd
+<br/>
 
 ## Technologies
 * ASP.NET Core 5
