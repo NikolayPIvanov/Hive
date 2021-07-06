@@ -2,7 +2,7 @@
   <div  fxLayout="column">
     <div fxLayout="column">
       <!-- new chat -->
-      <h3>Start a new chat with:</h3>
+      <h3>Create room with:</h3>
       <mat-form-field appearance="fill">
         <mat-label>New chat</mat-label>
         <mat-select (selectionChange)="selected($event)">
@@ -13,10 +13,12 @@
       </mat-form-field>
     </div>
 
-    <h3>Already started chatted with:</h3>
+    <h3>Rooms with:</h3>
     <div *ngIf="rooms$ | async; let rooms" fxLayout="column">
-      <mat-selection-list #roomsList [multiple]="false" (selectionChange)="onRoomSelected($event)">
-        <mat-list-option *ngFor="let room of rooms" [value]="room">
+      <mat-selection-list 
+        #roomsList [multiple]="false" 
+        (selectionChange)="onRoomSelected($event)">
+        <mat-list-option *ngFor="let room of rooms" [value]="room" >
           <mat-icon mat-list-icon>account_circle</mat-icon>
           {{ getChattingWithName(room)}}
         </mat-list-option>
@@ -28,7 +30,7 @@
   <mat-divider class="chat-window" [vertical]="true">
   </mat-divider>
 
-  <mat-card fxLayout="column" fxFlex class="chat-window scrollable-content">
+  <mat-card fxLayout="column" fxFlex class="chat-window scrollable-content mat-elevation-z8">
     <mat-card-header fxFlex="10">
       <mat-card-title> {{ otherParticipantName }} </mat-card-title>
       <mat-card-subtitle>Chat</mat-card-subtitle>
@@ -46,7 +48,7 @@
     <mat-card-actions fxFlexAlign="end strech" fxLayout="row">
       <mat-form-field fxFlex appearance="outline">
         <mat-label>Message</mat-label>
-        <input type="text" matInput placeholder="Type your message..." [(ngModel)]="text">
+        <input type="text" matInput placeholder="Type your message..." [(ngModel)]="text" >
         <button *ngIf="text" [disabled]="text.length==0" matSuffix mat-icon-button aria-label="Send" (click)="sendMessage()">
           <mat-icon>send</mat-icon>
         </button>
@@ -55,31 +57,4 @@
   </mat-card>
 </div>
 
-
-<!-- 
-  <input type="text" [(ngModel)]="text">
-  <button [disabled]="text.length==0" (click)="sendMessage()">Send Message</button>
-  <div *ngIf="rooms$ | async">
-    <div *ngFor="let room of chatService.rooms">
-      <div *ngFor="let message of room.messages">
-        <div>
-          <div><strong>ConnectionID</strong> {{message.senderIdentifier}}</div>
-          <div><strong>Date</strong> {{message.dateTime | date}}</div>
-          <div><strong>Message</strong> {{message.text}}</div>
-          <hr>
-        </div>
-      </div>
-    </div>
-  </div>
- 
-
-
-<h4>mat select</h4>
-<mat-form-field *ngIf="uuids$ | async; let uuids" appearance="fill">
-  <mat-label>Favorite animal</mat-label>
-  <mat-select [formControl]="selectFormControl" (selectionChange)="selected($event)" required>
-    <mat-option *ngFor="let uuid of uuids" [value]="uuid">
-      {{uuid.firstName || 'User'}} {{ uuid.lastName || 'User'}}
-    </mat-option>
-  </mat-select>
-</mat-form-field> -->
+<ngx-spinner></ngx-spinner>

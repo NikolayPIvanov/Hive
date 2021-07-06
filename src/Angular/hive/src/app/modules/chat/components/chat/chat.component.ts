@@ -1,10 +1,7 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
-import { AfterViewChecked, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { FormControl, Validators } from '@angular/forms';
-import { profile } from 'console';
-import { BehaviorSubject, concat, forkJoin, from, Observable, of, zip } from 'rxjs';
-import { catchError, concatMap, map, mergeMap, switchMap, tap, toArray } from 'rxjs/operators';
-import { ProfileClient, UserProfileDto } from 'src/app/clients/profile-client';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { NgxSpinnerService } from 'ngx-spinner';
+import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { switchMap, takeUntil, tap } from 'rxjs/operators';
 import { AuthService } from 'src/app/modules/layout/services/auth.service';
 import { ChatMessage, ChatService, Room, UniqueIdentifier } from '../../services/chat.service';
 
@@ -13,7 +10,10 @@ import { ChatMessage, ChatService, Room, UniqueIdentifier } from '../../services
   templateUrl: './chat.component.html',
   styleUrls: ['./chat.component.scss']
 })
-export class ChatComponent implements OnInit {
+export class ChatComponent implements OnInit, OnDestroy {
+  private unsubscribe = new Subject();
+
+
   public text: string = '';
   public otherParticipantName: string = ''
 
@@ -25,13 +25,22 @@ export class ChatComponent implements OnInit {
 
   constructor(
     public chatService: ChatService,
+    private spinner: NgxSpinnerService,
     private authService: AuthService) { }
+  
+  ngOnDestroy(): void {
+    //Called once, before the instance is destroyed.
+    //Add 'implements OnDestroy' to the class.
+    this.unsubscribe.next();
+    this.unsubscribe.complete();
+  }
  
   ngOnInit(): void {
-    //Called after the constructor, initializing input properties, and the first call to ngOnChanges.
-    //Add 'implements OnInit' to the class.
+    this.spinner.show();
+
     this.messages$ = this.chatService.fetchUUID(this.authService.user?.profile.sub!, true)
       .pipe(
+        // takeUntil(this.unsubscribe),
         switchMap(() => this.chatService.fetchRooms()),
         tap({
           next: (rooms) => {
@@ -56,7 +65,12 @@ export class ChatComponent implements OnInit {
             this.uuids = otherUuids
           }
         }),
-        switchMap(() => this.chatService.roomMessages)
+        switchMap(() => this.chatService.roomMessages),
+        tap({
+          complete: () => {
+            this.spinner.hide();
+          }
+        })
       )
   }
 

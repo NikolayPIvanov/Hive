@@ -1,11 +1,11 @@
 import { ENTER, COMMA } from '@angular/cdk/keycodes';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MatChipInputEvent } from '@angular/material/chips';
 import { Title } from '@angular/platform-browser';
 import { NgxSpinnerService } from 'ngx-spinner';
-import { Observable } from 'rxjs';
-import { switchMap, tap } from 'rxjs/operators';
+import { Observable, Subject } from 'rxjs';
+import { switchMap, takeUntil, tap } from 'rxjs/operators';
 import { FileUpload, ProfileClient, UpdateUserProfileCommand, UserProfileDto } from 'src/app/clients/profile-client';
 import { NotificationService } from 'src/app/modules/core/services/notification.service';
 import { AuthService } from 'src/app/modules/layout/services/auth.service';
@@ -16,7 +16,8 @@ import { ProfileService } from '../../services/profile.service';
   templateUrl: './account-overview.component.html',
   styleUrls: ['./account-overview.component.scss']
 })
-export class AccountOverviewComponent implements OnInit {
+export class AccountOverviewComponent implements OnInit, OnDestroy {
+  private unsubscribe = new Subject();
   public profile$!: Observable<UserProfileDto | undefined>;
   public isSeller = false;
   readonly separatorKeysCodes: number[] = [ENTER, COMMA];
@@ -42,6 +43,13 @@ export class AccountOverviewComponent implements OnInit {
     private notificationService: NotificationService,
     private profileClient: ProfileClient,
     private profileService: ProfileService) { }
+  
+  ngOnDestroy(): void {
+    //Called once, before the instance is destroyed.
+    //Add 'implements OnDestroy' to the class.
+    this.unsubscribe.next();
+    this.unsubscribe.complete();
+  }
 
   ngOnInit(): void {
     this.titleService.setTitle('Hive - Profile');
@@ -49,11 +57,13 @@ export class AccountOverviewComponent implements OnInit {
     this.isSeller = (this.authService.user?.profile.role as string[]).includes('Seller')
     
     this.profile$! = this.profileService.getProfile()
-      .pipe(tap({
-        next: (profile) => {
-          this.profile = profile!;
-          this.form.patchValue(profile!)
-        },
+      .pipe(
+        takeUntil(this.unsubscribe),
+        tap({
+          next: (profile) => {
+            this.profile = profile!;
+            this.form.patchValue(profile!)
+          },
         complete: () => this.spinnerService.hide()
       }));
   }
@@ -73,7 +83,9 @@ export class AccountOverviewComponent implements OnInit {
         const upload = FileUpload.fromJS({ fileData: base64result });
 
         this.profileClient.changeAvatar(this.profile.id!, upload)
-          .pipe(switchMap(() => this.profileService.getProfile()),
+          .pipe(
+            takeUntil(this.unsubscribe),
+            switchMap(() => this.profileService.getProfile()),
             tap({
               next: (profile) => {
                 this.profile = profile!;
@@ -89,9 +101,11 @@ export class AccountOverviewComponent implements OnInit {
   update() {
     const command = UpdateUserProfileCommand.fromJS(this.form.value);
     this.profileService.updateProfile(command.id!, command)
-      .pipe(tap({
-        next: () => this.notificationService.openSnackBar('Successfully saved changes'),
-        error: () => this.notificationService.openSnackBar('Saving changes failed'),
+      .pipe(
+        takeUntil(this.unsubscribe),
+        tap({
+          next: () => this.notificationService.openSnackBar('Successfully saved changes'),
+          error: () => this.notificationService.openSnackBar('Saving changes failed'),
       }))
       .subscribe();
   }

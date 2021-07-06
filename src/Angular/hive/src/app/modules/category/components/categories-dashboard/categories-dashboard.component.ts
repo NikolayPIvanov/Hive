@@ -6,8 +6,9 @@ import { PageEvent } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { NgxSpinnerService } from 'ngx-spinner';
 import { BehaviorSubject, Observable, Subject } from 'rxjs';
-import { tap } from 'rxjs/operators';
+import { takeUntil, tap } from 'rxjs/operators';
 import { CategoriesClient, CategoriesType, CategoryDto, PaginatedListOfCategoryDto } from 'src/app/clients/gigs-client';
+import { NotificationService } from 'src/app/modules/core/services/notification.service';
 import { CategoryDetailsComponent } from '../category-details/category-details.component';
 
 @Component({
@@ -32,6 +33,7 @@ export class CategoriesDashboardComponent implements OnInit, OnDestroy {
 
   constructor(
     public dialog: MatDialog,
+    private notificationService: NotificationService,
     private spinner: NgxSpinnerService,
     private categoriesApiClient: CategoriesClient,) { }
 
@@ -62,15 +64,20 @@ export class CategoriesDashboardComponent implements OnInit, OnDestroy {
   }
   delete(category: CategoryDto) {
     this.categoriesApiClient.deleteCategory(category.id!)
-      .pipe(tap({
-        next: () => {
-          const copy = this.dataSource.data
-          const index = copy.indexOf(category);
-          if (index > -1) {
-            copy.splice(index, 1);
-          }
-          this.dataSource.data = copy;
-      }}))
+      .pipe(
+        takeUntil(this.unsubscribe),
+        tap({
+          next: () => {
+            const copy = this.dataSource.data
+            const index = copy.indexOf(category);
+            if (index > -1) {
+              copy.splice(index, 1);
+            }
+            this.dataSource.data = copy;
+            this.notificationService.openSnackBar('Category Deleted')
+          },
+          error: () => this.notificationService.openSnackBar('Category updated failed. Try again later!')
+        }))
       .subscribe()
   }
 
@@ -82,15 +89,20 @@ export class CategoriesDashboardComponent implements OnInit, OnDestroy {
     });
 
     dialogRef.afterClosed()
-      .pipe(tap({
-        next: (updatedCategory) => {
-          const copy = this.dataSource.data;
-          const index = copy.indexOf(category);
-          if (updatedCategory && index > -1) {
-            copy.splice(index, 1, updatedCategory);
-            this.dataSource.data = copy;
-          }
-        }
+      .pipe(
+        takeUntil(this.unsubscribe),
+        tap({
+          next: (updatedCategory) => {
+            const copy = this.dataSource.data;
+            const index = copy.indexOf(category);
+            if (updatedCategory && index > -1) {
+              copy.splice(index, 1, updatedCategory);
+              this.dataSource.data = copy;
+              this.notificationService.openSnackBar('Category updated successfully')
+            }
+          },
+          error: () => this.notificationService.openSnackBar('Category updated failed. Try again later!')
+
       }))
       .subscribe();
   }
