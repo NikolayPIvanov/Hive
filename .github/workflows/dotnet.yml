@@ -14,7 +14,6 @@ jobs:
 
     env:
       SOLUTION: Hive.sln
-      UNIT_TESTS: ./tests/Application.UnitTests
 
     steps:
     - uses: actions/checkout@v2
@@ -26,5 +25,3 @@ jobs:
       run: dotnet restore $SOLUTION
     - name: Build
       run: dotnet build --no-restore $SOLUTION
-    - name: Test
-      run: dotnet test --no-build --verbosity normal $UNIT_TESTS
