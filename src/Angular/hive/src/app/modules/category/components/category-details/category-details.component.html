@@ -1,3 +1,62 @@
+<ng-container *ngIf="!editMode; else edit">
+    <h2 mat-dialog-title> {{ category.title! }} </h2>
+    <mat-dialog-content class="mat-typography" fxLayout="column wrap">
+        <p style="word-break: break-all;">{{ category.description }}</p>
+        <section *ngIf="category.parentOverview">
+            <mat-divider></mat-divider>
+            <h3> <strong>Parent Category</strong> </h3>
+            <h4> <strong>Title:</strong> {{ category.parentOverview?.title! }}</h4>
+            <p> <strong>Description:</strong> {{ category.parentOverview?.description! | limitTo:'100'}}</p>
+        </section>
+        <ng-container *ngIf="category.subCategories && category.subCategories.length > 0; else noChildren">
+            <mat-divider></mat-divider>
+            <mat-list>
+                <div mat-subheader>Child Categories</div>
+                <mat-list-item *ngFor="let child of category.subCategories">
+                  <mat-icon mat-list-icon>category</mat-icon>
+                  <div mat-line>{{child.title}}</div>
+                </mat-list-item>
+                <mat-divider></mat-divider>
+            </mat-list>
+        </ng-container>
+        <ng-template #noChildren>
+            <p>
+                No children
+            </p>
+        </ng-template>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+        <button mat-raised-button color="primary" (click)="editMode = true">Edit</button>
+        <button mat-raised-button mat-dialog-close>Cancel</button>
+    </mat-dialog-actions>
+</ng-container>
+<ng-template #edit>
+    <div fxLayout="column"> 
+        <mat-dialog-content class="mat-typography">
+            <h2 mat-dialog-title>Editting {{ category.title! }} </h2>
+            <form [formGroup]="categoryForm" fxLayout="column" (ngSubmit)="onSubmit()" id="cform">
+                <mat-form-field appearance="fill">
+                    <mat-label>Title</mat-label>
+                    <input matInput placeholder="Title" formControlName="title">
+                </mat-form-field>
+
+                <mat-form-field appearance="fill">
+                    <mat-label>Description</mat-label>
+                    <textarea matInput placeholder="Description" formControlName="description"></textarea>
+                </mat-form-field>
+
+                <app-categories-search (onSelectedCategory)="onSelected($event)" [init]="category.parentOverview?.title || null"></app-categories-search>
+            </form>
+        </mat-dialog-content>
+        <mat-dialog-actions align="end">
+            <button type="submit" form="cform" mat-raised-button color="primary">Update</button>
+            <button mat-raised-button mat-dialog-close>Cancel</button>
+        </mat-dialog-actions>
+    </div>
+</ng-template>
+
+
+<!-- 
 
 <ng-container>
     <ng-container *ngIf="!editMode; else edit">
@@ -6,7 +65,7 @@
     
         <mat-dialog-content class="mat-typography">
             <h3> <strong>Category Description:</strong> </h3>
-            <p> <strong>Description:</strong> {{ category.description }}</p>
+            <p> <strong>Description:</strong> </p>
     
             <section *ngIf="category.parentOverview">
                 <mat-divider></mat-divider>
@@ -15,8 +74,8 @@
                 <p> <strong>Description:</strong> {{ category.parentOverview?.description! | limitTo:'100'}}</p>
             </section>
     
-            <mat-divider></mat-divider>
             <ng-container *ngIf="category.subCategories && category.subCategories.length > 0; else noChildren">
+                <mat-divider></mat-divider>
                 <mat-list>
                     <div mat-subheader>Child Categories</div>
                     <mat-list-item *ngFor="let child of category.subCategories">
@@ -66,4 +125,4 @@
         </div>
     </ng-template>
     
-</ng-container>
+</ng-container> -->

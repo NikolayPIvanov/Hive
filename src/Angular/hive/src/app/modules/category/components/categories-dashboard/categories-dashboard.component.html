@@ -1,7 +1,7 @@
 <ng-container *ngIf="categories$ | async; else noCategories">
   <div fxLayout="column" fxLayoutGap="2rem" class="container">
 
-    <mat-accordion>
+    <mat-accordion fxFlex>
       <mat-expansion-panel>
         <mat-expansion-panel-header>
           <mat-panel-title>
@@ -12,42 +12,72 @@
           </mat-panel-description>
         </mat-expansion-panel-header>
       
-        <!-- filter -->
         <div 
           fxLayout.gt-lg="row"
+          fxFlex
           fxLayoutAlign.gt-lg="space-between">
-          <app-categories-search [defaultSearchType]="0" (onSelectedCategory)="selected($event)"></app-categories-search>
-          <app-categories-create (onClosedDialog)="onClosedDialog($event)"></app-categories-create>
+          <app-categories-search fxFlex="20%"
+            [defaultSearchType]="0" 
+            (onSelectedCategory)="selected($event)">
+          </app-categories-search>
+          <app-categories-create fxFlexOffset="65%" fxFlex="10%" (onClosedDialog)="onClosedDialog($event)">
+          </app-categories-create>
         </div>
 
       </mat-expansion-panel>
     </mat-accordion>
     
-    <div fxLayout="row wrap" fxLayoutGap="2rem" fxLayoutAlign="start center">
-        <mat-card 
-          *ngFor="let category of categories"
-            style="max-height: 10rem !important;"
-            class="list-item-card"
-            fxLayout="column"
-            fxFlex.gt-lg="18"
-            fxFlex.gt-md="18"> 
-            <mat-card-header fxLayout="column wrap">
-                <mat-card-title>{{ category.title }}</mat-card-title>
-                <mat-card-subtitle>Category</mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-content>
-                <p>
-                    {{ category.description! | limitTo:'100' }}
-                </p>
-            </mat-card-content>
-            <mat-card-actions 
-                fxLayout.gt-lg="row"
-                fxLayoutAlign.gt-lg="space-between center">
-                <button mat-button (click)="delete(category)">Delete</button>
-                <button mat-button (click)="openDialog(category)">Details</button>
-            </mat-card-actions>
-        </mat-card>
+    <div fxFlex class="mat-elevation-z8" fxLayout="column">
+      <table mat-table [dataSource]="dataSource" fxFlex>
+    
+        <!-- Title Column -->
+        <ng-container matColumnDef="title">
+          <th mat-header-cell *matHeaderCellDef> Title </th>
+          <td mat-cell *matCellDef="let element"> {{ element.title | limitTo:'20'}} </td>
+        </ng-container>
 
+        <!-- Description Column -->
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef> Description </th>
+          <td mat-cell *matCellDef="let element"> {{ element.description | limitTo:'20'}} </td>
+        </ng-container>
+    
+        <!-- Parents Column -->
+        <ng-container matColumnDef="parent">
+          <th mat-header-cell *matHeaderCellDef> Is Parent? </th>
+          <td mat-cell *matCellDef="let element"> 
+            {{element.parentOverview ? 'No' : 'Yes'}} 
+          </td>
+        </ng-container>
+
+        <!-- Children Column -->
+        <ng-container matColumnDef="children">
+          <th mat-header-cell *matHeaderCellDef> Children Count </th>
+          <td mat-cell *matCellDef="let element"> 
+            {{ element.subCategories.length }} 
+          </td>
+        </ng-container>
+
+        <!-- Children Column -->
+        <ng-container matColumnDef="actions">
+          <th mat-header-cell *matHeaderCellDef> Actions </th>
+          <td mat-cell *matCellDef="let element" fxLayout="row"> 
+            <button mat-raised-button color="primary" (click)="openDialog(element)">Details</button>
+            <button mat-raised-button color="warn" fxFlexOffset="3" (click)="delete(element)">Delete</button>
+          </td>
+        </ng-container>
+    
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+      </table>
+    
+      <mat-paginator 
+        [pageSizeOptions]="pageOptions"
+        [pageIndex]="pageNumber"
+        [pageSize]="pageSize"
+        [length]="length"
+        (page)="setPage($event)"
+        showFirstLastButtons></mat-paginator>
     </div>
   </div>
 
