@@ -22,7 +22,7 @@ namespace Hive.Investing.Application.IntegrationEvents.EventHandlers
             _integrationEventPublisher = integrationEventPublisher ?? throw new ArgumentNullException(nameof(integrationEventPublisher));
         }
         
-        [CapSubscribe(nameof(InvestorCreatedIntegrationEvent), Group = "hive.investing.investor.creation")]
+        [CapSubscribe(nameof(InvestorCreatedIntegrationEvent), Group = "hive.investing.investor.created")]
         public async Task Handle(InvestorCreatedIntegrationEvent @event)
         {
             var alreadyRegistered = await _context.Investors.AnyAsync(v => v.UserId == @event.UserId);

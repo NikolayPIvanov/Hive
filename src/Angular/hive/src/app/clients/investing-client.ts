@@ -1063,6 +1063,7 @@ export class PlanDto implements IPlanDto {
     isPublic?: boolean;
     startDate?: Date;
     endDate?: Date;
+    totalFundingNeeded?: number;
     fundingNeeded?: number;
     vendorId?: number;
     vendorUserId?: string;
@@ -1086,6 +1087,7 @@ export class PlanDto implements IPlanDto {
             this.isPublic = _data["isPublic"];
             this.startDate = _data["startDate"] ? new Date(_data["startDate"].toString()) : <any>undefined;
             this.endDate = _data["endDate"] ? new Date(_data["endDate"].toString()) : <any>undefined;
+            this.totalFundingNeeded = _data["totalFundingNeeded"];
             this.fundingNeeded = _data["fundingNeeded"];
             this.vendorId = _data["vendorId"];
             this.vendorUserId = _data["vendorUserId"];
@@ -1113,6 +1115,7 @@ export class PlanDto implements IPlanDto {
         data["isPublic"] = this.isPublic;
         data["startDate"] = this.startDate ? this.startDate.toISOString() : <any>undefined;
         data["endDate"] = this.endDate ? this.endDate.toISOString() : <any>undefined;
+        data["totalFundingNeeded"] = this.totalFundingNeeded;
         data["fundingNeeded"] = this.fundingNeeded;
         data["vendorId"] = this.vendorId;
         data["vendorUserId"] = this.vendorUserId;
@@ -1133,6 +1136,7 @@ export interface IPlanDto {
     isPublic?: boolean;
     startDate?: Date;
     endDate?: Date;
+    totalFundingNeeded?: number;
     fundingNeeded?: number;
     vendorId?: number;
     vendorUserId?: string;

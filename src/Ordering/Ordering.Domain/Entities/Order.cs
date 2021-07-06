@@ -42,6 +42,8 @@ namespace Ordering.Domain.Entities
         public Requirement Requirement { get; private init; }
         public int PackageId { get; private init; }
 
+        public int? GigId { get; set; }
+
         public decimal UnitPrice { get; private init; }
         public int Quantity { get; private set; }
         public decimal TotalPrice { get; private set; }

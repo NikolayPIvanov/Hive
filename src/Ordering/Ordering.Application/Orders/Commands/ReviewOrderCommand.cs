@@ -87,6 +87,10 @@ namespace Ordering.Application.Orders.Commands
             {
                 await _publisher.PublishAsync(new OrderDeclinedIntegrationEvent(order.OrderNumber, order.SellerUserId), cancellationToken);
             }
+            if (request.OrderState == OrderState.Accepted)
+            {
+                await _publisher.PublishAsync(new OrderAcceptedIntegrationEvent(order.OrderNumber, order.SellerUserId), cancellationToken);
+            }
             return Unit.Value;
         }
         

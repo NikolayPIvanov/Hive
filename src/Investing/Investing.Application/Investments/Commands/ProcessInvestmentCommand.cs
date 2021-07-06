@@ -40,16 +40,16 @@ namespace Hive.Investing.Application.Investments.Commands
                 .Include(x => x.Investor)
                 .FirstOrDefaultAsync(x => x.Id == request.InvestmentId, cancellationToken: cancellationToken);
 
-            if (investment?.Plan == null)
-            {
-                _logger.LogWarning("Plan with Id {@PlanId} was not found.", request.PlanId);
-                throw new NotFoundException(nameof(Plan), request.PlanId);
-            }
-            
             if (investment == null)
             {
                 _logger.LogWarning("Investment with Id {@InvestmentId} was not found.", request.InvestmentId);
                 throw new NotFoundException(nameof(Investment), request.InvestmentId);
+            }
+            
+            if (investment?.Plan == null)
+            {
+                _logger.LogWarning("Plan with Id {@PlanId} was not found.", request.PlanId);
+                throw new NotFoundException(nameof(Plan), request.PlanId);
             }
 
             var canProcess = _currentUserService.UserId == investment.Plan.Vendor.UserId;
@@ -58,11 +58,15 @@ namespace Hive.Investing.Application.Investments.Commands
             {
                 throw new ForbiddenAccessException();
             }
+            
 
             if (request.Accept)
             {
+                // Goes to Billing to check the balance and get the money from the investor's wallet
                 await _publisher.PublishAsync(
-                    new InvestmentAcceptedIntegrationEvent(investment.Investor.UserId, investment.Plan.Vendor.UserId,
+                    new InvestmentAcceptedIntegrationEvent(
+                        investment.Investor.UserId, 
+                        investment.Plan.Vendor.UserId,
                         investment.Id,
                         investment.Amount), cancellationToken);
             }

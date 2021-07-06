@@ -8,10 +8,10 @@ namespace BuildingBlocks.Core.Caching
     public static class RedisExtension
     {
         public static IServiceCollection AddRedis(this IServiceCollection services,
-            IConfiguration configuration)
+            IConfiguration configuration, string sectionName = "Redis")
         {
             services.AddStackExchangeRedisExtensions<NewtonsoftSerializer>(provider => 
-                configuration.GetSection("Redis").Get<RedisConfiguration>());
+                configuration.GetSection(sectionName).Get<RedisConfiguration>());
 
             return services;
         }

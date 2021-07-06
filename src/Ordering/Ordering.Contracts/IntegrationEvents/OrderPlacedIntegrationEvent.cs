@@ -9,6 +9,7 @@ namespace Ordering.Contracts.IntegrationEvents
             string BuyerUserId, string SellerUserId, int PackageId)
         : IntegrationEvent(nameof(OrderPlacedIntegrationEvent));
     
-    public record OrderBuyerVerificationIntegrationEvent(Guid OrderNumber, decimal UnitPrice, string UserId)
+    public record OrderBuyerVerificationIntegrationEvent(
+        Guid OrderNumber, decimal UnitPrice, string UserId, int PackageId, int GigId)
         : IntegrationEvent(nameof(OrderBuyerVerificationIntegrationEvent));
 }

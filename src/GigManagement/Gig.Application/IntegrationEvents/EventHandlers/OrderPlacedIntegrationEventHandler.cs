@@ -24,14 +24,17 @@ namespace Hive.Gig.Application.IntegrationEvents.EventHandlers
         public async Task Handle(OrderPlacedIntegrationEvent @event)
         {
             var package = await _dbContext.Packages
+                .Include(p => p.Gig)
                 .FirstOrDefaultAsync(g => g.Id == @event.PackageId);
             
             var reason = $"Package with id {@event.PackageId} was not found";
-            var integrationEvent = new OrderValidatedIntegrationEvent(@event.OrderNumber, reason, IsValid: false);
+            var integrationEvent = new OrderValidatedIntegrationEvent(
+                @event.OrderNumber, package.Id, package.Gig.Id, reason, IsValid: false);
             
             if (package is null)
             {
-                var invalidationEvent = new OrderValidatedIntegrationEvent(@event.OrderNumber, reason);
+                var invalidationEvent = new OrderValidatedIntegrationEvent(
+                    @event.OrderNumber, -1, -1, reason);
                 await _publisher.PublishAsync(invalidationEvent);
                 return;
             }

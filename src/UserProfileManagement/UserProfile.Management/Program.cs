@@ -1,3 +1,4 @@
+#nullable enable
 using System;
 using System.Threading.Tasks;
 using Hive.UserProfile.Infrastructure.Persistence;
@@ -24,20 +25,26 @@ namespace UserProfile.Management
                 
                 var configuration = services.GetService<IConfiguration>();
 
-                var elasticUri = configuration.GetValue<string>("ElasticUrl");
-            
-                Log.Logger = new LoggerConfiguration()
+                var logConfiguration = new LoggerConfiguration()
                     .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
                     .Enrich.FromLogContext()
-                    .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(elasticUri) ){
-                        AutoRegisterTemplate = true,
-                        AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv6
-                    })
                     .WriteTo.Console(
                         outputTemplate:
                         "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message:lj}{NewLine}{Exception}{NewLine}",
-                        theme: AnsiConsoleTheme.Code)
-                    .CreateLogger();
+                        theme: AnsiConsoleTheme.Code);
+                
+                var elasticUri = configuration.GetValue<string?>("ElasticUrl");
+                if (!string.IsNullOrEmpty(elasticUri))
+                {
+                    logConfiguration = logConfiguration
+                        .WriteTo.Elasticsearch(new ElasticsearchSinkOptions(new Uri(elasticUri))
+                        {
+                            AutoRegisterTemplate = true,
+                            AutoRegisterTemplateVersion = AutoRegisterTemplateVersion.ESv6
+                        });
+                }
+            
+                Log.Logger = logConfiguration.CreateLogger();
 
                 try
                 {

@@ -1,4 +1,5 @@
-﻿using BuildingBlocks.Core.Caching;
+﻿using System;
+using BuildingBlocks.Core.Caching;
 using BuildingBlocks.Core.Email;
 using BuildingBlocks.Core.MessageBus;
 using Hive.Common.Core.Interfaces;
@@ -27,12 +28,23 @@ namespace Hive.Investing.Infrastructure
                 services.AddDbContext<InvestingDbContext>(options =>
                     options.UseSqlServer(
                         sqlServerConnectionString,
-                        b => b.MigrationsAssembly(typeof(InvestingDbContext).Assembly.FullName)));
+                        b =>
+                        {
+                            b.MigrationsAssembly(typeof(InvestingDbContext).Assembly.FullName);
+                            b.EnableRetryOnFailure(
+                                maxRetryCount: 10,
+                                maxRetryDelay: TimeSpan.FromSeconds(30),
+                                errorNumbersToAdd: null
+                            );
+                        }));
             }
 
             services.AddRedis(configuration);
             services.AddSendGrid(configuration);
-            services.AddRabbitMqBroker<InvestingDbContext>(useInMemory, sqlServerConnectionString, configuration);
+            services.AddMessagingBus<InvestingDbContext>(
+                new StorageOptions(sqlServerConnectionString), 
+                new MessagingOptions(configuration.GetValue<bool>("IsProduction")), 
+                configuration);
             services.AddScoped<IInvestingDbContext>(provider => provider.GetService<InvestingDbContext>());
 
             return services;

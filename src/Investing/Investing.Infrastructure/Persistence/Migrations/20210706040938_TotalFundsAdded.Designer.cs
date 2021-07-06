@@ -4,14 +4,16 @@ using Hive.Investing.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Hive.Investing.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(InvestingDbContext))]
-    partial class InvestingDbContextModelSnapshot : ModelSnapshot
+    [Migration("20210706040938_TotalFundsAdded")]
+    partial class TotalFundsAdded
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -121,9 +123,6 @@ namespace Hive.Investing.Infrastructure.Persistence.Migrations
                     b.Property<DateTime?>("EndDate")
                         .IsRequired()
                         .HasColumnType("datetime2");
-
-                    b.Property<int?>("GigId")
-                        .HasColumnType("int");
 
                     b.Property<bool>("IsFunded")
                         .HasColumnType("bit");

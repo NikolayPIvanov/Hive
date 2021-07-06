@@ -1,6 +1,8 @@
 using System;
 using System.Linq;
 using System.Net.Http;
+using BuildingBlocks.Core.MessageBus;
+using DotNetCore.CAP;
 using FluentValidation.AspNetCore;
 using Hive.Common.Core;
 using Hive.Common.Core.Filters;
@@ -39,8 +41,6 @@ namespace UserProfile.Management
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            IdentityModelEventSource.ShowPII = true;
-            var authority = Configuration.GetValue<string>("Authority");
             services.AddUserProfileCore();
             services.AddUserProfileInfrastructure(Configuration);
             
@@ -51,17 +51,13 @@ namespace UserProfile.Management
                 options.AllowEmptyInputInBodyModelBinding = true;
                 options.Filters.Add<ApiExceptionFilterAttribute>();
             }).AddFluentValidation();
-
-            services.Configure<ForwardedHeadersOptions>(options =>
-            {
-                options.ForwardedHeaders =
-                    ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-            });
             
+            var authority = Configuration.GetValue<string>("Authority");
             services.AddAuthentication(DefaultAuthenticationSchema)
                 .AddJwtBearer(DefaultAuthenticationSchema, options =>
                 {
                     options.Authority = authority;
+                    // Because Identity is not running on TLS in docker
                     options.RequireHttpsMetadata = false;
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
@@ -90,6 +86,9 @@ namespace UserProfile.Management
                     });
             });
 
+            var sqlServerConnectionString = Configuration.GetConnectionString("DefaultConnection");
+            services.AddHealthChecks()
+                .AddSqlServer(sqlServerConnectionString, name: "ProfileDb-check", tags: new string[] {"profiledb"});
             
             services.AddScoped<ICurrentUserService, CurrentUserService>();
             services.AddScoped<IIdentityService, IdentityService>();
@@ -138,7 +137,11 @@ namespace UserProfile.Management
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MapHealthChecks("/health");
+            });
         }
     }
 }

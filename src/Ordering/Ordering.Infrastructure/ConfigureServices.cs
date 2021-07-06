@@ -1,4 +1,5 @@
-﻿using BuildingBlocks.Core.Email;
+﻿using System;
+using BuildingBlocks.Core.Email;
 using BuildingBlocks.Core.FileStorage;
 using BuildingBlocks.Core.Interfaces;
 using BuildingBlocks.Core.MessageBus;
@@ -28,12 +29,23 @@ namespace Ordering.Infrastructure
                 services.AddDbContext<OrderingDbContext>(options =>
                     options.UseSqlServer(
                         sqlServerConnectionString,
-                        b => b.MigrationsAssembly(typeof(OrderingDbContext).Assembly.FullName)));
+                        b =>
+                        {
+                            b.MigrationsAssembly(typeof(OrderingDbContext).Assembly.FullName);
+                            b.EnableRetryOnFailure(
+                                maxRetryCount: 10,
+                                maxRetryDelay: TimeSpan.FromSeconds(30),
+                                errorNumbersToAdd: null
+                            );
+                        }));
             }
 
             services.AddFileStorage(configuration);
             services.AddSendGrid(configuration);
-            services.AddRabbitMqBroker<OrderingDbContext>(useInMemory, sqlServerConnectionString, configuration);
+            services.AddMessagingBus<OrderingDbContext>(
+                new StorageOptions(sqlServerConnectionString), 
+                new MessagingOptions(configuration.GetValue<bool>("IsProduction")), 
+                configuration);
             services.AddScoped<IOrderingContext>(provider => provider.GetService<OrderingDbContext>());
 
             return services;

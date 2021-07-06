@@ -19,6 +19,7 @@ namespace Hive.Investing.Application.Plans.Queries
         
         public DateTime EndDate { get; set; }
         
+        public decimal TotalFundingNeeded { get; set; }
         public decimal FundingNeeded { get; set; }
         
         public int VendorId { get; set; }

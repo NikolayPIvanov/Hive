@@ -1,5 +1,7 @@
 using System.Reflection;
 using System.Threading.Tasks;
+using BuildingBlocks.Core.Interfaces;
+using BuildingBlocks.Core.MessageBus;
 using Hive.Chat.Data;
 using Hive.Chat.Hubs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -42,20 +44,6 @@ namespace Hive.Chat
 
             services.AddSignalR();
 
-            services.AddCors(options =>
-            {
-                var origins = Configuration.GetSection("CorsOrigins").Get<string[]>();
-                options.AddDefaultPolicy(builder =>
-                {
-                    builder
-                        .WithOrigins(origins)
-                        .AllowCredentials()
-                        .AllowAnyHeader()
-                        .SetIsOriginAllowed(_ => true)
-                        .AllowAnyMethod();
-                });
-            });
-            
             services.AddCors(options =>
             {
                 var origins = Configuration.GetSection("CorsOrigins").Get<string[]>();
@@ -125,22 +113,46 @@ namespace Hive.Chat
 
         services.AddCap(options =>
         {
-            var rabbitMqSettings = Configuration.GetSection(nameof(RabbitMqSettings)).Get<RabbitMqSettings>();
-            var mongoDbSettings = Configuration.GetSection(nameof(ChatDatabaseSettings)).Get<ChatDatabaseSettings>();
+            var isProduction = Configuration.GetValue<bool>("IsProduction");
+            if (isProduction)
+            {
+                var azureServiceBusSettings = Configuration.GetSection(nameof(ServiceBusSettings)).Get<ServiceBusSettings>();
+                options.UseAzureServiceBus(x =>
+                {
+                    x.ConnectionString = azureServiceBusSettings.ConnectionString;
+                    x.EnableSessions = azureServiceBusSettings.EnableSessions;
+                    x.TopicPath = azureServiceBusSettings.TopicPath;
+                });
+                    
+                services.AddScoped<IIntegrationEventPublisher, ServiceBusPublisher>();
+            }
+            else
+            {
+                var rabbitMqSettings = Configuration.GetSection(nameof(RabbitMqSettings)).Get<RabbitMqSettings>();
+                
+                options.UseRabbitMQ(ro =>
+                {
+                    ro.Password = rabbitMqSettings.Password;
+                    ro.UserName = rabbitMqSettings.UserName;
+                    ro.HostName = rabbitMqSettings.Hostname;
+                    ro.Port = rabbitMqSettings.Port;
+                    ro.VirtualHost = rabbitMqSettings.VirtualHost;
+                });
+                
+                services.AddScoped<IIntegrationEventPublisher, RabbitMqPublisher>();
+            }
+            
+            var mongoDbSettings = Configuration
+                .GetSection(nameof(ChatDatabaseSettings))
+                .Get<ChatDatabaseSettings>();
 
             options.UseMongoDB(opt =>
             {
                 opt.DatabaseConnection = mongoDbSettings.ConnectionString;
+
             });
 
-            options.UseRabbitMQ(ro =>
-            {
-                ro.Password = rabbitMqSettings.Password;
-                ro.UserName = rabbitMqSettings.UserName;
-                ro.HostName = rabbitMqSettings.Hostname;
-                ro.Port = rabbitMqSettings.Port;
-                ro.VirtualHost = rabbitMqSettings.VirtualHost;
-            });
+            
         });
             
         services.AddSwaggerGen();

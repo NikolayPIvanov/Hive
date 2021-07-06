@@ -24,7 +24,7 @@ namespace Hive.UserProfile.Domain.Entities
 
         public string Surname { get; set; }
         
-        public string Bio { get; set; }
+        public string? Bio { get; set; }
         
         public string? AvatarUri { get; set; }
         

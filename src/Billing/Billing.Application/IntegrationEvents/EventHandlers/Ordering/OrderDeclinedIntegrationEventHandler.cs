@@ -30,8 +30,8 @@ namespace Billing.Application.IntegrationEvents.EventHandlers
                 .Include(w => w.Transactions)
                 .FirstOrDefaultAsync(w => w.AccountHolder.UserId == @event.DeclinedBy);
             
-            // todo: check for null
-
+            if(wallet == null) return;
+            
             var paymentTransaction = wallet.Transactions.FirstOrDefault(t =>
                 t.OrderNumber == @event.OrderNumber && t.TransactionType == TransactionType.Payment);
             

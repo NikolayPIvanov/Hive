@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
+using System;
 using System.Reflection;
 using BuildingBlocks.Core.Caching;
 using BuildingBlocks.Core.Email;
@@ -41,14 +42,25 @@ namespace Hive.Identity
             
             services.AddControllersWithViews();
             services.AddRazorPages();
-            
+
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(connectionString,
-                    o => o.MigrationsAssembly(assembly)));
+                options.UseSqlServer(
+                    connectionString,
+                    b =>
+                    {
+                        b.MigrationsAssembly(assembly);
+                        b.EnableRetryOnFailure(
+                            maxRetryCount: 10,
+                            maxRetryDelay: TimeSpan.FromSeconds(30),
+                            errorNumbersToAdd: null
+                        );
+                    }));
             
             services.AddSendGrid(Configuration);
             services.AddRedis(Configuration);
-            services.AddRabbitMqBroker<ApplicationDbContext>(false, connectionString, Configuration);
+            services.AddMessagingBus<ApplicationDbContext>(
+                new StorageOptions(connectionString), 
+                new MessagingOptions(Configuration.GetValue<bool>("IsProduction")), Configuration);
             services.AddOfType<ICapSubscribe>(new []{ Assembly.GetExecutingAssembly() });
             services.AddScoped<IIdentityDispatcher, IdentityDispatcher>();
 
@@ -60,10 +72,13 @@ namespace Hive.Identity
                 .AddDefaultTokenProviders()
                 .AddDefaultUI();
 
-            var issuerUri = Configuration.GetValue<string>("IssuerUri");
+            var issuerUri = Configuration.GetValue<string?>("IssuerUri");
             services.AddIdentityServer(options =>
                 {
-                    options.IssuerUri = issuerUri;
+                    if(!string.IsNullOrEmpty(issuerUri))
+                    {
+                        options.IssuerUri = issuerUri;
+                    }
                     options.Events.RaiseErrorEvents = true;
                     options.Events.RaiseInformationEvents = true;
                     options.Events.RaiseFailureEvents = true;
@@ -74,13 +89,34 @@ namespace Hive.Identity
                 })
                 .AddConfigurationStore(options =>
                 {
-                    options.ConfigureDbContext = b => b.UseSqlServer(connectionString,
-                        sql => sql.MigrationsAssembly(assembly));
+                    options.ConfigureDbContext = b => 
+                        b.UseSqlServer(
+                            connectionString,
+                            b =>
+                            {
+                                b.MigrationsAssembly(assembly);
+                                b.EnableRetryOnFailure(
+                                    maxRetryCount: 10,
+                                    maxRetryDelay: TimeSpan.FromSeconds(30),
+                                    errorNumbersToAdd: null
+                                );
+                            });
+                    
                 })
                 .AddOperationalStore(options =>
                 {
-                    options.ConfigureDbContext = b => b.UseSqlServer(connectionString,
-                        sql => sql.MigrationsAssembly(assembly));
+                    options.ConfigureDbContext = b => 
+                        b.UseSqlServer(
+                            connectionString,
+                            b =>
+                            {
+                                b.MigrationsAssembly(assembly);
+                                b.EnableRetryOnFailure(
+                                    maxRetryCount: 10,
+                                    maxRetryDelay: TimeSpan.FromSeconds(30),
+                                    errorNumbersToAdd: null
+                                );
+                            });
                 })
                 .AddAspNetIdentity<ApplicationUser>()
                 .AddProfileService<IdentityProfileService>();

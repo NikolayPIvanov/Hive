@@ -2,7 +2,9 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Billing.Application.Interfaces;
+using BuildingBlocks.Core.Interfaces;
 using DotNetCore.CAP;
+using Hive.Billing.Contracts.IntegrationEvents;
 using Hive.Billing.Domain.Entities;
 using Hive.Billing.Domain.Enums;
 using Hive.Common.Core.Exceptions;
@@ -16,11 +18,13 @@ namespace Billing.Application.IntegrationEvents.EventHandlers
     public class OrderCompletedIntegrationEventHandler  : ICapSubscribe
     {
         private readonly IBillingDbContext _context;
+        private readonly IIntegrationEventPublisher _publisher;
         private readonly ILogger<OrderCompletedIntegrationEventHandler> _logger;
 
-        public OrderCompletedIntegrationEventHandler(IBillingDbContext context, ILogger<OrderCompletedIntegrationEventHandler> logger)
+        public OrderCompletedIntegrationEventHandler(IBillingDbContext context, IIntegrationEventPublisher publisher, ILogger<OrderCompletedIntegrationEventHandler> logger)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
+            _publisher = publisher ?? throw new ArgumentNullException(nameof(publisher));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
@@ -31,6 +35,7 @@ namespace Billing.Application.IntegrationEvents.EventHandlers
                 .Include(w => w.Transactions)
                 .Include(a => a.AccountHolder)
                 .FirstOrDefaultAsync(h => h.AccountHolder.UserId == @event.BuyerUserId);
+            
             if (buyerAccount == null)
             {
                 throw new NotFoundException(nameof(AccountHolder), @event.BuyerUserId);
@@ -46,21 +51,32 @@ namespace Billing.Application.IntegrationEvents.EventHandlers
                 throw new NotFoundException(nameof(AccountHolder), @event.SellerUserId);
             }
 
-            var alreadyPaid =buyerAccount.Transactions.Any(t =>
-                t.OrderNumber == @event.OrderNumber && t.TransactionType == TransactionType.Payment);
+            var userIds = @event.Data.Select(d => d.UserId);
+            var accounts = await _context.Wallets
+                .Include(w => w.Transactions)
+                .Include(a => a.AccountHolder)
+                .Where(h => userIds.Contains(h.AccountHolder.UserId))
+                .ToListAsync();
 
-            if (!alreadyPaid)
-            {
-                throw new Exception();
-            }
-            
+            var valid = true;
             // add billing here for investors
-            
-            
-            // main
-            sellerAccount.AddTransaction(new Transaction(@event.BasePrice, @event.OrderNumber, TransactionType.Fund));
-            await _context.SaveChangesAsync(default);
-            
+            foreach (var data in @event.Data)
+            {
+                var wallet = accounts.FirstOrDefault(a => a.AccountHolder.UserId == data.UserId);
+                if (wallet == null)
+                {
+                    valid = false;
+                    break;
+                }
+                wallet.AddTransaction(new Transaction(data.Amount, @event.OrderNumber, TransactionType.Fund));
+            }
+
+            if (valid)
+            {
+                await _context.SaveChangesAsync(default);
+                await _publisher.PublishAsync(new OrderFundsDistributedIntegrationEvent(@event.OrderNumber, @event.ResolutionId));
+            }
+
         }
     }
 }

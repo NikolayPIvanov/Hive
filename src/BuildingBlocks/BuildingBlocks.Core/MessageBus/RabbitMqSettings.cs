@@ -8,4 +8,11 @@
         public string Password { get; set; }
         public string VirtualHost { get; set; }
     }
+
+    public record ServiceBusSettings
+    {
+        public string ConnectionString { get; init; }
+        public bool EnableSessions { get; init; } = false;
+        public string TopicPath { get; init; } = "cap";
+    }
 }

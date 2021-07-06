@@ -1,4 +1,5 @@
-﻿using BuildingBlocks.Core.Caching;
+﻿using System;
+using BuildingBlocks.Core.Caching;
 using BuildingBlocks.Core.Email;
 using BuildingBlocks.Core.FileStorage;
 using BuildingBlocks.Core.MessageBus;
@@ -28,13 +29,24 @@ namespace Hive.Gig.Infrastructure
                 services.AddDbContext<GigManagementDbContext>(options =>
                     options.UseSqlServer(
                         sqlServerConnectionString,
-                        b => b.MigrationsAssembly(typeof(GigManagementDbContext).Assembly.FullName)));
+                        b =>
+                        {
+                            b.MigrationsAssembly(typeof(GigManagementDbContext).Assembly.FullName);
+                            b.EnableRetryOnFailure(
+                                maxRetryCount: 10,
+                                maxRetryDelay: TimeSpan.FromSeconds(30),
+                                errorNumbersToAdd: null
+                            );
+                        }));
             }
 
             services.AddSendGrid(configuration);
             services.AddRedis(configuration);
             services.AddFileStorage(configuration);
-            services.AddRabbitMqBroker<GigManagementDbContext>(useInMemory, sqlServerConnectionString, configuration);
+            services.AddMessagingBus<GigManagementDbContext>(
+                new StorageOptions(sqlServerConnectionString), 
+                new MessagingOptions(configuration.GetValue<bool>("IsProduction")), 
+                configuration);
             services.AddScoped<IGigManagementDbContext>(provider => provider.GetService<GigManagementDbContext>());
             
             return services;

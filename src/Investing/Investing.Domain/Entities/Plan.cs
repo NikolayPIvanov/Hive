@@ -21,7 +21,7 @@ namespace Hive.Investing.Domain.Entities
             Description = description;
             StartDate = startDate;
             EndDate = endDate;
-            StartingFunds = startingFunds;
+            TotalFundsNeeded = startingFunds;
         }
         
         public string Title { get; set; }
@@ -34,7 +34,9 @@ namespace Hive.Investing.Domain.Entities
         public bool IsPublic { get; set; }
         public bool IsFunded { get; private set; }
 
-        public decimal StartingFunds { get; set; }
+        public decimal TotalFundsNeeded { get; set; }
+        
+        public int? GigId { get; set; }
         
         public int VendorId { get; private set; }
         public Vendor Vendor { get; private set; }

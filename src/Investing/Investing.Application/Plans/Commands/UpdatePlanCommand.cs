@@ -48,10 +48,19 @@ namespace Hive.Investing.Application.Plans.Commands
             RuleFor(x => x.Id)
                 .MustAsync(async (command, id, token) =>
                 {
-                    var dbPlan = await context.Plans.FirstOrDefaultAsync(p => p.Id == id, token);
+                    var dbPlan = await context.Plans
+                        .Include(p => p.Investments)
+                        .FirstOrDefaultAsync(p => p.Id == id, token);
+                    
                     if (!dbPlan.IsFunded) return true;
+
+                    var totalInvestment = dbPlan.Investments.Sum(i => i.Amount);
+                    if (totalInvestment > command.FundingNeeded) return false;
+                    
+                    
                     var cannotUpdate = (dbPlan.StartDate != command.StartDate || dbPlan.EndDate != command.EndDate ||
-                                        dbPlan.StartingFunds != command.FundingNeeded);
+                                        dbPlan.TotalFundsNeeded != command.FundingNeeded);
+                    
                     return !cannotUpdate;
 
                 })
@@ -92,7 +101,7 @@ namespace Hive.Investing.Application.Plans.Commands
             plan.Description = request.Description;
             plan.StartDate = request.StartDate;
             plan.EndDate = request.EndDate;
-            plan.StartingFunds = request.FundingNeeded;
+            plan.TotalFundsNeeded = request.FundingNeeded;
             plan.IsPublic = request.IsPublic;
             
             await _context.SaveChangesAsync(cancellationToken);

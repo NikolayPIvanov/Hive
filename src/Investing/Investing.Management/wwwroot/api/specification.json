@@ -931,6 +931,10 @@
             "type": "string",
             "format": "date-time"
           },
+          "totalFundingNeeded": {
+            "type": "number",
+            "format": "decimal"
+          },
           "fundingNeeded": {
             "type": "number",
             "format": "decimal"

@@ -1,4 +1,5 @@
-﻿using Billing.Application.Interfaces;
+﻿using System;
+using Billing.Application.Interfaces;
 using Billing.Infrastructure.Persistence;
 using BuildingBlocks.Core.Caching;
 using BuildingBlocks.Core.Email;
@@ -25,12 +26,23 @@ namespace Billing.Infrastructure
                 services.AddDbContext<BillingDbContext>(options =>
                     options.UseSqlServer(
                         sqlServerConnectionString,
-                        b => b.MigrationsAssembly(typeof(BillingDbContext).Assembly.FullName)));
+                        b =>
+                        {
+                            b.MigrationsAssembly(typeof(BillingDbContext).Assembly.FullName);
+                            b.EnableRetryOnFailure(
+                                maxRetryCount: 10,
+                                maxRetryDelay: TimeSpan.FromSeconds(30),
+                                errorNumbersToAdd: null
+                            );
+                        }));
             }
 
             services.AddRedis(configuration);
             services.AddSendGrid(configuration);
-            services.AddRabbitMqBroker<BillingDbContext>(useInMemory, sqlServerConnectionString, configuration);
+            services.AddMessagingBus<BillingDbContext>(
+                new StorageOptions(sqlServerConnectionString), 
+                new MessagingOptions(configuration.GetValue<bool>("IsProduction")), 
+                configuration);
             services.AddScoped<IBillingDbContext>(provider => provider.GetService<BillingDbContext>());
             
             return services;

@@ -59,14 +59,8 @@ namespace Ordering.Application.Resolutions.Commands
                     new ValidationFailure("OrderStates", "Order is not marked in progress")
                 });
             }
-            
-            resolution.Order.OrderStates.Add(new State(OrderState.Completed, $"Buyer accepted resolution - {request.Version}"));
-            await _context.SaveChangesAsync(cancellationToken);
 
-            var basePrice = resolution.Order.Quantity * resolution.Order.UnitPrice;
-            var tax = resolution.Order.TotalPrice - basePrice;
-            await _publisher.PublishAsync(new OrderCompletedIntegrationEvent(resolution.Order.OrderNumber,
-                basePrice, tax, resolution.Order.Buyer.UserId, resolution.Order.SellerUserId), cancellationToken);
+            await _publisher.PublishAsync(new ResolutionAcceptedIntegrationEvent(resolution.Order.GigId.Value, resolution.Id), cancellationToken);
             
             return Unit.Value;
         }

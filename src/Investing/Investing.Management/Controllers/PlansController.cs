@@ -23,7 +23,8 @@ namespace Investing.Management.Controllers
         
         [HttpGet]
         [SwaggerResponse(HttpStatusCode.OK, typeof(PaginatedList<PlanDto>), Description = "Successful operation")]
-        public async Task<ActionResult<PlanDto>> GetPlans([FromQuery] int pageNumber = 1, int pageSize = 10, string key = null, bool isInvestor = true, CancellationToken cancellationToken = default) 
+        public async Task<ActionResult<PlanDto>> GetPlans(
+            [FromQuery] int pageNumber = 1, int pageSize = 10, string key = null, bool isInvestor = true, CancellationToken cancellationToken = default) 
             => Ok(await Mediator.Send(new GetPlansQuery(pageNumber, pageSize, key, isInvestor), cancellationToken));
         
         [HttpGet("random")]
