@@ -1,61 +1,25 @@
-<mat-card *ngIf="quantity$ | async; let quantity">
+<ng-container *ngIf="(quantity$ | async) && (package$ | async)">
     <div *ngIf="package$ | async; let package">
-        <ng-container *ngIf="package; else loading">
-            <mat-card-header>
-                <mat-card-title>Checkout</mat-card-title>
-                <mat-card-subtitle>Once the order is accepted the amount will be deducted from your account</mat-card-subtitle>
-            </mat-card-header>
-            <mat-card-content fxLayout="column" fxLayoutGap="3rem">
-                <div fxLayout="row" fxLayoutGap="3%" fxLayoutAlign="space-around">
-                    <div fxLayout="column" fxLayoutGap="3rem">
-                        <div fxLayout="row">
-                            <h3 fxFlex="50"><strong>Subtotal:</strong></h3>
-                            <h3 fxFlexAlign="end"><strong>{{ quantity * package!.price! }}$</strong></h3>
-                        </div>
-
-                        <div fxLayout="row" fxLayoutGap="3rem">
-                            <h3><strong>Service Fee (3%):</strong></h3>
-                            <h3><strong>{{ (3 * quantity * package!.price! / 100)}}$</strong></h3>
-                        </div>
-                    </div>
-                    
-                    <mat-divider
-                        [vertical]="true">
-                    </mat-divider>
-
-                    <div fxLayout="column" fxLayoutGap="3rem">
-                        <div fxLayout="row">
-                            <h3 fxFlex="50"><strong>Total:</strong></h3>
-                            <h3 fxFlexAlign="end"><strong>{{ quantity * package!.price! + (3 * quantity * package!.price! / 100)}}$</strong></h3>
-                        </div>
-
-                        <div fxLayout="row" fxLayoutGap="3rem">
-                            <h3><strong>Delivery Time:</strong></h3>
-                            <h3>
-                                <strong>
-                                    {{ package.deliveryTime }} 
-                                    {{ displayDeliveryType(package.deliveryFrequency!) || 'days' }}
-                                </strong>
-                            </h3>
-                        </div>
-                    </div>
-                </div>
-                <mat-form-field fxFlex appearance="fill">
-                    <mat-label>Write any special requirements here</mat-label>
-                    <textarea matInput [formControl]="requirements"></textarea>
-                </mat-form-field>
-            </mat-card-content>
-            <mat-card-actions>
-                <div fxLayout="row" fxLayoutAlign="end">
-                    <button 
-                        (click)="completeOrder(quantity, package)" 
-                        mat-raised-button
-                        color="primary">Checkout</button>
-                </div>
-            </mat-card-actions>
-        </ng-container>
-        <ng-template #loading>
-            <ngx-spinner [fullScreen]="false" [name]="spinnerName"></ngx-spinner>
-        </ng-template>
+        <div *ngIf="quantity$ | async; let quantity" fxLayout="column" style="height: 100%;">
+            <h3><strong>Quantity: </strong> {{ quantity }} </h3>
+            <h3><strong>Unit Price: </strong> {{ package.price }}$</h3>
+            <h3><strong>Subtotal: </strong>  {{ package.price! * quantity }}$</h3>
+            <h3><strong>Service Fee (3%): </strong> {{ 3 * package.price! * quantity / 100 }}$</h3>
+            <h3>
+                <strong>Total: </strong> 
+                {{ package.price! * quantity + (3 * package.price! * quantity / 100) }}$
+            </h3>
+    
+            <mat-form-field fxFlex="45" appearance="fill">
+                <mat-label>Write any special requirements here</mat-label>
+                <textarea rows="20" matInput [formControl]="requirements"></textarea>
+            </mat-form-field>
+    
+            <button 
+                (click)="completeOrder(quantity, package)" 
+                mat-raised-button
+                color="primary">Checkout</button>
+        </div>
     </div>
-</mat-card>
+    
+</ng-container>

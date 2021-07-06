@@ -52,7 +52,12 @@
           <input matInput (keyup)="applyFilter($event)" placeholder="Ex. My plan" #input>
         </mat-form-field>
 
-        <button *ngIf="isSeller" mat-raised-button color="primary" (click)="openCreateDialog()">Create Plan</button>
+        <button 
+          *ngIf="isSeller" 
+          mat-raised-button 
+          color="primary"
+          style="height: 5rem;"
+          (click)="openCreateDialog()">Create Plan</button>
       </div>
 
       <table mat-table [dataSource]="dataSource" fxFlex matSort multiTemplateDataRows>

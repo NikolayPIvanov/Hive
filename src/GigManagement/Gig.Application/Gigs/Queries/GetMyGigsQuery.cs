@@ -16,7 +16,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Hive.Gig.Application.Gigs.Queries
 {
-    public record GetMyGigsQuery(int PageSize = 8, int PageNumber = 1) : IRequest<PaginatedList<GigOverviewDto>>;
+    public record GetMyGigsQuery(int PageSize = 8, int PageNumber = 1, string? SearchKey = null) : IRequest<PaginatedList<GigOverviewDto>>;
 
     public class GetMyGigsQueryHandler : IRequestHandler<GetMyGigsQuery, PaginatedList<GigOverviewDto>>
     {
@@ -50,6 +50,12 @@ namespace Hive.Gig.Application.Gigs.Queries
 
             var query = _context.Gigs.AsNoTracking().Where(g => g.SellerId == seller.Id);
             var count = await query.CountAsync(cancellationToken);
+
+            if (!string.IsNullOrEmpty(request.SearchKey))
+            {
+                query = query.Where(q => q.Title.Contains(request.SearchKey.ToLowerInvariant()));
+            }
+            
             var gigs = await 
                 query.Include(g => g.Seller)
                     .Include(g => g.Packages)

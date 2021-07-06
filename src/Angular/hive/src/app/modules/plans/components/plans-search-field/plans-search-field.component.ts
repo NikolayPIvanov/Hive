@@ -22,7 +22,9 @@ export class PlansSearchFieldComponent implements OnInit {
   constructor(private plansService: PlansService) { }
 
   ngOnInit(): void {
-    this.autocompleteControl.setValue(this.init);
+    if (this.init) {
+      this.autocompleteControl.setValue(this.init);
+    }
 
     this.filteredOptions = this.autocompleteControl.valueChanges
       .pipe(
@@ -50,8 +52,8 @@ export class PlansSearchFieldComponent implements OnInit {
 
   private filter(val: string): Observable<any[]> {
     const source = this.selfOnly ?
-      this.plansService.getPlansAsVendor(val) :
-      this.plansService.getPlansAsVendor(val) // change to random
+      this.plansService.getPlansAsVendor(1, 5, val) :
+      this.plansService.getPlansAsInvestor(1, 5, val) // change to random
         
     return source
      .pipe(

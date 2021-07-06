@@ -1,60 +1,37 @@
 <ngx-spinner [fullScreen]="false"></ngx-spinner>
     
-<mat-card>
-    <mat-card-content fxLayout="column" fxLayoutGap="3rem">
-
-        <div fxLayout="row" fxFlexFill fxLayoutAlign="start">
-          <img fxFlex [src]="gig.imagePath?.path"/>
-          
-            <div fxFlex="40" fxFlexOffset="5" fxLayout="space-between" fxLayout="column wrap">
-                <h3> <strong>Gig title:</strong> {{ gig.title }} </h3>
-                <h3> <strong>Gig description:</strong> {{ gig.description }} </h3>
-            </div>
+<!-- <mat-accordion>
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <strong>{{ gig.title }}</strong>
+      </mat-panel-title>
+      <mat-panel-description>
+        Expand to see what is included in the package
+      </mat-panel-description>
+    </mat-expansion-panel-header>
     
-            <div fxFlex fxLayout="column">
-                <mat-form-field fxFlexAlign="end">
-                    <mat-label>Quantity</mat-label>
-                    <mat-select [(value)]="selectedQuantity" (selectionChange)="onSelected($event)">
-                      <mat-option [value]="quantityOption" *ngFor="let quantityOption of quantity">{{ quantityOption }}</mat-option>
-                    </mat-select>
-                </mat-form-field>
+  </mat-expansion-panel>
+</mat-accordion> -->
+<p>
+  <strong>Package tier:</strong> {{ displayPackageTier(currentPackage.packageTier!) }}
+</p>
+<p>
+<strong>Package name:</strong>  {{ currentPackage.title }}
+</p>
+<p>
+<strong>Package description:</strong> {{ currentPackage.description }}
+</p>
 
-                <h3 fxFlexAlign="end">Total Price: <strong>{{totalPrice}}$</strong></h3>
-            </div>
-        </div>
+<p *ngIf="currentPackage.revisionType != 0">
+<strong>Package revisions:</strong> {{ currentPackage.revisions }}
+</p>
+<p *ngIf="currentPackage.revisionType === 0">
+<strong>Package revisions:</strong> Unlimited
+</p>
 
-        <mat-accordion>
-            <mat-expansion-panel>
-              <mat-expansion-panel-header>
-                <mat-panel-title>
-                  Details
-                </mat-panel-title>
-                <mat-panel-description>
-                  Expand to see what is included in the package
-                </mat-panel-description>
-              </mat-expansion-panel-header>
-              <p>
-                  <strong>Package tier:</strong> {{ displayPackageTier(currentPackage.packageTier!) }}
-              </p>
-              <p>
-                <strong>Package name:</strong>  {{ currentPackage.title }}
-              </p>
-              <p>
-                <strong>Package description:</strong> {{ currentPackage.description }}
-              </p>
-              
-              <p *ngIf="currentPackage.revisionType != 0">
-                <strong>Package revisions:</strong> {{ currentPackage.revisions }}
-              </p>
-              <p *ngIf="currentPackage.revisionType === 0">
-                <strong>Package revisions:</strong> Unlimited
-              </p>
+<p>
+<strong>Package delivery time:</strong> {{ currentPackage.deliveryTime }} {{ displayDeliveryType(currentPackage.deliveryFrequency!) }}
+</p>
 
-              <p>
-                <strong>Package delivery time:</strong> {{ currentPackage.deliveryTime }} {{ displayDeliveryType(currentPackage.deliveryFrequency!) }}
-              </p>
-            </mat-expansion-panel>
-          </mat-accordion>
-    </mat-card-content>
-</mat-card>
-
+<p> <strong>Gig description:</strong> {{ gig.description }} </p>

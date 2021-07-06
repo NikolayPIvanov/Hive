@@ -20,16 +20,24 @@
           <div fxLayout="row">
             <mat-form-field appearance="standard" fxFlex>
               <mat-label>Search by name</mat-label>
-              <input matInput placeholder="Ex. My gig" #input> 
-              <!-- (keyup)="applyFilter($event)"  -->
+              <input matInput (keyup)="applyFilter($event)" placeholder="Ex. My gig" #input> 
             </mat-form-field>
-
+            <button 
+              fxFlexOffset="3rem"
+              style="height: 5rem"
+              mat-raised-button 
+              color="primary"
+              (click)="onCreateNew()">
+              <mat-icon>add</mat-icon>
+              <span>Create gig</span>
+            </button>
           </div>
 
         </mat-expansion-panel>
       </mat-accordion>
 
-      <div *ngIf="gigs$ | async; let gigs" fxLayout="row" fxLayoutGap="3% grid">
+      <div *ngIf="gigs$ | async; let gigs" 
+        fxLayout="row wrap" fxLayoutGap="3% grid">
         <app-gig-card 
           *ngFor="let gig of gigs"
           fxFlex="22"

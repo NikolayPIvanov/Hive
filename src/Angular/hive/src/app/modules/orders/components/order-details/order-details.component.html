@@ -3,9 +3,9 @@
   <div fxLayout="column">
     <div fxLayout="row" fxFlex fxLayoutGap="1rem">
 
-      <div *ngIf="gig$ | async; let gig" fxLayout="column">
+      <div *ngIf="gig$ | async; let gig" fxLayout="column" fxFlex="30">
         <mat-divider></mat-divider>
-        <h3 style="margin-bottom: 0;"><strong>{{ gig.title! }}</strong> </h3>
+        <h3 style="margin-bottom: 0;"><strong>Gig: </strong> {{ gig.title! }} </h3>
       </div>
 
       <div fxLayout="column" fxFlex="30">

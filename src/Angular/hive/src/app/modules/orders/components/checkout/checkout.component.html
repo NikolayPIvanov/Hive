@@ -1,10 +1,26 @@
-<mat-card *ngIf="gig$ | async; let gig" class="container" style="height: auto;">
-    <mat-card-header>
-        <mat-card-title>Review your Order</mat-card-title>
-        <mat-card-subtitle>Order</mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content fxLayout="column" fxLayoutGap="3rem">
-        <app-order-summary [gig]="gig"></app-order-summary>
-        <app-checkout-summary [gig]="gig"></app-checkout-summary>
-    </mat-card-content>
-</mat-card>
+<div *ngIf="gig$ | async; let gig" class="container" style="height: auto;">
+    <div fxLayout="row" fxLayout.sm="column" fxLayout.md="column" fxLayoutGap="3rem">
+        <mat-card fxFlex class="mat-elevation-z8">
+            <mat-card-header>
+                <mat-card-title>Order Details</mat-card-title>
+                <mat-card-subtitle>Information</mat-card-subtitle>
+            </mat-card-header>
+            <img mat-card-image [src]="gig.imagePath?.path"/>
+            <mat-card-content>
+                <app-order-summary [gig]="gig"></app-order-summary>
+            </mat-card-content>
+        </mat-card>
+
+        <mat-card fxFlex fxLayout="column" class="mat-elevation-z8">
+            <mat-card-header fxFlex="10">
+                <mat-card-title>Price Details</mat-card-title>
+                <mat-card-subtitle>Checkout</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content fxFlex>
+                <app-checkout-summary [gig]="gig">
+                </app-checkout-summary>
+            </mat-card-content>
+        </mat-card>
+
+    </div>
+</div>

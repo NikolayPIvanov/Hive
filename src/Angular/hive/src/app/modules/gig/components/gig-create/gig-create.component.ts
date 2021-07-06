@@ -66,6 +66,8 @@ export class GigCreateComponent implements OnInit {
     return (this.gigForm.get('packages') as FormArray)?.controls;
   }
 
+  private gid: number | undefined;
+
   onSubmit() {
     const command = CreateGigCommand.fromJS(this.gigForm.value);
       this.gigsApiClient.createGig(command)
@@ -78,11 +80,12 @@ export class GigCreateComponent implements OnInit {
                 id, FileUpload.fromJS({ fileData: imageData.value }))
             }
 
+            this.gid = id;
             return of(id);
-          }))
-        .subscribe(id => {
-          this.dialogRef.close(id)
-        });
+          }),
+          tap({ complete: () => this.dialogRef.close(this.gid)
+        }))
+        .subscribe();
   }
 
   addQuestion() {

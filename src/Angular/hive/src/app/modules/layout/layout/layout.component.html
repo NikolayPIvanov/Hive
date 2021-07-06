@@ -58,13 +58,6 @@
             <p mat-line> Categories </p>
           </a>
 
-          <a *ngIf="isSeller" mat-list-item [routerLink]="['/gigs/control']" routerLinkActive="active">
-            <mat-icon mat-list-icon>
-              receipt_long
-            </mat-icon>
-            <p mat-line> Gigs Control </p>
-          </a>
-
           <a *ngIf="isSeller || isBuyer" mat-list-item [routerLink]="['/gigs/dashboard']" routerLinkActive="active">
             <mat-icon mat-list-icon>
               receipt_long
