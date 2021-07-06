@@ -55,7 +55,7 @@ import { HashLocationStrategy, LocationStrategy, PathLocationStrategy } from '@a
     NgxSpinnerModule
   ],
   providers: [
-    {provide: LocationStrategy, useClass: HashLocationStrategy},
+    // {provide: LocationStrategy, useClass: HashLocationStrategy},
     { provide: profileClient.API_BASE_URL, useValue: environment.userManagementUrl },
     { provide: categoriesClient.API_BASE_URL, useValue: environment.gigsManagementUrl },
     { provide: billingClient.API_BASE_URL, useValue: environment.billingManagementUrl },

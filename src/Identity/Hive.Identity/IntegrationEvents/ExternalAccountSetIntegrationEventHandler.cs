@@ -4,16 +4,20 @@ using Hive.Common.Core.Exceptions;
 using Hive.Identity.Contracts.IntegrationEvents;
 using Hive.Identity.Contracts.IntegrationEvents.Inbound;
 using Hive.Identity.Data;
+using Hive.Identity.Models;
+using Microsoft.Extensions.Logging;
 
 namespace Hive.Identity.IntegrationEvents
 {
     public class ExternalAccountSetIntegrationEventHandler : ICapSubscribe
     {
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<ExternalAccountSetIntegrationEventHandler> _logger;
 
-        public ExternalAccountSetIntegrationEventHandler(ApplicationDbContext context)
+        public ExternalAccountSetIntegrationEventHandler(ApplicationDbContext context, ILogger<ExternalAccountSetIntegrationEventHandler> logger)
         {
             _context = context;
+            _logger = logger;
         }
 
         [CapSubscribe(nameof(ExternalAccountSetIntegrationEvent))]
@@ -22,7 +26,8 @@ namespace Hive.Identity.IntegrationEvents
             var user = await _context.Users.FindAsync(@event.UserId);
             if (user == null)
             {
-                throw new NotFoundException(nameof(ApplicationDbContext), @event.UserId);
+                _logger.LogError($"User with id={@event.UserId} is missing");
+                return;
             }
 
             user.ExternalAccountId = @event.ExternalAccountId;

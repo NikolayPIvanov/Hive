@@ -38,6 +38,9 @@ namespace Hive.Investing.Application.IntegrationEvents.EventHandlers
             if (plan == null)
                 return;
 
+            plan.GigId = @event.GigId;
+            await _context.SaveChangesAsync(default);
+
             var investorIds = plan.Investments.Select(i => i.Investor.UserId);
 
             var investorEmailKeys = investorIds.Select(id => $"{id}:email");

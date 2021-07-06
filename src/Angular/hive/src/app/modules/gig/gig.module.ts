@@ -11,6 +11,7 @@ import { CategoryModule } from '../category/category.module';
 import { SellerOverviewComponent } from './components/seller-overview/seller-overview.component';
 import { AvatarModule } from 'ngx-avatar';
 import { GigCreateComponent } from './components/gig-create/gig-create.component';
+import { PlansModule } from '../plans/plans.module';
 
 
 
@@ -26,6 +27,8 @@ import { GigCreateComponent } from './components/gig-create/gig-create.component
   ],
   imports: [
     CommonModule,
+
+    PlansModule,
 
     LayoutModule,
 

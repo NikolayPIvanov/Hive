@@ -30,6 +30,9 @@ import { PlanPendingTableComponent } from './components/plan-pending-table/plan-
     LayoutModule,
 
     PlansRoutingModule
+  ],
+  exports: [
+    PlansSearchFieldComponent
   ]
 })
 export class PlansModule { }

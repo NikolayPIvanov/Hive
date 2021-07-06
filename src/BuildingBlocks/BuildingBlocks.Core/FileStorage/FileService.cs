@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using Azure.Storage.Blobs.Specialized;
 using BuildingBlocks.Core.Interfaces;
 using Microsoft.Extensions.Options;
 
@@ -51,14 +52,18 @@ namespace BuildingBlocks.Core.FileStorage
 
         public async Task<FileResponse> DownloadAsync(string blobContainerName, string location, CancellationToken cancellationToken)
         {
+            var blobUriBuilder = new BlobUriBuilder(new Uri(location));
+
             var blobContainerClient =
                 new BlobContainerClient(_settings.BlobConnectionString, blobContainerName);
             await blobContainerClient.CreateIfNotExistsAsync(cancellationToken: cancellationToken);
-            var blobClient = blobContainerClient.GetBlobClient(location);
+            var blobClient = blobContainerClient.GetBlobClient(blobUriBuilder.BlobName);
             var response = await blobClient.DownloadAsync(cancellationToken);
 
+            
             var extension = location.Split(".").Last();
 
+            
             return new FileResponse(response.Value.Content, response.Value.ContentType,
                 $"{Guid.NewGuid()}.{extension}");
         }

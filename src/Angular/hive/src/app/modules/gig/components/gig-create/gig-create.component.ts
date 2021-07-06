@@ -7,6 +7,7 @@ import { NgxSpinnerService } from 'ngx-spinner';
 import { Observable, of, Subject, throwError } from 'rxjs';
 import { map, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { CategoriesClient, CategoryDto, CreateGigCommand, DeliveryFrequency, FileUpload, GigsClient, PackageTier, RevisionType } from 'src/app/clients/gigs-client';
+import { PlanDto } from 'src/app/clients/investing-client';
 
 @Component({
   selector: 'app-gig-create',
@@ -130,6 +131,11 @@ export class GigCreateComponent implements OnInit {
     }
   }
 
+  public setPlan(plan: PlanDto | undefined) {
+    if (plan) {
+      this.gigForm.patchValue({ planId: plan.id!})
+    }
+  }
 
   public initPackage() {
     return this.fb.group({

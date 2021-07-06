@@ -45,6 +45,8 @@
             
             <app-categories-search [defaultSearchType]="2"
              (onSelectedCategory)="onCategorySelected($event)" ></app-categories-search>
+
+            <app-plans-search-field (onSelected)="setPlan($event)"></app-plans-search-field>
             
             <mat-form-field appearance="outline" class="full-width mt-1">
               <mat-label>Tags</mat-label>

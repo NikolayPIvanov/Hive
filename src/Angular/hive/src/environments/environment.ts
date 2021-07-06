@@ -10,14 +10,14 @@ export const environment = {
   logLevel: NgxLoggerLevel.TRACE,
   serverLogLevel: NgxLoggerLevel.OFF,
 
-  userManagementUrl: 'http://localhost:5001',
-  gigsManagementUrl: 'http://localhost:5057',
-  billingManagementUrl: 'http://localhost:5051',
-  orderingManagementUrl: 'http://localhost:5041',
-  investingManagement: 'http://localhost:5031',
+  userManagementUrl: 'https://localhost:5001',
+  gigsManagementUrl: 'https://localhost:5057',
+  billingManagementUrl: 'https://localhost:5051',
+  orderingManagementUrl: 'https://localhost:5041',
+  investingManagement: 'https://localhost:5031',
 
-  chatUrl: 'http://localhost:6001/chat',
-  chatApiUrl: 'http://localhost:6001/api/chat',
+  chatUrl: 'https://localhost:6001/chat',
+  chatApiUrl: 'https://localhost:6001/api/chat',
 
   clientRoot: 'http://localhost:4200',
   idpAuthority: 'https://localhost:7001',

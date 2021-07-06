@@ -23,7 +23,7 @@ namespace Ordering.Application.IntegrationEvents.EventHandlers
         }
         
         [CapSubscribe(nameof(BuyerCreatedIntegrationEvent), Group = "hive.ordering.buyers")]
-        public async Task Handle(InvestorCreatedIntegrationEvent @event)
+        public async Task Handle(BuyerCreatedIntegrationEvent @event)
         {
             var alreadyRegistered = await _context.Buyers.AnyAsync(v => v.UserId == @event.UserId);
             if (alreadyRegistered)
