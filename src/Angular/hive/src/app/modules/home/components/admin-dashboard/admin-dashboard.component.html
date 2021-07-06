@@ -1,55 +1,60 @@
 <div fxLayout="column" class="container" fxFlex>
     <h1>Admin Dashboard</h1>
     <div fxLayout="row" fxLayoutGap="1%" fxFlex>
-        <mat-card fxFlex="45%">
-            <mat-card-header>
+        <mat-card fxFlex="45%" fxLayout="column" class="mat-elevation-z8">
+            <mat-card-header fxFlex="15">
                 <mat-card-title>Categories</mat-card-title>
-                <mat-card-subtitle>Manage Categories</mat-card-subtitle>
+                <mat-card-subtitle>Manage Global Categories</mat-card-subtitle>
             </mat-card-header>
-            <mat-divider>
+            <mat-divider
+                [inset]="true">
             </mat-divider>
-            <mat-card-content>
-                <mat-list>
-                    <mat-list-item *ngFor="let category of (categories$ | async)?.items">
+            <mat-card-content fxFlex="75%">
+                <mat-list fxLayout="column" fxLayoutGap="3%">
+                    <mat-list-item *ngFor="let category of (categories$ | async)?.items" 
+                        class="mat-elevation-z2">
                         <div mat-line><strong>{{category.title}}</strong> - <em>{{category.parentOverview ? 'Child' : 'Parent'}}</em></div>
                         <div mat-line> {{category.description! | limitTo:'100'}} </div>
                     </mat-list-item>
                 </mat-list>
             </mat-card-content>
-            <mat-divider>
+            <mat-divider
+                [inset]="true">
             </mat-divider>
-            <mat-card-actions>
+            <mat-card-footer fxFlex="10%">
                 <button mat-button>Manage</button>
-            </mat-card-actions>
+            </mat-card-footer>
         </mat-card>
 
-        <mat-card fxFlex="45%">
-            <mat-card-header>
+        <mat-card fxFlex="45%" fxLayout="column" class="mat-elevation-z8">
+            <mat-card-header fxFlex="15">
                 <mat-card-title>Users</mat-card-title>
                 <mat-card-subtitle>Manage Users</mat-card-subtitle>
             </mat-card-header>
-            <mat-divider>
+            <mat-divider
+                [inset]="true">
             </mat-divider>
-            <mat-card-content>
-                <mat-list>
-                    <mat-list-item *ngFor="let user of (users$ | async)?.items">
+            <mat-card-content fxFlex="75%">
+                <mat-list fxLayout="column" fxLayoutGap="3%">
+                    <mat-list-item *ngFor="let user of (users$ | async)?.items" class="mat-elevation-z2">
                         <div mat-line><strong>{{user.givenName}} {{user.surname}}</strong></div>
                         <div mat-line><strong>Bio: </strong>{{user.bio || 'Not yet provided'}}</div>
                     </mat-list-item>
                 </mat-list>
             </mat-card-content>
-            <mat-divider>
+            <mat-divider
+                [inset]="true">
             </mat-divider>
-            <mat-card-actions>
-                <button mat-button>Manage</button>
+            <mat-card-actions fxFlex="10%">
+                <button mat-button>Manage Users</button>
             </mat-card-actions>
         </mat-card>
     </div>
     <div fxLayout="row" style="margin-top: 3rem;" fxLayoutGap="1%" fxFlex>
-        <mat-card fxFlex="91%">
+        <mat-card fxFlex="91%" class="mat-elevation-z8">
             <mat-card-header>
                 <mat-card-title>Users over time</mat-card-title>
-                <mat-card-subtitle>Chart</mat-card-subtitle>
+                <mat-card-subtitle>Data</mat-card-subtitle>
             </mat-card-header>
             <mat-card-content>
                 <div style="display: block;">
