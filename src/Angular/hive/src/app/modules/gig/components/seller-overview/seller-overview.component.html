@@ -1,0 +1,17 @@
+<mat-card>
+    <mat-card-header>
+        <mat-card-title>About the Seller</mat-card-title>
+        <mat-card-subtitle>Public information</mat-card-subtitle>
+    </mat-card-header>
+    <img mat-card-image [src]="profile.avatarUri || url" style="max-width: 30rem; max-height: 15rem">
+    <mat-card-content fxLayout="column" fxLayoutGap="1rem">
+        <div fxLayout="row" fxLayoutGap="1rem" fxLayoutAlign="start center">
+            
+            <h2>{{ profile.givenName }} {{ profile.surname }}</h2>
+        </div>
+        <h3><strong>Education:</strong> {{ profile.education || 'Not provided' }}</h3>
+        <h3><strong>Languages:</strong> {{ profile.languages ? profile.languages!.join(',') : 'Not provided' }}</h3>
+        <h3><strong>Skills:</strong> {{ (profile.skills) ? profile.skills!.join(',') : 'Not provided' }}</h3>
+    </mat-card-content>
+</mat-card>
+

@@ -1,37 +1,39 @@
 ﻿using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using Hive.Common.Core;
 using Hive.Common.Core.Interfaces;
-using Hive.Common.Domain.SeedWork;
+using Hive.Common.Core.SeedWork;
 using Hive.Gig.Application.Interfaces;
-using Hive.Gig.Domain.Entities;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
 using IDateTimeService = Hive.Common.Core.Interfaces.IDateTimeService;
 
 namespace Hive.Gig.Infrastructure.Persistence
 {
+    using Domain.Entities;
+    
     public class GigManagementDbContext : DbContext, IGigManagementDbContext
     {
+        private readonly IMediator _mediator;
         private readonly ICurrentUserService _currentUserService;
         private readonly IDateTimeService _dateTimeService;
 
         public GigManagementDbContext(
             DbContextOptions<GigManagementDbContext> options,
+            IMediator mediator,
             ICurrentUserService currentUserService,
             IDateTimeService dateTimeService) : base(options)
         {
+            _mediator = mediator;
             _currentUserService = currentUserService;
             _dateTimeService = dateTimeService;
         }
 
         public DbSet<Category> Categories { get; set; }
-        public DbSet<Domain.Entities.Gig> Gigs { get; set; }
-        public DbSet<GigScope> GigScopes { get; set; }
+        public DbSet<Gig> Gigs { get; set; }
         public DbSet<Package> Packages { get; set; }
-        
-        public DbSet<Tag> Tags { get; set; }
-        public DbSet<Question> Questions { get; set; }
-
+        public DbSet<Review> Reviews { get; set; }
         public DbSet<Seller> Sellers { get; set; }
         
         public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = new())
@@ -53,7 +55,9 @@ namespace Hive.Gig.Infrastructure.Persistence
             }
 
             var result = await base.SaveChangesAsync(cancellationToken);
-            
+
+            await _mediator.DispatchDomainEventsAsync(this);
+
             return result;
         }
 

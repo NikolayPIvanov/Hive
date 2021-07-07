@@ -2,8 +2,7 @@
 {
     public enum TransactionType
     {
-        Deposit,
-        Hold,
+        Fund = 0,
         Payment
     }
 }

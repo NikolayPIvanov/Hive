@@ -15,7 +15,7 @@ using Duende.IdentityServer.Extensions;
 using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Services;
 using Duende.IdentityServer.Stores;
-using IdentityServerHost.Models;
+using Hive.Identity.Models;
 
 namespace IdentityServerHost.Quickstart.UI
 {
@@ -205,6 +205,12 @@ namespace IdentityServerHost.Quickstart.UI
         }
 
         [HttpGet]
+        public async Task<IActionResult> LoggedOut(LoggedOutViewModel model)
+        {
+            return View("LoggedOut", model);
+        }
+
+        [HttpGet]
         public IActionResult AccessDenied()
         {
             return View();
@@ -316,7 +322,7 @@ namespace IdentityServerHost.Quickstart.UI
                 PostLogoutRedirectUri = logout?.PostLogoutRedirectUri,
                 ClientName = string.IsNullOrEmpty(logout?.ClientName) ? logout?.ClientId : logout?.ClientName,
                 SignOutIframeUrl = logout?.SignOutIFrameUrl,
-                LogoutId = logoutId
+                LogoutId = logoutId,
             };
 
             if (User?.Identity.IsAuthenticated == true)

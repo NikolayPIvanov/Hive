@@ -1,0 +1,24 @@
+<div
+      fxLayout="column"
+      fxLayoutAlign="center center"
+      fxLayoutGap="1rem">
+      <img 
+            *ngIf="dataSource" 
+            [src]="dataSource" 
+            fxLayoutAlign="center" 
+            class="image-display"
+            width="100%" 
+            height="100%" 
+            alt="Image"/>
+
+      <input 
+        #uploader 
+        fxLayoutAlign="center"
+        fxHide="true" 
+        type='file' 
+        (change)="onFileSelected($event)">
+
+      <button *ngIf="showUpload" fxLayoutAlign="center" (click)="uploader.click()" color="primary" type="button" mat-raised-button>
+            Upload
+      </button>
+</div>

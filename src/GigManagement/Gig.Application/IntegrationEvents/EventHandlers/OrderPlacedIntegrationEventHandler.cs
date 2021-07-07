@@ -1,7 +1,7 @@
-﻿using System.Linq;
+﻿using System;
 using System.Threading.Tasks;
+using BuildingBlocks.Core.Interfaces;
 using DotNetCore.CAP;
-using Hive.Common.Core.Interfaces;
 using Hive.Gig.Application.Interfaces;
 using Hive.Gig.Contracts.IntegrationEvents;
 using Microsoft.EntityFrameworkCore;
@@ -16,32 +16,26 @@ namespace Hive.Gig.Application.IntegrationEvents.EventHandlers
 
         public OrderPlacedIntegrationEventHandler(IGigManagementDbContext dbContext, IIntegrationEventPublisher publisher)
         {
-            _dbContext = dbContext;
-            _publisher = publisher;
+            _dbContext = dbContext ?? throw new ArgumentNullException(nameof(dbContext));
+            _publisher = publisher ?? throw new ArgumentNullException(nameof(publisher));
         }
         
         [CapSubscribe(nameof(OrderPlacedIntegrationEvent))] 
         public async Task Handle(OrderPlacedIntegrationEvent @event)
         {
-            var gig = await _dbContext.Gigs
-                .Include(g => g.Packages)
-                .FirstOrDefaultAsync(g => g.Id == @event.GigId);
+            var package = await _dbContext.Packages
+                .Include(p => p.Gig)
+                .FirstOrDefaultAsync(g => g.Id == @event.PackageId);
             
-            var reason = $"Gig with id {@event.GigId} was not found";
-            var integrationEvent = new OrderValidatedIntegrationEvent(@event.OrderNumber, reason, IsValid: false);
+            var reason = $"Package with id {@event.PackageId} was not found";
+            var integrationEvent = new OrderValidatedIntegrationEvent(
+                @event.OrderNumber, package.Id, package.Gig.Id, reason, IsValid: false);
             
-            if (gig is null)
-            {
-                var invalidationEvent = new OrderValidatedIntegrationEvent(@event.OrderNumber, reason);
-                await _publisher.Publish(invalidationEvent);
-                return;
-            }
-            
-            var package = gig.Packages.FirstOrDefault(p => p.Id == @event.PackageId);
             if (package is null)
             {
-                reason = $"Package with id {@event.PackageId} was not found for gig with id {@event.GigId}";
-                await _publisher.Publish(integrationEvent  with { Reason = reason});
+                var invalidationEvent = new OrderValidatedIntegrationEvent(
+                    @event.OrderNumber, -1, -1, reason);
+                await _publisher.PublishAsync(invalidationEvent);
                 return;
             }
 
@@ -49,21 +43,24 @@ namespace Hive.Gig.Application.IntegrationEvents.EventHandlers
             if (!priceIsSame)
             {
                 reason = $"Order for package with id {@event.PackageId} was passed with price {@event.UnitPrice} but it was {package.Price}";
-                await _publisher.Publish(integrationEvent  with { Reason = reason});
+                await _publisher.PublishAsync(integrationEvent  with { Reason = reason});
                 return;
             }
 
-            var sellerIdIsValid =
-                await _dbContext.Sellers.AnyAsync(x => x.UserId == @event.SellerUserId && x.Id == gig.SellerId);
+            var gig = await _dbContext.Gigs
+                .Include(x => x.Seller)
+                .FirstOrDefaultAsync(x => x.Id ==package.GigId, default);
+            
+            var sellerIdIsValid = gig.Seller.UserId == @event.SellerUserId;
             if (!sellerIdIsValid) 
             {
                 reason = $"Order {@event.OrderNumber} had invalid seller id {@event.SellerUserId}";
-                await _publisher.Publish(integrationEvent  with { Reason = reason});
+                await _publisher.PublishAsync(integrationEvent  with { Reason = reason});
                 return;
             }
 
             reason = "Order details are valid.";
-            await _publisher.Publish(integrationEvent  with { Reason = reason, IsValid = true});
+            await _publisher.PublishAsync(integrationEvent  with { Reason = reason, IsValid = true});
         }
     }
 }

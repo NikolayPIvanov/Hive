@@ -1,0 +1,37 @@
+<div fxLayout="row" fxLayoutGap="1rem">
+  <h2 mat-dialog-title>Inspecting plan</h2>
+
+</div>
+<mat-dialog-content class="mat-typography">
+
+    <!-- info -->
+    <div fxLayout="row" fxLayoutGap="3rem">
+      <!-- left -->
+      <div fxLayout="column">
+        <h3><strong>Title:</strong> {{ data.title! }}</h3>
+        <h3><strong>Description:</strong> {{ data.description }}</h3>
+        <h3><strong>Total Funding needed:</strong> {{ data.fundingNeeded }}$</h3>
+      </div>
+
+      <!-- right -->
+      <div fxLayout="column">
+        <h3><strong>Start Date:</strong> {{ data.startDate | date:'short' }}</h3>
+        <h3><strong>End Date:</strong> {{ data.endDate | date:'short' }}</h3>
+        <h3><strong>Funding needed:</strong> {{ data.fundingNeeded }}$</h3>
+      </div>
+    </div>
+
+    <mat-divider ></mat-divider>
+
+    <app-plan-accepted-table [plan]="data"></app-plan-accepted-table>
+
+    <mat-divider ></mat-divider>
+
+    <app-plan-pending-table [plan]="data" [isOwner]="isOwner"></app-plan-pending-table>
+
+    
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+  <button *ngIf="isInvestor" mat-raised-button color="primary" (click)="openInvestmentDialog()">Make an investment</button>
+  <button mat-button mat-dialog-close>Close</button>
+</mat-dialog-actions>

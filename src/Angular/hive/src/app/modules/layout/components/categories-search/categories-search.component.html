@@ -1,0 +1,22 @@
+<div class="full-width">
+  <form>
+    <mat-form-field class="full-width" appearance="outline">
+      <mat-label>Search category by name</mat-label>
+      <input type="text"
+             placeholder="Search category by name"
+             aria-label="Search category by name"
+             matInput
+             #searchText
+             [formControl]="autocompleteControl"
+             [matAutocomplete]="auto">
+      <button *ngIf="searchText.value" matSuffix mat-icon-button aria-label="Clear" (click)="onCleared()">
+        <mat-icon>close</mat-icon>
+      </button>
+      <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFunc" (optionSelected)="onSelected($event)">
+        <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+          {{option.title }}
+        </mat-option>
+      </mat-autocomplete>
+    </mat-form-field>
+</form>
+</div>

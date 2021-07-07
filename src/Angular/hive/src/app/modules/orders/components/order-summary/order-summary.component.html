@@ -1,0 +1,37 @@
+<ngx-spinner [fullScreen]="false"></ngx-spinner>
+    
+<!-- <mat-accordion>
+  <mat-expansion-panel>
+    <mat-expansion-panel-header>
+      <mat-panel-title>
+        <strong>{{ gig.title }}</strong>
+      </mat-panel-title>
+      <mat-panel-description>
+        Expand to see what is included in the package
+      </mat-panel-description>
+    </mat-expansion-panel-header>
+    
+  </mat-expansion-panel>
+</mat-accordion> -->
+<p>
+  <strong>Package tier:</strong> {{ displayPackageTier(currentPackage.packageTier!) }}
+</p>
+<p>
+<strong>Package name:</strong>  {{ currentPackage.title }}
+</p>
+<p>
+<strong>Package description:</strong> {{ currentPackage.description }}
+</p>
+
+<p *ngIf="currentPackage.revisionType != 0">
+<strong>Package revisions:</strong> {{ currentPackage.revisions }}
+</p>
+<p *ngIf="currentPackage.revisionType === 0">
+<strong>Package revisions:</strong> Unlimited
+</p>
+
+<p>
+<strong>Package delivery time:</strong> {{ currentPackage.deliveryTime }} {{ displayDeliveryType(currentPackage.deliveryFrequency!) }}
+</p>
+
+<p> <strong>Gig description:</strong> {{ gig.description }} </p>

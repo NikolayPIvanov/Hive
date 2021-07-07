@@ -1,5 +1,8 @@
-﻿using Hive.Common.Core.Interfaces;
-using Hive.Investing.Infrastructure.Services;
+﻿using System;
+using BuildingBlocks.Core.Caching;
+using BuildingBlocks.Core.Email;
+using BuildingBlocks.Core.FileStorage;
+using BuildingBlocks.Core.MessageBus;
 using Hive.UserProfile.Application.Interfaces;
 using Hive.UserProfile.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
@@ -10,49 +13,45 @@ namespace Hive.UserProfile.Infrastructure
 {
     public static class ConfigureServices
     {
-        public static IServiceCollection AddUserProfileInfrastructure(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddUserProfileInfrastructure(
+            this IServiceCollection services, 
+            IConfiguration configuration)
         {
             var useInMemory = configuration.GetValue<bool>("UseInMemoryDatabase");
             var sqlServerConnectionString = configuration.GetConnectionString("DefaultConnection");
             if (useInMemory)
             {
                 services.AddDbContext<UserProfileDbContext>(options =>
-                    options.UseInMemoryDatabase("LooselyHive"));
+                    options.UseInMemoryDatabase(Guid.NewGuid().ToString()));
             }
             else
             {
                 services.AddDbContext<UserProfileDbContext>(options =>
                     options.UseSqlServer(
                         sqlServerConnectionString,
-                        b => b.MigrationsAssembly(typeof(UserProfileDbContext).Assembly.FullName)));
+                        b =>
+                        {
+                            b.MigrationsAssembly(typeof(UserProfileDbContext).Assembly.FullName);
+                            b.EnableRetryOnFailure(
+                                maxRetryCount: 10,
+                                maxRetryDelay: TimeSpan.FromSeconds(30),
+                                errorNumbersToAdd: null
+                            );
+                        }));
             }
             
+            var isProduction = configuration.GetValue<bool>("IsProduction");
+
             
-            services.AddCap(x =>
-            {
-                x.UseEntityFramework<UserProfileDbContext>();
-
-                if (!useInMemory)
-                {
-                    x.UseSqlServer(sqlServerConnectionString);
-                }
-
-                x.UseRabbitMQ(ro =>
-                {
-                    ro.Password = "admin";
-                    ro.UserName = "admin";
-                    ro.HostName = "localhost";
-                    ro.Port = 5672;
-                    ro.VirtualHost = "/";
-                });
-
-                x.UseDashboard(opt => { opt.PathMatch = "/cap"; });
-            });
-
+            services.AddRedis(configuration);
+            services.AddFileStorage(configuration);
+            
+            services.AddMessagingBus<UserProfileDbContext>(
+                new StorageOptions(sqlServerConnectionString),
+                new MessagingOptions(isProduction),
+                configuration);
+            
             services.AddScoped<IUserProfileDbContext>(provider => provider.GetService<UserProfileDbContext>());
-            services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
-            services.AddScoped<IDateTimeService, DateTimeService>();
-
 
             return services;
         }

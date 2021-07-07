@@ -1,0 +1,23 @@
+<div fxLayout="column"> 
+    <mat-dialog-content class="mat-typography">
+        <h2 mat-dialog-title>Create Category</h2>
+        <form [formGroup]="categoryForm" fxLayout="column" (ngSubmit)="onSubmit()" id="cform">
+            <mat-form-field appearance="fill">
+                <mat-label>Title</mat-label>
+                <input matInput placeholder="Title" formControlName="title">
+            </mat-form-field>
+
+            <mat-form-field appearance="fill">
+                <mat-label>Description</mat-label>
+                <textarea matInput placeholder="Description" formControlName="description"></textarea>
+                <mat-error></mat-error>
+            </mat-form-field>
+
+            <app-categories-search *ngIf="!onlyParent" (onSelectedCategory)="selected($event)"></app-categories-search>
+        </form>
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+        <button type="button" mat-raised-button>Cancel</button>
+        <button type="submit" form="cform" mat-raised-button color="primary">Create</button>
+    </mat-dialog-actions>
+</div>

@@ -11,13 +11,16 @@ using Duende.IdentityServer;
 using Duende.IdentityServer.Events;
 using Duende.IdentityServer.Services;
 using Duende.IdentityServer.Stores;
+using Hive.Identity.Contracts;
+using Hive.Identity.Data;
+using Hive.Identity.Models;
 using IdentityModel;
-using IdentityServerHost.Models;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace IdentityServerHost.Quickstart.UI
@@ -31,6 +34,7 @@ namespace IdentityServerHost.Quickstart.UI
         private readonly IIdentityServerInteractionService _interaction;
         private readonly IClientStore _clientStore;
         private readonly IEventService _events;
+        private readonly ApplicationDbContext _context;
         private readonly ILogger<ExternalController> _logger;
 
         public ExternalController(
@@ -39,6 +43,7 @@ namespace IdentityServerHost.Quickstart.UI
             IIdentityServerInteractionService interaction,
             IClientStore clientStore,
             IEventService events,
+            ApplicationDbContext context,
             ILogger<ExternalController> logger)
         {
             _userManager = userManager;
@@ -46,6 +51,7 @@ namespace IdentityServerHost.Quickstart.UI
             _interaction = interaction;
             _clientStore = clientStore;
             _events = events;
+            _context = context;
             _logger = logger;
         }
 
@@ -220,11 +226,12 @@ namespace IdentityServerHost.Quickstart.UI
             {
                 filtered.Add(new Claim(JwtClaimTypes.Email, email));
             }
-
-            var user = new ApplicationUser
+            
+            var user = new ApplicationUser()
             {
                 UserName = Guid.NewGuid().ToString(),
             };
+            
             var identityResult = await _userManager.CreateAsync(user);
             if (!identityResult.Succeeded) throw new Exception(identityResult.Errors.First().Description);
 

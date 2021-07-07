@@ -1,0 +1,94 @@
+<mat-card *ngIf="profile$ | async; let profile" class="container mat-elevation-z8" fxLayout="column">
+  <mat-card-header fxFlex="8">
+    <mat-card-title>Manage your profile</mat-card-title>
+    <mat-card-subtitle>Profile information</mat-card-subtitle>
+  </mat-card-header>
+  <mat-card-content fxLayout="column" fxFlex="86">
+    <div fxLayout="row" fxFlex="20" fxLayoutAlign="center center"> 
+      <img fxFlexAlign="center center" style="max-height:100%;" [src]="profile.avatarUri || '../../../../../assets/user.png'" alt="Profile Avatar">
+    </div>
+
+    <div fxFlexOffset="2rem" fxFlex>
+      <form [formGroup]="form" fxLayout="column" fxFlex fxLayoutAlign="space-between">
+        <mat-form-field appearance="fill">
+          <mat-label>Given Name</mat-label>
+          <input matInput formControlName="givenName">
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Surname</mat-label>
+          <input matInput formControlName="surname">
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+            <mat-label>Bio</mat-label>
+            <textarea 
+                matInput 
+                placeholder="Information about yourself"
+                formControlName="bio">
+            </textarea>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Education</mat-label>
+          <textarea 
+              matInput 
+              placeholder="Information about your current or previous education"
+              formControlName="education">
+          </textarea>
+        </mat-form-field>
+
+        <mat-form-field class="full-width active-input" appearance="fill">
+            <mat-label>Languages</mat-label>
+            <mat-chip-list #chipList aria-label="Languages" formControlName="languages">
+                <mat-chip 
+                    *ngFor="let language of languages.value" 
+                    selectable="false" removable="true" (removed)="remove(languages, language)">
+                    {{language}}
+                    <mat-icon matChipRemove>cancel</mat-icon>
+                </mat-chip>
+        
+                <input matInput
+                    class="active-input"
+                    placeholder="Language..." 
+                    [matChipInputFor]="chipList" 
+                    [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                    matChipInputAddOnBlur="true"
+                    (matChipInputTokenEnd)="add(languages, $event)">
+            </mat-chip-list>
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
+          <mat-label>Skills</mat-label>
+          <mat-chip-list #skillsList aria-label="Skills" formControlName="skills">
+              <mat-chip 
+                  *ngFor="let skill of skills.value" 
+                  selectable="false" removable="true" (removed)="remove(skills, skill)">
+                  {{skill}}
+                  <mat-icon matChipRemove>cancel</mat-icon>
+              </mat-chip>
+      
+              <input matInput
+                  class="active-input"
+                  placeholder="Skills..." 
+                  [matChipInputFor]="skillsList" 
+                  [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                  matChipInputAddOnBlur="true"
+                  (matChipInputTokenEnd)="add(skills, $event)">
+          </mat-chip-list>
+        </mat-form-field>
+      </form>
+    </div>
+  </mat-card-content>
+  <mat-card-footer fxFlex="5" fxLayoutAlign="end" fxLayoutGap="1rem">
+    <button mat-raised-button color="primary" (click)="update()">Save Changes</button>
+
+    <input 
+        #uploader 
+        fxHide="true" 
+        type='file' 
+        (change)="onUpload($event)">
+
+      <button mat-raised-button color="primary" (click)="uploader.click()" type="button">Change Avatar</button>
+  </mat-card-footer>
+</mat-card>

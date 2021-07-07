@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using Hive.Investing.Domain.Entities;
+﻿using Hive.Investing.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -9,15 +8,19 @@ namespace Hive.Investing.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<Investment> builder)
         {
-            builder.ToTable("investments", InvestingDbContext.Schema);
-            builder.HasKey(i => i.Id);
+            builder.Property(x => x.RoiPercentage).IsRequired();
+            builder.Property(x => x.Amount).HasColumnType("decimal(18,2)").IsRequired();
+            builder.Property(x => x.ExpirationDate).IsRequired(false);
+            builder.Property(x => x.EffectiveDate).IsRequired();
+            builder.Property(x => x.IsAccepted).IsRequired();
 
-            builder.Ignore(i => i.DomainEvents);
+            builder.HasOne(x => x.Investor)
+                .WithMany(x => x.Investments)
+                .HasForeignKey(x => x.InvestorId);
 
-            builder.Property(i => i.EffectiveDate).IsRequired();
-            builder.Property(i => i.ExpirationDate).IsRequired(false);
-            builder.Property(i => i.Amount).IsRequired();
-            builder.Property(i => i.RoiPercentage).IsRequired();
+            builder.HasOne(i => i.Plan)
+                .WithMany(p => p.Investments)
+                .HasForeignKey(x => x.PlanId);
         }
     }
 }

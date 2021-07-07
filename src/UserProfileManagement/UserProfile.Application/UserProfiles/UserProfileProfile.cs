@@ -1,17 +1,19 @@
-﻿using AutoMapper;
+﻿using System.Linq;
+using AutoMapper;
 using Hive.UserProfile.Application.UserProfiles.Queries;
 
 namespace Hive.UserProfile.Application.UserProfiles
 {
-    public class UserProfileProfile : Profile
+    using Domain.Entities;
+    
+    public class UserProfileMapping : Profile
     {
-        public UserProfileProfile()
+        public UserProfileMapping()
         {
-            CreateMap<Domain.UserProfile, UserProfileDto>()
-                .ForMember(d => d.IsTransient,
-                    x => x.Condition(
-                        profile => !string.IsNullOrEmpty(profile.FirstName) &&
-                                   !string.IsNullOrEmpty(profile.LastName)));
+            CreateMap<UserProfile, UserProfileDto>()
+                .ForMember(d => d.Languages, x => x.MapFrom(s => s.Languages.Select(l => l.Value)))
+                .ForMember(d => d.Skills, x => x.MapFrom(s => s.Skills.Select(l => l.Value)));
+            CreateMap<NotificationSetting, NotificationSettingDto>().DisableCtorValidation().ReverseMap();
         }
     }
 }

@@ -1,0 +1,25 @@
+<ng-container *ngIf="(quantity$ | async) && (package$ | async)">
+    <div *ngIf="package$ | async; let package">
+        <div *ngIf="quantity$ | async; let quantity" fxLayout="column" style="height: 100%;">
+            <h3><strong>Quantity: </strong> {{ quantity }} </h3>
+            <h3><strong>Unit Price: </strong> {{ package.price }}$</h3>
+            <h3><strong>Subtotal: </strong>  {{ package.price! * quantity }}$</h3>
+            <h3><strong>Service Fee (3%): </strong> {{ 3 * package.price! * quantity / 100 }}$</h3>
+            <h3>
+                <strong>Total: </strong> 
+                {{ package.price! * quantity + (3 * package.price! * quantity / 100) }}$
+            </h3>
+    
+            <mat-form-field fxFlex="45" appearance="fill">
+                <mat-label>Write any special requirements here</mat-label>
+                <textarea rows="20" matInput [formControl]="requirements"></textarea>
+            </mat-form-field>
+    
+            <button 
+                (click)="completeOrder(quantity, package)" 
+                mat-raised-button
+                color="primary">Checkout</button>
+        </div>
+    </div>
+    
+</ng-container>

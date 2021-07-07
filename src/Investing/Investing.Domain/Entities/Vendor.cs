@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
-using Hive.Common.Domain;
-using Hive.Common.Domain.SeedWork;
+using Hive.Common.Core.SeedWork;
 
 namespace Hive.Investing.Domain.Entities
 {
@@ -15,8 +14,8 @@ namespace Hive.Investing.Domain.Entities
         {
             UserId = userId;
         }
-        
-        public string UserId { get; set; }
+
+        public string UserId { get; private init; }
 
         public ICollection<Plan> Plans { get; private set; }
     }

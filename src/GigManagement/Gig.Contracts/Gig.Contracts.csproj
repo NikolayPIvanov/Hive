@@ -11,6 +11,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\..\BuildingBlocks\BuildingBlocks.Core\BuildingBlocks.Core.csproj" />
       <ProjectReference Include="..\..\Common\Common.Core\Common.Core.csproj" />
     </ItemGroup>
 

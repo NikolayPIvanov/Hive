@@ -1,16 +1,21 @@
 ﻿// Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
-using System.Linq;
+using System;
+using System.Reflection;
+using BuildingBlocks.Core.Caching;
+using BuildingBlocks.Core.Email;
+using BuildingBlocks.Core.MessageBus;
+using DotNetCore.CAP;
 using Duende.IdentityServer;
-using Duende.IdentityServer.EntityFramework.DbContexts;
-using Duende.IdentityServer.EntityFramework.Mappers;
-using Hive.Common.Core.Interfaces;
+using Hive.Common.Core;
 using Hive.Identity.Data;
+using Hive.Identity.Jobs;
+using Hive.Identity.Models;
 using Hive.Identity.Services;
-using IdentityServerHost.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -34,43 +39,46 @@ namespace Hive.Identity
         {
             var connectionString = Configuration.GetConnectionString("DefaultConnection");
             var assembly = typeof(Startup).Assembly.FullName;
+            
             services.AddControllersWithViews();
             services.AddRazorPages();
-            
+
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(connectionString,
-                    o => o.MigrationsAssembly(assembly)));
+                options.UseSqlServer(
+                    connectionString,
+                    b =>
+                    {
+                        b.MigrationsAssembly(assembly);
+                        b.EnableRetryOnFailure(
+                            maxRetryCount: 10,
+                            maxRetryDelay: TimeSpan.FromSeconds(30),
+                            errorNumbersToAdd: null
+                        );
+                    }));
             
-            var sqlServerConnectionString = Configuration.GetConnectionString("DefaultConnection");
-            
-            services.AddCap(x =>
-            {
-                x.UseEntityFramework<ApplicationDbContext>();
-                x.UseSqlServer(sqlServerConnectionString);
+            services.AddSendGrid(Configuration);
+            services.AddRedis(Configuration);
+            services.AddMessagingBus<ApplicationDbContext>(
+                new StorageOptions(connectionString), 
+                new MessagingOptions(Configuration.GetValue<bool>("IsProduction")), Configuration);
+            services.AddOfType<ICapSubscribe>(new []{ Assembly.GetExecutingAssembly() });
+            services.AddScoped<IIdentityDispatcher, IdentityDispatcher>();
 
-                x.UseRabbitMQ(ro =>
+            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
                 {
-                    ro.Password = "admin";
-                    ro.UserName = "admin";
-                    ro.HostName = "localhost";
-                    ro.Port = 5672;
-                    ro.VirtualHost = "/";
-                });
-
-                x.UseDashboard(opt => { opt.PathMatch = "/cap"; });
-            });
-
-            services.AddScoped<IDispatcher, EventDispatcher>();
-            services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
-            
-
-            services.AddIdentity<ApplicationUser, IdentityRole>()
+                    options.SignIn.RequireConfirmedAccount = true;
+                })
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders()
                 .AddDefaultUI();
 
-            var builder = services.AddIdentityServer(options =>
+            var issuerUri = Configuration.GetValue<string?>("IssuerUri");
+            services.AddIdentityServer(options =>
                 {
+                    if(!string.IsNullOrEmpty(issuerUri))
+                    {
+                        options.IssuerUri = issuerUri;
+                    }
                     options.Events.RaiseErrorEvents = true;
                     options.Events.RaiseInformationEvents = true;
                     options.Events.RaiseFailureEvents = true;
@@ -81,38 +89,54 @@ namespace Hive.Identity
                 })
                 .AddConfigurationStore(options =>
                 {
-                    options.ConfigureDbContext = b => b.UseSqlServer(connectionString,
-                        sql => sql.MigrationsAssembly(assembly));
+                    options.ConfigureDbContext = b => 
+                        b.UseSqlServer(
+                            connectionString,
+                            b =>
+                            {
+                                b.MigrationsAssembly(assembly);
+                                b.EnableRetryOnFailure(
+                                    maxRetryCount: 10,
+                                    maxRetryDelay: TimeSpan.FromSeconds(30),
+                                    errorNumbersToAdd: null
+                                );
+                            });
+                    
                 })
                 .AddOperationalStore(options =>
                 {
-                    options.ConfigureDbContext = b => b.UseSqlServer(connectionString,
-                        sql => sql.MigrationsAssembly(assembly));
+                    options.ConfigureDbContext = b => 
+                        b.UseSqlServer(
+                            connectionString,
+                            b =>
+                            {
+                                b.MigrationsAssembly(assembly);
+                                b.EnableRetryOnFailure(
+                                    maxRetryCount: 10,
+                                    maxRetryDelay: TimeSpan.FromSeconds(30),
+                                    errorNumbersToAdd: null
+                                );
+                            });
                 })
-                .AddAspNetIdentity<ApplicationUser>();
+                .AddAspNetIdentity<ApplicationUser>()
+                .AddProfileService<IdentityProfileService>();
 
-            services.AddAuthentication()
-                .AddGoogle(options =>
-                {
-                    options.SignInScheme = IdentityServerConstants.ExternalCookieAuthenticationScheme;
+            services.AddAuthentication();
 
-                    // register your IdentityServer with Google at https://console.developers.google.com
-                    // enable the Google+ API
-                    // set the redirect URI to https://localhost:5001/signin-google
-                    options.ClientId = "copy client ID from Google here";
-                    options.ClientSecret = "copy client secret from Google here";
-                });
+            services.AddHostedService<RoleSeeder>();
         }
 
         public void Configure(IApplicationBuilder app)
         {
-            InitializeDatabase(app);
-            
             if (Environment.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseDatabaseErrorPage();
             }
+            
+            app.UseForwardedHeaders(new ForwardedHeadersOptions
+            {
+                ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto
+            });
 
             app.UseStaticFiles();
 
@@ -124,48 +148,6 @@ namespace Hive.Identity
                 endpoints.MapDefaultControllerRoute();
                 endpoints.MapRazorPages();
             });
-        }
-    
-        private void InitializeDatabase(IApplicationBuilder app)
-        {
-            using var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>()?.CreateScope();
-            if (serviceScope == null) return;
-            InitializePersistedGrantDbContext(serviceScope);
-            InitializeConfigurationDbContext(serviceScope);
-            InitializeApplicationDbContext(serviceScope);
-        }
-
-        private void InitializePersistedGrantDbContext(IServiceScope serviceScope)
-        {
-            serviceScope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();
-        }
-        
-        private void InitializeConfigurationDbContext(IServiceScope serviceScope)
-        {
-            var context = serviceScope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
-            context.Database.Migrate();
-
-            var allClients = context.Clients.AsQueryable();
-            context.Clients.RemoveRange(allClients);
-            context.Clients.AddRange(Config.Clients.Select(x => x.ToEntity()));
-
-            context.SaveChanges();
-            
-            var allResources = context.IdentityResources.AsQueryable();
-            context.IdentityResources.RemoveRange(allResources);
-            context.IdentityResources.AddRange(Config.IdentityResources.Select(x => x.ToEntity()));
-            context.SaveChanges();
-            
-            var allScopes = context.ApiScopes.AsQueryable();
-            context.ApiScopes.RemoveRange(allScopes);
-            context.ApiScopes.AddRange(Config.ApiScopes.Select(x => x.ToEntity()));
-            context.SaveChanges();
-        }
-
-        private void InitializeApplicationDbContext(IServiceScope serviceScope)
-        {
-            var appContext = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            appContext.Database.Migrate();
         }
     }
 }

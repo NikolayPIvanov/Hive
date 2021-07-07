@@ -11,6 +11,10 @@ namespace Ordering.Infrastructure.Persistence.Configurations
             builder.Property(x => x.Version).IsRequired();
             builder.Property(x => x.Location).IsRequired();
             builder.Property(x => x.IsApproved).IsRequired();
+
+            builder.HasOne(r => r.Order)
+                .WithMany(o => o.Resolutions)
+                .HasForeignKey(x => x.OrderId);
         }
     }
 }

@@ -1,4 +1,6 @@
 ﻿using System;
+using BuildingBlocks.Core.MessageBus;
+using Hive.Common.Core.SeedWork;
 using Hive.Common.Domain.SeedWork;
 
 namespace Hive.Billing.Contracts.IntegrationEvents

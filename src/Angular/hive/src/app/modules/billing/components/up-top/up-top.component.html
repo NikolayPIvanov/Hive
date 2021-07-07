@@ -1,0 +1,12 @@
+<h1>Top-up your account</h1>
+
+<div>
+    <form fxLayout="column" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+        <mat-form-field appearance="fill">
+            <mat-label>Amount</mat-label>
+            <input matInput id="amount" type="number" formControlName="amount">
+        </mat-form-field>
+
+        <button mat-button type="submit">Top-up</button>
+    </form>
+</div>

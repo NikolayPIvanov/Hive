@@ -10,12 +10,15 @@ namespace Hive.Gig.Infrastructure.Persistence.Configurations
         {
             builder.Property(c => c.Title).HasMaxLength(50).IsRequired();
 
+            builder.HasOne(c => c.Parent)
+                .WithMany(c => c.SubCategories)
+                .HasForeignKey(c => c.ParentId)
+                .OnDelete(DeleteBehavior.NoAction);
+
             builder.HasMany(c => c.SubCategories)
-                .WithOne()
+                .WithOne(c => c.Parent)
                 .HasForeignKey(c => c.ParentId)
                 .OnDelete(DeleteBehavior.NoAction);
         }
-
-        
     }
 }

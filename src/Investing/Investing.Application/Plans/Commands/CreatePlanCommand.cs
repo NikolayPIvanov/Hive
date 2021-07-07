@@ -1,33 +1,83 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
+using FluentValidation;
+using Hive.Common.Core.Exceptions;
+using Hive.Common.Core.Interfaces;
 using Hive.Investing.Application.Interfaces;
+using Hive.Investing.Application.Plans.Queries;
 using Hive.Investing.Domain.Entities;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Hive.Investing.Application.Plans.Commands
 {
-    public record CreatePlanCommand(int VendorId, string Title, string Description,
-        int EstimatedReleaseDays, DateTime? EstimatedReleaseDate, decimal FundingNeeded) : IRequest<int>;
+    public record CreatePlanCommand(string Title, string Description,
+        DateTime StartDate, DateTime? EndDate, decimal FundingNeeded) : IRequest<PlanDto>;
+
+    public class CreatePlanCommandValidator : AbstractValidator<CreatePlanCommand>
+    {
+        public CreatePlanCommandValidator()
+        {
+            RuleFor(x => x.Title)
+                .MinimumLength(5).WithMessage("{Property} must be above {MinimumLength}")
+                .MaximumLength(50).WithMessage("{Property} must be below {MaximumLength}")
+                .NotEmpty().WithMessage("{Property} cannot be empty or missing");
+            
+            RuleFor(x => x.Description)
+                .MinimumLength(20).WithMessage("{Property} must be above {MinimumLength}")
+                .MaximumLength(3000).WithMessage("{Property} must be below {MaximumLength}")
+                .NotEmpty().WithMessage("{Property} cannot be empty or missing");
+            
+            RuleFor(x => x.StartDate)
+                .Must(x => DateTime.UtcNow.AddYears(1) > x).WithMessage("{Property} must not be more than an year away.")
+                .NotEmpty().WithMessage("{Property} cannot be empty or missing");
+            
+            RuleFor(x => x.EndDate)
+                .Must(x => DateTime.UtcNow.AddYears(5) > x).WithMessage("{Property} must not be more than 5 years away.")
+                .NotEmpty().WithMessage("{Property} cannot be empty or missing");
+            
+            RuleFor(x => x.FundingNeeded)
+                .InclusiveBetween(100.0m, 100000.0m).WithMessage("{Property} must between 100.0 and 100000.0")
+                .NotEmpty().WithMessage("{Property} cannot be empty or missing");
+        }
+    }
     
-    public class CreatePlanCommandHandler : IRequestHandler<CreatePlanCommand, int>
+    public class CreatePlanCommandHandler : IRequestHandler<CreatePlanCommand, PlanDto>
     {
         private readonly IInvestingDbContext _context;
+        private readonly IMapper _mapper;
+        private readonly ICurrentUserService _currentUserService;
+        private readonly ILogger<CreatePlanCommandHandler> _logger;
 
-        public CreatePlanCommandHandler(IInvestingDbContext context)
+        public CreatePlanCommandHandler(IInvestingDbContext context, IMapper mapper, ICurrentUserService currentUserService,
+            ILogger<CreatePlanCommandHandler> logger)
         {
-            _context = context;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _mapper = mapper;
+            _currentUserService = currentUserService ?? throw new ArgumentNullException(nameof(currentUserService));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
-        public async Task<int> Handle(CreatePlanCommand request, CancellationToken cancellationToken)
+        public async Task<PlanDto> Handle(CreatePlanCommand request, CancellationToken cancellationToken)
         {
-            var plan = new Plan(request.VendorId, request.Title, request.Description, request.EstimatedReleaseDays,
-                request.EstimatedReleaseDate, request.FundingNeeded);
-            // TODO: Add validation
+            var vendor = await _context.Vendors.FirstOrDefaultAsync(x => x.UserId == _currentUserService.UserId, cancellationToken);
+
+            if (vendor == null)
+            {
+                _logger.LogWarning("Vendor with user id: {UserId} was not found", _currentUserService.UserId);
+                throw new NotFoundException(nameof(Vendor), _currentUserService.UserId);
+            }
+            
+            var plan = new Plan(vendor.Id, request.Title, request.Description, request.StartDate, request.EndDate, request.FundingNeeded);
             _context.Plans.Add(plan);
             await _context.SaveChangesAsync(cancellationToken);
+            
+            _logger.LogInformation("Plan {Id} was created", plan.Id);
 
-            return plan.Id;
+            return _mapper.Map<PlanDto>(plan);
         }
     }
 }

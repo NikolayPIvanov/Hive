@@ -1,0 +1,56 @@
+.chat-window {
+    max-height: 90% !important;
+}
+
+.mat-card.scrollable-content {
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  
+    > .mat-card-title-group {
+      display: block;
+    }
+  
+    > .mat-card-content {
+      overflow-y: auto;
+    }
+  }
+
+  ul{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  
+  ul li{
+    display:inline-block;
+    clear: both;
+    padding: 20px;
+    border-radius: 30px;
+    margin-bottom: 2px;
+    font-family: Helvetica, Arial, sans-serif;
+  }
+  
+  .him{
+    background: #eee;
+    float: left;
+  }
+  
+  .me{
+    float: right;
+    background: #0084ff;
+    color: #fff;
+  }
+  
+  .him + .me{
+    border-bottom-right-radius: 5px;
+  }
+  
+  .me + .me{
+    border-top-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+  }
+  
+  .me:last-of-type {
+    border-bottom-right-radius: 30px;
+  }

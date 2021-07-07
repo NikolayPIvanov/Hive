@@ -1,0 +1,62 @@
+<div fxLayout="column" class="container">
+  <mat-card class="mat-elevation-z8" fxLayout="column" fxFlex>
+    <mat-card-header>
+      <mat-card-title>Explore Gigs</mat-card-title>
+      <mat-card-subtitle>Network</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content fxFlex fxLayoutGap="1%">
+      
+      <mat-accordion>
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+                Filtering
+            </mat-panel-title>
+            <mat-panel-description>
+              Expand to explore filter options
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+
+          <div fxLayout="row">
+            <mat-form-field appearance="standard" fxFlex>
+              <mat-label>Search by name</mat-label>
+              <input matInput (keyup)="applyFilter($event)" placeholder="Ex. My gig" #input> 
+            </mat-form-field>
+            <button 
+              fxFlexOffset="3rem"
+              style="height: 5rem"
+              mat-raised-button 
+              color="primary"
+              (click)="onCreateNew()">
+              <mat-icon>add</mat-icon>
+              <span>Create gig</span>
+            </button>
+          </div>
+
+        </mat-expansion-panel>
+      </mat-accordion>
+
+      <div *ngIf="gigs$ | async; let gigs" 
+        fxLayout="row wrap" fxLayoutGap="3% grid">
+        <app-gig-card 
+          *ngFor="let gig of gigs"
+          fxFlex="22"
+          (onDeleted)="deleted($event)"
+          [gig]="gig"></app-gig-card>
+      </div>
+
+    </mat-card-content>
+    <mat-card-footer>
+      <mat-divider
+        [inset]="true">
+      </mat-divider>
+      <mat-paginator 
+          [length]="length"
+          [pageSizeOptions]="pageSizeOptions" 
+          [pageSize]="pageSize"
+          [pageIndex]="pageNumber"
+          (page)="pageChange($event)"
+          showFirstLastButtons></mat-paginator>
+    </mat-card-footer>
+  </mat-card>
+</div>

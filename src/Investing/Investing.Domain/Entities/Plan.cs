@@ -1,45 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
-using Hive.Common.Domain.SeedWork;
+using System.Linq;
+using Hive.Common.Core.SeedWork;
 
 namespace Hive.Investing.Domain.Entities
 {
-    public record Tag(string Value);
-    
     public class Plan : Entity
     {
         private Plan()
         {
-            Tags = new HashSet<Tag>(10);
+            Investments = new HashSet<Investment>();
+            IsFunded = (Investments ?? new List<Investment>()).Any(i => i.IsAccepted);
+            IsPublic = false;
         }
 
-        public Plan(int vendorId, string title, string description, 
-            int estimatedReleaseDays, DateTime? estimatedReleaseDate, decimal fundingNeeded) : this()
+        public Plan(int vendorId, string title, string description, DateTime startDate, DateTime? endDate, decimal startingFunds) : this()
         {
             VendorId = vendorId;
             Title = title;
             Description = description;
-            EstimatedReleaseDays = estimatedReleaseDays;
-            EstimatedReleaseDate = estimatedReleaseDate;
-            FundingNeeded = fundingNeeded;
+            StartDate = startDate;
+            EndDate = endDate;
+            TotalFundsNeeded = startingFunds;
         }
         
         public string Title { get; set; }
 
         public string Description { get; set; }
-
-        public int EstimatedReleaseDays { get; set; }
         
-        public DateTime? EstimatedReleaseDate { get; set; }
+        public DateTime StartDate { get; set; }
+        public DateTime? EndDate { get; set; }
 
-        public decimal FundingNeeded { get; set; }
+        public bool IsPublic { get; set; }
+        public bool IsFunded { get; private set; }
+
+        public decimal TotalFundsNeeded { get; set; }
         
-        public int VendorId { get; set; }
+        public int? GigId { get; set; }
         
-        public int? InvestmentId { get; set; }
-
-        public Investment Investment { get; set; }
-
-        public ICollection<Tag> Tags { get; private set; }
+        public int VendorId { get; private set; }
+        public Vendor Vendor { get; private set; }
+        
+        public ICollection<Investment> Investments { get; private set; }
     }
 }

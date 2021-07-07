@@ -1,0 +1,285 @@
+<h2 mat-dialog-title>Edit Gig</h2>
+<mat-dialog-content class="mat-typography">
+    <form 
+        fxLayout="column"
+        [formGroup]="gigForm"
+        (ngSubmit)="onSubmit()">
+
+        <mat-horizontal-stepper [linear]="true" #stepper>
+            <mat-step>
+                <ng-template matStepLabel>
+                    Gig Information
+                </ng-template>
+                <div fxLayout="column">
+                    <mat-form-field appearance="outline">
+                        <mat-label>Title</mat-label>
+                        <input matInput formControlName="title" placeholder="Title">
+                        
+                        <mat-error *ngIf="gigForm.controls.title.errors">
+                          <div *ngIf="gigForm.controls['title'].errors.required">
+                            Please enter a title
+                          </div>
+        
+                          <div *ngIf="gigForm.controls['title'].errors.minlength">
+                            Title must be at least 3 characters long
+                          </div>
+        
+                          <div *ngIf="gigForm.controls['title'].errors.maxlength">
+                            Title must be at most 100 characters long
+                          </div>
+                        </mat-error>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline">
+                        <mat-label>Description</mat-label>
+                        <textarea matInput formControlName="description" placeholder="Description"></textarea>
+                        <mat-error *ngIf="gigForm.controls.description.errors">
+                          <div *ngIf="gigForm.controls['description'].errors.required">
+                            Please enter a description
+                          </div>
+        
+                          <div *ngIf="gigForm.controls['description'].errors.minlength">
+                            Description must be at least 10 characters long
+                          </div>
+        
+                          <div *ngIf="gigForm.controls['description'].errors.maxlength">
+                            Description must be at most 2500 characters long
+                          </div>
+                        </mat-error>
+                        
+                    </mat-form-field>
+
+                    <app-categories-search 
+                        [init]="data.category!"
+                        [defaultSearchType]="2"
+                        (onSelectedCategory)="onCategorySelected($event)" >
+                    </app-categories-search>
+
+                    <mat-form-field appearance="outline" class="full-width mt-1">
+                        <mat-label>Tags</mat-label>
+                        <mat-chip-list #tagsList aria-label="Tags" formControlName="tags">
+                            <mat-chip 
+                                *ngFor="let tag of tags.value" 
+                                selectable="false" 
+                                removable="true" 
+                                (removed)="remove(tags, tag)">
+                                {{tag}}
+                                <mat-icon matChipRemove>cancel</mat-icon>
+                            </mat-chip>
+                    
+                            <input matInput
+                                class="active-input"
+                                placeholder="Tags..." 
+                                [matChipInputFor]="tagsList" 
+                                [matChipInputSeparatorKeyCodes]="separatorKeysCodes"
+                                matChipInputAddOnBlur="true"
+                                (matChipInputTokenEnd)="add(tags, $event)">
+                        </mat-chip-list>
+                        <mat-error *ngIf="gigForm.controls.tags.errors">
+                          <div *ngIf="gigForm.controls['tags'].errors.required">
+                            Please enter tags
+                          </div>
+                        </mat-error>
+                    </mat-form-field>
+
+                    <button *ngIf="gigForm.controls.questions.controls.length === 0" 
+                        mat-raised-button color="primary" (click)="addQuestion()">
+                        <span>Add FAQ</span>
+                        <mat-icon>add</mat-icon>
+                    </button>
+
+                    <div formArrayName="questions">
+                        <div *ngFor="let question of gigForm.controls.questions.controls; let i = index; let last = last;">
+                            <!-- address header, show remove button when more than one address available -->
+                            <div fxLayout="row">
+                                <h3> Question {{ i + 1 }}</h3>
+                                <mat-icon fxLayoutAlign="end"
+                                    (click)="removeQuestion(i)"> remove </mat-icon>
+                                <mat-icon *ngIf="last" (click)="addQuestion()" fxLayoutAlign="end"> add </mat-icon>
+                            </div>
+                
+                            <div [formGroupName]="i" fxLayout="column" fxLayoutGap="1rem">
+                                <mat-form-field appearance="outline" fxFill>
+                                    <mat-label>Title</mat-label>
+                                    <input matInput type="text" formControlName="title">
+                                </mat-form-field>
+            
+                                <mat-form-field appearance="outline" fxFill>
+                                    <mat-label>Answer</mat-label>
+                                    <textarea matInput type="text" formControlName="answer"></textarea>
+                                </mat-form-field>
+                            <div>
+                        </div>
+                        </div>
+                        </div>  
+                    </div>
+        
+                    <div style="margin-top: 1rem;">
+                        <button mat-raised-button type="button" matStepperNext>Next</button>
+                    </div>
+                </div>
+            </mat-step>
+
+            <mat-step label="Thumbnail" [optional]="true">
+                <app-image-upload
+                    [source]="data.imagePath?.path"
+                    [download]="download"
+                    (onUploaded)="setImage($event)">
+                </app-image-upload>
+      
+                <div>
+                  <button mat-raised-button  type="button" matStepperPrevious>Back</button>
+                  <button mat-raised-button  type="button" matStepperNext>Next</button>
+                </div>
+            </mat-step>
+
+            <mat-step label="Packages" fxLayout="column">
+                <ng-template matStepLabel>Add Packages</ng-template>
+                    
+                <div formArrayName="packages">
+                    <div *ngFor="let package of gigForm.controls.packages.controls; let i = index; let last = last;">
+                        <div fxLayout="row"> 
+                            <h3> Package {{ i + 1 }}</h3>
+                            <mat-icon 
+                              *ngIf="gigForm.controls.packages.controls.length > 1" 
+                              fxLayoutAlign="end"
+                              (click)="removePackage(i)"> 
+                                remove 
+                            </mat-icon>
+                            <mat-icon 
+                              *ngIf="last" 
+                              fxLayoutAlign="end"
+                              (click)="addPackage()"> 
+                                add 
+                            </mat-icon>
+                        </div>
+            
+                        <div [formGroupName]="i" fxLayout="column" fxLayoutGap="1rem">
+                            <mat-form-field appearance="outline" fxFill>
+                                <mat-label>Title</mat-label>
+                                <input matInput type="text" formControlName="title">
+                                <mat-error *ngIf="packagesForm && packagesForm[i].get('title').errors">
+                                  <div *ngIf="packagesForm[i].get('title').errors.required">
+                                    Please enter a title
+                                  </div>
+                
+                                  <div *ngIf="packagesForm[i].get('title').errors.minlength">
+                                    Title must be at least 3 characters long
+                                  </div>
+                
+                                  <div *ngIf="packagesForm[i].get('title').errors.maxlength">
+                                    Title must be at most 50 characters long
+                                  </div>
+                                </mat-error>
+                            </mat-form-field>
+        
+                            <mat-form-field appearance="outline" fxFill>
+                                <mat-label>Description</mat-label>
+                                <input matInput type="text" formControlName="description">
+                                <mat-error *ngIf="packagesForm && packagesForm[i].get('description').errors">
+                                  <div *ngIf="packagesForm[i].get('description').errors.required">
+                                    Please enter a Description
+                                  </div>
+                
+                                  <div *ngIf="packagesForm[i].get('description').errors.minlength">
+                                    Description must be at least 10 characters long
+                                  </div>
+                
+                                  <div *ngIf="packagesForm[i].get('description').errors.maxlength">
+                                    Description must be at most 200 characters long
+                                  </div>
+                                </mat-error>
+                              </mat-form-field> 
+    
+                            <mat-form-field appearance="outline" fxFill>
+                              <mat-label>Price</mat-label>
+                              <input matInput type="number" formControlName="price">
+                            </mat-form-field> 
+    
+                            <mat-form-field appearance="outline" fxFill>
+                              <mat-label>Select package tier</mat-label>
+                              <mat-select [compareWith]="compareFunction" formControlName="packageTier">
+                                <mat-option 
+                                  *ngFor="let t of packageTiers"
+                                  [value]="t">{{ displayTier(t) }}</mat-option>
+                              </mat-select>
+                              <mat-error *ngIf="packagesForm && packagesForm[i].get('packageTier').errors">
+                                <div *ngIf="packagesForm[i].get('packageTier').errors.required">
+                                  Please select a package tier
+                                </div>
+                              </mat-error>
+                            </mat-form-field>
+    
+                            <mat-form-field appearance="outline" fxFill>
+                              <mat-label>Delivery Time</mat-label>
+                              <input matInput type="number" formControlName="deliveryTime">
+                              <mat-error *ngIf="packagesForm && packagesForm[i].get('deliveryTime').errors">
+                                <div *ngIf="packagesForm[i].get('deliveryTime').errors.required">
+                                  Please specify delivery time
+                                </div>
+                              </mat-error>
+                            </mat-form-field> 
+    
+                            <mat-form-field appearance="outline" fxFill>
+                              <mat-label>Select delivery frequency</mat-label>
+                              <mat-select formControlName="deliveryFrequency">
+                                <mat-option *ngFor="let t of deliveryFrequencies" [value]="t">{{ displayFrequency(t) }}</mat-option>
+                              </mat-select>
+                              <mat-error *ngIf="packagesForm && packagesForm[i].get('deliveryFrequency').errors">
+                                <div *ngIf="packagesForm[i].get('deliveryFrequency').errors.required">
+                                  Please select a delivery frequency
+                                </div>
+                              </mat-error>
+                            </mat-form-field> 
+    
+    
+                            <mat-form-field appearance="outline" fxFill>
+                              <mat-label>Revisions</mat-label>
+                              <input matInput type="number" formControlName="revisions">
+                              <mat-error *ngIf="packagesForm && packagesForm[i].get('revisions').errors">
+                                <div *ngIf="packagesForm[i].get('revisions').errors.required">
+                                  Please specify delivery time
+                                </div>
+                              </mat-error>
+                            </mat-form-field>
+    
+                            <mat-form-field appearance="outline" fxFill>
+                              <mat-label>Revision Type</mat-label>
+                              <mat-select formControlName="revisionType">
+                                <mat-option *ngFor="let t of revisionsTypes" [value]="t">{{ displayRevision(t) }}</mat-option>
+                              </mat-select>
+                              <mat-error *ngIf="packagesForm && packagesForm[i].get('revisionType').errors">
+                                <div *ngIf="packagesForm[i].get('revisionType').errors.required">
+                                  Please select a revision type
+                                </div>
+                              </mat-error>
+                            </mat-form-field>
+                      <div>
+                    </div>
+                    </div>
+                    </div>  
+                </div>
+    
+                <div>
+                  <button mat-raised-button type="button" matStepperPrevious>Back</button>
+                  <button mat-raised-button type="button" matStepperNext>Next</button>
+                </div>
+            </mat-step>
+            
+            <mat-step>
+              <ng-template matStepLabel>Finish</ng-template>
+              <p>You are now all done. Click on update when you want to finish the update of the gig.</p>
+              <div>
+                <button mat-raised-button type="submit">Update</button>
+                <button  mat-raised-button type="button" (click)="stepper.reset()">To First</button>
+              </div>
+            </mat-step>
+
+        </mat-horizontal-stepper>
+    </form>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+    <button mat-button mat-dialog-close>Close</button>
+</mat-dialog-actions>
+

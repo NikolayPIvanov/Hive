@@ -17,43 +17,35 @@ namespace Hive.Identity
                 new IdentityResources.Profile(),
             };
 
+        public static IEnumerable<ApiResource> ApiResources =>
+            new ApiResource[]
+            {
+                new ApiResource("gigs-management", "Gigs Management API")
+                {
+                    Scopes = { "gigs.read", "gigs.write", "gigs.delete" }
+                },
+                
+                new ApiResource("ordering", "Orders Management API")
+                {
+                    Scopes = { "ordering.read", "ordering.write", "ordering.delete" }
+                }
+            };
+
         public static IEnumerable<ApiScope> ApiScopes =>
             new ApiScope[]
             {
-                new ApiScope("scope1"),
-                new ApiScope("scope2"),
-                new ApiScope("loosely-coupled"),
+                new ApiScope("gigs.read"),
+                new ApiScope("gigs.write"),
+                new ApiScope("gigs.delete"),
+                
+                new ApiScope("ordering.read"),
+                new ApiScope("ordering.write"),
+                new ApiScope("ordering.delete")
             };
 
         public static IEnumerable<Client> Clients =>
             new Client[]
             {
-                new Client
-                {
-                    ClientId = "m2m.monolith",
-                    ClientName = "Loosely Coupled Monolith",
-                    
-                    AllowedGrantTypes = GrantTypes.ClientCredentials,
-                    ClientSecrets = { new Secret("511536EF-F270-4058-80CA-1C89C192F69A".Sha256()) },
-                    
-                    AllowOfflineAccess = true,
-                    
-                    AllowedScopes = new List<string> { "loosely-coupled" }
-                },
-                // m2m client credentials flow client
-                new Client
-                {
-                    ClientId = "m2m.client",
-                    ClientName = "Client Credentials Client",
-
-                    AllowedGrantTypes = GrantTypes.ClientCredentials,
-                    ClientSecrets = {new Secret("511536EF-F270-4058-80CA-1C89C192F69A".Sha256())},
-                    
-                    AllowOfflineAccess = true,
-
-                    AllowedScopes = new List<string> { "loosely-coupled" }
-                },
-
                 // interactive client using code flow + pkce
                 new Client
                 {
@@ -61,14 +53,93 @@ namespace Hive.Identity
                     ClientSecrets = {new Secret("49C1A7E1-0C79-4A89-A3D6-A37998FB86B0".Sha256())},
 
                     AllowedGrantTypes = GrantTypes.Code,
+                    AccessTokenLifetime = 365 * 24 * 60,
 
-                    RedirectUris = {"https://localhost:44300/signin-oidc"},
-                    FrontChannelLogoutUri = "https://localhost:44300/signout-oidc",
-                    PostLogoutRedirectUris = {"https://localhost:44300/signout-callback-oidc"},
+                    RedirectUris = { "http://localhost:44300/signin-oidc" },
+                    FrontChannelLogoutUri = "http://localhost:44300/signout-oidc",
+                    PostLogoutRedirectUris = {"http://localhost:44300/signout-callback-oidc"},
 
                     AllowOfflineAccess = true,
-                    AllowedScopes = {"openid", "profile", "scope2"}
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        
+                        "gigs.read",
+                        "gigs.write",
+                        "gigs.delete",
+                        
+                        "ordering.read",
+                        "ordering.write",
+                        "ordering.delete"
+                        
+                    }
+                    
                 },
+                
+                new Client
+                {
+                    ClientName = "Angular-Client",
+                    ClientId = "angular-client",
+                    AllowedGrantTypes = GrantTypes.Code,
+                    RedirectUris = new List<string>
+                    {
+                        "http://localhost:4200/auth/signin-callback"
+                    },
+                    PostLogoutRedirectUris = { "http://localhost:4200/auth/signout-callback" },
+                    RequirePkce = true,
+                    AllowAccessTokensViaBrowser = true,
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        
+                        "gigs.read",
+                        "gigs.write",
+                        "gigs.delete",
+                        
+                        "ordering.read",
+                        "ordering.write",
+                        "ordering.delete"
+                    },
+                    
+                    AllowedCorsOrigins = { "http://localhost:4200" },
+                    RequireClientSecret = false,
+                    RequireConsent = false,
+                    AccessTokenLifetime = 600 * 600
+                },
+                
+                new Client
+                {
+                    ClientName = "Angular-Prod",
+                    ClientId = "angular-prod",
+                    AllowedGrantTypes = GrantTypes.Code,
+                    RedirectUris = new List<string>
+                    {
+                        "http://localhost/#/auth/signin-callback"
+                    },
+                    PostLogoutRedirectUris = { "http://localhost/#/auth/signout-callback" },
+                    RequirePkce = true,
+                    AllowAccessTokensViaBrowser = true,
+                    AllowedScopes =
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile,
+                        
+                        "gigs.read",
+                        "gigs.write",
+                        "gigs.delete",
+                        
+                        "ordering.read",
+                        "ordering.write",
+                        "ordering.delete"
+                    },
+                    
+                    AllowedCorsOrigins = { "http://localhost" },
+                    RequireClientSecret = false,
+                    RequireConsent = false,
+                    AccessTokenLifetime = 600 * 600
+                }
             };
     }
 }

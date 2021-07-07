@@ -1,4 +1,4 @@
-﻿using Hive.Common.Domain.SeedWork;
+﻿using Hive.Common.Core.SeedWork;
 
 namespace Ordering.Domain.Entities
 {
@@ -16,11 +16,12 @@ namespace Ordering.Domain.Entities
             IsApproved = false;
         }
         
-        public string Version { get; init; }
+        public string Version { get; set; }
 
-        public string Location { get; init; }
+        public string Location { get; set; }
 
-        public int OrderId { get; init; }
+        public int OrderId { get; private init; }
+        public Order Order { get; private set; }
 
         public bool IsApproved { get; set; }
     }

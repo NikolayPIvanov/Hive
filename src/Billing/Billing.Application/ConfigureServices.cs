@@ -1,10 +1,8 @@
 ﻿using System.Reflection;
-using Billing.Application.IntegrationEvents;
 using DotNetCore.CAP;
 using FluentValidation;
 using Hive.Common.Core;
 using Hive.Common.Core.Behaviours;
-using Hive.Common.Core.Interfaces;
 using MediatR;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,16 +11,18 @@ namespace Billing.Application
 {
     public static class ConfigureServices
     {
-        public static IServiceCollection AddBillingApp(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddBillingCore(this IServiceCollection services)
         {
             services.AddAutoMapper(Assembly.GetExecutingAssembly());
             services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
             services.AddMediatR(Assembly.GetExecutingAssembly());
+
+            services.AddOfType<ICapSubscribe>(new []{ Assembly.GetExecutingAssembly() });
+            
+            services.AddTransient(typeof(IPipelineBehavior<,>), typeof(AuthorizationBehaviour<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(UnhandledExceptionBehaviour<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehaviour<,>));
             services.AddTransient(typeof(IPipelineBehavior<,>), typeof(PerformanceBehaviour<,>));
-
-            services.AddOfType<ICapSubscribe>(new []{ Assembly.GetExecutingAssembly() });
             
             return services;
         }

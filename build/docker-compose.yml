@@ -10,50 +10,64 @@ services:
     ports:
       - 5672:5672
       - 15672:15672
+    networks:
+      - dev
 
-  db:
-    image: "mcr.microsoft.com/mssql/server"
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+    networks:
+      - dev
+
+  mongo:
+    image: "mongo"
+    ports:
+      - "27017:27017"
+      
+  sqlserver:
+    image: "mcr.microsoft.com/mssql/server:2019-CU8-ubuntu-16.04"
     environment:
-        SA_PASSWORD: "Your_password123"
-        ACCEPT_EULA: "Y"
+      SA_PASSWORD: "yourStrong(!)Password"
+      ACCEPT_EULA: "Y"
     ports:
       - "1433:1433"
+  
+  azurite:
+    image: "mcr.microsoft.com/azure-storage/azurite"
+    ports:
+      - "10000:10000"
+      - "10001:10001"
 
-  es01:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.10.2
-    container_name: es01
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.12.1
+    container_name: elasticsearch
     environment:
-      - node.name=es01
-      - cluster.name=es-docker-cluster
-      - cluster.initial_master_nodes=es01
-      - bootstrap.memory_lock=true
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - discovery.type=single-node
     ulimits:
       memlock:
         soft: -1
         hard: -1
     volumes:
-      - data01:/usr/share/elasticsearch/data
+      - esdata:/usr/share/elasticsearch/data
     ports:
-      - 9200:9200
+      - "9200:9200"
     networks:
-      - elastic
+      - dev
 
-  kib01:
-    image: docker.elastic.co/kibana/kibana:7.10.2
-    container_name: kib01
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.12.1
+    container_name: kibana
     ports:
-      - 5601:5601
-    environment:
-      ELASTICSEARCH_URL: http://es01:9200
-      ELASTICSEARCH_HOSTS: http://es01:9200
+      - "5601:5601"
     networks:
-      - elastic
+      - dev
 
 volumes:
-  data01:
+  esdata:
     driver: local
+    
 
 networks:
-  elastic:
-    driver: bridge
+  dev:
+    external: true

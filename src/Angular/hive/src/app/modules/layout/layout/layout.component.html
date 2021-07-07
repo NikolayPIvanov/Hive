@@ -1,0 +1,107 @@
+<div class="navbar-container" [class.example-is-mobile]="mobileQuery.matches">
+
+    <!-- Top navbar -->
+    <mat-toolbar class="navbar" color="primary">
+  
+      <button mat-icon-button (click)="snav.toggle()">
+        <mat-icon>menu</mat-icon>
+      </button>
+  
+      <a fxLayout="row" fxLayoutGap="1rem" class="navbar-brand" (click)="navigate()" matTooltip="Home">
+        <img src="../../../../assets/logo.png" alt="" srcset="">
+        <span>Hive</span>
+      </a>
+  
+      <span class="navbar-spacer"></span>
+  
+      <button *ngIf="profile$ | async; let profile" mat-button [matMenuTriggerFor]="userMenu" fxLayout="row">
+        <img [src]="profile.avatarUri || '../../../../assets/user.png'" style="height: 4rem;">
+        <span fxShow fxHide.xs >
+          {{profile.givenName}} {{profile.surname}}
+        </span>
+      </button>
+      <mat-menu #userMenu="matMenu" xPosition="before" yPosition="above" [overlapTrigger]="false">
+  
+        <a mat-menu-item [routerLink]="['/account/overview']">
+          <mat-icon>person</mat-icon>
+          <span>Account</span>
+        </a>
+  
+        <a mat-menu-item (click)="logout()">
+          <mat-icon>exit_to_app</mat-icon>
+          <span>Log out</span>
+        </a>
+  
+      </mat-menu>
+  
+    </mat-toolbar>
+  
+    <mat-sidenav-container class="navbar-sidenav-container">
+      <!-- Side nav -->
+      <mat-sidenav #snav [opened]="!mobileQuery.matches" [mode]="mobileQuery.matches ? 'over' : 'side'"
+        [fixedInViewport]="mobileQuery.matches" fixedTopGap="56" class="sidenav">
+  
+        <mat-nav-list>
+          <h3 mat-subheader>Menu</h3>
+
+          <a mat-list-item [routerLink]="['/home']" routerLinkActive="active">
+            <mat-icon mat-list-icon>
+              home
+            </mat-icon>
+            <p mat-line> Dashboard </p>
+          </a>
+  
+          <a *ngIf="isAdmin" mat-list-item [routerLink]="['/categories/dashboard']" routerLinkActive="active">
+            <mat-icon mat-list-icon>
+              category
+            </mat-icon>
+            <p mat-line> Categories </p>
+          </a>
+
+          <a *ngIf="isSeller || isBuyer" mat-list-item [routerLink]="['/gigs/dashboard']" routerLinkActive="active">
+            <mat-icon mat-list-icon>
+              receipt_long
+            </mat-icon>
+            <p mat-line> Gigs </p>
+          </a>
+  
+          <a *ngIf="isSeller || isBuyer || isInvestor" mat-list-item [routerLink]="['/billing/overview']" routerLinkActive="active">
+            <mat-icon mat-list-icon>
+              credit_card
+            </mat-icon>
+            <p mat-line> Billing Account </p>
+          </a>
+
+          <a *ngIf="isSeller || isBuyer" mat-list-item [routerLink]="['/orders']" routerLinkActive="active">
+            <mat-icon mat-list-icon>
+              request_quote
+            </mat-icon>
+            <p mat-line> Orders </p>
+          </a>
+
+          <a mat-list-item [routerLink]="['/chat']" routerLinkActive="active">
+            <mat-icon mat-list-icon>
+              chat
+            </mat-icon>
+            <p mat-line> Chat </p>
+          </a>
+
+          <a *ngIf="isSeller || isInvestor" mat-list-item [routerLink]="['/plans']" routerLinkActive="active">
+            <mat-icon mat-list-icon>
+              note_alt
+            </mat-icon>
+            <p mat-line> Plans </p>
+          </a>
+        </mat-nav-list>
+  
+      </mat-sidenav>
+  
+      <!-- Main content -->
+      <mat-sidenav-content class="sidenav-content">
+
+        <router-outlet></router-outlet>
+  
+      </mat-sidenav-content>
+    </mat-sidenav-container>
+  
+  </div>

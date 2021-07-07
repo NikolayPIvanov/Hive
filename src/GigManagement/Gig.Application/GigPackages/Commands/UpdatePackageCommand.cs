@@ -1,37 +1,37 @@
-﻿using System.Threading;
+﻿using System;
+using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
+using AutoMapper;
 using FluentValidation;
+using Hive.Common.Core;
 using Hive.Common.Core.Exceptions;
+using Hive.Common.Core.Interfaces;
+using Hive.Common.Core.Security.Handlers;
 using Hive.Gig.Application.Interfaces;
 using Hive.Gig.Domain.Entities;
 using Hive.Gig.Domain.Enums;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Hive.Gig.Application.GigPackages.Commands
 {
-    public class UpdatePackageCommand : IRequest<Unit>
-    {
-        public int Id { get; set; }
-        
-        public PackageTier PackageTier { get; set; }
-        
-        public string Title { get; set; }
-        
-        public string Description { get; set; }
-        
-        public decimal Price { get; set; }
-        
-        public double DeliveryTime { get; set; }
-        
-        public DeliveryFrequency DeliveryFrequency { get; set; }
-        
-        public int Revisions { get; set; }
-    }
+    public record UpdatePackageCommand(int PackageId, int GigId, PackageTier PackageTier, string Title, string Description, decimal Price, 
+        double DeliveryTime, DeliveryFrequency DeliveryFrequency, int? Revisions, RevisionType RevisionType) : IRequest;
     
     public class UpdatePackageCommandValidator : AbstractValidator<UpdatePackageCommand>
     {
-        public UpdatePackageCommandValidator(IGigManagementDbContext dbContext)
+        public UpdatePackageCommandValidator(IGigManagementDbContext context)
         {
+            RuleFor(x => new {x.PackageId, x.GigId, x.PackageTier})
+                .MustAsync(async (pair, token) =>
+                {
+                    return await context.Packages.Where(x => x.GigId == pair.GigId && x.Id != pair.PackageId)
+                        .AllAsync(p => p.PackageTier != pair.PackageTier, token);
+                }).WithMessage("Package with selected tier already is present on the gig or the gig does not exist.");
+            
             RuleFor(x => x.Title)
                 .MaximumLength(50).WithMessage("{PropertyName} cannot have more than {MaxLength} characters.")
                 .MinimumLength(3).WithMessage("{PropertyName} cannot have less than {MinLength} characters.")
@@ -41,7 +41,7 @@ namespace Hive.Gig.Application.GigPackages.Commands
                 .MaximumLength(100).WithMessage("{PropertyName} cannot have more than {MaxLength} characters.")
                 .MinimumLength(10).WithMessage("{PropertyName} cannot have less than {MinLength} characters.")
                 .NotEmpty().WithMessage("A {PropertyName} must be provided");
-
+            
             RuleFor(x => x.Price)
                 .NotNull().WithMessage("A {PropertyName} must be provided")
                 .GreaterThan(0.0m).WithMessage("{PropertyName} cannot be below {ComparisonValue}.");
@@ -51,40 +51,47 @@ namespace Hive.Gig.Application.GigPackages.Commands
                 .GreaterThanOrEqualTo(1.0d).WithMessage("{PropertyName} cannot be below {ComparisonValue}.");
             
             RuleFor(x => x.Revisions)
-                .NotNull().WithMessage("A {PropertyName} must be provided")
-                .GreaterThanOrEqualTo(1).WithMessage("{PropertyName} cannot be below {ComparisonValue}.");
+                .NotNull().WithMessage("A {PropertyName} must be provided").When(x => x.Revisions.HasValue)
+                .GreaterThanOrEqualTo(1).WithMessage("{PropertyName} cannot be below {ComparisonValue}.").When(x => x.Revisions.HasValue);
         }
     }
-
-    public class UpdatePackageCommandHandler : IRequestHandler<UpdatePackageCommand>
+    
+    public class UpdatePackageCommandHandler : AuthorizationRequestHandler<Package>, IRequestHandler<UpdatePackageCommand>
     {
-        private readonly IGigManagementDbContext _dbContext;
+        private readonly IGigManagementDbContext _context;
+        private readonly IMapper _mapper;
+        private readonly ILogger<UpdatePackageCommandHandler> _logger;
 
-        public UpdatePackageCommandHandler(IGigManagementDbContext dbContext)
+        public UpdatePackageCommandHandler(IGigManagementDbContext context, IMapper mapper,
+            ICurrentUserService currentUserService, IAuthorizationService authorizationService,
+            ILogger<UpdatePackageCommandHandler> logger) : base(currentUserService, authorizationService)
         {
-            _dbContext = dbContext;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
         public async Task<Unit> Handle(UpdatePackageCommand request, CancellationToken cancellationToken)
         {
-            var entity = await _dbContext.Packages.FindAsync(request.Id);
+            var package = await _context.Packages.FindAsync(request.PackageId);
 
-            if (entity is null)
+            if (package == null)
             {
-                throw new NotFoundException(nameof(Package), request.Id);
+                _logger.LogWarning("Package with id: {@Id} was not found", request.PackageId);
+                throw new NotFoundException(nameof(Package), request.PackageId);
+            }
+            
+            var result = await base.AuthorizeAsync(package,  new [] {"OnlyOwnerPolicy"});
+            
+            if (!result.All(s => s.Succeeded))
+            {
+                throw new ForbiddenAccessException();
             }
 
-            // TODO: Use AutoMapper ?
-            entity.Description = request.Description;
-            entity.Price = request.Price;
-            entity.Revisions = request.Revisions;
-            entity.Title = request.Title;
-            entity.DeliveryFrequency = request.DeliveryFrequency;
-            entity.DeliveryTime = request.DeliveryTime;
-            entity.PackageTier = request.PackageTier;
-
-            _dbContext.Packages.Update(entity);
-            await _dbContext.SaveChangesAsync(cancellationToken);
+            _mapper.Map(request, package);
+            await _context.SaveChangesAsync(cancellationToken);
+            
+            _logger.LogWarning("Package with id: {@Id} was updated", request.PackageId);
 
             return Unit.Value;
         }

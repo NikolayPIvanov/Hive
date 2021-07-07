@@ -8,15 +8,16 @@ namespace Billing.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<Transaction> builder)
         {
-            builder.ToTable("transactions", BillingDbContext.Schema);
-            builder.HasKey(t => t.Id);
+            builder.HasKey(x => x.Id);
+            builder.HasAlternateKey(x => x.TransactionNumber).IsClustered(false);
+            builder.Ignore(x => x.DomainEvents);
+            builder.Property(x => x.Amount).HasColumnType("decimal(18,2)").IsRequired();
+            builder.Property(x => x.TransactionType).HasConversion<string>().IsRequired();
+            builder.Property(x => x.OrderNumber).IsRequired(false);
 
-            builder.Property(t => t.Amount)
-                .HasPrecision(18, 2)
-                .IsRequired();
-
-            builder.Property(t => t.OrderNumber).IsRequired(false);
-            builder.Property(t => t.TransactionId).IsRequired();
+            builder.HasOne(x => x.Wallet)
+                .WithMany(x => x.Transactions)
+                .HasForeignKey(x => x.WalletId);
         }
     }
 }

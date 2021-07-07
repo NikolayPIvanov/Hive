@@ -1,12 +1,14 @@
-﻿using System.Collections;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Hive.Common.Core.Mappings;
+using Hive.Common.Core.Security;
 using Hive.Investing.Application.Interfaces;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Hive.Investing.Application.Plans.Queries
 {
@@ -19,15 +21,13 @@ namespace Hive.Investing.Application.Plans.Queries
 
         public GetPlansForVendorQueryHandler(IInvestingDbContext context, IMapper mapper)
         {
-            _context = context;
-            _mapper = mapper;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
         
         public async Task<IEnumerable<PlanDto>> Handle(GetPlansForVendorQuery request, CancellationToken cancellationToken)
         {
-            // validate for authorization
-            var currentUserId = "str";
-            return await _context.Plans
+            return await _context.Plans.Include(p => p.Vendor)
                 .Where(p => p.VendorId == request.VendorId)
                 .ProjectToListAsync<PlanDto>(_mapper.ConfigurationProvider);
         }

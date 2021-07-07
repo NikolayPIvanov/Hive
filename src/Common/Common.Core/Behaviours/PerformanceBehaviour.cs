@@ -1,4 +1,6 @@
-﻿namespace Hive.Common.Core.Behaviours
+﻿using Hive.Common.Core.Interfaces;
+
+namespace Hive.Common.Core.Behaviours
 {
     using System.Diagnostics;
     using System.Threading;
@@ -11,14 +13,18 @@
     {
         private readonly Stopwatch _timer;
         private readonly ILogger<TRequest> _logger;
-        // private readonly ICurrentUserService _currentUserService;
-        // private readonly IIdentityService _identityService;
+        private readonly ICurrentUserService _currentUserService;
+        private readonly IIdentityService _identityService;
 
         public PerformanceBehaviour(
+            ICurrentUserService currentUserService,
+            IIdentityService identityService,
             ILogger<TRequest> logger)
         {
             _timer = new Stopwatch();
 
+            _currentUserService = currentUserService;
+            _identityService = identityService;
             _logger = logger;
         }
 

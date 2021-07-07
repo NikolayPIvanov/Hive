@@ -8,15 +8,9 @@ namespace Billing.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<AccountHolder> builder)
         {
-            builder.ToTable("account_holders", BillingDbContext.Schema);
-            builder.HasKey(a => a.Id);
-
-            builder.HasIndex(h => h.UserId)
-                .IsUnique();
-
-            builder.HasOne(h => h.Account)
-                .WithOne()
-                .HasForeignKey<AccountHolder>(h => h.AccountId);
+            builder.HasKey(x => x.Id);
+            builder.HasAlternateKey(x => x.UserId).IsClustered(false);
+            builder.Ignore(x => x.DomainEvents);
         }
     }
 }

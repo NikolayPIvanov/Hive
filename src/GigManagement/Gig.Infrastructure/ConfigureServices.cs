@@ -1,7 +1,12 @@
-﻿using Hive.Common.Core.Interfaces;
+﻿using System;
+using BuildingBlocks.Core.Caching;
+using BuildingBlocks.Core.Email;
+using BuildingBlocks.Core.FileStorage;
+using BuildingBlocks.Core.MessageBus;
+using Hive.Common.Core.Interfaces;
+using Hive.Common.Core.Services;
 using Hive.Gig.Application.Interfaces;
 using Hive.Gig.Infrastructure.Persistence;
-using Hive.Gig.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,34 +29,26 @@ namespace Hive.Gig.Infrastructure
                 services.AddDbContext<GigManagementDbContext>(options =>
                     options.UseSqlServer(
                         sqlServerConnectionString,
-                        b => b.MigrationsAssembly(typeof(GigManagementDbContext).Assembly.FullName)));
+                        b =>
+                        {
+                            b.MigrationsAssembly(typeof(GigManagementDbContext).Assembly.FullName);
+                            b.EnableRetryOnFailure(
+                                maxRetryCount: 10,
+                                maxRetryDelay: TimeSpan.FromSeconds(30),
+                                errorNumbersToAdd: null
+                            );
+                        }));
             }
 
-            services.AddCap(x =>
-            {
-                x.UseEntityFramework<GigManagementDbContext>();
-
-                if (!useInMemory)
-                {
-                    x.UseSqlServer(sqlServerConnectionString);
-                }
-
-                x.UseRabbitMQ(ro =>
-                {
-                    ro.Password = "admin";
-                    ro.UserName = "admin";
-                    ro.HostName = "localhost";
-                    ro.Port = 5672;
-                    ro.VirtualHost = "/";
-                });
-
-                x.UseDashboard(opt => { opt.PathMatch = "/cap"; });
-            });
-
+            services.AddSendGrid(configuration);
+            services.AddRedis(configuration);
+            services.AddFileStorage(configuration);
+            services.AddMessagingBus<GigManagementDbContext>(
+                new StorageOptions(sqlServerConnectionString), 
+                new MessagingOptions(configuration.GetValue<bool>("IsProduction")), 
+                configuration);
             services.AddScoped<IGigManagementDbContext>(provider => provider.GetService<GigManagementDbContext>());
-            services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
-            services.AddScoped<IDateTimeService, DateTimeService>();
-
+            
             return services;
         }
     }

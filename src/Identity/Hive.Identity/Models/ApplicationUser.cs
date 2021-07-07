@@ -2,14 +2,19 @@
 // See LICENSE in the project root for license information.
 
 
-using Hive.Identity.Models;
+using System.Collections.Generic;
+using Hive.Identity.Contracts;
 using Microsoft.AspNetCore.Identity;
 
-namespace IdentityServerHost.Models
+namespace Hive.Identity.Models
 {
     // Add profile data for application users by adding properties to the ApplicationUser class
-    public class ApplicationUser : IdentityUser
+    public sealed class ApplicationUser : IdentityUser
     {
-        public UserType UserType { get; set; }
+        public ApplicationUser()
+        {
+        }
+        
+        public int? ExternalAccountId { get; set; }
     }
 }

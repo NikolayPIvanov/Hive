@@ -1,24 +1,29 @@
-﻿namespace Hive.Gig.Domain.Entities
+﻿using System.Collections.Generic;
+
+namespace Hive.Gig.Domain.Entities
 {
     using Hive.Common.Domain.SeedWork;
 
-    public class Question : Entity
+    public class Question : ValueObject
     {
         private Question()
         {
         }
         
-        public Question(string title, string answer, int gigId) : this()
+        public Question(string title, string answer) : this()
         {
             Title = title;
             Answer = answer;
-            GigId = gigId;
         }
         
         public string Title { get; set; }
 
         public string Answer { get; set; }
-
-        public int GigId { get; private init; }
+        
+        protected override IEnumerable<object> GetEqualityComponents()
+        {
+            yield return Title;
+            yield return Answer;
+        }
     }
 }

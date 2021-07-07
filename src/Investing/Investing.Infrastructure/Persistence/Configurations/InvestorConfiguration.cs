@@ -8,14 +8,12 @@ namespace Hive.Investing.Infrastructure.Persistence.Configurations
     {
         public void Configure(EntityTypeBuilder<Investor> builder)
         {
-            builder.ToTable("investors", InvestingDbContext.Schema);
-            builder.HasKey(i => i.Id);
+            builder.HasAlternateKey(x => x.UserId).IsClustered(false);
+            builder.Ignore(x => x.DomainEvents);
 
-            builder.HasIndex(i => i.UserId).IsUnique();
-
-            builder.HasMany(i => i.Investments)
-                .WithOne()
-                .HasForeignKey(i => i.InvestorId);
+            builder.HasMany(x => x.Investments)
+                .WithOne(x => x.Investor)
+                .HasForeignKey(x => x.InvestorId);
         }
     }
 }

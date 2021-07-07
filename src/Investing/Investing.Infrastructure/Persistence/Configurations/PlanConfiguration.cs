@@ -4,31 +4,21 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Hive.Investing.Infrastructure.Persistence.Configurations
 {
-    public class PlanConfiguration : IEntityTypeConfiguration<Plan>
+    public class PlanConfiguration :  IEntityTypeConfiguration<Plan>
     {
         public void Configure(EntityTypeBuilder<Plan> builder)
         {
-            builder.ToTable("plans", InvestingDbContext.Schema);
-            builder.HasKey(i => i.Id);
+            builder.Property(p => p.Title).HasMaxLength(50).IsRequired();
+            builder.Property(p => p.Description).HasMaxLength(3000).IsRequired();
+            builder.Property(p => p.StartDate).IsRequired();
+            builder.Property(p => p.EndDate).IsRequired();
 
-            builder.Property(i => i.Title).HasMaxLength(50).IsRequired();
-            builder.Property(i => i.Description).HasMaxLength(5000).IsRequired();
-            builder.Property(i => i.EstimatedReleaseDate).IsRequired(false);
-            builder.Property(i => i.EstimatedReleaseDays).IsRequired();
-            builder.Property(i => i.FundingNeeded)
-                .HasPrecision(18, 2)
-                .IsRequired();
+            // https://docs.microsoft.com/en-us/ef/core/modeling/owned-entities#collections-of-owned-types
 
-            builder.OwnsMany(p => p.Tags, t =>
-            {
-                t.WithOwner().HasForeignKey("PlanId");
-                t.Property<int>("Id");
-                t.HasKey("Id");
-            });
+            builder.HasMany(x => x.Investments)
+                .WithOne(i => i.Plan)
+                .HasForeignKey(i => i.PlanId);
 
-            builder.HasOne(p => p.Investment)
-                .WithOne()
-                .HasForeignKey<Plan>(p => p.InvestmentId);
         }
     }
 }

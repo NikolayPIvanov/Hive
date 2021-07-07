@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using Hive.Common.Domain;
-using Hive.Common.Domain.SeedWork;
+using Hive.Common.Core.SeedWork;
 
 namespace Hive.Investing.Domain.Entities
 {
@@ -22,17 +20,17 @@ namespace Hive.Investing.Domain.Entities
         }
         
         public DateTime EffectiveDate { get; set; }
-        
         public DateTime? ExpirationDate { get; set; }
 
         public decimal Amount { get; set; }
-        
         public double RoiPercentage { get; set; }
 
-        public int InvestorId { get; set; }
+        public int InvestorId { get; private set; }
+        public Investor Investor { get; set; }
 
-        public int PlanId { get; set; }
-
+        public int PlanId { get; private set; }
         public Plan Plan { get; set; }
+        
+        public bool IsAccepted { get; set; }
     }
 }

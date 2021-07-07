@@ -1,50 +1,43 @@
 ﻿using System;
 using Hive.Billing.Domain.Enums;
-using Hive.Common.Domain.SeedWork;
+using Hive.Common.Core.SeedWork;
 
 namespace Hive.Billing.Domain.Entities
 {
     public class Transaction : Entity
     {
+        private const int JitterMaxValue = 100000000;
+
         private Transaction()
         {
         }
         
-        public Transaction(string userId, TransactionType type, decimal amount, int paymentMethodId, Guid? orderNumber) : this()
+        public Transaction(decimal amount, Guid? orderNumber, TransactionType type) : this()
         {
-            UserId = userId;
+            TransactionNumber = GenerateTransactionId();
             Amount = amount;
             OrderNumber = orderNumber;
-            PaymentMethodId = paymentMethodId;
             TransactionType = type;
-            TransactionId = GenerateTransactionId();
         }
         
-        public TransactionType TransactionType { get; private set; }
-
-        public int TransactionId { get; private init; }
-
-        public string UserId { get; set; }
-
+        public int TransactionNumber { get; private init; }
+        
         public decimal Amount { get; private init; }
+        
+        public TransactionType TransactionType { get; private init; }
 
         public Guid? OrderNumber { get; private init; }
         
-        public int PaymentMethodId { get; private init; }
+        public int WalletId { get; private init; }
+        
+        public Wallet Wallet { get; private init; }
 
-        private static int GenerateTransactionId()
+
+        private int GenerateTransactionId()
         {
             Random jitter = new ((int)DateTime.Now.Ticks);
-            var id = jitter.Next(1, 100000000);
+            var id = jitter.Next(1, maxValue: JitterMaxValue);
             return id;
-        }
-
-        public void ChangeFromHoldToPayment()
-        {
-            if (TransactionType == TransactionType.Hold)
-            {
-                TransactionType = TransactionType.Payment;
-            }
         }
     }
 }

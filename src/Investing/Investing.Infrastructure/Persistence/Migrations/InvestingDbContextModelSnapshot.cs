@@ -17,7 +17,7 @@ namespace Hive.Investing.Infrastructure.Persistence.Migrations
             modelBuilder
                 .HasDefaultSchema("investing")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.4")
+                .HasAnnotation("ProductVersion", "5.0.7")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
             modelBuilder.Entity("Hive.Investing.Domain.Entities.Investment", b =>
@@ -45,6 +45,9 @@ namespace Hive.Investing.Infrastructure.Persistence.Migrations
                     b.Property<int>("InvestorId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsAccepted")
+                        .HasColumnType("bit");
+
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
 
@@ -54,9 +57,6 @@ namespace Hive.Investing.Infrastructure.Persistence.Migrations
                     b.Property<int>("PlanId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("PlanId2")
-                        .HasColumnType("int");
-
                     b.Property<double>("RoiPercentage")
                         .HasColumnType("float");
 
@@ -64,9 +64,9 @@ namespace Hive.Investing.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("InvestorId");
 
-                    b.HasIndex("PlanId2");
+                    b.HasIndex("PlanId");
 
-                    b.ToTable("investments", "investing");
+                    b.ToTable("Investments");
                 });
 
             modelBuilder.Entity("Hive.Investing.Domain.Entities.Investor", b =>
@@ -89,15 +89,15 @@ namespace Hive.Investing.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique()
-                        .HasFilter("[UserId] IS NOT NULL");
+                    b.HasAlternateKey("UserId")
+                        .IsClustered(false);
 
-                    b.ToTable("investors", "investing");
+                    b.ToTable("Investors");
                 });
 
             modelBuilder.Entity("Hive.Investing.Domain.Entities.Plan", b =>
@@ -115,21 +115,21 @@ namespace Hive.Investing.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasMaxLength(5000)
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(3000)
+                        .HasColumnType("nvarchar(3000)");
 
-                    b.Property<DateTime?>("EstimatedReleaseDate")
+                    b.Property<DateTime?>("EndDate")
+                        .IsRequired()
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("EstimatedReleaseDays")
+                    b.Property<int?>("GigId")
                         .HasColumnType("int");
 
-                    b.Property<decimal>("FundingNeeded")
-                        .HasPrecision(18, 2)
-                        .HasColumnType("decimal(18,2)");
+                    b.Property<bool>("IsFunded")
+                        .HasColumnType("bit");
 
-                    b.Property<int?>("InvestmentId")
-                        .HasColumnType("int");
+                    b.Property<bool>("IsPublic")
+                        .HasColumnType("bit");
 
                     b.Property<DateTime?>("LastModified")
                         .HasColumnType("datetime2");
@@ -137,23 +137,25 @@ namespace Hive.Investing.Infrastructure.Persistence.Migrations
                     b.Property<string>("LastModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<DateTime>("StartDate")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
+
+                    b.Property<decimal>("TotalFundsNeeded")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<int>("VendorId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("InvestmentId")
-                        .IsUnique()
-                        .HasFilter("[InvestmentId] IS NOT NULL");
-
                     b.HasIndex("VendorId");
 
-                    b.ToTable("plans", "investing");
+                    b.ToTable("Plans");
                 });
 
             modelBuilder.Entity("Hive.Investing.Domain.Entities.Vendor", b =>
@@ -176,73 +178,53 @@ namespace Hive.Investing.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId")
-                        .IsUnique()
-                        .HasFilter("[UserId] IS NOT NULL");
+                    b.HasAlternateKey("UserId")
+                        .IsClustered(false);
 
-                    b.ToTable("vendors", "investing");
+                    b.ToTable("Vendors");
                 });
 
             modelBuilder.Entity("Hive.Investing.Domain.Entities.Investment", b =>
                 {
-                    b.HasOne("Hive.Investing.Domain.Entities.Investor", null)
+                    b.HasOne("Hive.Investing.Domain.Entities.Investor", "Investor")
                         .WithMany("Investments")
                         .HasForeignKey("InvestorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Hive.Investing.Domain.Entities.Plan", "Plan")
-                        .WithMany()
-                        .HasForeignKey("PlanId2");
+                        .WithMany("Investments")
+                        .HasForeignKey("PlanId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Investor");
 
                     b.Navigation("Plan");
                 });
 
             modelBuilder.Entity("Hive.Investing.Domain.Entities.Plan", b =>
                 {
-                    b.HasOne("Hive.Investing.Domain.Entities.Investment", "Investment")
-                        .WithOne()
-                        .HasForeignKey("Hive.Investing.Domain.Entities.Plan", "InvestmentId");
-
-                    b.HasOne("Hive.Investing.Domain.Entities.Vendor", null)
+                    b.HasOne("Hive.Investing.Domain.Entities.Vendor", "Vendor")
                         .WithMany("Plans")
                         .HasForeignKey("VendorId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.OwnsMany("Hive.Investing.Domain.Entities.Tag", "Tags", b1 =>
-                        {
-                            b1.Property<int>("Id")
-                                .ValueGeneratedOnAdd()
-                                .HasColumnType("int")
-                                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                            b1.Property<int>("PlanId")
-                                .HasColumnType("int");
-
-                            b1.Property<string>("Value")
-                                .HasColumnType("nvarchar(max)");
-
-                            b1.HasKey("Id");
-
-                            b1.HasIndex("PlanId");
-
-                            b1.ToTable("Tag");
-
-                            b1.WithOwner()
-                                .HasForeignKey("PlanId");
-                        });
-
-                    b.Navigation("Investment");
-
-                    b.Navigation("Tags");
+                    b.Navigation("Vendor");
                 });
 
             modelBuilder.Entity("Hive.Investing.Domain.Entities.Investor", b =>
+                {
+                    b.Navigation("Investments");
+                });
+
+            modelBuilder.Entity("Hive.Investing.Domain.Entities.Plan", b =>
                 {
                     b.Navigation("Investments");
                 });

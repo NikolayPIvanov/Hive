@@ -1,7 +1,8 @@
-﻿namespace Hive.Gig.Domain.Entities
+﻿using Hive.Common.Core.SeedWork;
+
+namespace Hive.Gig.Domain.Entities
 {
     using System.Collections.Generic;
-    using Hive.Common.Domain.SeedWork;
     
     public class Seller : Entity
     {

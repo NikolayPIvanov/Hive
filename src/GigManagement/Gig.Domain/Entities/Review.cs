@@ -1,7 +1,7 @@
-﻿namespace Hive.Gig.Domain.Entities
-{
-    using Hive.Common.Domain.SeedWork;
+﻿using Hive.Common.Core.SeedWork;
 
+namespace Hive.Gig.Domain.Entities
+{
     public class Review : Entity
     {
         private Review()
@@ -21,6 +21,6 @@
 
         public string UserId { get; private init; }
 
-        public int GigId { get; set; }
+        public int GigId { get; private init; }
     }
 }

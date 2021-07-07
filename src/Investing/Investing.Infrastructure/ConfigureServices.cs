@@ -1,7 +1,11 @@
-﻿using Hive.Common.Core.Interfaces;
+﻿using System;
+using BuildingBlocks.Core.Caching;
+using BuildingBlocks.Core.Email;
+using BuildingBlocks.Core.MessageBus;
+using Hive.Common.Core.Interfaces;
+using Hive.Common.Core.Services;
 using Hive.Investing.Application.Interfaces;
 using Hive.Investing.Infrastructure.Persistence;
-using Hive.Investing.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,34 +28,24 @@ namespace Hive.Investing.Infrastructure
                 services.AddDbContext<InvestingDbContext>(options =>
                     options.UseSqlServer(
                         sqlServerConnectionString,
-                        b => b.MigrationsAssembly(typeof(InvestingDbContext).Assembly.FullName)));
+                        b =>
+                        {
+                            b.MigrationsAssembly(typeof(InvestingDbContext).Assembly.FullName);
+                            b.EnableRetryOnFailure(
+                                maxRetryCount: 10,
+                                maxRetryDelay: TimeSpan.FromSeconds(30),
+                                errorNumbersToAdd: null
+                            );
+                        }));
             }
-            
-            services.AddCap(x =>
-            {
-                x.UseEntityFramework<InvestingDbContext>();
 
-                if (!useInMemory)
-                {
-                    x.UseSqlServer(sqlServerConnectionString);
-                }
-
-                x.UseRabbitMQ(ro =>
-                {
-                    ro.Password = "admin";
-                    ro.UserName = "admin";
-                    ro.HostName = "localhost";
-                    ro.Port = 5672;
-                    ro.VirtualHost = "/";
-                });
-
-                x.UseDashboard(opt => { opt.PathMatch = "/cap"; });
-            });
-
+            services.AddRedis(configuration);
+            services.AddSendGrid(configuration);
+            services.AddMessagingBus<InvestingDbContext>(
+                new StorageOptions(sqlServerConnectionString), 
+                new MessagingOptions(configuration.GetValue<bool>("IsProduction")), 
+                configuration);
             services.AddScoped<IInvestingDbContext>(provider => provider.GetService<InvestingDbContext>());
-            services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
-            services.AddScoped<IDateTimeService, DateTimeService>();
-
 
             return services;
         }

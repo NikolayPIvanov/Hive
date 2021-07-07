@@ -24,7 +24,7 @@ namespace Hive.Gig.Infrastructure.Persistence.Configurations
                 .IsRequired();
 
             builder.Property(x => x.Revisions)
-                .IsRequired();
+                .IsRequired(false);
         }
     }
 }

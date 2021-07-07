@@ -4,10 +4,11 @@ using Billing.Application.Interfaces;
 using DotNetCore.CAP;
 using Hive.Billing.Domain.Entities;
 using Hive.Identity.Contracts.IntegrationEvents;
+using Hive.Identity.Contracts.IntegrationEvents.Outbound;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
-namespace Billing.Application.IntegrationEvents.EventHandlers.Identity
+namespace Billing.Application.IntegrationEvents.EventHandlers
 {
     public class UserCreatedIntegrationEventHandler : ICapSubscribe
     {
@@ -24,14 +25,14 @@ namespace Billing.Application.IntegrationEvents.EventHandlers.Identity
         public async Task Handle(UserCreatedIntegrationEvent @event)
         {
             var accountHolderAlreadyRegistered = await _context.AccountHolders.AnyAsync(s => s.UserId == @event.UserId);
-            if (!accountHolderAlreadyRegistered)
+            if (accountHolderAlreadyRegistered)
             {
                 _logger.LogWarning("Account holder with {@UserId} already has an account.", @event.UserId);
                 return;
             }
-
-            var account = new AccountHolder(@event.UserId);
-            _context.AccountHolders.Add(account);
+            
+            var wallet = new Wallet(@event.UserId);
+            _context.Wallets.Add(wallet);
             await _context.SaveChangesAsync(default);
             _logger.LogInformation("Account holder with {@UserId} successfully created.");
         }

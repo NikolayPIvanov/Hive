@@ -1,25 +1,13 @@
-﻿namespace Hive.Common.Domain.SeedWork
-{
-    using System;
-    using System.Collections.Generic;
-    
-    using MediatR;
+﻿using System;
+using System.Collections.Generic;
+using MediatR;
 
-    public abstract class Entity
+namespace Hive.Common.Core.SeedWork
+{
+    public abstract class DomainEntity
     {
         private List<INotification> _domainEvents;
-        
-        public virtual int Id { get; protected set; }
-
         public IReadOnlyCollection<INotification> DomainEvents => _domainEvents?.AsReadOnly();
-        
-        public DateTime Created { get; set;  }
-
-        public string CreatedBy { get; set; }
-
-        public DateTime? LastModified { get; set; }
-
-        public string LastModifiedBy { get; set; }
         
         public void AddDomainEvent(INotification eventItem)
         {
@@ -36,6 +24,20 @@
         {
             _domainEvents?.Clear();
         }
+
+    }
+    
+    public abstract class Entity : DomainEntity
+    {
+        public virtual int Id { get; protected set; }
+
+        public DateTime Created { get; set;  }
+
+        public string CreatedBy { get; set; }
+
+        public DateTime? LastModified { get; set; }
+
+        public string LastModifiedBy { get; set; }
         
         public bool IsTransient()
         {

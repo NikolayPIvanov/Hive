@@ -1,0 +1,115 @@
+<div *ngIf="orders$ | async; let list" style="height: 95% !important;">
+    <mat-card class="mat-elevation-z8" fxLayout="column" class="container">
+        <mat-card-header>
+            <mat-card-title>Your orders</mat-card-title>
+            <mat-card-subtitle>Manage your orders</mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content fxFlex>
+            <table mat-table [dataSource]="dataSource" multiTemplateDataRows fxFlex>
+            
+                <!-- Order Number Column -->
+                <ng-container matColumnDef="orderNumber">
+                    <th mat-header-cell *matHeaderCellDef> No. </th>
+                    <td mat-cell *matCellDef="let element"> <strong>{{element.orderNumber}}</strong> </td>
+                </ng-container>
+    
+                <!-- Ordered At Column -->
+                <ng-container matColumnDef="orderedAt">
+                    <th mat-header-cell *matHeaderCellDef> Ordered At  </th>
+                    <td mat-cell *matCellDef="let element"> <strong>{{element.orderedAt | date:'short'}}</strong> </td>
+                </ng-container>
+    
+                <!-- State Column -->
+                <ng-container matColumnDef="orderStates">
+                    <th mat-header-cell *matHeaderCellDef> Current state </th>
+                    <td mat-cell *matCellDef="let element"> 
+                        <!-- Seller -->
+    
+                        <!-- This done only because of rendering problem -->
+                        <strong>
+                            <span [ngSwitch]="latestState(element.orderStates)">
+                                <span *ngSwitchCase="0"> In validation</span>
+                                <span *ngSwitchCase="1"> Data valid </span>
+                                <span *ngSwitchCase="2"> Balance sufficient </span>
+                                <span *ngSwitchCase="3"> Invalid </span>
+                                <span *ngSwitchCase="4"> Canceled </span>
+                                <span *ngSwitchCase="5"> Accepted </span>
+                                <span *ngSwitchCase="6"> Declined </span>
+                                <span *ngSwitchCase="7"> In Progress </span>
+                                <span *ngSwitchCase="8"> Completed </span>
+                                <span *ngSwitchDefault> Unknown</span>
+                                </span>
+                        </strong>
+                    </td>
+                </ng-container>
+    
+                <!-- Unit Price Column -->
+                <ng-container matColumnDef="unitPrice">
+                    <th mat-header-cell *matHeaderCellDef> Unit Price </th>
+                    <td mat-cell *matCellDef="let element"> <strong>{{element.unitPrice}}$</strong></td>
+                </ng-container>
+    
+                <!-- Quantity Column -->
+                <ng-container matColumnDef="quantity">
+                    <th mat-header-cell *matHeaderCellDef> Quantity </th>
+                    <td mat-cell *matCellDef="let element"> <strong>{{element.quantity}}</strong> </td>
+                </ng-container>
+    
+                <!-- Total Column -->
+                <ng-container matColumnDef="totalPrice">
+                    <th mat-header-cell *matHeaderCellDef> Total </th>
+                    <td mat-cell *matCellDef="let element"> <strong>{{element.totalPrice}}$</strong> </td>
+                </ng-container>
+    
+                <ng-container matColumnDef="actions">
+                    <th mat-header-cell *matHeaderCellDef> Actions </th>
+                    <td mat-cell *matCellDef="let element">
+                        <!-- Seller -->
+                        <ng-container *ngIf="isSeller; else buyer">
+                            <button 
+                                [disabled]="!canProcess(element.orderStates)"
+                                mat-icon-button 
+                                (click)="updateStatusAsSeller(element.orderNumber)"><mat-icon>done</mat-icon></button>
+                            <button 
+                                [disabled]="!canProcess(element.orderStates)"
+                                mat-icon-button 
+                                (click)="updateStatusAsSeller(element.orderNumber, false)"><mat-icon>highlight_off</mat-icon></button>
+                            <button 
+                                [disabled]="!canSetInProgress(element.orderStates)"
+                                mat-icon-button 
+                                (click)="setInProgress(element.orderNumber)"><mat-icon>play_arrow</mat-icon></button>
+                                
+                            <input #uploader fxHide="true" type='file' (change)="uploadFile(element.orderNumber!, uploader.files)">
+                            <button 
+                                [disabled]="!canUpload(element.orderStates)"
+                                type="button"
+                                (click)="uploader.click()"
+                                mat-icon-button><mat-icon>upload</mat-icon></button>
+                        </ng-container>
+                        <ng-template #buyer>
+                            <button mat-icon-button 
+                                [disabled]="!canCancel(element.orderStates)"
+                                (click)="cancelOrder(element.orderNumber)"><mat-icon>cancel</mat-icon></button>
+                        </ng-template>
+                        
+                        <button mat-icon-button (click)="openDialog(element)"><mat-icon>info</mat-icon></button>
+                    </td>
+                </ng-container>
+            
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+    
+            </table>
+        </mat-card-content>
+        
+        <mat-paginator 
+            fxFlexAlign="end"
+            [length]="length"
+            [pageSizeOptions]="pageSizeOptions" 
+            [pageSize]="pageSize"
+            [pageIndex]="pageNumber"
+            (page)="pageChange($event)"
+            showFirstLastButtons></mat-paginator>
+    </mat-card>
+</div>

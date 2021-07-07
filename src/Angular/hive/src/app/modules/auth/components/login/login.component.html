@@ -1,0 +1,14 @@
+<div class="login-container" fxLayout="column" fxLayoutAlign="center center">
+    <h1 fxFlexAlign="center" style="color: whitesmoke; font-size: 6rem">Hive</h1>
+    <img src="../../../../../assets/logo.png">
+    <h1 fxFlexAlign="center" style="color: whitesmoke;">Explore the network of freelance</h1>
+
+    <ng-container *ngIf="isUserAuthenticated; else anon">
+        <button mat-raised-button (click)="logout()">Logout</button> 
+    </ng-container>
+    <ng-template #anon>
+        <section fxLayout="column" fxLayoutGap="1rem">
+            <button mat-raised-button (click)="login()">Login with Hive's Identity Provider</button>
+        </section>
+    </ng-template>
+</div>

@@ -1,16 +1,21 @@
-﻿using Hive.Common.Core.Interfaces;
+﻿using System;
+using BuildingBlocks.Core.Email;
+using BuildingBlocks.Core.FileStorage;
+using BuildingBlocks.Core.Interfaces;
+using BuildingBlocks.Core.MessageBus;
+using Hive.Common.Core.Interfaces;
+using Hive.Common.Core.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Ordering.Application.Interfaces;
 using Ordering.Infrastructure.Persistence;
-using Ordering.Infrastructure.Services;
 
 namespace Ordering.Infrastructure
 {
     public static class ConfigureServices
     {
-        public static IServiceCollection AddOrdering(this IServiceCollection services, IConfiguration configuration)
+        public static IServiceCollection AddOrderingInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
             var useInMemory = configuration.GetValue<bool>("UseInMemoryDatabase");
             var sqlServerConnectionString = configuration.GetConnectionString("DefaultConnection");
@@ -24,33 +29,24 @@ namespace Ordering.Infrastructure
                 services.AddDbContext<OrderingDbContext>(options =>
                     options.UseSqlServer(
                         sqlServerConnectionString,
-                        b => b.MigrationsAssembly(typeof(OrderingDbContext).Assembly.FullName)));
+                        b =>
+                        {
+                            b.MigrationsAssembly(typeof(OrderingDbContext).Assembly.FullName);
+                            b.EnableRetryOnFailure(
+                                maxRetryCount: 10,
+                                maxRetryDelay: TimeSpan.FromSeconds(30),
+                                errorNumbersToAdd: null
+                            );
+                        }));
             }
 
-            services.AddCap(x =>
-            {
-                x.UseEntityFramework<OrderingDbContext>();
-
-                if (!useInMemory)
-                {
-                    x.UseSqlServer(sqlServerConnectionString);
-                }
-
-                x.UseRabbitMQ(ro =>
-                {
-                    ro.Password = "admin";
-                    ro.UserName = "admin";
-                    ro.HostName = "localhost";
-                    ro.Port = 5672;
-                    ro.VirtualHost = "/";
-                });
-
-                x.UseDashboard(opt => { opt.PathMatch = "/cap"; });
-            });
-
+            services.AddFileStorage(configuration);
+            services.AddSendGrid(configuration);
+            services.AddMessagingBus<OrderingDbContext>(
+                new StorageOptions(sqlServerConnectionString), 
+                new MessagingOptions(configuration.GetValue<bool>("IsProduction")), 
+                configuration);
             services.AddScoped<IOrderingContext>(provider => provider.GetService<OrderingDbContext>());
-            services.AddScoped<IIntegrationEventPublisher, IntegrationEventPublisher>();
-            services.AddScoped<IDateTimeService, DateTimeService>();
 
             return services;
         }

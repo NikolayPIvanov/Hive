@@ -1,0 +1,5 @@
+<button mat-raised-button color="primary" [matMenuTriggerFor]="menu">Create category</button>
+<mat-menu #menu="matMenu">
+  <button mat-menu-item (click)="openDialog()">Child category</button>
+  <button mat-menu-item (click)="openDialog(true)">Parent category</button>
+</mat-menu>

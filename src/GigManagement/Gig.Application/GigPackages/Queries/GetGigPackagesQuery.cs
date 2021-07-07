@@ -1,12 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Hive.Common.Core.Mappings;
 using Hive.Gig.Application.Interfaces;
-using Hive.Gig.Contracts.Objects;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace Hive.Gig.Application.GigPackages.Queries
 {
@@ -14,18 +16,23 @@ namespace Hive.Gig.Application.GigPackages.Queries
 
     public class GetGigPackagesQueryHandler : IRequestHandler<GetGigPackagesQuery, IEnumerable<PackageDto>>
     {
-        private readonly IGigManagementDbContext _dbContext;
+        private readonly IGigManagementDbContext _context;
         private readonly IMapper _mapper;
+        private readonly ILogger<GetGigPackagesQueryHandler> _logger;
 
-        public GetGigPackagesQueryHandler(IGigManagementDbContext dbContext, IMapper mapper)
+        public GetGigPackagesQueryHandler(IGigManagementDbContext context, IMapper mapper, ILogger<GetGigPackagesQueryHandler> logger)
         {
-            _dbContext = dbContext;
-            _mapper = mapper;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
         
         public async Task<IEnumerable<PackageDto>> Handle(GetGigPackagesQuery request, CancellationToken cancellationToken)
         {
-            return await _dbContext.Packages
+            _logger.LogInformation("Fetching packages for gig with id: {@GigId}", request.GigId);
+            
+            return await _context.Packages
+                .AsNoTracking()
                 .Where(p => p.GigId == request.GigId)
                 .ProjectToListAsync<PackageDto>(_mapper.ConfigurationProvider);
         }

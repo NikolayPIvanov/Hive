@@ -4,7 +4,6 @@ using DotNetCore.CAP;
 using Hive.Billing.Contracts.IntegrationEvents;
 using Microsoft.EntityFrameworkCore;
 using Ordering.Application.Interfaces;
-using Ordering.Domain.Entities;
 using Ordering.Domain.Enums;
 using Ordering.Domain.ValueObjects;
 
@@ -23,7 +22,6 @@ namespace Ordering.Application.IntegrationEvents.EventHandlers.Billing
         public async Task Handle(BuyerBalanceVerifiedIntegrationEvent @event)
         {
             var order = await _context.Orders
-                .Select(o => new {o.Id, o.OrderNumber, o.OrderStates})
                 .FirstOrDefaultAsync(o => o.OrderNumber == @event.OrderNumber);
 
             var orderState = @event.IsValid ? OrderState.UserBalanceValid : OrderState.Invalid;

@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Hive.Common.Core.Exceptions;
@@ -18,13 +19,17 @@ namespace Hive.Investing.Application.Plans.Queries
 
         public GetPlanByIdQueryHandler(IInvestingDbContext context, IMapper mapper)
         {
-            _context = context;
-            _mapper = mapper;
+            _context = context ?? throw new ArgumentNullException(nameof(context));
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
         }
         
         public async Task<PlanDto> Handle(GetPlanByIdQuery request, CancellationToken cancellationToken)
         {
-            var plan = await _context.Plans.FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
+            var plan = await _context.Plans
+                .Include(x => x.Investments)
+                .ThenInclude(x => x.Investor)
+                .Include(x => x.Vendor)
+                .FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
             
             if (plan is null)
             {

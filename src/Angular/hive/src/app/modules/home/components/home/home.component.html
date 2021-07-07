@@ -1,0 +1,14 @@
+<div *ngIf="role" [ngSwitch]="role">
+    <div *ngSwitchCase="'Admin'">
+        <app-admin-dashboard></app-admin-dashboard>
+    </div>
+    <div *ngSwitchCase="'Buyer'">
+        <app-buyer-dashboard></app-buyer-dashboard>
+    </div>
+    <div *ngSwitchCase="'Seller'">
+        <app-seller-dashboard></app-seller-dashboard>
+    </div>
+    <div *ngSwitchCase="'Investor'">
+        <app-investor-dashboard></app-investor-dashboard>
+    </div>
+</div>

@@ -1,0 +1,22 @@
+<div class="full-width" >
+    <form>
+      <mat-form-field style="padding: 0% !important;" class="full-width" appearance="outline">
+        <mat-label>Search plan by name</mat-label>
+        <input type="text"
+               placeholder="Search plan by name"
+               aria-label="Search plan by name"
+               matInput
+               [formControl]="autocompleteControl"
+               [matAutocomplete]="auto">
+        <button *ngIf="autocompleteControl.value" matSuffix mat-icon-button aria-label="Clear" 
+          (click)="onCleared($event)">
+          <mat-icon>clear</mat-icon>
+        </button>
+        <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayFn" (optionSelected)="onSelectedEvent($event)">
+          <mat-option *ngFor="let option of filteredOptions | async" [value]="option">
+            {{option.title }}
+          </mat-option>
+        </mat-autocomplete>
+      </mat-form-field>
+  </form>
+  </div>

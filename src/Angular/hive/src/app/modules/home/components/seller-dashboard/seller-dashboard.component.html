@@ -1,0 +1,105 @@
+<div fxLayout="column" class="container" fxFlex>
+    <h1>Seller Dashboard</h1>
+    <div fxLayout="row" fxLayoutGap="1%" fxFlex>
+        <mat-card fxFlex="30%" fxLayout="column">
+            <mat-card-header fxFlex="20">
+                <mat-card-title>My Gigs</mat-card-title>
+                <mat-card-subtitle>Manage Gigs</mat-card-subtitle>
+            </mat-card-header>
+            <mat-divider inset="true" fxFlexOffset="2"></mat-divider>
+            <mat-card-content fxFlex="70">
+                <mat-list fxLayout="column">
+                    <mat-list-item *ngFor="let gig of (gigs$ | async)?.items; let i = index" fxFlex="2rem">
+                        <div mat-line>
+                            <strong>{{i + 1}}. {{gig.title! | limitTo:'100'}}</strong>
+                        </div>
+                    </mat-list-item>
+                </mat-list>
+            </mat-card-content>
+            <mat-divider inset="true" fxFlexOffset="2"></mat-divider>
+            <mat-card-actions fxFlex>
+                <a mat-button [routerLink]="['/gigs/control']">
+                    <mat-icon>receipt_long</mat-icon>
+                    <span>Manage Gigs</span>
+                </a>
+            </mat-card-actions>
+        </mat-card>
+
+        <mat-card fxFlex="30%" fxLayout="column">
+            <mat-card-header fxFlex="20">
+                <mat-card-title>My Orders</mat-card-title>
+                <mat-card-subtitle>Manage Orders</mat-card-subtitle>
+            </mat-card-header>
+            <mat-divider inset="true" fxFlexOffset="2"></mat-divider>
+            <mat-card-content fxFlex="70">
+                <mat-list fxLayout="column">
+                    <mat-list-item *ngFor="let order of (orders$ | async)?.items; let i = index" fxFlex="2rem">
+                        <div mat-line>
+                            <strong>{{i + 1}}. Order Number. ({{order.orderNumber! | limitTo: '10'}}) - {{ order.totalPrice }}$</strong>
+                        </div>
+                    </mat-list-item>
+                </mat-list>
+            </mat-card-content>
+            <mat-divider inset="true" fxFlexOffset="2"></mat-divider>
+            <mat-card-actions>
+                <a mat-button [routerLink]="['/orders']">
+                    <mat-icon>request_quote</mat-icon>
+                    <span>Manage Orders</span>
+                </a>
+            </mat-card-actions>
+        </mat-card>
+
+        <mat-card fxFlex fxLayout="column">
+            <mat-card-header fxFlex="20">
+                <mat-card-title>My Plans</mat-card-title>
+                <mat-card-subtitle>Manage Plans</mat-card-subtitle>
+            </mat-card-header>
+            <mat-divider inset="true" fxFlexOffset="2"></mat-divider>
+            <mat-card-content fxFlex="70"> 
+                <div *ngIf="plans$ | async; let plansList">
+                    <ng-container *ngIf="plansList && plansList?.items && plansList?.items?.length! > 0; else noPlans">
+                        <mat-list *ngIf="plans$ | async; let plansList" fxLayout="column">
+                            <mat-list-item *ngFor="let plans of plansList?.items" fxFlex="2rem">
+                                <div mat-line><strong>{{plans.title}}</strong> </div>
+                            </mat-list-item>
+                        </mat-list>  
+                    </ng-container>
+                    <ng-template #noPlans>
+                        <h3>No plans yet</h3>
+                    </ng-template>
+                </div>  
+            </mat-card-content>
+            <mat-divider inset="true" fxFlexOffset="2"></mat-divider>
+            <mat-card-actions>
+                <a mat-button [routerLink]="['/orders']">
+                    <mat-icon>note_alt</mat-icon>
+                    <span>Manage Plans</span>
+                </a>
+            </mat-card-actions>
+        </mat-card>
+    </div>
+    <div fxLayout="row" style="margin-top: 3rem;" fxLayoutGap="1%" fxFlex>
+        <mat-card fxFlex="95">
+            <mat-card-header>
+                <mat-card-title>Revenue over time</mat-card-title>
+                <mat-card-subtitle>Manage Balance</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+                <app-line-chart
+                    [label]="label"
+                    [data]="data"
+                    [labels]="labels"
+                    [color]="color"
+                >
+                </app-line-chart>             
+            </mat-card-content>
+            <mat-card-actions>
+                <a mat-button [routerLink]="['/billing/overview']">
+                    <mat-icon>credit_card</mat-icon>
+                    <span>Check Balance Account</span>
+                </a>
+            </mat-card-actions>
+        </mat-card>
+
+    </div>
+</div>

@@ -1,0 +1,63 @@
+<ng-container>
+    <mat-card *ngIf="profile$ | async; let profile" 
+        style="height: auto !important;" 
+        fxLayout="column" 
+        class="container mat-elevation-z8">
+        <mat-card-header fxFlex="10%">
+            <img mat-card-avatar [src]="profile.avatarUri || '../../../../../assets/user.png'">	
+            <mat-card-title>{{ profile.givenName }} {{ profile.surname }}</mat-card-title>
+            <mat-card-subtitle>Personal Information</mat-card-subtitle>
+        </mat-card-header>
+        <mat-card-content fxFlex fxLayout="column" fxLayoutGap="2rem">
+            <mat-card>
+                <div fxFlex="30" fxLayout="column">
+                    <p> <strong> Contact Email: </strong> {{ email }} </p>
+                    <p> <strong> Education: </strong> {{ profile.education }} </p>
+                </div>
+                <div fxFlex="30" fxLayout="column">
+                    <p><strong> Languages: </strong> {{ profile.languages?.join(',') }}</p>
+                    <p><strong> Skills: </strong> {{ profile.skills?.join(',') }}</p>
+                </div>
+                <div fxFlex="30" fxLayout="row" fxFlexAlign="start">
+                    <a mat-button fxLayoutGap="1rem" [routerLink]="['/billing/overview']">
+                        <mat-icon>credit_card</mat-icon>
+                        <span>Billing</span>
+                    </a>
+                    <a mat-button fxLayoutGap="1rem" [routerLink]="['/orders']">
+                        <mat-icon>request_quote</mat-icon>
+                        <span>Orders</span>
+                    </a>
+                    <button mat-button fxLayoutGap="1rem" (click)="onCreateNew()">
+                        <mat-icon>add</mat-icon>
+                        <span>Create gig</span>
+                    </button>
+                </div>
+            </mat-card>
+
+            <ng-container *ngIf="gigs$ | async; else noGigs">
+                <div fxLayout="row wrap" fxLayoutGap="3rem grid">
+                    <app-gig-card
+                        *ngFor="let gig of gigs$ | async" 
+                        fxFlex="22"
+                        [gig]="gig" 
+                        (onDeleted)="deleteAndRemoveGig($event)"
+                    ></app-gig-card>
+                </div>
+            </ng-container>
+            <ng-template #noGigs>
+                
+            </ng-template>
+            
+
+        </mat-card-content>
+        <mat-card-footer fxFlex>
+            <mat-paginator fxFlex
+                [length]="length"
+                [pageSizeOptions]="pageSizeOptions" 
+                [pageSize]="pageSize"
+                [pageIndex]="pageNumber"
+                (page)="pageChange($event)"
+                showFirstLastButtons></mat-paginator>
+        </mat-card-footer>
+    </mat-card>
+</ng-container>

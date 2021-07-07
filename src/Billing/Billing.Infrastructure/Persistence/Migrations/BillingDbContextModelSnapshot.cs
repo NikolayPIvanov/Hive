@@ -17,43 +17,8 @@ namespace Billing.Infrastructure.Persistence.Migrations
             modelBuilder
                 .HasDefaultSchema("billing")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("ProductVersion", "5.0.4")
+                .HasAnnotation("ProductVersion", "5.0.6")
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-            modelBuilder.Entity("Hive.Billing.Domain.Entities.Account", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("AccountHolderId")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int?>("DefaultPaymentMethodId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("DefaultPaymentMethodId1")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("DefaultPaymentMethodId1");
-
-                    b.ToTable("accounts", "billing");
-                });
 
             modelBuilder.Entity("Hive.Billing.Domain.Entities.AccountHolder", b =>
                 {
@@ -61,9 +26,6 @@ namespace Billing.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("AccountId")
-                        .HasColumnType("int");
 
                     b.Property<DateTime>("Created")
                         .HasColumnType("datetime2");
@@ -78,52 +40,15 @@ namespace Billing.Infrastructure.Persistence.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AccountId")
-                        .IsUnique();
+                    b.HasAlternateKey("UserId")
+                        .IsClustered(false);
 
-                    b.HasIndex("UserId")
-                        .IsUnique()
-                        .HasFilter("[UserId] IS NOT NULL");
-
-                    b.ToTable("account_holders", "billing");
-                });
-
-            modelBuilder.Entity("Hive.Billing.Domain.Entities.PaymentMethod", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<int>("AccountId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Alias")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime>("Created")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("LastModified")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("LastModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AccountId");
-
-                    b.ToTable("payment_methods", "billing");
+                    b.ToTable("AccountHolders");
                 });
 
             modelBuilder.Entity("Hive.Billing.Domain.Entities.Transaction", b =>
@@ -134,7 +59,6 @@ namespace Billing.Infrastructure.Persistence.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<decimal>("Amount")
-                        .HasPrecision(18, 2)
                         .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("Created")
@@ -152,68 +76,82 @@ namespace Billing.Infrastructure.Persistence.Migrations
                     b.Property<Guid?>("OrderNumber")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("PaymentMethodId")
+                    b.Property<int>("TransactionNumber")
                         .HasColumnType("int");
 
-                    b.Property<int>("TransactionId")
-                        .HasColumnType("int");
+                    b.Property<string>("TransactionType")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TransactionType")
+                    b.Property<int>("WalletId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("PaymentMethodId");
+                    b.HasAlternateKey("TransactionNumber")
+                        .IsClustered(false);
 
-                    b.ToTable("transactions", "billing");
+                    b.HasIndex("WalletId");
+
+                    b.ToTable("Transactions");
                 });
 
-            modelBuilder.Entity("Hive.Billing.Domain.Entities.Account", b =>
+            modelBuilder.Entity("Hive.Billing.Domain.Entities.Wallet", b =>
                 {
-                    b.HasOne("Hive.Billing.Domain.Entities.PaymentMethod", "DefaultPaymentMethod")
-                        .WithMany()
-                        .HasForeignKey("DefaultPaymentMethodId1");
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Navigation("DefaultPaymentMethod");
-                });
+                    b.Property<int>("AccountHolderId")
+                        .HasColumnType("int");
 
-            modelBuilder.Entity("Hive.Billing.Domain.Entities.AccountHolder", b =>
-                {
-                    b.HasOne("Hive.Billing.Domain.Entities.Account", "Account")
-                        .WithOne()
-                        .HasForeignKey("Hive.Billing.Domain.Entities.AccountHolder", "AccountId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<decimal>("Balance")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Navigation("Account");
-                });
+                    b.Property<DateTime>("Created")
+                        .HasColumnType("datetime2");
 
-            modelBuilder.Entity("Hive.Billing.Domain.Entities.PaymentMethod", b =>
-                {
-                    b.HasOne("Hive.Billing.Domain.Entities.Account", "Account")
-                        .WithMany("PaymentMethods")
-                        .HasForeignKey("AccountId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Navigation("Account");
+                    b.Property<DateTime?>("LastModified")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("LastModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AccountHolderId")
+                        .IsUnique();
+
+                    b.ToTable("Wallets");
                 });
 
             modelBuilder.Entity("Hive.Billing.Domain.Entities.Transaction", b =>
                 {
-                    b.HasOne("Hive.Billing.Domain.Entities.PaymentMethod", null)
+                    b.HasOne("Hive.Billing.Domain.Entities.Wallet", "Wallet")
                         .WithMany("Transactions")
-                        .HasForeignKey("PaymentMethodId")
+                        .HasForeignKey("WalletId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("Wallet");
                 });
 
-            modelBuilder.Entity("Hive.Billing.Domain.Entities.Account", b =>
+            modelBuilder.Entity("Hive.Billing.Domain.Entities.Wallet", b =>
                 {
-                    b.Navigation("PaymentMethods");
+                    b.HasOne("Hive.Billing.Domain.Entities.AccountHolder", "AccountHolder")
+                        .WithOne()
+                        .HasForeignKey("Hive.Billing.Domain.Entities.Wallet", "AccountHolderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("AccountHolder");
                 });
 
-            modelBuilder.Entity("Hive.Billing.Domain.Entities.PaymentMethod", b =>
+            modelBuilder.Entity("Hive.Billing.Domain.Entities.Wallet", b =>
                 {
                     b.Navigation("Transactions");
                 });

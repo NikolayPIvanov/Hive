@@ -1,7 +1,7 @@
-﻿namespace Hive.Investing.Domain.Entities
+﻿using Hive.Common.Core.SeedWork;
+
+namespace Hive.Investing.Domain.Entities
 {
-    using Hive.Common.Domain.SeedWork;
-   
     using System.Collections.Generic;
 
     public class Investor : Entity
@@ -16,7 +16,7 @@
             UserId = userId;
         }
         
-        public string UserId { get; set; }
+        public string UserId { get; private set; }
 
         public ICollection<Investment> Investments { get; private set; }
     }

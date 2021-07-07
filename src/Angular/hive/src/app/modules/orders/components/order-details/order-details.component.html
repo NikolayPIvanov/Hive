@@ -1,0 +1,97 @@
+<h1 mat-dialog-title>Order Details</h1>
+<div mat-dialog-content>
+  <div fxLayout="column">
+    <div fxLayout="row" fxFlex fxLayoutGap="1rem">
+
+      <div *ngIf="gig$ | async; let gig" fxLayout="column" fxFlex="30">
+        <mat-divider></mat-divider>
+        <h3 style="margin-bottom: 0;"><strong>Gig: </strong> {{ gig.title! }} </h3>
+      </div>
+
+      <div fxLayout="column" fxFlex="30">
+        <mat-divider>
+        </mat-divider>
+        <h3><strong>Order number: </strong> {{ order.orderNumber }}</h3>
+        <h3><strong>Ordered at: </strong> {{ order.orderedAt | date:'short' }}</h3>
+        <h3 *ngIf="profile$ | async; let profile">
+          <strong>Buyer:</strong> {{ profile.givenName }} {{ profile.surname }}
+        </h3>
+      </div>
+
+      <!-- price -->
+      <div fxLayout="column" fxFlex="30" >
+        <mat-divider>
+        </mat-divider>
+        <h3><strong>Unit Price:</strong> {{ order.unitPrice }}$</h3>
+        <h3><strong>Quantity:</strong> {{ order.quantity }}</h3>
+        <h3><strong>Total:</strong> {{ order.totalPrice }}$</h3>
+      </div>
+    </div>
+  </div>
+
+  <mat-divider style="margin-top: 1rem;"></mat-divider>
+  
+  <div fxLayout="column">
+    <div fxLayout="column">
+      <h2>Requirements</h2>
+      <mat-divider>
+      </mat-divider>
+      <textarea [disabled]="true" name="requrements" id="requrements" class="full-width" rows="10">
+        {{ order.requirements }}
+      </textarea>
+    </div>
+
+    <mat-divider>
+    </mat-divider>
+
+    <div fxLayout="column">
+      <h2>States History</h2>
+      <mat-list>
+        <mat-list-item *ngFor="let state of order.orderStates">
+          <mat-icon matListIcon>radio_button_checked</mat-icon>
+          
+          <span matLine [ngSwitch]="state.orderState">
+            <span *ngSwitchCase="0"> In validation</span>
+            <span *ngSwitchCase="1"> Data valid </span>
+            <span *ngSwitchCase="2"> Balance sufficient </span>
+            <span *ngSwitchCase="3"> Invalid </span>
+            <span *ngSwitchCase="4"> Canceled </span>
+            <span *ngSwitchCase="5"> Accepted </span>
+            <span *ngSwitchCase="6"> Declined </span>
+            <span *ngSwitchCase="7"> In Progress </span>
+            <span *ngSwitchCase="8"> Completed </span>
+            <span *ngSwitchDefault> Unknown</span>
+          </span>
+          <p matLine>
+            <span> {{state.reason}} </span>
+            <span> -- {{ state.created | date:'short' }} </span>
+          </p>
+        </mat-list-item>
+      </mat-list>
+    </div>
+
+    <div fxLayout="column" *ngIf="order.resolution && order.resolution.length">
+      <h2>Resolutions</h2>
+      <mat-list>
+        <mat-list-item *ngFor="let res of order.resolution">
+          <mat-icon matListIcon>article</mat-icon>
+          
+          <p matLine>
+            <span>Resolution</span>
+            <span> -- Version: {{ res.version }} </span>
+            <button mat-icon-button (click)="downloadResolution(res.version!)"><mat-icon>download</mat-icon></button>
+            <ng-container *ngIf="isBuyer()">
+              <button mat-icon-button
+                *ngIf="!isAccepted"
+                (click)="accept(res.version!)"><mat-icon>check</mat-icon></button>
+            </ng-container>
+          </p>
+        </mat-list-item>
+      </mat-list>
+    </div>
+    
+  </div>
+</div>
+<div mat-dialog-actions>
+  <button mat-button [mat-dialog-close]="order.orderNumber" cdkFocusInitial>Close</button>
+</div>
