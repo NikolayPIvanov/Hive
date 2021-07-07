@@ -41,6 +41,7 @@
         <app-gig-card 
           *ngFor="let gig of gigs"
           fxFlex="22"
+          (onDeleted)="deleted($event)"
           [gig]="gig"></app-gig-card>
       </div>
 

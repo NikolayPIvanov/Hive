@@ -26,8 +26,7 @@ export class SellerDashboardComponent implements OnInit {
 
   ngOnInit(): void {
     this.gigs$ = this.sellersClient.getUserSellerId()
-      .pipe(switchMap(id => this.sellersClient.getMyGigs(3, 1, id)));
-    
+      .pipe(switchMap(id => this.sellersClient.getMyGigs(3, 1, undefined, id)));
     this.orders$ = this.ordersClient.getMyOrders(1, 3, true)
     this.plans$ = this.plansClient.getPlans(1, 3, undefined, false);
   }

@@ -16,6 +16,6 @@ export class GigsService {
 
   getSellerGigsOverview(pageIndex = 1, pageSize = 8): Observable<PaginatedListOfGigOverviewDto> {
     return this.sellersApiClient.getUserSellerId()
-      .pipe(switchMap(id => this.sellersApiClient.getMyGigs(pageSize, pageIndex, id)));
+      .pipe(switchMap(id => this.sellersApiClient.getMyGigs(pageSize, pageIndex, null, id)));
   }
 }

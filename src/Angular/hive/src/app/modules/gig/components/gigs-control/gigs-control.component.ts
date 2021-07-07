@@ -55,7 +55,7 @@ export class GigsControlComponent implements OnInit, OnDestroy {
       .pipe(
         takeUntil(this.subject),
         tap({ next: (id) => this.sellerId = id }),
-        switchMap(id => this.sellerClient.getMyGigs(this.pageSize, this.pageNumber + 1, id)),
+        switchMap(id => this.sellerClient.getMyGigs(this.pageSize, this.pageNumber + 1, null, id)),
         tap({ next: (gigs) => this.pushNewGigs(gigs) }))
       .subscribe()
   }
@@ -73,7 +73,7 @@ export class GigsControlComponent implements OnInit, OnDestroy {
     this.pageSize = pageEvent.pageSize;
     this.pageNumber = pageEvent.pageIndex;
 
-    this.sellerClient.getMyGigs(this.pageSize, this.pageNumber + 1, this.sellerId)
+    this.sellerClient.getMyGigs(this.pageSize, this.pageNumber + 1, null, this.sellerId)
       .pipe(
         takeUntil(this.subject),
         tap({

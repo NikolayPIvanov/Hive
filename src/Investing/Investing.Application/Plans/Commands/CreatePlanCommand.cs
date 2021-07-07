@@ -71,8 +71,7 @@ namespace Hive.Investing.Application.Plans.Commands
                 throw new NotFoundException(nameof(Vendor), _currentUserService.UserId);
             }
             
-            var plan = new Plan(vendor.Id, request.Title, request.Description,
-                request.StartDate, request.EndDate, request.FundingNeeded);
+            var plan = new Plan(vendor.Id, request.Title, request.Description, request.StartDate, request.EndDate, request.FundingNeeded);
             _context.Plans.Add(plan);
             await _context.SaveChangesAsync(cancellationToken);
             

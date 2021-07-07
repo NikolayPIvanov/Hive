@@ -62,7 +62,8 @@ namespace Hive.Investing.Application.Investments.Commands
 
             if (request.Accept)
             {
-                // Goes to Billing to check the balance and get the money from the investor's wallet
+                // Goes to Billing to check the balance and gets the amount
+                // from the investor's wallet to transfer to seller's
                 await _publisher.PublishAsync(
                     new InvestmentAcceptedIntegrationEvent(
                         investment.Investor.UserId, 

@@ -44,6 +44,25 @@ export class GigDashboardComponent implements OnInit, OnDestroy {
     this.unsubscribe.complete();
   }
 
+  deleted(id: number) {
+    this.gigsClient.delete(id)
+      .pipe(
+        takeUntil(this.unsubscribe),
+        tap({
+          next: () => {
+            let copy = this.gigs;
+            const index = copy.findIndex(g => g.id == id);
+            if (index > -1) {
+              copy.splice(index, 1);
+              this.gigs = copy;
+              this.length -= 1;
+              this.gigsSubject.next(this.gigs);
+            }
+          }
+        })
+      ).subscribe();
+  }
+
   fetchGigs() {
     if (this.isSeller) {
       this.sellerClient.getUserSellerId()
