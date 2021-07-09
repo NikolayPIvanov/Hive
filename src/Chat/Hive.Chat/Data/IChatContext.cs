@@ -23,9 +23,10 @@ namespace Hive.Chat.Data
     {
         public ChatContext(IOptions<ChatDatabaseSettings> mongoSettings)
         {
-            var settings = mongoSettings.Value;
-            var client = new MongoClient(settings.ConnectionString);
-            var database = client.GetDatabase(settings.DatabaseName);
+            var localSettings = mongoSettings.Value;
+            var settings = MongoClientSettings.FromConnectionString(localSettings.ConnectionString);
+            var client = new MongoClient(settings);
+            var database = client.GetDatabase(localSettings.DatabaseName);
             UserIdentifiers = database.GetCollection<UserIdentifier>("UserIdentifiers");
             Rooms = database.GetCollection<Room>("Rooms");
         }

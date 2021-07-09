@@ -4,16 +4,14 @@ using Hive.UserProfile.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
-namespace Hive.UserProfile.Infrastructure.Persistence.Migrations
+namespace Hive.UserProfile.Infrastructure.Migrations
 {
     [DbContext(typeof(UserProfileDbContext))]
-    [Migration("20210626053322_UserBioAndNames")]
-    partial class UserBioAndNames
+    partial class UserProfileDbContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -29,7 +27,7 @@ namespace Hive.UserProfile.Infrastructure.Persistence.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("AvatarFile")
+                    b.Property<string>("AvatarUri")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Bio")

@@ -15,7 +15,9 @@
       <span class="navbar-spacer"></span>
   
       <button *ngIf="profile$ | async; let profile" mat-button [matMenuTriggerFor]="userMenu" fxLayout="row">
-        <img [src]="profile.avatarUri || '../../../../assets/user.png'" style="height: 4rem;">
+        <img 
+          [src]="profile.avatarUri || '../../../../assets/user.png'" 
+          style="height: 4rem; border-radius: 50%;">
         <span fxShow fxHide.xs >
           {{profile.givenName}} {{profile.surname}}
         </span>

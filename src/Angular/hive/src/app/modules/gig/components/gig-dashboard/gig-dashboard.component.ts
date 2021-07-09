@@ -101,8 +101,7 @@ export class GigDashboardComponent implements OnInit, OnDestroy {
       .pipe(
         takeUntil(this.unsubscribe),
         switchMap(id => {
-          debugger;
-          return this.gigsClient.getGigById(id);
+          return this.gigsClient.getGigOverviewById(id);
         }),
         tap({
           next: (gig) => {

@@ -25,7 +25,7 @@ namespace Hive.Identity.Areas.Identity.Pages.Account
         [TempData]
         public string StatusMessage { get; set; }
 
-        public async Task<IActionResult> OnGetAsync(string userId, string code)
+        public async Task<IActionResult> OnGetAsync(string userId, string code, string returnUrl)
         {
             if (userId == null || code == null)
             {
@@ -42,8 +42,13 @@ namespace Hive.Identity.Areas.Identity.Pages.Account
             var result = await _userManager.ConfirmEmailAsync(user, code);
             StatusMessage = result.Succeeded ? "Thank you for confirming your email." : "Error confirming your email.";
 
-            return Redirect("http://localhost/login");
-            return Page();
+            if(!string.IsNullOrEmpty(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+            else {
+                return Page();
+            }
         }
     }
 }

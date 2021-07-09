@@ -52,7 +52,8 @@ namespace BuildingBlocks.Core.MessageBus
                         ro.VirtualHost = rabbitMqSettings.VirtualHost;
                         ro.ConnectionFactoryOptions = factory =>
                         {
-                            factory.AutomaticRecoveryEnabled = true;
+                            factory.RequestedHeartbeat = TimeSpan.FromSeconds(60);
+                            factory.AutomaticRecoveryEnabled = false;
                             factory.NetworkRecoveryInterval = TimeSpan.FromSeconds(30);
                         };
                     });

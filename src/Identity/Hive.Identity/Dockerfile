@@ -21,7 +21,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:5.0
 WORKDIR /app
 
 ENV ASPNETCORE_URLS="https://+:7001;http://+:7000"
-ENV ASPNETCORE_Kestrel__Certificates__Default__Password="mypass123"
+# ENV ASPNETCORE_Kestrel__Certificates__Default__Password="mypass123"
 
 EXPOSE 7001
 EXPOSE 7000

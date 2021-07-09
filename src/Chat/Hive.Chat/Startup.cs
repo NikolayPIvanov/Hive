@@ -141,16 +141,18 @@ namespace Hive.Chat
                 
                 services.AddScoped<IIntegrationEventPublisher, RabbitMqPublisher>();
             }
+
+            options.UseInMemoryStorage();
             
-            var mongoDbSettings = Configuration
-                .GetSection(nameof(ChatDatabaseSettings))
-                .Get<ChatDatabaseSettings>();
-
-            options.UseMongoDB(opt =>
-            {
-                opt.DatabaseConnection = mongoDbSettings.ConnectionString;
-
-            });
+            // var mongoDbSettings = Configuration
+            //     .GetSection(nameof(ChatDatabaseSettings))
+            //     .Get<ChatDatabaseSettings>();
+            //
+            // options.UseMongoDB(opt =>
+            // {
+            //     opt.DatabaseConnection = mongoDbSettings.ConnectionString;
+            //
+            // });
 
             
         });

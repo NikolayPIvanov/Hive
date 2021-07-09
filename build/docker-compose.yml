@@ -8,10 +8,10 @@ services:
       - RABBITMQ_DEFAULT_USER=${RABBITMQ_DEFAULT_USER:-admin}
       - RABBITMQ_DEFAULT_PASS=${RABBITMQ_DEFAULT_PASS:-admin}
     ports:
-      - 5672:5672
+      - 5672:56
+        - dev72
       - 15672:15672
     networks:
-      - dev
 
   redis:
     image: "redis:alpine"

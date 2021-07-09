@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Mime;
 using System.Threading;
 using System.Threading.Tasks;
+using Gig.Application.Gigs.Queries;
 using Hive.Common.Core.Models;
 using Hive.Gig.Application.GigPackages;
 using Hive.Gig.Application.GigPackages.Commands;
@@ -31,6 +32,12 @@ namespace Gig.Management.Controllers
         [SwaggerResponse(HttpStatusCode.NotFound, typeof(NotFoundObjectResult), Description = "Anomaly not found")]
         public async Task<ActionResult<GigDto>> GetGigById([FromRoute] int id, CancellationToken cancellationToken) 
             => Ok(await Mediator.Send(new GetGigQuery(id), cancellationToken));
+
+        [HttpGet("{id:int}/overview")]
+        [SwaggerResponse(HttpStatusCode.OK, typeof(GigOverviewDto), Description = "Successful operation")]
+        [SwaggerResponse(HttpStatusCode.NotFound, typeof(NotFoundObjectResult), Description = "Anomaly not found")]
+        public async Task<ActionResult<GigDto>> GetGigOverviewById([FromRoute] int id, CancellationToken cancellationToken) 
+            => Ok(await Mediator.Send(new GetGigOverViewQuery(id), cancellationToken));
         
         [HttpGet("packages/{packageId:int}")]
         [SwaggerResponse(HttpStatusCode.OK, typeof(GigDto), Description = "Successful operation")]
@@ -55,7 +62,7 @@ namespace Gig.Management.Controllers
         public async Task<ActionResult<int>> CreateGig([FromBody] CreateGigCommand command, CancellationToken cancellationToken)
         {
             var id = await Mediator.Send(command, cancellationToken);
-            return CreatedAtAction(nameof(GetGigById), new {id}, id);
+            return CreatedAtAction(nameof(GetGigOverviewById), new {id}, id);
         }
         
         [HttpPut("{id:int}/images")]

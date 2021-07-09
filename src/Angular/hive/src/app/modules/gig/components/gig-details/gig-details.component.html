@@ -22,7 +22,7 @@
         </mat-card-header>
         <mat-card-content>
           <mat-accordion *ngFor="let question of gig.questions">
-            <mat-expansion-panel>
+            <mat-expansion-panel style="margin-top: 1rem;">
               <mat-expansion-panel-header>
                 <mat-panel-title>
                   {{ question.title }} 
@@ -78,8 +78,8 @@
               </mat-tab>
             </mat-tab-group>
           </mat-card-content>
-          <mat-card-actions *ngIf="canModify">
-            <button mat-raised-button color="accent" (click)="edit(gig)">Edit</button>
+          <mat-card-actions *ngIf="canModify" fxLayout="row">
+            <button fxFlex mat-raised-button color="accent" (click)="edit(gig)">Edit</button>
           </mat-card-actions>
         </mat-card>
       </div>

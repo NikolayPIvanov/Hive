@@ -75,16 +75,16 @@ export class GigCreateComponent implements OnInit {
           takeUntil(this.unsubscribe),
           switchMap((id) => {
             const imageData = this.gigForm.get('image');
+            this.gid = id;
             if (imageData?.value) {
+              this.gid = id;
               return this.gigsApiClient.updateImage(
                 id, FileUpload.fromJS({ fileData: imageData.value }))
             }
 
-            this.gid = id;
             return of(id);
           }),
-          tap({ complete: () => this.dialogRef.close(this.gid)
-        }))
+          tap({ complete: () => this.dialogRef.close(this.gid) }))
         .subscribe();
   }
 

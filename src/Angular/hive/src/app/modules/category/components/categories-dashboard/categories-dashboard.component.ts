@@ -108,7 +108,7 @@ export class CategoriesDashboardComponent implements OnInit, OnDestroy {
   }
 
   onClosedDialog(category: CategoryDto) {
-    this.categories.push(category)
+    // this.categories.push(category)
 
     const copy = this.dataSource.data
     copy.push(category);

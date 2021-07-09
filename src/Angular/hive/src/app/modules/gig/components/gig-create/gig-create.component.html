@@ -115,7 +115,7 @@
           <app-image-upload (onUploaded)="setImage($event)"></app-image-upload>
 
           <div>
-            <button mat-raised-button  type="button" matStepperPrevious>Back</button>
+            <button mat-raised-button style="margin-right: 1rem;"  type="button" matStepperPrevious>Back</button>
             <button mat-raised-button  type="button" matStepperNext>Next</button>
           </div>
         </mat-step>
@@ -247,16 +247,16 @@
             </div>
 
             <div>
-              <button mat-raised-button type="button" matStepperPrevious>Back</button>
+              <button mat-raised-button style="margin-right: 1rem;" type="button" matStepperPrevious>Back</button>
               <button mat-raised-button type="button" matStepperNext>Next</button>
             </div>
         </mat-step>
         
         <mat-step>
           <ng-template matStepLabel>Finish</ng-template>
-          <p>You are now all done. Click on create when you want to create the gig.</p>
+          <h2>You are now all done. Click on create when you want to finish the process.</h2>
           <div>
-            <button mat-raised-button type="submit">Create</button>
+            <button mat-raised-button style="margin-right: 1rem;" type="submit">Create</button>
             <button  mat-raised-button type="button" (click)="stepper.reset()">To First</button>
           </div>
         </mat-step>

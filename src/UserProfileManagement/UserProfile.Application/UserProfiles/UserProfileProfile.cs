@@ -13,7 +13,6 @@ namespace Hive.UserProfile.Application.UserProfiles
             CreateMap<UserProfile, UserProfileDto>()
                 .ForMember(d => d.Languages, x => x.MapFrom(s => s.Languages.Select(l => l.Value)))
                 .ForMember(d => d.Skills, x => x.MapFrom(s => s.Skills.Select(l => l.Value)));
-            CreateMap<NotificationSetting, NotificationSettingDto>().DisableCtorValidation().ReverseMap();
         }
     }
 }

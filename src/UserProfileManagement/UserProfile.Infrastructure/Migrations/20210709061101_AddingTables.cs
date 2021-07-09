@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace Hive.UserProfile.Infrastructure.Persistence.Migrations
+namespace Hive.UserProfile.Infrastructure.Migrations
 {
-    public partial class AddingEntities : Migration
+    public partial class AddingTables : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -11,16 +11,17 @@ namespace Hive.UserProfile.Infrastructure.Persistence.Migrations
                 name: "up");
 
             migrationBuilder.CreateTable(
-                name: "profiles",
+                name: "Profiles",
                 schema: "up",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     UserId = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FirstName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    GivenName = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Surname = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Bio = table.Column<string>(type: "nvarchar(2500)", maxLength: 2500, nullable: true),
+                    AvatarUri = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Education = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: true),
                     Created = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
@@ -29,7 +30,7 @@ namespace Hive.UserProfile.Infrastructure.Persistence.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_profiles", x => x.Id);
+                    table.PrimaryKey("PK_Profiles", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -46,10 +47,10 @@ namespace Hive.UserProfile.Infrastructure.Persistence.Migrations
                 {
                     table.PrimaryKey("PK_Language", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Language_profiles_ProfileId",
+                        name: "FK_Language_Profiles_ProfileId",
                         column: x => x.ProfileId,
                         principalSchema: "up",
-                        principalTable: "profiles",
+                        principalTable: "Profiles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -68,10 +69,10 @@ namespace Hive.UserProfile.Infrastructure.Persistence.Migrations
                 {
                     table.PrimaryKey("PK_Skill", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Skill_profiles_ProfileId",
+                        name: "FK_Skill_Profiles_ProfileId",
                         column: x => x.ProfileId,
                         principalSchema: "up",
-                        principalTable: "profiles",
+                        principalTable: "Profiles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -100,7 +101,7 @@ namespace Hive.UserProfile.Infrastructure.Persistence.Migrations
                 schema: "up");
 
             migrationBuilder.DropTable(
-                name: "profiles",
+                name: "Profiles",
                 schema: "up");
         }
     }
