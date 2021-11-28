@@ -19,3 +19,4 @@
 * [Redis](https://redis.io/)
 * [Duende Software](https://duendesoftware.com/)
 
+### The concept of this project is used in my bachelors degree and the projects stucture and approach are free to use, whereas the idea is not :)
