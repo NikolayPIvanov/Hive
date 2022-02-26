@@ -7,6 +7,10 @@
 <br/>
 <br/>
 
+
+### The concept of this project is used in my bachelors degree and the projects stucture and approach are free to use, whereas the idea is not :)
+### This project will be discontinued in this repository
+
 ## Technologies
 * ASP.NET Core 5
 * [Entity Framework Core 5](https://docs.microsoft.com/en-us/ef/core/)
@@ -19,5 +23,3 @@
 * [Redis](https://redis.io/)
 * [Duende Software](https://duendesoftware.com/)
 
-### The concept of this project is used in my bachelors degree and the projects stucture and approach are free to use, whereas the idea is not :)
-### This project will be discontinued in this repository
